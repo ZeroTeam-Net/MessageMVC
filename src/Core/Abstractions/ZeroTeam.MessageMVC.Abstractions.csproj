@@ -8,7 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Agebull.EntityModel.Core" Version="3.1.40.9-bate" />
     <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MicroZero\Agebull.MicroZero.Abstractions.csproj" />
   </ItemGroup>
 </Project>
