@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using Agebull.Common.Context;
+using ZeroTeam.MessageMVC.Context;
 using Agebull.Common.Logging;
-using Agebull.EntityModel.Common;
 using Newtonsoft.Json;
 
 
@@ -58,13 +56,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         ///  调用的命令或广播子标题
         /// </summary>
-        public string Command { get; set; }
-
-
-        /// <summary>
-        ///  调用的命令或广播子标题
-        /// </summary>
-        public string ApiName => Command;
+        public string ApiName { get; set; }
 
         /// <summary>
         ///  请求者
@@ -74,10 +66,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
 
         /// <summary>
-        ///  站点
+        ///  服务
         /// </summary>
         [JsonProperty]
-        public string Station { get; set; }
+        public string Service { get; set; }
 
 
         /// <summary>

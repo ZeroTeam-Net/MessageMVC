@@ -55,18 +55,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Context\**" />
+    <Compile Remove="Exception\**" />
     <Compile Remove="Properties\PublishProfiles\**" />
+    <Compile Remove="Snowflake\**" />
+    <Compile Remove="SystemExtend\**" />
     <EmbeddedResource Remove="Context\**" />
+    <EmbeddedResource Remove="Exception\**" />
     <EmbeddedResource Remove="Properties\PublishProfiles\**" />
+    <EmbeddedResource Remove="Snowflake\**" />
+    <EmbeddedResource Remove="SystemExtend\**" />
     <None Remove="Context\**" />
+    <None Remove="Exception\**" />
     <None Remove="Properties\PublishProfiles\**" />
+    <None Remove="Snowflake\**" />
+    <None Remove="SystemExtend\**" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Ioc\AppConfigHelper.cs" />
     <Compile Remove="Properties\AssemblyInfo.cs" />
-    <Compile Remove="SystemExtend\AppConfigHelper.cs" />
-    <Compile Remove="SystemExtend\Configuration.cs" />
-    <Compile Remove="SystemExtend\ConfigurationSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

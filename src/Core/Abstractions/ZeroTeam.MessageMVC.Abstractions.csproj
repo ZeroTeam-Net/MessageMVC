@@ -8,10 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Auth\**" />
+    <EmbeddedResource Remove="Auth\**" />
+    <None Remove="Auth\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MicroZero\Agebull.MicroZero.Abstractions.csproj" />
+    <ProjectReference Include="..\LogRecorder\Agebull.Common.LogRecorder.csproj" />
   </ItemGroup>
 </Project>

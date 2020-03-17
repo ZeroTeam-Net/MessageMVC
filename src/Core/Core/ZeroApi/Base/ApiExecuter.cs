@@ -1,14 +1,11 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Agebull.Common.Context;
+using ZeroTeam.MessageMVC.Context;
 using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
-using Agebull.EntityModel.Common;
-using ZeroTeam.MessageMVC.PubSub;
 using Newtonsoft.Json;
-using Agebull.MicroZero;
-using Agebull.MicroZero.ZeroApis;
+using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -45,10 +42,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         public static void OnMessagePush(ZeroService station, string message)
         {
             station.NetPool.Commit();
-            PublishItem frame = null;
+            MessageItem frame = null;
             try
             {
-                frame = JsonHelper.DeserializeObject<PublishItem>(message);
+                frame = JsonHelper.DeserializeObject<MessageItem>(message);
             }
             catch (Exception e)
             {
@@ -64,9 +61,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     Station = station,
                     Item = new ApiCallItem
                     {
-                        Station = frame.Topic,
-                        Command = frame.Command,
-                        Argument = frame.Argument
+                        Service = frame.ServiceName,
+                        ApiName = frame.ApiName,
+                        Argument = frame.Argument,
+                        Context = frame.Context
                     }
                 };
                 executer.Execute().Wait();
@@ -405,7 +403,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     return ZeroOperatorStateType.Ok;
                 case ApiFileResult result:
                     if (result.Status == null)
-                        result.Status = new ApiStatusResult { InnerMessage = Item.GlobalId };
+                        result.Status = new OperatorStatus { InnerMessage = Item.GlobalId };
                     else
                         result.Status.InnerMessage = Item.GlobalId;
 
@@ -414,10 +412,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     Item.Result = JsonHelper.SerializeObject(result);
                     return result.Success ? ZeroOperatorStateType.Ok : ZeroOperatorStateType.Failed;
                 case IApiResult result:
-                    if (result.Status == null)
-                        result.Status = new ApiStatusResult { InnerMessage = Item.GlobalId };
-                    else
-                        result.Status.InnerMessage = Item.GlobalId;
                     Item.Result = JsonHelper.SerializeObject(result);
                     Item.Status = result.Success ? UserOperatorStateType.Success : UserOperatorStateType.LogicalError;
                     return result.Success ? ZeroOperatorStateType.Ok : ZeroOperatorStateType.Failed;

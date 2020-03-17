@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace KafkaTest
 {
-    public class KafkaConsumer
+    public class KafkaConsumerDemo
     {
 
         private static readonly string bootstrapServers = "47.111.0.73:9092";

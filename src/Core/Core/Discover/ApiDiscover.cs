@@ -10,9 +10,9 @@ using Agebull.Common.Reflection;
 using Agebull.EntityModel.Common;
 using Newtonsoft.Json;
 using Agebull.Common.Ioc;
-using Agebull.MicroZero;
-using Agebull.MicroZero.ApiDocuments;
-using Agebull.MicroZero.ZeroApis;
+using ZeroTeam.MessageMVC;
+using ZeroTeam.MessageMVC.ApiDocuments;
+using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -154,7 +154,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     ServiceInfos.Add(sa.Name, station = new ServiceInfo
                     {
                         Name = sa.Name,
-                        NetBuilder = name=>IocHelper.Create<IRpc>()
+                        NetBuilder = name=>IocHelper.Create<IRpcTransport>()
                     });
                     station.Copy(docx);
                 }

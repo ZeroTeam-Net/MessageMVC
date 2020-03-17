@@ -4,9 +4,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Agebull.Common.Logging;
 using Agebull.EntityModel.Common;
-using Agebull.MicroZero;
-using Agebull.MicroZero.ApiDocuments;
-using Agebull.MicroZero.ZeroApis;
+using ZeroTeam.MessageMVC;
+using ZeroTeam.MessageMVC.ApiDocuments;
+using ZeroTeam.MessageMVC.ZeroApis;
 using ZeroTeam.MessageMVC.ZeroApis;
 using ZeroTeam.MessageMVC.ZeroServices.StateMachine;
 
@@ -18,7 +18,6 @@ namespace ZeroTeam.MessageMVC
     /// </summary>
     public class ZeroService : IService
     {
-
         #region 基础信息
 
         /// <summary>
@@ -162,7 +161,7 @@ namespace ZeroTeam.MessageMVC
 
         #endregion
 
-        #region 主流程
+        #region 执行流程
 
         /// <summary>
         /// 应用程序等待结果的信号量对象
@@ -288,6 +287,7 @@ namespace ZeroTeam.MessageMVC
             }
             RealState = StationState.Closing;
             CancelToken.Cancel();
+            NetPool.Close();
             ZeroTrace.SystemLog(ServiceName, "Close", "Run is cancel,waiting... ");
             return true;
         }
@@ -320,8 +320,6 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         private void LoopComplete()
         {
-            if (CancelToken == null)
-                return;
             NetPool.LoopComplete();
             CancelToken.Dispose();
             CancelToken = null;
@@ -351,13 +349,13 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         protected virtual void DoDestory()
         {
-
+            StateMachine.Close();
         }
 
 
         #endregion
 
-        #region IZeroObject
+        #region IService
 
 
         void IService.OnInitialize()

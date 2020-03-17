@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using Agebull.Common.Context;
-using Agebull.Common.OAuth;
-
+﻿using ZeroTeam.MessageMVC.Context;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -14,7 +11,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// 当前登录用户
         /// </summary>
-        public ILoginUserInfo UserInfo => GlobalContext.Customer;
+        public IUser UserInfo => GlobalContext.Customer;
 
         /// <summary>
         /// 调用者（机器名）

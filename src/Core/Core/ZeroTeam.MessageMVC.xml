@@ -1225,7 +1225,7 @@
             析构
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction(System.String,ZeroTeam.MessageMVC.ZeroApis.ApiAction,Agebull.MicroZero.ApiDocuments.ApiActionInfo)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction(System.String,ZeroTeam.MessageMVC.ZeroApis.ApiAction,ZeroTeam.MessageMVC.ApiDocuments.ApiActionInfo)">
             <summary>
                 注册方法
             </summary>
@@ -1233,16 +1233,7 @@
             <param name="action">动作</param>
             <param name="info">反射信息</param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction(System.String,System.Func{System.Threading.Tasks.Task{Agebull.MicroZero.ZeroApis.IApiResult}},Agebull.MicroZero.ApiAccessOption,Agebull.MicroZero.ApiDocuments.ApiActionInfo)">
-            <summary>
-                注册方法
-            </summary>
-            <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
-            <param name="action">动作</param>
-            <param name="info">反射信息</param>
-            <param name="access">访问设置</param>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction(System.String,System.Func{System.Object,System.Threading.Tasks.Task{Agebull.MicroZero.ZeroApis.IApiResult}},Agebull.MicroZero.ApiAccessOption,Agebull.MicroZero.ApiDocuments.ApiActionInfo)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction(System.String,System.Func{System.Threading.Tasks.Task{ZeroTeam.MessageMVC.ZeroApis.IApiResult}},ZeroTeam.MessageMVC.ApiAccessOption,ZeroTeam.MessageMVC.ApiDocuments.ApiActionInfo)">
             <summary>
                 注册方法
             </summary>
@@ -1251,7 +1242,7 @@
             <param name="info">反射信息</param>
             <param name="access">访问设置</param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction(System.String,System.Func{Agebull.MicroZero.ZeroApis.IApiResult},Agebull.MicroZero.ApiAccessOption,Agebull.MicroZero.ApiDocuments.ApiActionInfo)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction(System.String,System.Func{System.Object,System.Threading.Tasks.Task{ZeroTeam.MessageMVC.ZeroApis.IApiResult}},ZeroTeam.MessageMVC.ApiAccessOption,ZeroTeam.MessageMVC.ApiDocuments.ApiActionInfo)">
             <summary>
                 注册方法
             </summary>
@@ -1260,7 +1251,16 @@
             <param name="info">反射信息</param>
             <param name="access">访问设置</param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction(System.String,System.Func{System.Object,System.Object},Agebull.MicroZero.ApiAccessOption,Agebull.MicroZero.ApiDocuments.ApiActionInfo)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction(System.String,System.Func{ZeroTeam.MessageMVC.ZeroApis.IApiResult},ZeroTeam.MessageMVC.ApiAccessOption,ZeroTeam.MessageMVC.ApiDocuments.ApiActionInfo)">
+            <summary>
+                注册方法
+            </summary>
+            <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
+            <param name="action">动作</param>
+            <param name="info">反射信息</param>
+            <param name="access">访问设置</param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction(System.String,System.Func{System.Object,System.Object},ZeroTeam.MessageMVC.ApiAccessOption,ZeroTeam.MessageMVC.ApiDocuments.ApiActionInfo)">
             <summary>
                 注册方法
             </summary>
@@ -1269,7 +1269,7 @@
             <param name="access">访问设置</param>
             <param name="info">反射信息</param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction(System.String,System.Func{System.Object},Agebull.MicroZero.ApiAccessOption,Agebull.MicroZero.ApiDocuments.ApiActionInfo)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction(System.String,System.Func{System.Object},ZeroTeam.MessageMVC.ApiAccessOption,ZeroTeam.MessageMVC.ApiDocuments.ApiActionInfo)">
             <summary>
                 注册方法
             </summary>
@@ -1278,7 +1278,7 @@
             <param name="access">访问设置</param>
             <param name="info">反射信息</param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction``1(System.String,System.Func{``0},Agebull.MicroZero.ApiAccessOption,Agebull.MicroZero.ApiDocuments.ApiActionInfo)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction``1(System.String,System.Func{``0},ZeroTeam.MessageMVC.ApiAccessOption,ZeroTeam.MessageMVC.ApiDocuments.ApiActionInfo)">
             <summary>
                 注册方法
             </summary>
@@ -1287,7 +1287,7 @@
             <param name="access">访问设置</param>
             <param name="info">反射信息</param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction2``1(System.String,System.Func{``0},Agebull.MicroZero.ApiAccessOption,Agebull.MicroZero.ApiDocuments.ApiActionInfo)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction2``1(System.String,System.Func{``0},ZeroTeam.MessageMVC.ApiAccessOption,ZeroTeam.MessageMVC.ApiDocuments.ApiActionInfo)">
             <summary>
                 注册方法
             </summary>
@@ -1296,7 +1296,7 @@
             <param name="access">访问设置</param>
             <param name="info">反射信息</param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction2``2(System.String,System.Func{``0,``1},Agebull.MicroZero.ApiAccessOption,Agebull.MicroZero.ApiDocuments.ApiActionInfo)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction2``2(System.String,System.Func{``0,``1},ZeroTeam.MessageMVC.ApiAccessOption,ZeroTeam.MessageMVC.ApiDocuments.ApiActionInfo)">
             <summary>
                 注册方法
             </summary>
@@ -1305,7 +1305,7 @@
             <param name="access">访问设置</param>
             <param name="info">反射信息</param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction(System.String,System.Func{Agebull.MicroZero.ZeroApis.IApiArgument,Agebull.MicroZero.ZeroApis.IApiResult},Agebull.MicroZero.ApiAccessOption,Agebull.MicroZero.ApiDocuments.ApiActionInfo)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction(System.String,System.Func{ZeroTeam.MessageMVC.ZeroApis.IApiArgument,ZeroTeam.MessageMVC.ZeroApis.IApiResult},ZeroTeam.MessageMVC.ApiAccessOption,ZeroTeam.MessageMVC.ApiDocuments.ApiActionInfo)">
             <summary>
                 注册方法
             </summary>
@@ -1314,7 +1314,7 @@
             <param name="access">访问设置</param>
             <param name="info">反射信息</param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction``2(System.String,System.Func{``0,``1},Agebull.MicroZero.ApiAccessOption,Agebull.MicroZero.ApiDocuments.ApiActionInfo)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction``2(System.String,System.Func{``0,``1},ZeroTeam.MessageMVC.ApiAccessOption,ZeroTeam.MessageMVC.ApiDocuments.ApiActionInfo)">
             <summary>
                 注册方法
             </summary>

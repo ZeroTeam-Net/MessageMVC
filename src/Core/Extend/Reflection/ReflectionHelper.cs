@@ -1563,11 +1563,11 @@ namespace Agebull.Common.Reflection
                 return;
             }
             par.Add(new XElement("ExceptionMessage", err.Message));
-            if (err is SystemExException serr)
-            {
-                par.Add(new XElement("InnerMessage", serr.InnerMessage));
-                par.Add(new XElement("Extend", serr.Extend));
-            }
+            //if (err is SystemExException serr)
+            //{
+            //    par.Add(new XElement("InnerMessage", serr.InnerMessage));
+            //    par.Add(new XElement("Extend", serr.Extend));
+            //}
             var xe = new XElement("Exception",
                 new XElement("Type", err.GetType().ToString()),
                 new XElement("Source", err.Source),

@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using Newtonsoft.Json;
 
-namespace Agebull.MicroZero
+namespace ZeroTeam.MessageMVC
 {
     /// <summary>
     /// Json序列化装饰器

@@ -7,7 +7,7 @@ using Agebull.Common;
 using Agebull.Common.Configuration;
 using Agebull.Common.Logging;
 
-using Agebull.Common.Context;
+using ZeroTeam.MessageMVC.Context;
 using System.Threading;
 
 namespace ZeroTeam.MessageMVC

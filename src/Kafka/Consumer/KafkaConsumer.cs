@@ -1,4 +1,5 @@
 ﻿using Agebull.Common.Configuration;
+using Agebull.Common.Logging;
 using Confluent.Kafka;
 using System;
 using System.Threading;
@@ -13,6 +14,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// </summary>
         public void Initialize()
         {
+            
             config = ConfigurationManager.Get<ConsumerConfig>("Kafka");
         }
         IConsumer<Ignore, string> consumer;
@@ -33,14 +35,24 @@ namespace ZeroTeam.MessageMVC.Kafka
 
         public bool Loop(CancellationToken token)
         {
-            while (!token.IsCancellationRequested)
+            try
             {
-                var cr = consumer.Consume(token);
-                if (cr == null)
+                var tm = new TimeSpan(0, 0, 3);
+                while (!token.IsCancellationRequested)
                 {
-                    continue;
+                    var cr = consumer.Consume(tm);
+                    Console.WriteLine("...");
+                    if (cr == null)
+                    {
+                        Console.WriteLine("Empty");
+                        continue;
+                    }
+                    ApiExecuter.OnMessagePush(Station, cr.Value);
                 }
-                ApiExecuter.OnMessagePush(Station, cr.Value);
+            }
+            catch (Exception ex)
+            {
+                LogRecorder.Exception(ex);
             }
             return true;
         }
@@ -52,14 +64,15 @@ namespace ZeroTeam.MessageMVC.Kafka
         {
             return true;
         }
-
+        ConsumerBuilder<Ignore, string> builder;
         /// <summary>
         /// 同步运行状态
         /// </summary>
         /// <returns></returns>
         public void LoopBegin()
         {
-            consumer = new ConsumerBuilder<Ignore, string>(config).Build();
+            builder = new ConsumerBuilder<Ignore, string>(config);
+            consumer = builder.Build();
             consumer.Subscribe(Station.ServiceName);
         }
 
@@ -72,6 +85,14 @@ namespace ZeroTeam.MessageMVC.Kafka
             consumer.Dispose();
         }
 
+        /// <summary>
+        /// 关闭
+        /// </summary>
+        /// <returns></returns>
+        public void Close()
+        {
+            consumer.Close();
+        }
         /// <summary>
         /// 表示已成功接收 
         /// </summary>

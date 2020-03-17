@@ -3,7 +3,7 @@
     /// <summary>
     /// 监控状态机
     /// </summary>
-    public class EmptyStateMachine : StationStateMachineBase, IStationStateMachine
+    internal class EmptyStateMachine : StateMachineBase, IStationStateMachine
     {
         /// <summary>
         ///     开始的处理
