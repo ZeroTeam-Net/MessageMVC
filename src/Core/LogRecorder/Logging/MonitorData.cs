@@ -1,64 +1,64 @@
-using System;
+ï»¿using System;
 
 namespace Agebull.Common.Logging
 {
     /// <summary>
-    ///     ¸ú×ÙĞÅÏ¢
+    ///     è·Ÿè¸ªä¿¡æ¯
     /// </summary>
     internal class MonitorData
     {
         /// <summary>
-        ///     ÎÄ±¾
+        ///     æ–‡æœ¬
         /// </summary>
         internal string Space;
 
         /// <summary>
-        ///     ÎÄ±¾
+        ///     æ–‡æœ¬
         /// </summary>
         internal string Message;
 
         /// <summary>
-        ///     ÆğÖ¹Ê±¼ä
+        ///     èµ·æ­¢æ—¶é—´
         /// </summary>
         internal DateTime StartTime;
 
         /// <summary>
-        ///     ÆğÖ¹Ê±¼ä
+        ///     èµ·æ­¢æ—¶é—´
         /// </summary>
         internal DateTime PreTime;
 
         /// <summary>
-        /// ±êÌâ
+        /// æ ‡é¢˜
         /// </summary>
         public string Title;
 
         /// <summary>
-        ///     ×Ü´¦ÀíÆ÷Ê±¼ä
+        ///     æ€»å¤„ç†å™¨æ—¶é—´
         /// </summary>
         internal double TotalTime=> (DateTime.UtcNow - StartTime).TotalMilliseconds;
 
 
 #if !NETCOREAPP
         /// <summary>
-        /// ÄÚ´æ·ÖÅä
+        /// å†…å­˜åˆ†é…
         /// </summary>
         internal long TotalAllocatedMemorySize, MonitoringTotalAllocatedMemorySize;
         /// <summary>
-        /// ÄÚ´æÕ¼ÓÃ
+        /// å†…å­˜å ç”¨
         /// </summary>
         internal long TotalSurvivedMemorySize, MonitoringSurvivedMemorySize;
         /// <summary>
-        /// ´¦ÀíÆ÷Ê±¼ä
+        /// å¤„ç†å™¨æ—¶é—´
         /// </summary>
         internal TimeSpan MonitoringTotalProcessorTime;
         /// <summary>
-        /// ×Ü´¦ÀíÆ÷Ê±¼ä
+        /// æ€»å¤„ç†å™¨æ—¶é—´
         /// </summary>
         internal double TotalProcessorTime;
 
 #endif
         /// <summary>
-        ///     ¹¹Ôì
+        ///     æ„é€ 
         /// </summary>
         internal MonitorData()
         {
@@ -71,9 +71,9 @@ namespace Agebull.Common.Logging
             TotalAllocatedMemorySize = 0;
 
 
-            Message = $"|¿ªÊ¼| {DateTime.UtcNow:HH:mm:ss} |       -       |     -    |     -    |{(AppDomain.CurrentDomain.MonitoringTotalAllocatedMemorySize / 1048576F).ToFixLenString(10, 3)}|    -     |{(AppDomain.CurrentDomain.MonitoringSurvivedMemorySize / 1048576F).ToFixLenString(10, 3)}|";
+            Message = $"|å¼€å§‹| {DateTime.UtcNow:HH:mm:ss} |       -       |     -    |     -    |{(AppDomain.CurrentDomain.MonitoringTotalAllocatedMemorySize / 1048576F).ToFixLenString(10, 3)}|    -     |{(AppDomain.CurrentDomain.MonitoringSurvivedMemorySize / 1048576F).ToFixLenString(10, 3)}|";
 #else
-            Message = $"|¿ªÊ¼| {DateTime.UtcNow:HH:mm:ss.ffff} |";
+            Message = $"|å¼€å§‹| {DateTime.UtcNow:HH:mm:ss.ffff} |";
 #endif
 
             PreTime = StartTime = DateTime.UtcNow;
@@ -82,7 +82,7 @@ namespace Agebull.Common.Logging
         }
 
         /// <summary>
-        ///     Ë¢ĞÂÏûÏ¢
+        ///     åˆ·æ–°æ¶ˆæ¯
         /// </summary>
         /// <returns></returns>
         internal void FlushMessage()
@@ -94,7 +94,7 @@ namespace Agebull.Common.Logging
             var d = AppDomain.CurrentDomain.MonitoringTotalAllocatedMemorySize;
             var e = AppDomain.CurrentDomain.MonitoringSurvivedMemorySize - MonitoringSurvivedMemorySize;
             var f = AppDomain.CurrentDomain.MonitoringSurvivedMemorySize;
-            Message = string.Format("| ¡î |    -     |{0}|{1}|{2}|{3}|{4}|{5}|"
+            Message = string.Format("| â˜† |    -     |{0}|{1}|{2}|{3}|{4}|{5}|"
                 , a.TotalMilliseconds.ToFixLenString(15, 2)
                 , b.TotalMilliseconds.ToFixLenString(10, 2)
                 , (c / 1024F).ToFixLenString(10, 3)
@@ -102,12 +102,12 @@ namespace Agebull.Common.Logging
                 , (e / 1024F).ToFixLenString(10, 3)
                 , (f / 1048576F).ToFixLenString(10, 3));
 #else
-            Message = $"| ¡î |    -     |{a.TotalMilliseconds.ToFixLenString(15, 2)}|";
+            Message = $"| â˜† |    -     |{a.TotalMilliseconds.ToFixLenString(15, 2)}|";
 #endif
         }
 
         /// <summary>
-        ///     ÊÕ¼¯ĞÅÏ¢
+        ///     æ”¶é›†ä¿¡æ¯
         /// </summary>
         /// <returns></returns>
         internal void Coll()
@@ -124,7 +124,7 @@ namespace Agebull.Common.Logging
         }
 
         /// <summary>
-        ///     ÊÕ¼¯ĞÅÏ¢
+        ///     æ”¶é›†ä¿¡æ¯
         /// </summary>
         /// <returns></returns>
         internal void Coll(MonitorData item)
@@ -143,7 +143,7 @@ namespace Agebull.Common.Logging
         }
 
         /// <summary>
-        ///     Ë¢ĞÂÏûÏ¢
+        ///     åˆ·æ–°æ¶ˆæ¯
         /// </summary>
         /// <returns></returns>
         internal void Flush()
@@ -156,7 +156,7 @@ namespace Agebull.Common.Logging
         }
 
         /// <summary>
-        ///     Ë¢ĞÂ×ÊÔ´¼ì²â
+        ///     åˆ·æ–°èµ„æºæ£€æµ‹
         /// </summary>
         internal void EndMessage()
         {
@@ -164,7 +164,7 @@ namespace Agebull.Common.Logging
 #if !NETCOREAPP
             var d = AppDomain.CurrentDomain.MonitoringTotalAllocatedMemorySize;
             var f = AppDomain.CurrentDomain.MonitoringSurvivedMemorySize;
-            Message = string.Format("|Íê³É| {0:HH:mm:ss} |{1}/{7}|{2}|{3}|{4}|{5}|{6}|"
+            Message = string.Format("|å®Œæˆ| {0:HH:mm:ss} |{1}/{7}|{2}|{3}|{4}|{5}|{6}|"
                 , DateTime.UtcNow
                 , TotalTime.ToFixLenString(7, 1)
                 , TotalProcessorTime.ToFixLenString(10, 2)
@@ -175,7 +175,7 @@ namespace Agebull.Common.Logging
                 , a.TotalMilliseconds.ToFixLenString(7, 1));
 #else
             Message =
-                $"|Íê³É| {DateTime.UtcNow:HH:mm:ss.ffff} |{TotalTime.ToFixLenString(7, 1)}/{a.TotalMilliseconds.ToFixLenString(7, 1)}|";
+                $"|å®Œæˆ| {DateTime.UtcNow:HH:mm:ss.ffff} |{TotalTime.ToFixLenString(7, 1)}/{a.TotalMilliseconds.ToFixLenString(7, 1)}|";
 #endif
         }
     }

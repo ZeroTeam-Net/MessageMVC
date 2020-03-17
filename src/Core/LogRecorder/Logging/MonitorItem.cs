@@ -1,17 +1,17 @@
-using System;
+ï»¿using System;
 using System.Linq;
 using System.Text;
 
 namespace Agebull.Common.Logging
 {
     /// <summary>
-    ///     ¸ú×ÙĞÅÏ¢
+    ///     è·Ÿè¸ªä¿¡æ¯
     /// </summary>
     [Serializable]
     internal class MonitorItem
     {
         /// <summary>
-        ///     ¼ÇÂ¼¶ÑÕ»
+        ///     è®°å½•å †æ ˆ
         /// </summary>
         internal LogStack<MonitorData> Stack = new LogStack<MonitorData>();
 
@@ -20,12 +20,12 @@ namespace Agebull.Common.Logging
         internal DateTime Id = DateTime.Now;
 
         /// <summary>
-        ///     Õì²â¿ª¹Ø
+        ///     ä¾¦æµ‹å¼€å…³
         /// </summary>
         internal bool InMonitor;
 
         /// <summary>
-        ///     ¿ªÊ¼¼ì²â×ÊÔ´
+        ///     å¼€å§‹æ£€æµ‹èµ„æº
         /// </summary>
         public void BeginMonitor(string title)
         {
@@ -48,18 +48,18 @@ namespace Agebull.Common.Logging
                 {
                     Title = title
                 });
-                //Texter.Append("±êÌâ");
+                //Texter.Append("æ ‡é¢˜");
                 //Texter.Append(' ', 24);
-                //Texter.Append("|×´Ì¬|   Ê±¼ä   |   ÓÃ Ê±(ms)   |");
+                //Texter.Append("|çŠ¶æ€|   æ—¶é—´   |   ç”¨ æ—¶(ms)   |");
 //#if !NETCOREAPP
-//                Texter.Append("|  CPU(ms) |ÄÚ´æ·ÖÅäKb| ×Ü·ÖÅäMb |ÄÚ´æ×¤ÁôKb| ×Ü×¤ÁôMb |");
+//                Texter.Append("|  CPU(ms) |å†…å­˜åˆ†é…Kb| æ€»åˆ†é…Mb |å†…å­˜é©»ç•™Kb| æ€»é©»ç•™Mb |");
 //#endif
                 Write(title, ItemType.First);
             }
         }
 
         /// <summary>
-        ///     Ë¢ĞÂ×ÊÔ´¼ì²â
+        ///     åˆ·æ–°èµ„æºæ£€æµ‹
         /// </summary>
         internal void BeginStep(string title)
         {
@@ -71,7 +71,7 @@ namespace Agebull.Common.Logging
         }
 
         /// <summary>
-        ///     Ë¢ĞÂ×ÊÔ´¼ì²â
+        ///     åˆ·æ–°èµ„æºæ£€æµ‹
         /// </summary>
         public void Flush(string title, bool number = false)
         {
@@ -82,7 +82,7 @@ namespace Agebull.Common.Logging
         }
 
         /// <summary>
-        ///     Ë¢ĞÂ×ÊÔ´¼ì²â
+        ///     åˆ·æ–°èµ„æºæ£€æµ‹
         /// </summary>
         public string End()
         {
@@ -131,32 +131,32 @@ namespace Agebull.Common.Logging
                 case ItemType.Begin:
                     if (cnt > 0)
                     {
-                        Texter.Append('©¦', cnt - 1);
-                        Texter.Append("©À©Ğ");
+                        Texter.Append('â”‚', cnt - 1);
+                        Texter.Append("â”œâ”¬");
                     }
                     else
                     {
-                        Texter.Append('©°');
+                        Texter.Append('â”Œ');
                     }
                     break;
                 //if (cnt > 0)
-                //    Texter.Append('©¦', cnt);
-                //Texter.Append('©Ğ');
+                //    Texter.Append('â”‚', cnt);
+                //Texter.Append('â”¬');
                 //break;
                 case ItemType.End:
                     if (cnt > 1)
-                        Texter.Append('©¦', cnt);
-                    Texter.Append('©¸');
+                        Texter.Append('â”‚', cnt);
+                    Texter.Append('â””');
                     break;
                 default:
                 //case ItemType.Item:
                 //    if (cnt > 0)
-                //        Texter.Append('©¦', cnt);
-                //    Texter.Append('©¸');
+                //        Texter.Append('â”‚', cnt);
+                //    Texter.Append('â””');
                 //    break;
                     if (cnt > 0)
-                        Texter.Append('©¦', cnt);
-                    Texter.Append('©À');
+                        Texter.Append('â”‚', cnt);
+                    Texter.Append('â”œ');
                     cnt++;
                     break;
             }
@@ -177,7 +177,7 @@ namespace Agebull.Common.Logging
 
 
         /// <summary>
-        ///     Ë¢ĞÂ×ÊÔ´¼ì²â
+        ///     åˆ·æ–°èµ„æºæ£€æµ‹
         /// </summary>
         public void EndStepMonitor()
         {

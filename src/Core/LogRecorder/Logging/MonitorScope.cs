@@ -1,4 +1,4 @@
-using Agebull.Common.Base;
+锘縰sing Agebull.Common.Base;
 using Agebull.Common.Ioc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -6,12 +6,12 @@ using System;
 namespace Agebull.Common.Logging
 {
     /// <summary>
-    /// 根据步骤范围
+    /// 鏍规嵁姝ラ鑼冨洿
     /// </summary>
     public class EmptyScope : ScopeBase
     {
         /// <summary>
-        /// 清理资源
+        /// 娓呯悊璧勬簮
         /// </summary>
         protected override void OnDispose()
         {
@@ -19,14 +19,14 @@ namespace Agebull.Common.Logging
     }
 
     /// <summary>
-    /// 根据步骤范围
+    /// 鏍规嵁姝ラ鑼冨洿
     /// </summary>
     public class MonitorScope : ScopeBase
     {
         private bool _isStep;
         private bool _isScope;
         /// <summary>
-        /// 生成范围
+        /// 鐢熸垚鑼冨洿
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
@@ -50,7 +50,7 @@ namespace Agebull.Common.Logging
         }
 
         /// <summary>
-        /// 清理资源
+        /// 娓呯悊璧勬簮
         /// </summary>
         protected override void OnDispose()
         {
@@ -64,7 +64,7 @@ namespace Agebull.Common.Logging
     }
 
     /// <summary>
-    /// 根据步骤范围
+    /// 鏍规嵁姝ラ鑼冨洿
     /// </summary>
     [Obsolete]
     public class MonitorStepScope : MonitorScope
