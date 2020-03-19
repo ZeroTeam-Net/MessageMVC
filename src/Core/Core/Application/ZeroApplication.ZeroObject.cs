@@ -19,7 +19,7 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 已注册的对象
         /// </summary>
-        internal static readonly ConcurrentDictionary<string, IService> ZeroObjects = new ConcurrentDictionary<string, IService>();
+        internal static readonly ConcurrentDictionary<string, IService> Services = new ConcurrentDictionary<string, IService>();
 
         /// <summary>
         /// 活动对象(执行中)
@@ -85,7 +85,7 @@ namespace ZeroTeam.MessageMVC
             lock (ActiveObjects)
             {
                 ActiveObjects.Add(obj);
-                can = ActiveObjects.Count + FailedObjects.Count == ZeroObjects.Count;
+                can = ActiveObjects.Count + FailedObjects.Count == Services.Count;
             }
             if (can)
                 ActiveSemaphore.Release(); //发出完成信号
@@ -101,7 +101,7 @@ namespace ZeroTeam.MessageMVC
             lock (ActiveObjects)
             {
                 FailedObjects.Add(obj);
-                can = ActiveObjects.Count + FailedObjects.Count == ZeroObjects.Count;
+                can = ActiveObjects.Count + FailedObjects.Count == Services.Count;
             }
             if (can)
                 ActiveSemaphore.Release(); //发出完成信号
@@ -139,7 +139,7 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public static IService TryGetZeroObject(string name)
         {
-            return ZeroObjects.TryGetValue(name, out var zeroObject) ? zeroObject : null;
+            return Services.TryGetValue(name, out var zeroObject) ? zeroObject : null;
         }
 
         /// <summary>
@@ -147,7 +147,7 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public static bool RegistZeroObject(IService obj)
         {
-            if (!ZeroObjects.TryAdd(obj.ServiceName, obj))
+            if (!Services.TryAdd(obj.ServiceName, obj))
                 return false;
             ZeroTrace.SystemLog(obj.ServiceName, "RegistZeroObject");
 
@@ -155,7 +155,7 @@ namespace ZeroTeam.MessageMVC
             {
                 try
                 {
-                    obj.OnInitialize();
+                    obj.Initialize();
                     ZeroTrace.SystemLog(obj.ServiceName, "Initialize");
                 }
                 catch (Exception e)
@@ -179,7 +179,7 @@ namespace ZeroTeam.MessageMVC
             try
             {
                 ZeroTrace.SystemLog(obj.ServiceName, "Start");
-                obj.OnStart();
+                obj.Start();
             }
             catch (Exception e)
             {
@@ -194,22 +194,21 @@ namespace ZeroTeam.MessageMVC
         internal static void OnZeroInitialize()
         {
             ZeroTrace.SystemLog("Application", "[OnZeroInitialize>>");
-            //using (OnceScope.CreateScope(ZeroObjects))
+            foreach (var mid in Middlewares)
+                mid.Initialize();
+            foreach (var obj in Services.Values.ToArray())
             {
-                foreach (var obj in ZeroObjects.Values.ToArray())
+                try
                 {
-                    try
-                    {
-                        obj.OnInitialize();
-                        ZeroTrace.SystemLog(obj.ServiceName, "Initialize");
-                    }
-                    catch (Exception e)
-                    {
-                        ZeroTrace.WriteException(obj.ServiceName, e, "*Initialize");
-                    }
+                    obj.Initialize();
+                    ZeroTrace.SystemLog(obj.ServiceName, "Initialize");
                 }
-                ZeroTrace.SystemLog("Application", "<<OnZeroInitialize]");
+                catch (Exception e)
+                {
+                    ZeroTrace.WriteException(obj.ServiceName, e, "*Initialize");
+                }
             }
+            ZeroTrace.SystemLog("Application", "<<OnZeroInitialize]");
         }
 
         /// <summary>
@@ -217,71 +216,81 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         internal static async Task OnZeroStart()
         {
-            //Debug.Assert(!HaseActiveObject);
             ZeroTrace.SystemLog("Application", "[OnZeroStart>>");
-            //using (OnceScope.CreateScope(ZeroObjects, ResetObjectActive))
+            foreach (var mid in Middlewares)
+                await mid.Start();
+            List<Task> tasks = new List<Task>();
+            foreach (var obj in Services.Values.ToArray())
             {
-                List<Task> tasks = new List<Task>();
-                foreach (var obj in ZeroObjects.Values.ToArray())
+                try
                 {
-                    try
-                    {
-                        ZeroTrace.SystemLog(obj.ServiceName, $"Try start by {StationState.Text(obj.RealState)}");
-                        tasks.Add(Task.Run(obj.OnStart));
-                    }
-                    catch (Exception e)
-                    {
-                        ZeroTrace.WriteException(obj.ServiceName, e, "*Start");
-                    }
+                    ZeroTrace.SystemLog(obj.ServiceName, $"Try start by {StationState.Text(obj.RealState)}");
+                    tasks.Add(Task.Run(obj.Start));
                 }
-
-                Task.WaitAll(tasks.ToArray());
-                //等待所有对象信号(全开或全关)
-                await ActiveSemaphore.WaitAsync();
+                catch (Exception e)
+                {
+                    ZeroTrace.WriteException(obj.ServiceName, e, "*Start");
+                }
             }
+
+            Task.WaitAll(tasks.ToArray());
+            //等待所有对象信号(全开或全关)
+            await ActiveSemaphore.WaitAsync();
+
             ApplicationState = StationState.Run;
             ZeroTrace.SystemLog("Application", "<<OnZeroStart]");
         }
 
+        /// <summary>
+        ///     注销时调用
+        /// </summary>
+        internal static void OnZeroClose()
+        {
+            var array = Services.Values.ToArray();
+            Services.Clear();
+            ZeroTrace.SystemLog("Application", "[OnZeroClose>>");
+            foreach (var mid in Middlewares)
+                mid.Close();
+            foreach (var obj in array)
+            {
+                try
+                {
+                    ZeroTrace.SystemLog("OnZeroClose", obj.ServiceName);
+                    obj.Close();
+                }
+                catch (Exception e)
+                {
+                    ZeroTrace.WriteException("OnZeroClose", e, obj.ServiceName);
+                }
+            }
+            ZeroTrace.SystemLog("Application", "<<OnZeroClose]");
+
+            GC.Collect();
+        }
 
         /// <summary>
         ///     注销时调用
         /// </summary>
-        internal static void OnZeroDestory()
+        internal static void OnZeroEnd()
         {
-            ZeroTrace.SystemLog("Application", "[OnZeroDestory>>");
-            var array = ZeroObjects.Values.ToArray();
-            ZeroObjects.Clear();
+            var array = Services.Values.ToArray();
+            Services.Clear();
+            ZeroTrace.SystemLog("Application", "[OnZeroEnd>>");
+            foreach (var mid in Middlewares)
+                mid.Close();
             foreach (var obj in array)
             {
                 try
                 {
-                    ZeroTrace.SystemLog("OnZeroDestory", obj.ServiceName);
-                    obj.OnDestory();
+                    ZeroTrace.SystemLog("OnZeroEnd", obj.ServiceName);
+                    obj.End();
                 }
                 catch (Exception e)
                 {
-                    ZeroTrace.WriteException("OnZeroDestory", e, obj.ServiceName);
+                    ZeroTrace.WriteException("OnZeroEnd", e, obj.ServiceName);
                 }
             }
-            ZeroTrace.SystemLog("Application", "<<OnZeroDestory]");
-
-            GC.Collect();
-
-            ZeroTrace.SystemLog("Application", "[OnZeroDispose>>");
-            foreach (var obj in array)
-            {
-                try
-                {
-                    ZeroTrace.SystemLog("OnZeroDispose", obj.ServiceName);
-                    obj.Dispose();
-                }
-                catch (Exception e)
-                {
-                    ZeroTrace.WriteException("OnZeroDispose", e, obj.ServiceName);
-                }
-            }
-            ZeroTrace.SystemLog("Application", "<<OnZeroDispose]");
+            ZeroTrace.SystemLog("Application", "<<OnZeroEnd]");
         }
 
         #endregion

@@ -10,7 +10,7 @@
         /// </summary>
         bool IStationStateMachine.Start()
         {
-            ZeroApplication.OnObjectFailed(Station);
+            ZeroApplication.OnObjectFailed(Service);
             return false;
         }
 
@@ -19,7 +19,7 @@
         /// </summary>
         bool IStationStateMachine.Close()
         {
-            ZeroApplication.OnObjectClose(Station);
+            ZeroApplication.OnObjectClose(Service);
             return false;
         }
 
@@ -31,7 +31,8 @@
             if (IsDisposed)
                 return false;
             IsDisposed = true;
-            return Station.Start();
+            Control.DoEnd();
+            return true;
         }
     }
 }

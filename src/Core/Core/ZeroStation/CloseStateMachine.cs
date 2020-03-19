@@ -12,11 +12,11 @@
         {
             if (IsDisposed)
             {
-                ZeroApplication.OnObjectFailed(Station);
+                ZeroApplication.OnObjectFailed(Service);
                 return false;
             }
             IsDisposed = true;
-            return Station.Start();
+            return Control.DoStart();
         }
 
         /// <summary>
@@ -24,7 +24,7 @@
         /// </summary>
         bool IStationStateMachine.Close()
         {
-            ZeroApplication.OnObjectClose(Station);
+            ZeroApplication.OnObjectClose(Service);
             return false;
         }
 

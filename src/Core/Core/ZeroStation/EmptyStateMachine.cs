@@ -10,7 +10,7 @@
         /// </summary>
         bool IStationStateMachine.Start()
         {
-            ZeroApplication.OnObjectFailed(Station);
+            ZeroApplication.OnObjectFailed(Service);
             return false;
         }
         /// <summary>
@@ -18,7 +18,6 @@
         /// </summary>
         bool IStationStateMachine.End()
         {
-            ZeroApplication.OnObjectClose(Station);
             return false;
         }
 
@@ -27,6 +26,7 @@
         /// </summary>
         bool IStationStateMachine.Close()
         {
+            ZeroApplication.OnObjectClose(Service);
             return false;
         }
     }

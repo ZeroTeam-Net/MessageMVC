@@ -6,7 +6,7 @@ namespace ZeroTeam.MessageMVC.Messages
     /// 消息交互格式
     /// </summary>
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
-    public class MessageItem
+    public class MessageItem : IMessageItem
     {
         /// <summary>
         /// 唯一标识，UUID

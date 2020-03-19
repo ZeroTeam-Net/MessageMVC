@@ -1,12 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
+using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC
 {
     /// <summary>
     /// 站点连接池
     /// </summary>
-    public interface IService : IDisposable
+    public interface IService
     {
+        /// <summary>
+        /// 注册的方法
+        /// </summary>
+        Dictionary<string, IApiAction> Actions { get; }
+
         /// <summary>
         /// 实例名称
         /// </summary>
@@ -23,6 +30,11 @@ namespace ZeroTeam.MessageMVC
         int RealState { get; }
 
         /// <summary>
+        /// 网络传输对象
+        /// </summary>
+        public INetTransport Transport { get; }
+
+        /// <summary>
         ///     配置状态
         /// </summary>
         StationStateType ConfigState { get; }
@@ -30,22 +42,8 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 系统初始化时调用
         /// </summary>
-        void OnInitialize();
+        void Initialize();
 
-        /// <summary>
-        /// 系统启动时调用
-        /// </summary>
-        bool OnStart();
-
-        /// <summary>
-        /// 系统关闭时调用
-        /// </summary>
-        bool OnEnd();
-
-        /// <summary>
-        /// 注销时调用
-        /// </summary>
-        void OnDestory();
 
         /// <summary>
         /// 开启
@@ -56,6 +54,12 @@ namespace ZeroTeam.MessageMVC
         /// 关闭
         /// </summary>
         bool Close();
+
+        /// <summary>
+        /// 结束
+        /// </summary>
+        void End();
+        
 
     }
 

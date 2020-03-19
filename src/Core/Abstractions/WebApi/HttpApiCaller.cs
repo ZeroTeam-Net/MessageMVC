@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Web;
 using Agebull.Common.Configuration;
 using Agebull.Common.Logging;
-using Agebull.EntityModel.Common;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace Agebull.Common.Http

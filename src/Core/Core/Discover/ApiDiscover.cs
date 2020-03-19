@@ -10,9 +10,6 @@ using Agebull.Common.Reflection;
 using Agebull.EntityModel.Common;
 using Newtonsoft.Json;
 using Agebull.Common.Ioc;
-using ZeroTeam.MessageMVC;
-using ZeroTeam.MessageMVC.ApiDocuments;
-using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -83,11 +80,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 var station = (ZeroService)ZeroApplication.TryGetZeroObject(sta.Name);
                 if (station == null)
                 {
-                    ZeroApplication.RegistZeroObject(station = new ZeroService(ZeroStationType.Queue)
+                    ZeroApplication.RegistZeroObject(station = new ZeroService
                     {
                         InstanceName = sta.Name,
                         ServiceName = sta.Name,
-                        NetPoolBuilder = sta.NetBuilder
+                        TransportBuilder = sta.NetBuilder
                     });
                 }
                 foreach (var api in sta.Aips)

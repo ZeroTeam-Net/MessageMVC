@@ -1,4 +1,5 @@
 ﻿using ZeroTeam.MessageMVC.Context;
+using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -28,12 +29,12 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         public string UserAgent => GlobalContext.RequestInfo.UserAgent;
 
-        ApiCallItem _apiCallItem;
+        IMessageItem _message;
 
         /// <summary>
         /// 原始调用帧消息
         /// </summary>
-        public ApiCallItem ApiCallItem => _apiCallItem ?? (_apiCallItem = GlobalContext.Current.DependencyObjects.Dependency<ApiCallItem>());
+        public IMessageItem Message => _message ?? (_message = GlobalContext.Current.DependencyObjects.Dependency<IMessageItem>());
 
     }
 }

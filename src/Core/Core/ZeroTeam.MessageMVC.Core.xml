@@ -9,29 +9,19 @@
             MEF插件导入器
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.AddInImporter.Instance">
-            <summary>
-            实例对象
-            </summary>
-        </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.AddInImporter.Registers">
             <summary>
             插件对象
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.AddInImporter.Import">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.AddInImporter.CheckOption(ZeroTeam.MessageMVC.ZeroAppConfigRuntime)">
             <summary>
-            导入
+                配置校验,作为第一步
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApis.AddInImporter.Initialize">
             <summary>
             初始化
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.AddInImporter.AutoRegist">
-            <summary>
-            执行自动注册
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiAction">
@@ -503,179 +493,6 @@
             <param name="methodName">原始调用方法</param>
             <returns>匿名委托</returns>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiCallItem">
-            <summary>
-            Api调用节点
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiCallItem.Handlers">
-            <summary>
-            全局ID
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiCallItem.LocalId">
-            <summary>
-            站点请求ID(队列使用)
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiCallItem.GlobalId">
-            <summary>
-            全局ID(本次)
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiCallItem.CallId">
-            <summary>
-            全局ID(调用方)
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiCallItem.RequestId">
-            <summary>
-            请求ID
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiCallItem.Context">
-            <summary>
-             原始上下文的JSO内容
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiCallItem.Content">
-            <summary>
-            内容
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiCallItem.ApiName">
-            <summary>
-             调用的命令或广播子标题
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiCallItem.Requester">
-            <summary>
-             请求者
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiCallItem.Service">
-            <summary>
-             服务
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiCallItem.Argument">
-            <summary>
-            请求参数
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiCallItem.Extend">
-            <summary>
-            请求参数
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiCallItem.Result">
-            <summary>
-            返回
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiCallItem.Status">
-            <summary>
-            执行状态
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiCallItem.RestoryContext(System.String)">
-            <summary>
-            还原调用上下文
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiCallItem.ToString">
-            <summary>
-            显示到文本
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter">
-            <summary>
-                Api调用器
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.Station">
-            <summary>
-            当前站点
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.Item">
-            <summary>
-            调用的内容
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.CancellationToken">
-            <summary>
-            取消停牌
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.ScopeResource">
-            <summary>
-            范围资源
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.OnMessagePush(ZeroTeam.MessageMVC.ZeroService,System.String)">
-            <summary>
-            消息处理
-            </summary>
-            <param name="station"></param>
-            <param name="message"></param>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.Execute">
-            <summary>
-            调用 
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.RestoryContext">
-            <summary>
-            还原调用上下文
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.CommandPrepare(System.Boolean,ZeroTeam.MessageMVC.ZeroApis.ApiAction@)">
-            <summary>
-                执行命令
-            </summary>
-            <param name="monitor"></param>
-            <param name="action"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.CommandExec(System.Boolean,ZeroTeam.MessageMVC.ZeroApis.ApiAction)">
-            <summary>
-                执行命令
-            </summary>
-            <param name="monitor"></param>
-            <param name="action"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.CheckCommandResult(System.Object)">
-            <summary>
-                执行命令
-            </summary>
-            <param name="res"></param>
-            <returns></returns>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.IApiHandler">
-            <summary>
-            Api处理器
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiHandler.Prepare(ZeroTeam.MessageMVC.ZeroService,ZeroTeam.MessageMVC.ZeroApis.ApiCallItem)">
-            <summary>
-            准备
-            </summary>
-            <param name="station"></param>
-            <param name="item"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiHandler.End(ZeroTeam.MessageMVC.ZeroService,ZeroTeam.MessageMVC.ZeroApis.ApiCallItem)">
-            <summary>
-            结束处理
-            </summary>
-            <param name="station"></param>
-            <param name="item"></param>
-        </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiControllerBase">
             <summary>
             ZeroApi控制器基类
@@ -701,10 +518,73 @@
             HTTP调用时的UserAgent
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiControllerBase.ApiCallItem">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiControllerBase.Message">
             <summary>
             原始调用帧消息
             </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter">
+            <summary>
+                Api调用器
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.ZeroTeam#MessageMVC#ZeroApis#IMessageMiddleware#Handle(ZeroTeam.MessageMVC.IService,System.String,System.Func{System.Threading.Tasks.Task{ZeroTeam.MessageMVC.Messages.MessageState}})">
+            <summary>
+            准备
+            </summary>
+            <param name="service">当前服务</param>
+            <param name="message">当前消息</param>
+            <param name="next">下一个处理方法</param>
+            <returns></returns>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.Service">
+            <summary>
+            当前站点
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.Item">
+            <summary>
+            调用的内容
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.CancellationToken">
+            <summary>
+            取消停牌
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.Execute">
+            <summary>
+            调用 
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.RestoryContext">
+            <summary>
+            还原调用上下文
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.CommandPrepare(System.Boolean,ZeroTeam.MessageMVC.ZeroApis.IApiAction@)">
+            <summary>
+                执行命令
+            </summary>
+            <param name="monitor"></param>
+            <param name="action"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.CommandExec(System.Boolean,ZeroTeam.MessageMVC.ZeroApis.IApiAction)">
+            <summary>
+                执行命令
+            </summary>
+            <param name="monitor"></param>
+            <param name="action"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.CheckCommandResult(System.Object)">
+            <summary>
+                执行命令
+            </summary>
+            <param name="res"></param>
+            <returns></returns>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApplication">
             <summary>
@@ -772,17 +652,17 @@
                 已关闭
             </summary>
         </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApplication.WaitToken">
+            <summary>
+                应用程序等待结果的信号量对象
+            </summary>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApplication.CheckOption">
             <summary>
                 配置校验,作为第一步
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApplication.InitializeDependency">
-            <summary>
-                设置LogRecorder的依赖属性(内部使用)
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApplication.Discove(System.Reflection.Assembly,System.String)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApplication.Discove(System.Reflection.Assembly)">
             <summary>
                 发现
             </summary>
@@ -812,11 +692,6 @@
                 执行并等待
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApplication.WaitToken">
-            <summary>
-                应用程序等待结果的信号量对象
-            </summary>
-        </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApplication.Start">
             <summary>
                 启动
@@ -827,7 +702,7 @@
                 关闭
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApplication.ZeroObjects">
+        <member name="F:ZeroTeam.MessageMVC.ZeroApplication.Services">
             <summary>
             已注册的对象
             </summary>
@@ -907,9 +782,24 @@
                 系统启动时调用
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApplication.OnZeroDestory">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApplication.OnZeroClose">
             <summary>
                 注销时调用
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApplication.OnZeroEnd">
+            <summary>
+                注销时调用
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroGlobal">
+            <summary>
+            默认的全局对象
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroGlobal.CheckOption(ZeroTeam.MessageMVC.ZeroAppConfigRuntime)">
+            <summary>
+                配置校验,作为第一步
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroServices.StateMachine.CloseStateMachine">
@@ -977,7 +867,7 @@
             站点状态机
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroServices.StateMachine.IStationStateMachine.Station">
+        <member name="P:ZeroTeam.MessageMVC.ZeroServices.StateMachine.IStationStateMachine.Service">
             <summary>
             站点
             </summary>
@@ -1047,7 +937,12 @@
             监控状态机
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroServices.StateMachine.StateMachineBase.Station">
+        <member name="P:ZeroTeam.MessageMVC.ZeroServices.StateMachine.StateMachineBase.Service">
+            <summary>
+            站点
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroServices.StateMachine.StateMachineBase.Control">
             <summary>
             站点
             </summary>
@@ -1057,30 +952,45 @@
             是否已析构
             </summary>
         </member>
+        <member name="T:ZeroTeam.MessageMVC.IStateMachineControl">
+            <summary>
+            受状态机控制的对象
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.IStateMachineControl.DoStart">
+            <summary>
+            系统启动时调用
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.IStateMachineControl.DoClose">
+            <summary>
+            系统关闭时调用
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.IStateMachineControl.DoEnd">
+            <summary>
+            注销时调用
+            </summary>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroService">
             <summary>
             一个服务
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroService.#ctor(ZeroTeam.MessageMVC.ZeroStationType)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroService.#ctor">
             <summary>
             构造
             </summary>
             <param name="type">站点类型</param>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroService.NetPool">
+        <member name="P:ZeroTeam.MessageMVC.ZeroService.Transport">
             <summary>
             网络传输对象
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroService.NetPoolBuilder">
+        <member name="P:ZeroTeam.MessageMVC.ZeroService.TransportBuilder">
             <summary>
             网络传输对象构造器
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroService.StationType">
-            <summary>
-            类型
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroService.ServiceName">
@@ -1096,36 +1006,6 @@
         <member name="P:ZeroTeam.MessageMVC.ZeroService.RealName">
             <summary>
             实例名称
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroService.CallCount">
-            <summary>
-            调用计数
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroService.ErrorCount">
-            <summary>
-            调用计数
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroService.SuccessCount">
-            <summary>
-            调用计数
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroService.RecvCount">
-            <summary>
-            调用计数
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroService.SendCount">
-            <summary>
-            调用计数
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroService.SendError">
-            <summary>
-            调用计数
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.ZeroService._realState">
@@ -1168,12 +1048,6 @@
             初始化
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroService.Start">
-            <summary>
-            开始
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroService.DoStart">
             <summary>
             开始
@@ -1183,12 +1057,6 @@
         <member name="M:ZeroTeam.MessageMVC.ZeroService.Run">
             <summary>
             命令轮询
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroService.Close">
-            <summary>
-            关闭
             </summary>
             <returns></returns>
         </member>
@@ -1210,14 +1078,28 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroService.DoDispose">
+        <member name="M:ZeroTeam.MessageMVC.ZeroService.DoEnd">
             <summary>
             析构
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroService.DoDestory">
+        <member name="M:ZeroTeam.MessageMVC.ZeroService.ZeroTeam#MessageMVC#IService#Start">
+            <summary>
+            开始
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroService.ZeroTeam#MessageMVC#IService#End">
+            <inheritdoc/>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroService.ZeroTeam#MessageMVC#IStateMachineControl#DoEnd">
             <summary>
             析构
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroService.ZeroTeam#MessageMVC#IService#Actions">
+            <summary>
+            注册的方法
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction(System.String,ZeroTeam.MessageMVC.ZeroApis.ApiAction,ZeroTeam.MessageMVC.ApiDocuments.ApiActionInfo)">
@@ -1317,21 +1199,6 @@
             <param name="action">动作</param>
             <param name="access">访问设置</param>
             <param name="info">反射信息</param>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroService.ApiHandlers">
-            <summary>
-            处理器
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistHandlers``1">
-            <summary>
-                注册处理器
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroService.CreateHandlers">
-            <summary>
-                注册处理器
-            </summary>
         </member>
     </members>
 </doc>

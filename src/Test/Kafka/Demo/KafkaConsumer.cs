@@ -1,8 +1,5 @@
-﻿using Agebull.Common.Configuration;
-using Confluent.Kafka;
+﻿using Confluent.Kafka;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 
 namespace KafkaTest

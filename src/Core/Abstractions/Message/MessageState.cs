@@ -17,19 +17,26 @@
 		/// 格式错误
 		/// </summary>
 		FormalError = 2,
+
 		/// <summary>
 		/// 无处理方法
 		/// </summary>
-		NoAction = 3,
+		NoSupper = 3,
+
+		/// <summary>
+		/// 取消处理
+		/// </summary>
+		Cancel = 4,
 
 		/// <summary>
 		/// 处理异常
 		/// </summary>
-		Exception = 4,
+		Exception = 5,
+
 		/// <summary>
 		/// 处理失败
 		/// </summary>
-		Failed = 5,
+		Failed = 6,
 
 		/// <summary>
 		/// 处理成功

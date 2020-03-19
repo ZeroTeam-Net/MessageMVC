@@ -1,8 +1,6 @@
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
-using ZeroTeam.MessageMVC;
-using ZeroTeam.MessageMVC.ZeroApis;
 using Newtonsoft.Json;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
@@ -11,7 +9,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     /// <summary>
     ///     Api站点
     /// </summary>
-    public abstract class ApiAction
+    public abstract class ApiAction : IApiAction
     {
         /// <summary>
         ///     参数

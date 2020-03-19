@@ -10,6 +10,8 @@ using Agebull.EntityModel.Common;
 
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
 
 namespace ZeroTeam.MessageMVC
 {
@@ -74,6 +76,13 @@ namespace ZeroTeam.MessageMVC
 
         #region Flow
 
+        private static IAppMiddleware[] Middlewares;
+        private static readonly CancellationTokenSource CancelToken = new CancellationTokenSource();
+
+        /// <summary>
+        ///     应用程序等待结果的信号量对象
+        /// </summary>
+        private static readonly SemaphoreSlim WaitToken = new SemaphoreSlim(0);
 
         #region Option
 
@@ -82,53 +91,17 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public static void CheckOption()
         {
-            
-            Console.WriteLine("Weconme MicroZero");
-
-            ThreadPool.GetMaxThreads(out var worker, out _);
-            ThreadPool.SetMaxThreads(worker, 4096);
-            //ThreadPool.GetAvailableThreads(out worker, out io);
-
             CheckConfig();
-            InitializeDependency();
+            Middlewares = IocHelper.ServiceProvider.GetServices<IAppMiddleware>().ToArray();
+            foreach (var mid in Middlewares)
+                mid.CheckOption(Config);
             ShowOptionInfo();
         }
-
-
-        /// <summary>
-        ///     设置LogRecorder的依赖属性(内部使用)
-        /// </summary>
-        private static void InitializeDependency()
-        {
-            GlobalContext.ServiceName = Config.ServiceName;
-            GlobalContext.ServiceRealName = $"{Config.ServiceName}:{Config.StationName}:{RandomOperate.Generate(4)}";
-
-            //日志
-            LogRecorder.LogPath = Config.LogFolder;
-            LogRecorder.GetMachineNameFunc = () => GlobalContext.ServiceRealName;
-            LogRecorder.GetUserNameFunc = () => GlobalContext.CurrentNoLazy?.User?.UserId.ToString() ?? "*";
-            LogRecorder.GetRequestIdFunc = () => GlobalContext.CurrentNoLazy?.Request?.RequestId ?? RandomOperate.Generate(10);
-            LogRecorder.Initialize();
-            IocScope.Logger = IocHelper.Create<ILoggerFactory>().CreateLogger("MicroZero");
-
-            //插件
-            AddInImporter.Import();
-            AddInImporter.Instance.Initialize();
-
-            //注册默认广播
-           // IocHelper.AddSingleton<IZeroPublisher, ZPublisher>();
-
-            var testContext = IocHelper.Create<GlobalContext>();
-            if (testContext == null)
-                IocHelper.AddScoped<GlobalContext, GlobalContext>();
-
-        }
-
 
         /// <summary>
         ///     发现
         /// </summary>
-        public static void Discove(Assembly assembly, string stationName = null)
+        public static void Discove(Assembly assembly)
         {
             var discover = new ApiDiscover
             {
@@ -147,7 +120,8 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public static void Initialize()
         {
-            AddInImporter.Instance.AutoRegist();
+            foreach (var mid in Middlewares)
+                mid.Initialize();
             ApplicationState = StationState.Initialized;
             OnZeroInitialize();
             IocHelper.Update();
@@ -186,7 +160,6 @@ namespace ZeroTeam.MessageMVC
             WaitToken.Wait(CancelToken.Token);
         }
 
-        private static readonly CancellationTokenSource CancelToken = new CancellationTokenSource();
         /// <summary>
         ///     执行并等待
         /// </summary>
@@ -197,16 +170,6 @@ namespace ZeroTeam.MessageMVC
             ZeroTrace.SystemLog("MicroZero services is runing. Press Ctrl+C to shutdown.");
             await WaitToken.WaitAsync(CancelToken.Token);
         }
-
-        private static void OnConsoleOnCancelKeyPress(object s, ConsoleCancelEventArgs e)
-        {
-            Shutdown();
-        }
-
-        /// <summary>
-        ///     应用程序等待结果的信号量对象
-        /// </summary>
-        private static readonly SemaphoreSlim WaitToken = new SemaphoreSlim(0);
 
         /// <summary>
         ///     启动
@@ -223,27 +186,34 @@ namespace ZeroTeam.MessageMVC
 
         #region Destroy
 
+        private static void OnConsoleOnCancelKeyPress(object s, ConsoleCancelEventArgs e)
+        {
+            Shutdown();
+        }
+
         /// <summary>
         ///     关闭
         /// </summary>
         public static void Shutdown()
         {
             ZeroTrace.SystemLog("Begin shutdown...");
-            switch (ApplicationState)
+            if (ApplicationState >= StationState.Closing)
             {
-                case StationState.Destroy:
-                    return;
+                return;
             }
+
+            ApplicationState = StationState.Closing;
+            WaitToken.Release();
+            ApplicationState = StationState.Closed;
+            OnZeroClose();
+
             ApplicationState = StationState.Destroy;
+            OnZeroEnd();
             if (GlobalObjects.Count > 0)
                 GlobalSemaphore.Wait();
-            OnZeroDestory();
             ApplicationState = StationState.Disposed;
-
-            ZeroTrace.SystemLog("Application shutdown ,see you late.");
-
-            WaitToken.Release();
             CancelToken.Cancel();
+            ZeroTrace.SystemLog("Application shutdown ,see you late.");
         }
 
         #endregion

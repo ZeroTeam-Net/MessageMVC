@@ -4,19 +4,18 @@ using System.Threading;
 using System.Threading.Tasks;
 using Agebull.Common.Logging;
 using Agebull.EntityModel.Common;
-using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.ApiDocuments;
-using ZeroTeam.MessageMVC.ZeroApis;
 using ZeroTeam.MessageMVC.ZeroApis;
 using ZeroTeam.MessageMVC.ZeroServices.StateMachine;
 
 
 namespace ZeroTeam.MessageMVC
 {
+
     /// <summary>
     /// 一个服务
     /// </summary>
-    public class ZeroService : IService
+    public class ZeroService : IService, IStateMachineControl
     {
         #region 基础信息
 
@@ -24,9 +23,8 @@ namespace ZeroTeam.MessageMVC
         /// 构造
         /// </summary>
         /// <param name="type">站点类型</param>
-        public ZeroService(ZeroStationType type)
+        public ZeroService()
         {
-            StationType = type;
             InstanceName = GetType().Name;
             ConfigState = StationStateType.None;
         }
@@ -34,18 +32,15 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 网络传输对象
         /// </summary>
-        public INetTransport NetPool { get; protected set; }
+        public INetTransport Transport { get; protected set; }
 
 
         /// <summary>
         /// 网络传输对象构造器
         /// </summary>
-        public Func<string, INetTransport> NetPoolBuilder { get; set; }
+        public Func<string, INetTransport> TransportBuilder { get; set; }
 
-        /// <summary>
-        /// 类型
-        /// </summary>
-        public ZeroStationType StationType { get; }
+
         /// <summary>
         /// 站点名称
         /// </summary>
@@ -64,12 +59,6 @@ namespace ZeroTeam.MessageMVC
         #endregion
 
         #region 状态管理
-
-        /// <summary>
-        /// 调用计数
-        /// </summary>
-        public int CallCount, ErrorCount, SuccessCount, RecvCount, SendCount, SendError;
-
 
         /// <summary>
         ///     运行状态
@@ -116,22 +105,22 @@ namespace ZeroTeam.MessageMVC
                     case StationStateType.Stop:
                     case StationStateType.Remove:
                         if (!(StateMachine is EmptyStateMachine) || StateMachine.IsDisposed)
-                            StateMachine = new EmptyStateMachine { Station = this };
+                            StateMachine = new EmptyStateMachine { Service = this };
                         break;
                     case StationStateType.Run:
                         if (ZeroApplication.CanDo)
-                            StateMachine = new RunStateMachine { Station = this };
+                            StateMachine = new RunStateMachine { Service = this };
                         else
-                            StateMachine = new StartStateMachine { Station = this };
+                            StateMachine = new StartStateMachine { Service = this };
                         break;
                     case StationStateType.Failed:
                         if (ZeroApplication.CanDo)
-                            StateMachine = new FailedStateMachine { Station = this };
+                            StateMachine = new FailedStateMachine { Service = this };
                         else
-                            StateMachine = new StartStateMachine { Station = this };
+                            StateMachine = new StartStateMachine { Service = this };
                         break;
                     default:
-                        StateMachine = new StartStateMachine { Station = this };
+                        StateMachine = new StartStateMachine { Service = this };
                         break;
                 }
                 //#endif
@@ -176,25 +165,13 @@ namespace ZeroTeam.MessageMVC
             if (InstanceName == null)
                 InstanceName = ServiceName;
             RealState = StationState.Initialized;
-            NetPool = NetPoolBuilder(ServiceName);
-            NetPool.Service = this;
-            NetPool.Name = ServiceName;
-            NetPool.Initialize();
+            Transport = TransportBuilder(ServiceName);
+            Transport.Service = this;
+            Transport.Name = ServiceName;
+            Transport.Initialize();
             ConfigState = ServiceName == null ? StationStateType.ConfigError : StationStateType.Initialized;
         }
 
-        /// <summary>
-        /// 开始
-        /// </summary>
-        /// <returns></returns>
-        public bool Start()
-        {
-            if (DoStart())
-                return true;
-            RealState = StationState.Failed;
-            ZeroApplication.OnObjectFailed(this);
-            return false;
-        }
 
         private readonly LockData _startLock = new LockData();
         /// <summary>
@@ -218,9 +195,9 @@ namespace ZeroTeam.MessageMVC
                     RealState = StationState.Start;
                     //名称初始化
                     RealName = $"{ZeroApplication.Config.StationName}-{RandomOperate.Generate(6)}";
-                    ZeroTrace.SystemLog(ServiceName, InstanceName, StationType, RealName);
+                    ZeroTrace.SystemLog(ServiceName, InstanceName, RealName);
                     //扩展动作
-                    if (!NetPool.Prepare())
+                    if (!Transport.Prepare())
                     {
                         return false;
                     }
@@ -245,14 +222,14 @@ namespace ZeroTeam.MessageMVC
         /// 命令轮询
         /// </summary>
         /// <returns></returns>
-        private void Run()
+        private async void Run()
         {
             bool success;
             LoopBegin();
             try
             {
                 RealState = StationState.Run;
-                success = NetPool.Loop(CancelToken.Token);
+                success = await Transport.Loop(CancelToken.Token);
             }
             catch (Exception e)
             {
@@ -274,23 +251,6 @@ namespace ZeroTeam.MessageMVC
         }
 
 
-        /// <summary>
-        /// 关闭
-        /// </summary>
-        /// <returns></returns>
-        public bool Close()
-        {
-            if (CancelToken == null || CancelToken.IsCancellationRequested)
-            {
-                ZeroTrace.WriteError(ServiceName, "Close", "station not runing");
-                return false;
-            }
-            RealState = StationState.Closing;
-            CancelToken.Cancel();
-            NetPool.Close();
-            ZeroTrace.SystemLog(ServiceName, "Close", "Run is cancel,waiting... ");
-            return true;
-        }
         #endregion
 
         #region 扩展流程
@@ -310,7 +270,7 @@ namespace ZeroTeam.MessageMVC
             {
                 ZeroApplication.OnObjectFailed(this);
             }
-            NetPool.LoopBegin();
+            Transport.LoopBegin();
             _waitToken.Release();
         }
 
@@ -320,12 +280,11 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         private void LoopComplete()
         {
-            NetPool.LoopComplete();
+            Transport.LoopComplete();
             CancelToken.Dispose();
             CancelToken = null;
             RealState = StationState.Closed;
             ZeroApplication.OnObjectClose(this);
-
         }
 
         /// <summary>
@@ -340,62 +299,91 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 析构
         /// </summary>
-        protected virtual void DoDispose()
+        protected virtual void DoEnd()
         {
-            NetPool.Dispose();
+            Transport.Dispose();
         }
-        /// <summary>
-        /// 析构
-        /// </summary>
-        protected virtual void DoDestory()
-        {
-            StateMachine.Close();
-        }
-
-
         #endregion
 
         #region IService
 
 
-        void IService.OnInitialize()
+        void IService.Initialize()
         {
             Initialize();
         }
 
-        bool IService.OnStart()
+        /// <summary>
+        /// 开始
+        /// </summary>
+        /// <returns></returns>
+        bool IService.Start()
         {
             return StateMachine.Start();
         }
 
-        bool IService.OnEnd()
+        bool IService.Close()
         {
-            //#if UseStateMachine
             return StateMachine.Close();
-            //#else
-            //            return Close();
-            //#endif
-        }
-
-        void IService.OnDestory()
-        {
-            DoDestory();
         }
 
         private bool _isDisposed;
-
-        void IDisposable.Dispose()
+        /// <inheritdoc/>
+        void IService.End()
         {
             if (_isDisposed)
                 return;
             _isDisposed = true;
-            DoDispose();
+            StateMachine.End();
         }
         #endregion
 
+
+        #region 状态机接口
+
+        bool IStateMachineControl.DoStart()
+        {
+            if (DoStart())
+                return true;
+            RealState = StationState.Failed;
+            ZeroApplication.OnObjectFailed(this);
+            return false;
+        }
+
+        bool IStateMachineControl.DoClose()
+        {
+            if (CancelToken == null || CancelToken.IsCancellationRequested)
+            {
+                ZeroTrace.WriteError(ServiceName, "Close", "station not runing");
+                return false;
+            }
+            RealState = StationState.Closing;
+            CancelToken.Cancel();
+            Transport.Close();
+            ZeroTrace.SystemLog(ServiceName, "Close", "Run is cancel,waiting... ");
+            return true;
+        }
+
+        /// <summary>
+        /// 析构
+        /// </summary>
+        void IStateMachineControl.DoEnd()
+        {
+            DoEnd();
+        }
+
+        #endregion
+
+
         #region 方法注册
 
-        internal readonly Dictionary<string, ApiAction> ApiActions = new Dictionary<string, ApiAction>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// 注册的方法
+        /// </summary>
+        Dictionary<string, IApiAction> IService.Actions => ApiActions;
+
+        internal readonly Dictionary<string, IApiAction> ApiActions = new Dictionary<string, IApiAction>(StringComparer.OrdinalIgnoreCase);
 
 
         /// <summary>
@@ -617,39 +605,6 @@ namespace ZeroTeam.MessageMVC
             return a;
         }
 
-        #endregion
-
-        #region 方法扩展
-
-        /// <summary>
-        /// 处理器
-        /// </summary>
-        private static readonly List<Func<IApiHandler>> ApiHandlers = new List<Func<IApiHandler>>();
-
-        /// <summary>
-        ///     注册处理器
-        /// </summary>
-        public static void RegistHandlers<TApiHandler>() where TApiHandler : class, IApiHandler, new()
-        {
-            ApiHandlers.Add(() => new TApiHandler());
-        }
-
-        private List<IApiHandler> _handlers;
-
-        /// <summary>
-        ///     注册处理器
-        /// </summary>
-        internal List<IApiHandler> CreateHandlers()
-        {
-            if (ApiHandlers.Count == 0)
-                return null;
-            if (_handlers != null)
-                return _handlers;
-            _handlers = new List<IApiHandler>();
-            foreach (var func in ApiHandlers)
-                _handlers.Add(func());
-            return _handlers;
-        }
 
         #endregion
     }

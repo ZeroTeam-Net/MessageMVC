@@ -11,11 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Configuration;
-using Microsoft.Extensions.Logging.Console;
 using System;
 using System.Diagnostics;
-
-using System.Text;
 using System.Threading;
 
 #endregion

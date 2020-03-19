@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using Agebull.EntityModel.Common;
 using ZeroTeam.MessageMVC.ZeroApis;
 using Newtonsoft.Json;
 

@@ -1,9 +1,7 @@
-﻿using System;
-using Agebull.Common.Logging;
-using ZeroTeam.MessageMVC.ZeroApis;
+﻿using Agebull.Common.Logging;
 using ZeroTeam.MessageMVC.ZeroApis;
 
-namespace WebApplication2.Controllers
+namespace ZeroTeam.MessageMVC.Sample.Controllers
 {
     [Consumer("test1")]
     public class TestControler : ApiControllerBase

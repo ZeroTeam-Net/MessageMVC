@@ -13,7 +13,7 @@ namespace ZeroTeam.MessageMVC.Kafka
     /// <summary>
     ///     消息发布
     /// </summary>
-    public class KafkaProducer : IMessageProducer
+    internal class KafkaProducer : IMessageProducer
     {
         #region Producer 
 

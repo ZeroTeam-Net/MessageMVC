@@ -10,7 +10,12 @@ namespace ZeroTeam.MessageMVC.ZeroServices.StateMachine
         /// <summary>
         /// 站点
         /// </summary>
-        public IService Station { get; set; }
+        public ZeroService Service { get; set; }
+
+        /// <summary>
+        /// 站点
+        /// </summary>
+        public IStateMachineControl Control => Service;
 
 
         /// <summary>

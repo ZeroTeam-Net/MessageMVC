@@ -3,18 +3,25 @@ using Agebull.Common.Logging;
 using Confluent.Kafka;
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Kafka
 {
-    public class KafkaConsumer : IMessageConsumer
+    internal class KafkaConsumer : IMessageConsumer
     {
+        /// <summary>
+        /// 调用计数
+        /// </summary>
+        public int CallCount, WaitCount, ErrorCount, SuccessCount, RecvCount, SendCount, SendError;
+
+
         /// <summary>
         /// 初始化
         /// </summary>
         public void Initialize()
         {
-            
+
             config = ConfigurationManager.Get<ConsumerConfig>("Kafka");
         }
         IConsumer<Ignore, string> consumer;
@@ -29,11 +36,11 @@ namespace ZeroTeam.MessageMVC.Kafka
         IService INetTransport.Service { get => Station; set => Station = value as ZeroService; }
 
 
-        public void Dispose()
+        void IDisposable.Dispose()
         {
         }
 
-        public bool Loop(CancellationToken token)
+        async Task<bool> INetTransport.Loop(CancellationToken token)
         {
             try
             {
@@ -41,13 +48,20 @@ namespace ZeroTeam.MessageMVC.Kafka
                 while (!token.IsCancellationRequested)
                 {
                     var cr = consumer.Consume(tm);
-                    Console.WriteLine("...");
-                    if (cr == null)
-                    {
-                        Console.WriteLine("Empty");
-                        continue;
-                    }
-                    ApiExecuter.OnMessagePush(Station, cr.Value);
+                    //Console.WriteLine("...");
+                    //if (cr == null)
+                    //{
+                    //    Console.WriteLine("Empty");
+                    //    continue;
+                    //}
+                    Interlocked.Increment(ref CallCount);
+                    Interlocked.Increment(ref WaitCount);
+                    var state = await MessageProcess.OnMessagePush(Station, cr.Value);
+                    if (state == Messages.MessageState.Success)
+                        Interlocked.Increment(ref SuccessCount);
+                    else
+                        Interlocked.Increment(ref ErrorCount);
+                    Interlocked.Decrement(ref WaitCount);
                 }
             }
             catch (Exception ex)

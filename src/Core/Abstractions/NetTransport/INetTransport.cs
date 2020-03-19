@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
+using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -52,7 +54,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// 轮询
         /// </summary>
         /// <returns>返回False表明需要重启</returns>
-        bool Loop(CancellationToken token);
+        Task<bool> Loop(CancellationToken token);
 
         /// <summary>
         /// 同步关闭状态
@@ -74,7 +76,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// 发送返回值 
         /// </summary>
         /// <returns></returns>
-        void OnResult(bool success, string message)
+        void OnResult(IMessageItem message)
         {
         }
 

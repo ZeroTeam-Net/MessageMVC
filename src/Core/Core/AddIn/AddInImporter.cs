@@ -3,20 +3,14 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using Agebull.Common;
 using Agebull.Common.Ioc;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
     /// <summary>
     /// MEF插件导入器
     /// </summary>
-    internal class AddInImporter
+    public class AddInImporter : IAppMiddleware
     {
-        /// <summary>
-        /// 实例对象
-        /// </summary>
-        internal static AddInImporter Instance;
-
         /// <summary>
         /// 插件对象
         /// </summary>
@@ -24,18 +18,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         public IEnumerable<IAutoRegister> Registers { get; set; }
 
         /// <summary>
-        /// 导入
+        ///     配置校验,作为第一步
         /// </summary>
-        public static void Import()
-        {
-            if (Instance != null)
-                return;
-            Instance = new AddInImporter();
-            IocHelper.ServiceCollection.AddSingleton(pro => Instance);
-            CheckAddIn();
-        }
-
-        static void CheckAddIn()
+        public void CheckOption(ZeroAppConfigRuntime config)
         {
             if (string.IsNullOrEmpty(ZeroApplication.Config.AddInPath))
                 return;
@@ -47,12 +32,13 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             // 通过容器对象将宿主和部件组装到一起。 
             DirectoryCatalog directoryCatalog = new DirectoryCatalog(path);
             var container = new CompositionContainer(directoryCatalog);
-            container.ComposeParts(Instance);
-            foreach (var reg in Instance.Registers)
+            container.ComposeParts(this);
+            foreach (var reg in Registers)
             {
                 ZeroTrace.SystemLog("AddIn(Extend)", reg.GetType().Assembly.FullName);
             }
         }
+
         /// <summary>
         /// 初始化
         /// </summary>
@@ -61,21 +47,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             if (Registers == null)
                 return;
             foreach (var reg in Registers)
+                reg.AutoRegist();
+            foreach (var reg in Registers)
             {
                 reg.Initialize();
             }
         }
-
-        /// <summary>
-        /// 执行自动注册
-        /// </summary>
-        public void AutoRegist()
-        {
-            if (Registers == null)
-                return;
-            foreach (var reg in Registers)
-                reg.AutoRegist();
-        }
-
     }
 }

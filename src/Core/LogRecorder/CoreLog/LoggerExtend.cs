@@ -4,18 +4,8 @@
 // 整理时间：2018年5月16日 00:34:00
 #region
 
-using Agebull.Common.Configuration;
-using Agebull.Common.Ioc;
-using Agebull.EntityModel.Common;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Configuration;
-using Microsoft.Extensions.Logging.Console;
 using System;
-using System.Diagnostics;
-
-using System.Text;
 using System.Threading;
 
 #endregion

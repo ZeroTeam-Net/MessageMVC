@@ -34,6 +34,10 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         Waiting = 0x6,
         /// <summary>
+        /// 取消操作
+        /// </summary>
+        Cancel = 0x7,
+        /// <summary>
         /// 投票已发送
         /// </summary>
         VoteSend = 0x70,

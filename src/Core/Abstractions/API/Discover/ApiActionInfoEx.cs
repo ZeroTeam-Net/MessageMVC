@@ -1,6 +1,5 @@
 using System;
 using System.Runtime.Serialization;
-using ZeroTeam.MessageMVC.ApiDocuments;
 using Newtonsoft.Json;
 
 namespace ZeroTeam.MessageMVC.ApiDocuments

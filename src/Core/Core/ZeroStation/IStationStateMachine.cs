@@ -10,7 +10,7 @@ namespace ZeroTeam.MessageMVC.ZeroServices.StateMachine
         /// <summary>
         /// 站点
         /// </summary>
-        IService Station { get; set; }
+        ZeroService Service { get; set; }
 
         /// <summary>
         /// 是否已析构
