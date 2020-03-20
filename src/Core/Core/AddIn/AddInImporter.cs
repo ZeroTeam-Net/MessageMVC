@@ -12,6 +12,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     public class AddInImporter : IAppMiddleware
     {
         /// <summary>
+        /// 等级
+        /// </summary>
+        int IAppMiddleware.Level => -0xFFFF;
+
+        /// <summary>
         /// 插件对象
         /// </summary>
         [ImportMany(typeof(IAutoRegister))]

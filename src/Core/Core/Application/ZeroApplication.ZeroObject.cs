@@ -32,48 +32,9 @@ namespace ZeroTeam.MessageMVC
         private static readonly List<IService> FailedObjects = new List<IService>();
 
         /// <summary>
-        /// 全局执行对象(内部的Task)
-        /// </summary>
-        private static readonly List<IService> GlobalObjects = new List<IService>();
-
-        /// <summary>
         ///     对象活动状态记录器锁定
         /// </summary>
         private static readonly SemaphoreSlim ActiveSemaphore = new SemaphoreSlim(0, short.MaxValue);
-
-        /// <summary>
-        ///     对象活动状态记录器锁定
-        /// </summary>
-        private static readonly SemaphoreSlim GlobalSemaphore = new SemaphoreSlim(0, short.MaxValue);
-
-        /// <summary>
-        ///     对象活动时登记
-        /// </summary>
-        public static void OnGlobalStart(IService obj)
-        {
-            lock (GlobalObjects)
-            {
-                GlobalObjects.Add(obj);
-                ZeroTrace.SystemLog(obj.ServiceName, "GlobalStart");
-            }
-        }
-
-        /// <summary>
-        ///     对象活动时登记
-        /// </summary>
-        public static void OnGlobalEnd(IService obj)
-        {
-            ZeroTrace.SystemLog(obj.ServiceName, "GlobalEnd");
-            bool can;
-            lock (GlobalObjects)
-            {
-                GlobalObjects.Remove(obj);
-                can = GlobalObjects.Count == 0;
-            }
-            if (can)
-                GlobalSemaphore.Release();
-        }
-
 
         /// <summary>
         ///     对象活动时登记
@@ -126,12 +87,12 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         ///     等待所有对象信号(全开或全关)
         /// </summary>
-        public static async Task WaitAllObjectSafeClose()
+        private static void WaitAllObjectSafeClose()
         {
             lock (ActiveObjects)
-                if (ActiveSemaphore.CurrentCount == 0 && ActiveObjects.Count == 0)
-                    return;
-            await ActiveSemaphore.WaitAsync();
+                if (Services.Count == 0 || ActiveObjects.Count == 0)
+                    return ;
+            ActiveSemaphore.Wait();
         }
 
         /// <summary>
@@ -218,7 +179,7 @@ namespace ZeroTeam.MessageMVC
         {
             ZeroTrace.SystemLog("Application", "[OnZeroStart>>");
             foreach (var mid in Middlewares)
-                await mid.Start();
+                _ = Task.Factory.StartNew(mid.Start);
             List<Task> tasks = new List<Task>();
             foreach (var obj in Services.Values.ToArray())
             {
@@ -246,12 +207,10 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         internal static void OnZeroClose()
         {
-            var array = Services.Values.ToArray();
-            Services.Clear();
             ZeroTrace.SystemLog("Application", "[OnZeroClose>>");
             foreach (var mid in Middlewares)
                 mid.Close();
-            foreach (var obj in array)
+            foreach (var obj in Services.Values)
             {
                 try
                 {
@@ -273,12 +232,10 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         internal static void OnZeroEnd()
         {
-            var array = Services.Values.ToArray();
-            Services.Clear();
             ZeroTrace.SystemLog("Application", "[OnZeroEnd>>");
             foreach (var mid in Middlewares)
                 mid.Close();
-            foreach (var obj in array)
+            foreach (var obj in Services.Values)
             {
                 try
                 {

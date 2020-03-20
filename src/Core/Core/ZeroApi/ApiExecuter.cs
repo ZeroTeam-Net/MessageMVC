@@ -15,38 +15,41 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     public class ApiExecuter : IMessageMiddleware
     {
         /// <summary>
+        /// 调用的内容
+        /// </summary>
+        internal IMessageItem Message;
+
+        /// <summary>
+        /// 调用的内容
+        /// </summary>
+        internal object Tag;
+
+        /// <summary>
         /// 准备
         /// </summary>
         /// <param name="service">当前服务</param>
         /// <param name="message">当前消息</param>
+        /// <param name="tag"></param>
         /// <param name="next">下一个处理方法</param>
         /// <returns></returns>
-        async Task<MessageState> IMessageMiddleware.Handle(IService service, string message, Func<Task<MessageState>> next)
+        async Task<MessageState> IMessageMiddleware.Handle(IService service, IMessageItem message, object tag, Func<Task<MessageState>> next)
         {
-            MessageItem item = null;
-            try
-            {
-                item = JsonHelper.DeserializeObject<MessageItem>(message);
-            }
-            catch (Exception e)
-            {
-                service.Transport.OnError(e, "格式错误");
-                return MessageState.FormalError;
-            }
+            Service = service;
+            Message = message;
+            Tag = tag;
             MessageState state;
             try
             {
-                var executer = new ApiExecuter
-                {
-                    Service = service,
-                    Item = item
-                };
-                state = await executer.Execute();
+                state = await Execute();
             }
             catch (Exception e)
             {
                 LogRecorder.Exception(e);
-                service.Transport.OnError(e, "未处理异常");
+                service.Transport.OnError(e, new MessageItem
+                {
+                    State = MessageState.Exception,
+                    Result = e.Message
+                }, tag);
                 state = MessageState.Exception;
             }
             await next();
@@ -57,16 +60,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// 当前站点
         /// </summary>
         internal IService Service;
-
-        /// <summary>
-        /// 调用的内容
-        /// </summary>
-        internal IMessageItem Item;
-
-        /// <summary>
-        /// 取消停牌
-        /// </summary>
-        internal CancellationTokenSource CancellationToken = new CancellationTokenSource();
 
         #region 同步
 
@@ -81,69 +74,61 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 {
                     try
                     {
-                        if (CancellationToken.IsCancellationRequested)
-                            return MessageState.Cancel;
-                        GlobalContext.Current.DependencyObjects.Annex(Item);
+                        GlobalContext.Current.DependencyObjects.Annex(Message);
                         var state = LogRecorder.LogMonitor
                                 ? await ApiCallByMonitor()
                                 : await ApiCallNoMonitor();
 
-                        Service.Transport.OnResult(Item);
+                        Service.Transport.OnResult(Message, Tag);
                         return state;
                     }
                     catch (ThreadInterruptedException)
                     {
-                        ZeroTrace.SystemLog("Timeout", Item.Title, Item.Content, Item.Content, Item.Context);
+                        ZeroTrace.SystemLog("Timeout", Message.Title, Message.Content, Message.Content, Message.Context);
                         return MessageState.Cancel;
                     }
                     catch (Exception ex)
                     {
-                        Service.Transport.OnError(ex, "未处理异常");
-                        ZeroTrace.SystemLog("Timeout", Item.Title, Item.Content, Item.Content, Item.Context);
+                        Service.Transport.OnError(ex, new MessageItem
+                        {
+                            State = MessageState.Exception,
+                            Result = ex.Message
+                        }, Tag);
+                        ZeroTrace.SystemLog("Exception", Message.Title, Message.Content, Message.Content, Message.Context);
                         return MessageState.Exception;
-                    }
-                    finally
-                    {
-                        CancellationToken.Dispose();
-                        CancellationToken = null;
                     }
                 }
             }
             catch (Exception ex)
             {
-                ZeroTrace.WriteException(Service.ServiceName, ex, "Api Executer", Item.Title, Item.Content);
+                ZeroTrace.WriteException(Service.ServiceName, ex, "Api Executer", Message.Title, Message.Content);
                 return MessageState.Exception;
             }
         }
 
         private async Task<MessageState> ApiCallByMonitor()
         {
-            using (MonitorScope.CreateScope($"{Service.ServiceName}/{Item.Title}"))
+            using (MonitorScope.CreateScope($"{Service.ServiceName}/{Message.Title}"))
             {
-                LogRecorder.MonitorTrace(() => $"MessageId:{Item.ID}");
-                LogRecorder.MonitorTrace(() => JsonConvert.SerializeObject(Item, Formatting.Indented));
+                LogRecorder.MonitorTrace(() => $"MessageId:{Message.ID}");
+                LogRecorder.MonitorTrace(() => JsonConvert.SerializeObject(Message, Formatting.Indented));
 
                 if (!RestoryContext())
                 {
                     LogRecorder.MonitorTrace("Restory context failed");
-                    return Item.State;
+                    return Message.State;
                 }
                 using (MonitorScope.CreateScope("Do"))
                 {
                     if (!CommandPrepare(true, out var action))
-                        return Item.State;
-                    object res;
-                    if (CancellationToken.IsCancellationRequested)
-                        Item.State = MessageState.Cancel;
-                    else
-                    {
-                        res = CommandExec(true, action);
-                        await CheckCommandResult(res);
-                    }
+                        return Message.State;
+                    var res = await CommandExec(action);
+                    Message.State = res.Item1;
+                    Message.Result = res.Item2;
                 }
 
-                LogRecorder.MonitorTrace(Item.Result);
-                return Item.State;
+                LogRecorder.MonitorTrace(Message.Result);
+                return Message.State;
             }
         }
 
@@ -151,19 +136,14 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         {
             if (!RestoryContext())
             {
-                return Item.State;
+                return Message.State;
             }
             if (!CommandPrepare(true, out var action))
-                return Item.State;
-            object res;
-            if (CancellationToken.IsCancellationRequested)
-                Item.State = MessageState.Cancel;
-            else
-            {
-                res = CommandExec(true, action);
-                await CheckCommandResult(res);
-            }
-            return Item.State;
+                return Message.State;
+            var res = await CommandExec(action);
+            Message.State = res.Item1;
+            Message.Result = res.Item2;
+            return Message.State;
         }
 
 
@@ -181,9 +161,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             try
             {
                 //GlobalContext.Current.DependencyObjects.Annex(CancellationToken);
-                if (!string.IsNullOrWhiteSpace(Item.Context))
+                if (!string.IsNullOrWhiteSpace(Message.Context))
                 {
-                    GlobalContext.SetContext(JsonConvert.DeserializeObject<GlobalContext>(Item.Context));
+                    GlobalContext.SetContext(JsonConvert.DeserializeObject<GlobalContext>(Message.Context));
                 }
                 else
                 {
@@ -194,9 +174,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             catch (Exception e)
             {
                 LogRecorder.MonitorTrace(() => $"Restory context exception:{e.Message}");
-                ZeroTrace.WriteException(Service.ServiceName, e, Item.Title, "restory context", Item.Context);
-                Item.Result = ApiResultIoc.ArgumentErrorJson;
-                Item.State = MessageState.FormalError;
+                ZeroTrace.WriteException(Service.ServiceName, e, Message.Title, "restory context", Message.Context);
+                Message.Result = ApiResultIoc.ArgumentErrorJson;
+                Message.State = MessageState.FormalError;
                 return false;
             }
         }
@@ -211,12 +191,12 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         private bool CommandPrepare(bool monitor, out IApiAction action)
         {
             //1 查找调用方法
-            if (!Service.Actions.TryGetValue(Item.Title.Trim(), out action))
+            if (!Service.Actions.TryGetValue(Message.Title.Trim(), out action))
             {
                 if (monitor)
-                    LogRecorder.MonitorTrace(() => $"Error: Action({Item.Title}) no find");
-                Item.Result = ApiResultIoc.NoFindJson;
-                Item.State = MessageState.NoSupper;
+                    LogRecorder.MonitorTrace(() => $"Error: Action({Message.Title}) no find");
+                Message.Result = ApiResultIoc.NoFindJson;
+                Message.State = MessageState.NoSupper;
                 return false;
             }
 
@@ -225,8 +205,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             //{
             //    if (monitor)
             //        LogRecorder.MonitorTrace("Error: Need login user");
-            //    Item.Result = ApiResultIoc.DenyAccessJson;
-            //    Item.Status = UserOperatorStateType.DenyAccess;
+            //    Message.Result = ApiResultIoc.DenyAccessJson;
+            //    Message.Status = UserOperatorStateType.DenyAccess;
             //    return ZeroOperatorStateType.DenyAccess;
             //}
 
@@ -235,12 +215,12 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 return true;
             try
             {
-                if (!action.RestoreArgument(Item.Content ?? "{}"))
+                if (!action.RestoreArgument(Message.Content))
                 {
                     if (monitor)
                         LogRecorder.MonitorTrace("Error: argument can't restory.");
-                    Item.Result = ApiResultIoc.ArgumentErrorJson;
-                    Item.State = MessageState.FormalError;
+                    Message.Result = ApiResultIoc.ArgumentErrorJson;
+                    Message.State = MessageState.FormalError;
                     return false;
                 }
             }
@@ -248,9 +228,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 if (monitor)
                     LogRecorder.MonitorTrace($"Error: argument restory {e.Message}.");
-                ZeroTrace.WriteException(Service.ServiceName, e, Item.Title, "restory argument", Item.Content);
-                Item.Result = ApiResultIoc.LocalExceptionJson;
-                Item.State = MessageState.FormalError;
+                ZeroTrace.WriteException(Service.ServiceName, e, Message.Title, "restory argument", Message.Content);
+                Message.Result = ApiResultIoc.LocalExceptionJson;
+                Message.State = MessageState.FormalError;
                 return false;
             }
 
@@ -260,8 +240,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 {
                     if (monitor)
                         LogRecorder.MonitorTrace($"Error: argument validate {message}.");
-                    Item.Result = JsonHelper.SerializeObject(ApiResultIoc.Ioc.Error(ErrorCode.ArgumentError, message));
-                    Item.State = MessageState.Failed;
+                    Message.Result = JsonHelper.SerializeObject(ApiResultIoc.Ioc.Error(ErrorCode.ArgumentError, message));
+                    Message.State = MessageState.Failed;
                     return false;
                 }
             }
@@ -269,9 +249,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 if (monitor)
                     LogRecorder.MonitorTrace($"Error: argument validate {e.Message}.");
-                ZeroTrace.WriteException(Service.ServiceName, e, Item.Title, "invalidate argument", Item.Content);
-                Item.Result = ApiResultIoc.LocalExceptionJson;
-                Item.State = MessageState.FormalError;
+                ZeroTrace.WriteException(Service.ServiceName, e, Message.Title, "invalidate argument", Message.Content);
+                Message.Result = ApiResultIoc.LocalExceptionJson;
+                Message.State = MessageState.FormalError;
                 return false;
             }
             return true;
@@ -280,56 +260,16 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         ///     执行命令
         /// </summary>
-        /// <param name="monitor"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        private object CommandExec(bool monitor, IApiAction action)
+        private Task<Tuple<MessageState, string>> CommandExec(IApiAction action)
         {
-            GlobalContext.Current.DependencyObjects.Annex(Item);
+            GlobalContext.Current.DependencyObjects.Annex(Message);
             GlobalContext.Current.DependencyObjects.Annex(this);
             GlobalContext.Current.DependencyObjects.Annex(action);
             return action.Execute();
         }
 
-        /// <summary>
-        ///     执行命令
-        /// </summary>
-        /// <param name="res"></param>
-        /// <returns></returns>
-        private async Task CheckCommandResult(object res)
-        {
-            switch (res)
-            {
-                case string str:
-                    Item.Result = str;
-                    Item.State = MessageState.Success;
-                    return;
-                case ApiFileResult result:
-                    result.Data = null;
-                    Item.Result = JsonHelper.SerializeObject(result);
-                    Item.State = result.Success ? MessageState.Success : MessageState.Failed;
-                    return;
-                case IApiResult result:
-                    Item.Result = JsonHelper.SerializeObject(result);
-                    Item.State = result.Success ? MessageState.Success : MessageState.Failed;
-                    return;
-                case Task task:
-                    await task;
-                    dynamic tresd = task;
-                    await CheckCommandResult(tresd.Result);
-                    return;
-            }
-            //BUG: 检测await生成的代码对象,需要重写
-            var name = res?.GetType().ToString();
-            if (name?.IndexOf("System.Runtime.CompilerServices.AsyncTaskMethodBuilder", StringComparison.Ordinal) == 0)
-            {
-                dynamic resd = res;
-                await CheckCommandResult(resd.Result);
-                return;
-            }
-            Item.Result = ApiResultIoc.SucceesJson;
-            Item.State = MessageState.Success;
-        }
 
         #endregion
     }

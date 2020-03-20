@@ -11,6 +11,11 @@ namespace ZeroTeam.MessageMVC
     public interface IAppMiddleware
     {
         /// <summary>
+        /// 等级
+        /// </summary>
+        int Level { get;}
+
+        /// <summary>
         ///     配置校验,作为第一步
         /// </summary>
         void CheckOption(ZeroAppConfigRuntime config) { }
@@ -25,9 +30,8 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 开启
         /// </summary>
-        Task Start()
+        void Start()
         {
-            return Task.CompletedTask;
         }
 
         /// <summary>

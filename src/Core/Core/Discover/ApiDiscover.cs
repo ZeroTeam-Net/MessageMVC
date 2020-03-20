@@ -10,6 +10,7 @@ using Agebull.Common.Reflection;
 using Agebull.EntityModel.Common;
 using Newtonsoft.Json;
 using Agebull.Common.Ioc;
+using System.Threading.Tasks;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -89,41 +90,24 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 }
                 foreach (var api in sta.Aips)
                 {
-                    var info = (ApiActionInfoEx)api.Value;
-                    ApiAction action;
-                    switch (info.ArgumentType)
+                    var info = (ApiActionInfo)api.Value;
+                    var a = new ApiAction
                     {
-                        case 0:
-                            action = station.RegistAction(api.Key, info.Action, info.AccessOption, info);
-                            break;
-                        case 1:
-                            action = station.RegistAction(api.Key, info.ArgumentAction, info.AccessOption, info);
-                            break;
-                        case 2:
-                            action = station.RegistAction(api.Key, info.ArgumentAction2, info.AccessOption, info);
-                            break;
-                        case 3:
-                            action = station.RegistAction(api.Key, info.Action2, info.AccessOption, info);
-                            break;
-                        case 4:
-                            action = station.RegistAction2(api.Key, info.Action3, info.AccessOption, info);
-                            break;
-                        case 5:
-                            action = station.RegistAction2(api.Key, info.Action4, info.AccessOption, info);
-                            break;
-                        default:
-                            continue;
-                    }
-                    action.ArgumenType = info.ArgumenType;
-                    action.ResultType = info.ResultType;
+                        Name = api.Key,
+                        Function = info.Action,
+                        Access = info.AccessOption,
+                        ArgumentType = info.ArgumentType,
+                        ResultType = info.ResultType,
+                        IsAsync= info.IsAsync
+                    };
+                    station.RegistAction(api.Key, a, info);
                 }
             }
         }
 
-         static IMessageConsumer CreateMessageConsumer (string name)
+        static IMessageConsumer CreateMessageConsumer(string name)
         {
-            var obj = IocHelper.Create<IMessageConsumer>();
-            return obj;
+            return IocHelper.Create<IMessageConsumer>();
         }
 
         /// <summary>
@@ -151,7 +135,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     ServiceInfos.Add(sa.Name, station = new ServiceInfo
                     {
                         Name = sa.Name,
-                        NetBuilder = name=>IocHelper.Create<IRpcTransport>()
+                        NetBuilder = name => IocHelper.Create<IRpcTransport>()
                     });
                     station.Copy(docx);
                 }
@@ -206,117 +190,195 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             var defOption = type.GetCustomAttribute<ApiAccessOptionFilterAttribute>()?.Option;
             var defCategory = type.GetCustomAttribute<CategoryAttribute>()?.Category.SafeTrim();
 
-            var methods = type.GetMethods(BindingFlags.Instance | BindingFlags.Public);
-
-            foreach (var method in methods)
+            foreach (var method in type.GetMethods(BindingFlags.Instance | BindingFlags.Public))
             {
-                var route = method.GetCustomAttribute<RouteAttribute>();
-                if (route == null)
-                {
-                    //ZeroTrace.WriteError("ApiDiscover", "exclude", station.Name, type.Name, method.Name);
-                    continue;
-                }
-                if (method.Name.Length > 4 && (method.Name.IndexOf("get_", StringComparison.Ordinal) == 0 || method.Name.IndexOf("set_", StringComparison.Ordinal) == 0))
-                    continue;
-                if (method.GetParameters().Length > 1)
-                {
-                    //ZeroTrace.WriteError("ApiDiscover", "argument size must 0 or 1", station.Name, type.Name, method.Name);
-                    continue;
-                }
-
-                var head = routeHead;
-                if (routeHead == null && method.DeclaringType != type)//基类方法,即增加自动前缀
-                {
-                    head = type.Name;
-                }
-                var name = route.Name == null
-                    ? $"{head}{method.Name}"
-                    : $"{head}{route.Name.Trim(' ', '\t', '\r', '\n', '/')}";
-                var accessOption = method.GetCustomAttribute<ApiAccessOptionFilterAttribute>();
-                ApiAccessOption option;
-                if (accessOption != null)
-                    option = accessOption.Option;
-                else if (defOption != null)
-                    option = defOption.Value;
-                else
-                    option = ApiAccessOption.Internal | ApiAccessOption.Customer | ApiAccessOption.Employe;
-
-                var category = method.GetCustomAttribute<CategoryAttribute>()?.Category.SafeTrim();
-                var page = method.GetCustomAttribute<ApiPageAttribute>()?.PageUrl.SafeTrim();
-
-                var api = new ApiActionInfoEx
-                {
-                    Name = method.Name,
-                    ApiName = name,
-                    RouteName = name,
-                    Category = category ?? defCategory ?? docx?.Caption ?? docx?.Name,
-                    AccessOption = option,
-                    ResultInfo = ReadEntity(method.ReturnType, "result"),
-                    PageUrl = page ?? defPage
-                };
-                var doc = XmlMember.Find(type, method.Name, "M");
-                api.Copy(doc);
-                //if (method.DeclaringType != type)
-                //{
-                //    api.Caption = $"{xdoc?.Caption ?? xdoc?.Name} : {api.Caption ?? api.Name}";
-                //}
-                var arg = method.GetParameters().FirstOrDefault();
-                api.HaseArgument = arg != null;
-                api.ResultType = method.ReturnType;
-                //动态生成并编译
-                if (api.HaseArgument)
-                {
-                    api.ArgumentInfo = ReadEntity(arg.ParameterType, "argument") ?? new TypeDocument();
-                    api.ArgumentInfo.Name = arg.Name;
-                    if (doc != null)
-                        api.ArgumentInfo.Caption = doc.Arguments.Values.FirstOrDefault();
-
-                    if (!onlyDoc)
-                    {
-                        api.ArgumenType = arg.ParameterType;
-                        if (api.ArgumenType.IsSupperInterface(typeof(IApiArgument)) && method.ReturnType.IsSupperInterface(typeof(IApiResult)))
-                        {
-                            api.ArgumentType = 1;
-                            api.ArgumentAction = CreateFunc<IApiArgument, IApiResult>(type.GetTypeInfo(),
-                                method.Name,
-                                arg.ParameterType.GetTypeInfo(),
-                                method.ReturnType.GetTypeInfo());
-                        }
-                        else
-                        {
-                            api.ArgumentType = 2;
-                            api.ArgumentAction2 = CreateFunc(type.GetTypeInfo(),
-                                method.Name,
-                                arg.ParameterType.GetTypeInfo(),
-                                method.ReturnType.GetTypeInfo());
-                        }
-                    }
-                }
-                else if (!onlyDoc)
-                {
-                    if (method.ReturnType.IsSupperInterface(typeof(IApiResult)))
-                    {
-                        api.Action = CreateFunc<IApiResult>(type.GetTypeInfo(), method.Name,
-                            typeof(IApiResult).GetTypeInfo());
-                        api.ArgumentType = 0;
-                    }
-                    else if (method.ReturnType == typeof(string))
-                    {
-                        api.ArgumentType = 4;
-                        api.Action3 = CreateStringFunc(type.GetTypeInfo(), method.Name);
-                    }
-                    else
-                    {
-                        api.ArgumentType = 3;
-                        api.Action2 = CreateFunc(type.GetTypeInfo(), method.Name, method.ReturnType.GetTypeInfo());
-                    }
-                }
-                station.Aips.Add(api.RouteName, api);
+                CheckMethod(type, onlyDoc, docx, station, routeHead, defPage, defOption, defCategory, method);
             }
         }
+
+        private void CheckMethod(Type type, bool onlyDoc, XmlMember docx, ServiceInfo station, string routeHead, string defPage, ApiAccessOption? defOption, string defCategory, MethodInfo method)
+        {
+            var route = method.GetCustomAttribute<RouteAttribute>();
+            if (route == null)
+            {
+                //ZeroTrace.WriteError("ApiDiscover", "exclude", station.Name, type.Name, method.Name);
+                return;
+            }
+            if (method.Name.Length > 4 && (method.Name.IndexOf("get_", StringComparison.Ordinal) == 0 || method.Name.IndexOf("set_", StringComparison.Ordinal) == 0))
+                return;
+            if (method.GetParameters().Length > 1)
+            {
+                //ZeroTrace.WriteError("ApiDiscover", "argument size must 0 or 1", station.Name, type.Name, method.Name);
+                return;
+            }
+
+            var head = routeHead;
+            if (routeHead == null && method.DeclaringType != type)//基类方法,即增加自动前缀
+            {
+                head = type.Name;
+            }
+            var name = route.Name == null
+                ? $"{head}{method.Name}"
+                : $"{head}{route.Name.Trim(' ', '\t', '\r', '\n', '/')}";
+            var accessOption = method.GetCustomAttribute<ApiAccessOptionFilterAttribute>();
+            ApiAccessOption option;
+            if (accessOption != null)
+                option = accessOption.Option;
+            else if (defOption != null)
+                option = defOption.Value;
+            else
+                option = ApiAccessOption.Internal | ApiAccessOption.Customer | ApiAccessOption.Employe;
+
+            var category = method.GetCustomAttribute<CategoryAttribute>()?.Category.SafeTrim();
+            var page = method.GetCustomAttribute<ApiPageAttribute>()?.PageUrl.SafeTrim();
+
+            var api = new ApiActionInfo
+            {
+                Name = method.Name,
+                ApiName = name,
+                RouteName = name,
+                Category = category ?? defCategory ?? docx?.Caption ?? docx?.Name,
+                AccessOption = option,
+                ResultInfo = ReadEntity(method.ReturnType, "result"),
+                PageUrl = page ?? defPage
+            };
+            var doc = XmlMember.Find(type, method.Name, "M");
+            api.Copy(doc);
+            var arg = method.GetParameters().FirstOrDefault();
+            api.HaseArgument = arg != null;
+            api.ResultType = method.ReturnType;
+
+            if (api.HaseArgument)
+            {
+                api.ArgumentInfo = ReadEntity(arg.ParameterType, "argument") ?? new TypeDocument();
+                api.ArgumentInfo.Name = arg.Name;
+                api.ArgumentType = arg.ParameterType;
+                if (doc != null)
+                    api.ArgumentInfo.Caption = doc.Arguments.Values.FirstOrDefault();
+            }
+            //动态生成并编译
+            if (!onlyDoc)
+                BuildMethod(type, method, api, arg);
+            station.Aips.Add(api.RouteName, api);
+        }
+
         #endregion
 
         #region Api调用方法生成
+
+        private void BuildMethod(Type type, MethodInfo method, ApiActionInfo api, ParameterInfo arg)
+        {
+
+            if (api.HaseArgument)
+            {
+                if (api.ArgumentType.IsSupperInterface(typeof(IApiArgument)) && method.ReturnType.IsSupperInterface(typeof(IApiResult)))
+                {
+                    api.ArgumentFeature = 1;
+                }
+                else
+                {
+                    api.ArgumentFeature = 2;
+                }
+            }
+            else
+            {
+                if (method.ReturnType.IsSupperInterface(typeof(IApiResult)))
+                {
+                    api.ArgumentFeature = 0;
+                }
+                else if (method.ReturnType == typeof(string))
+                {
+                    api.ArgumentFeature = 4;
+                }
+                else
+                {
+                    api.ArgumentFeature = 3;
+                }
+            }
+            api.Action = CreateMethod(type.GetTypeInfo(),
+                method.Name,
+                arg?.ParameterType.GetTypeInfo(),
+                out var isAsync);
+            api.IsAsync = isAsync;
+        }
+
+
+        /// <summary>生成动态匿名调用内部方法（参数由TArg转为实际类型后调用，并将调用返回值转为TRes）</summary>
+        /// <param name="callInfo">调用对象类型</param>
+        /// <param name="argInfo">原始参数类型</param>
+        /// <param name="methodName">原始调用方法</param>
+        /// <returns>匿名委托</returns>
+        public static Func<object, object> CreateMethod(TypeInfo callInfo, string methodName, TypeInfo argInfo,out bool isAsync)
+        {
+            var constructor = callInfo.GetConstructor(Type.EmptyTypes);
+            if (constructor == null)
+                throw new ArgumentException("类型" + callInfo.FullName + "没有无参构造函数");
+            var method = callInfo.GetMethod(methodName);
+            if (method == null)
+                throw new ArgumentException("类型" + callInfo.FullName + "没有名称为" + methodName + "的方法");
+
+            var parameters = method.GetParameters();
+            if (parameters.Length > 1)
+                throw new ArgumentException("类型" + callInfo.FullName + "的方法" + methodName + "参数不是一个");
+            if (argInfo != null && parameters[0].ParameterType != argInfo)
+                throw new ArgumentException("类型" + callInfo.FullName + "的方法" + methodName + "唯一参数不为" + argInfo.FullName);
+
+            var dynamicMethod = new DynamicMethod(methodName, typeof(object), new[]
+            {
+                typeof(object)
+            });
+            var ilGenerator = dynamicMethod.GetILGenerator();
+            //如果修补操作码，则填充空间。 尽管可能消耗处理周期，但未执行任何有意义的操作。
+            ilGenerator.Emit(OpCodes.Nop);
+            //参数入栈 : 将自变量（由指定索引值引用）加载到堆栈上。
+            LocalBuilder arg = null;
+            if (parameters.Length == 1)
+            {
+                ilGenerator.Emit(OpCodes.Ldarg, 0);
+                ilGenerator.Emit(OpCodes.Castclass, argInfo);
+                arg = ilGenerator.DeclareLocal(argInfo);
+                ilGenerator.Emit(OpCodes.Stloc, arg);
+            }
+
+            //new Controler;
+            ilGenerator.Emit(OpCodes.Newobj, constructor);
+
+            // action() | action(arg)
+            //声明局部变量。
+            var local2 = ilGenerator.DeclareLocal(callInfo);
+            //从计算堆栈的顶部弹出当前值并将其存储到指定索引处的局部变量列表中。
+            ilGenerator.Emit(OpCodes.Stloc, local2);
+            //将指定索引处的局部变量加载到计算堆栈上。
+            ilGenerator.Emit(OpCodes.Ldloc, local2);
+            if (parameters.Length == 1)
+                ilGenerator.Emit(OpCodes.Ldloc, arg);
+            //对对象调用后期绑定方法，并且将返回值推送到计算堆栈上。
+            ilGenerator.Emit(OpCodes.Callvirt, method);
+            var resInfo = typeof(object).GetTypeInfo();
+            if (method.ReturnType == null || method.ReturnType == typeof(void))
+            {
+                isAsync = false;
+                //空值入栈
+                var local4 = ilGenerator.DeclareLocal(resInfo);
+                ilGenerator.Emit(OpCodes.Ldnull, local4);
+            }
+            else
+            {
+                isAsync = method.ReturnType.IsSubclassOf(typeof(Task));
+                //取返回值
+                var local3 = ilGenerator.DeclareLocal(method.ReturnType);
+                ilGenerator.Emit(OpCodes.Stloc, local3);
+                ilGenerator.Emit(OpCodes.Ldloc, local3);
+                ilGenerator.Emit(OpCodes.Castclass, resInfo);
+                //返回值入栈
+                var local4 = ilGenerator.DeclareLocal(resInfo);
+                ilGenerator.Emit(OpCodes.Stloc, local4);
+                ilGenerator.Emit(OpCodes.Ldloc, local4);
+            }
+            ilGenerator.Emit(OpCodes.Ret);
+            return dynamicMethod.CreateDelegate(typeof(Func<object, object>)) as Func<object, object>;
+        }
+
 
         /// <summary>生成动态匿名调用内部方法（参数由TArg转为实际类型后调用，并将调用返回值转为TRes）</summary>
         /// <param name="callInfo">调用对象类型</param>
@@ -350,11 +412,17 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             var local1 = ilGenerator.DeclareLocal(argInfo);
             ilGenerator.Emit(OpCodes.Stloc, local1);
             ilGenerator.Emit(OpCodes.Newobj, constructor);
+
+            //声明局部变量。
             var local2 = ilGenerator.DeclareLocal(callInfo);
+            //从计算堆栈的顶部弹出当前值并将其存储到指定索引处的局部变量列表中。
             ilGenerator.Emit(OpCodes.Stloc, local2);
+            //将指定索引处的局部变量加载到计算堆栈上。
             ilGenerator.Emit(OpCodes.Ldloc, local2);
             ilGenerator.Emit(OpCodes.Ldloc, local1);
+            //对对象调用后期绑定方法，并且将返回值推送到计算堆栈上。
             ilGenerator.Emit(OpCodes.Callvirt, method);
+
             var local3 = ilGenerator.DeclareLocal(method.ReturnType);
             ilGenerator.Emit(OpCodes.Stloc, local3);
             ilGenerator.Emit(OpCodes.Ldloc, local3);

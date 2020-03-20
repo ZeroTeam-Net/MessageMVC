@@ -57,6 +57,11 @@
         string Result { get; set; }
 
         /// <summary>
+        ///     文件内容二进制数据
+        /// </summary>
+        byte[] Bytes { get; set; }
+
+        /// <summary>
         /// 其他带外内容
         /// </summary>
         string Tag { get; set; }

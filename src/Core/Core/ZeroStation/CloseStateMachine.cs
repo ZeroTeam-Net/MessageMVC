@@ -24,7 +24,6 @@
         /// </summary>
         bool IStationStateMachine.Close()
         {
-            ZeroApplication.OnObjectClose(Service);
             return false;
         }
 
@@ -33,7 +32,8 @@
         /// </summary>
         bool IStationStateMachine.End()
         {
-            return false;
+            Control.DoEnd();
+            return true;
         }
     }
 }

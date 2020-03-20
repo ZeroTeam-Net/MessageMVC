@@ -9,6 +9,11 @@
             MEF插件导入器
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.AddInImporter.ZeroTeam#MessageMVC#IAppMiddleware#Level">
+            <summary>
+            等级
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.AddInImporter.Registers">
             <summary>
             插件对象
@@ -54,14 +59,29 @@
                 是否公开接口
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAction.ArgumenType">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAction.ArgumentType">
             <summary>
                 参数类型
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAction.ResultType">
             <summary>
-                参数类型
+               返回值类型
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAction.IsAsync">
+            <summary>
+                是否异步任务
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAction.Function">
+            <summary>
+                执行行为
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAction.ArgumentConvert">
+            <summary>
+                参数转换方法
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiAction.RestoreArgument(System.String)">
@@ -82,340 +102,10 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiActionObj2">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiAction.Initialize">
             <summary>
-                Api动作
+            初始化
             </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiActionObj2.Argument">
-            <summary>
-                参数
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiActionObj2.Action">
-            <summary>
-                执行行为
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiActionObj2.RestoreArgument(System.String)">
-            <summary>
-                还原参数
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiActionObj2.Validate(System.String@)">
-            <summary>
-                参数校验
-            </summary>
-            <param name="message"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiActionObj2.Execute">
-            <summary>
-                执行
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiAction`1">
-            <summary>
-                Api动作
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAction`1.Argument">
-            <summary>
-                参数
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAction`1.Action">
-            <summary>
-                执行行为
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiAction`1.RestoreArgument(System.String)">
-            <summary>
-                还原参数
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiAction`1.Validate(System.String@)">
-            <summary>
-                参数校验
-            </summary>
-            <param name="message"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiAction`1.Execute">
-            <summary>
-                执行
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiTaskAction`1">
-            <summary>
-                Api动作
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiTaskAction`1.Argument">
-            <summary>
-                参数
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiTaskAction`1.Action">
-            <summary>
-                执行行为
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiTaskAction`1.RestoreArgument(System.String)">
-            <summary>
-                还原参数
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiTaskAction`1.Validate(System.String@)">
-            <summary>
-                参数校验
-            </summary>
-            <param name="message"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiTaskAction`1.Execute">
-            <summary>
-                执行
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiTaskAction2`1">
-            <summary>
-                Api动作
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiTaskAction2`1._argument">
-            <summary>
-                参数
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiTaskAction2`1.Argument">
-            <summary>
-                参数
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiTaskAction2`1.Action">
-            <summary>
-                执行行为
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiTaskAction2`1.RestoreArgument(System.String)">
-            <summary>
-                还原参数
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiTaskAction2`1.Validate(System.String@)">
-            <summary>
-                参数校验
-            </summary>
-            <param name="message"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiTaskAction2`1.Execute">
-            <summary>
-                执行
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiAction2`1">
-            <summary>
-                Api动作
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAction2`1.Argument">
-            <summary>
-                参数
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAction2`1.Action">
-            <summary>
-                执行行为
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiAction2`1.RestoreArgument(System.String)">
-            <summary>
-                还原参数
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiAction2`1.Validate(System.String@)">
-            <summary>
-                参数校验
-            </summary>
-            <param name="message"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiAction2`1.Execute">
-            <summary>
-                执行
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiDelegate1">
-            <summary>
-                API标准委托
-            </summary>
-            <param name="argument"></param>
-            <returns></returns>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiDelegate">
-            <summary>
-                API标准委托
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.AnyApiAction`1">
-            <summary>
-                Api动作
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.AnyApiAction`1._argument">
-            <summary>
-                参数
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.AnyApiAction`1.Argument">
-            <summary>
-                参数
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.AnyApiAction`1.Method">
-            <summary>
-                执行行为
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.AnyApiAction`1.RestoreArgument(System.String)">
-            <summary>
-                还原参数
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.AnyApiAction`1.Validate(System.String@)">
-            <summary>
-                参数校验
-            </summary>
-            <param name="message"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.AnyApiAction`1.Execute">
-            <summary>
-                执行
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiAction`2">
-            <summary>
-                Api动作
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAction`2.Argument">
-            <summary>
-                参数
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAction`2._argument">
-            <summary>
-                参数
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAction`2.Action">
-            <summary>
-                执行行为
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiAction`2.RestoreArgument(System.String)">
-            <summary>
-                还原参数
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiAction`2.Validate(System.String@)">
-            <summary>
-                参数校验
-            </summary>
-            <param name="message"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiAction`2.Execute">
-            <summary>
-                执行
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiAction2`2">
-            <summary>
-                Api动作
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAction2`2.Argument">
-            <summary>
-                参数
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAction2`2._argument">
-            <summary>
-                参数
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAction2`2.Action">
-            <summary>
-                执行行为
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiAction2`2.RestoreArgument(System.String)">
-            <summary>
-                还原参数
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiAction2`2.Validate(System.String@)">
-            <summary>
-                参数校验
-            </summary>
-            <param name="message"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiAction2`2.Execute">
-            <summary>
-                执行
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiActionObj">
-            <summary>
-                Api动作
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiActionObj.Argument">
-            <summary>
-                参数
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiActionObj._argument">
-            <summary>
-                参数
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiActionObj.Action">
-            <summary>
-                执行行为
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiActionObj.RestoreArgument(System.String)">
-            <summary>
-                还原参数
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiActionObj.Execute">
-            <summary>
-                执行
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiActionObj.Validate(System.String@)">
-            <summary>
-                参数校验
-            </summary>
-            <param name="message"></param>
-            <returns></returns>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover">
             <summary>
@@ -453,6 +143,13 @@
             </summary>
             <param name="type"></param>
             <param name="onlyDoc"></param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.CreateMethod(System.Reflection.TypeInfo,System.String,System.Reflection.TypeInfo,System.Boolean@)">
+            <summary>生成动态匿名调用内部方法（参数由TArg转为实际类型后调用，并将调用返回值转为TRes）</summary>
+            <param name="callInfo">调用对象类型</param>
+            <param name="argInfo">原始参数类型</param>
+            <param name="methodName">原始调用方法</param>
+            <returns>匿名委托</returns>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.CreateFunc(System.Reflection.TypeInfo,System.String,System.Reflection.TypeInfo,System.Reflection.TypeInfo)">
             <summary>生成动态匿名调用内部方法（参数由TArg转为实际类型后调用，并将调用返回值转为TRes）</summary>
@@ -528,28 +225,29 @@
                 Api调用器
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.ZeroTeam#MessageMVC#ZeroApis#IMessageMiddleware#Handle(ZeroTeam.MessageMVC.IService,System.String,System.Func{System.Threading.Tasks.Task{ZeroTeam.MessageMVC.Messages.MessageState}})">
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.Message">
+            <summary>
+            调用的内容
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.Tag">
+            <summary>
+            调用的内容
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.ZeroTeam#MessageMVC#ZeroApis#IMessageMiddleware#Handle(ZeroTeam.MessageMVC.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object,System.Func{System.Threading.Tasks.Task{ZeroTeam.MessageMVC.Messages.MessageState}})">
             <summary>
             准备
             </summary>
             <param name="service">当前服务</param>
             <param name="message">当前消息</param>
+            <param name="tag"></param>
             <param name="next">下一个处理方法</param>
             <returns></returns>
         </member>
         <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.Service">
             <summary>
             当前站点
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.Item">
-            <summary>
-            调用的内容
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.CancellationToken">
-            <summary>
-            取消停牌
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.Execute">
@@ -571,25 +269,14 @@
             <param name="action"></param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.CommandExec(System.Boolean,ZeroTeam.MessageMVC.ZeroApis.IApiAction)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.CommandExec(ZeroTeam.MessageMVC.ZeroApis.IApiAction)">
             <summary>
                 执行命令
             </summary>
-            <param name="monitor"></param>
             <param name="action"></param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.CheckCommandResult(System.Object)">
-            <summary>
-                执行命令
-            </summary>
-            <param name="res"></param>
-            <returns></returns>
-        </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApplication">
-            <summary>
-                站点应用
-            </summary>
             <summary>
                 站点应用
             </summary>
@@ -605,11 +292,6 @@
         <member name="P:ZeroTeam.MessageMVC.ZeroApplication.Config">
             <summary>
                 站点配置
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApplication.CheckConfig">
-            <summary>
-                配置校验
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.ZeroApplication._appState">
@@ -642,19 +324,14 @@
                 运行状态（本地未关闭）
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApplication.IsDisposed">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApplication.IsDestroy">
             <summary>
-                已关闭
+                已销毁
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroApplication.IsClosed">
             <summary>
                 已关闭
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApplication.WaitToken">
-            <summary>
-                应用程序等待结果的信号量对象
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApplication.CheckOption">
@@ -717,29 +394,9 @@
             活动对象(执行中)
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApplication.GlobalObjects">
-            <summary>
-            全局执行对象(内部的Task)
-            </summary>
-        </member>
         <member name="F:ZeroTeam.MessageMVC.ZeroApplication.ActiveSemaphore">
             <summary>
                 对象活动状态记录器锁定
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApplication.GlobalSemaphore">
-            <summary>
-                对象活动状态记录器锁定
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApplication.OnGlobalStart(ZeroTeam.MessageMVC.IService)">
-            <summary>
-                对象活动时登记
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApplication.OnGlobalEnd(ZeroTeam.MessageMVC.IService)">
-            <summary>
-                对象活动时登记
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApplication.OnObjectActive(ZeroTeam.MessageMVC.IService)">
@@ -797,9 +454,24 @@
             默认的全局对象
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroGlobal.CheckOption(ZeroTeam.MessageMVC.ZeroAppConfigRuntime)">
+        <member name="P:ZeroTeam.MessageMVC.ZeroGlobal.ZeroTeam#MessageMVC#IAppMiddleware#Level">
+            <summary>
+            等级
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroGlobal.ZeroTeam#MessageMVC#IAppMiddleware#Close">
+            <summary>
+                关闭
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroGlobal.ZeroTeam#MessageMVC#IAppMiddleware#CheckOption(ZeroTeam.MessageMVC.ZeroAppConfigRuntime)">
             <summary>
                 配置校验,作为第一步
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroGlobal.CheckConfig(ZeroTeam.MessageMVC.ZeroAppConfigRuntime)">
+            <summary>
+                配置校验
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroServices.StateMachine.CloseStateMachine">
@@ -1108,96 +780,6 @@
             </summary>
             <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
             <param name="action">动作</param>
-            <param name="info">反射信息</param>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction(System.String,System.Func{System.Threading.Tasks.Task{ZeroTeam.MessageMVC.ZeroApis.IApiResult}},ZeroTeam.MessageMVC.ApiAccessOption,ZeroTeam.MessageMVC.ApiDocuments.ApiActionInfo)">
-            <summary>
-                注册方法
-            </summary>
-            <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
-            <param name="action">动作</param>
-            <param name="info">反射信息</param>
-            <param name="access">访问设置</param>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction(System.String,System.Func{System.Object,System.Threading.Tasks.Task{ZeroTeam.MessageMVC.ZeroApis.IApiResult}},ZeroTeam.MessageMVC.ApiAccessOption,ZeroTeam.MessageMVC.ApiDocuments.ApiActionInfo)">
-            <summary>
-                注册方法
-            </summary>
-            <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
-            <param name="action">动作</param>
-            <param name="info">反射信息</param>
-            <param name="access">访问设置</param>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction(System.String,System.Func{ZeroTeam.MessageMVC.ZeroApis.IApiResult},ZeroTeam.MessageMVC.ApiAccessOption,ZeroTeam.MessageMVC.ApiDocuments.ApiActionInfo)">
-            <summary>
-                注册方法
-            </summary>
-            <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
-            <param name="action">动作</param>
-            <param name="info">反射信息</param>
-            <param name="access">访问设置</param>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction(System.String,System.Func{System.Object,System.Object},ZeroTeam.MessageMVC.ApiAccessOption,ZeroTeam.MessageMVC.ApiDocuments.ApiActionInfo)">
-            <summary>
-                注册方法
-            </summary>
-            <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
-            <param name="action">动作</param>
-            <param name="access">访问设置</param>
-            <param name="info">反射信息</param>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction(System.String,System.Func{System.Object},ZeroTeam.MessageMVC.ApiAccessOption,ZeroTeam.MessageMVC.ApiDocuments.ApiActionInfo)">
-            <summary>
-                注册方法
-            </summary>
-            <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
-            <param name="action">动作</param>
-            <param name="access">访问设置</param>
-            <param name="info">反射信息</param>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction``1(System.String,System.Func{``0},ZeroTeam.MessageMVC.ApiAccessOption,ZeroTeam.MessageMVC.ApiDocuments.ApiActionInfo)">
-            <summary>
-                注册方法
-            </summary>
-            <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
-            <param name="action">动作</param>
-            <param name="access">访问设置</param>
-            <param name="info">反射信息</param>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction2``1(System.String,System.Func{``0},ZeroTeam.MessageMVC.ApiAccessOption,ZeroTeam.MessageMVC.ApiDocuments.ApiActionInfo)">
-            <summary>
-                注册方法
-            </summary>
-            <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
-            <param name="action">动作</param>
-            <param name="access">访问设置</param>
-            <param name="info">反射信息</param>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction2``2(System.String,System.Func{``0,``1},ZeroTeam.MessageMVC.ApiAccessOption,ZeroTeam.MessageMVC.ApiDocuments.ApiActionInfo)">
-            <summary>
-                注册方法
-            </summary>
-            <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
-            <param name="action">动作</param>
-            <param name="access">访问设置</param>
-            <param name="info">反射信息</param>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction(System.String,System.Func{ZeroTeam.MessageMVC.ZeroApis.IApiArgument,ZeroTeam.MessageMVC.ZeroApis.IApiResult},ZeroTeam.MessageMVC.ApiAccessOption,ZeroTeam.MessageMVC.ApiDocuments.ApiActionInfo)">
-            <summary>
-                注册方法
-            </summary>
-            <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
-            <param name="action">动作</param>
-            <param name="access">访问设置</param>
-            <param name="info">反射信息</param>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroService.RegistAction``2(System.String,System.Func{``0,``1},ZeroTeam.MessageMVC.ApiAccessOption,ZeroTeam.MessageMVC.ApiDocuments.ApiActionInfo)">
-            <summary>
-                注册方法
-            </summary>
-            <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
-            <param name="action">动作</param>
-            <param name="access">访问设置</param>
             <param name="info">反射信息</param>
         </member>
     </members>

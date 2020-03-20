@@ -104,6 +104,7 @@ namespace Agebull.Common.Logging
                     LoggerProviderOptions.RegisterProviderOptions<TextLoggerOption, TextLoggerProvider>(builder.Services);
 
                 });
+            IocHelper.Update();
             ConfigurationManager.RegistOnChange(ReadConfig, false);
 
             SystemLog("日志开始");

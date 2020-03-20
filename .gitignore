@@ -87,3 +87,4 @@ packages
 /install/zero/auth2
 /install/zero/auth
 /src/WebApplication2
+/src/zmq

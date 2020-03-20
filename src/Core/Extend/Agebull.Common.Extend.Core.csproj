@@ -19,7 +19,7 @@
     <PackageTags>Agebull.Common.Extend</PackageTags>
     
     <PackageProjectUrl>https://github.com/agebullhu/EntityModel</PackageProjectUrl>
-    <PackageLicenseExpression>MPL</PackageLicenseExpression>
+    <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/agebullhu/EntityModel</RepositoryUrl>

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading.Tasks;
+using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -25,7 +27,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         ///     参数类型
         /// </summary>
-        public Type ArgumenType { get; set; }
+        public Type ArgumentType { get; set; }
 
         /// <summary>
         ///     参数类型
@@ -48,6 +50,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ///     执行
         /// </summary>
         /// <returns></returns>
-        object Execute();
+        Task<Tuple<MessageState, string>> Execute();
     }
 }

@@ -13,8 +13,22 @@ namespace ZeroTeam.MessageMVC.Kafka
     /// <summary>
     ///     消息发布
     /// </summary>
-    internal class KafkaProducer : IMessageProducer
+    internal class KafkaProducer : IMessageProducer, IAppMiddleware
     {
+        /// <summary>
+        /// 等级
+        /// </summary>
+        int IAppMiddleware.Level => 0xFFFF;
+
+        /// <summary>
+        ///     关闭
+        /// </summary>
+        void IAppMiddleware.Close()
+        {
+            producer?.Dispose();
+            producer = null;
+        }
+
         #region Producer 
 
         private static IProducer<Null, string> producer;
@@ -24,12 +38,14 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// </summary>
         public static void Initialize()
         {
-            IocHelper.AddSingleton<IMessageProducer, KafkaProducer>();
+            IocHelper.AddTransient<IMessageProducer, KafkaProducer>();
+            IocHelper.AddTransient<IAppMiddleware, KafkaProducer>();
             ConsumerConfig config = ConfigurationManager.Get<ConsumerConfig>("Kafka");
             producer = new ProducerBuilder<Null, string>(new ProducerConfig
             {
                 BootstrapServers = config.BootstrapServers
             }).Build();
+
         }
 
         /// <summary>
@@ -54,6 +70,15 @@ namespace ZeroTeam.MessageMVC.Kafka
         {
             try
             {
+                if (producer == null)
+                    return new ApiResult
+                    {
+                        Success = false,
+                        Status = new OperatorStatus
+                        {
+                            Code = ErrorCode.Ignore
+                        }
+                    };
                 var item = new MessageItem
                 {
                     Topic = topic,

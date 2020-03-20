@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Agebull.Common.Logging;
 using Agebull.EntityModel.Common;
+using Newtonsoft.Json;
 using ZeroTeam.MessageMVC.ApiDocuments;
 using ZeroTeam.MessageMVC.ZeroApis;
 using ZeroTeam.MessageMVC.ZeroServices.StateMachine;
@@ -98,7 +99,6 @@ namespace ZeroTeam.MessageMVC
             {
                 if (_configState == value)
                     return;
-                //#if UseStateMachine
                 switch (value)
                 {
                     case StationStateType.None:
@@ -113,6 +113,9 @@ namespace ZeroTeam.MessageMVC
                         else
                             StateMachine = new StartStateMachine { Service = this };
                         break;
+                    case StationStateType.Closed:
+                        StateMachine = new CloseStateMachine { Service = this };
+                        break;
                     case StationStateType.Failed:
                         if (ZeroApplication.CanDo)
                             StateMachine = new FailedStateMachine { Service = this };
@@ -123,13 +126,8 @@ namespace ZeroTeam.MessageMVC
                         StateMachine = new StartStateMachine { Service = this };
                         break;
                 }
-                //#endif
                 _configState = value;
-                //#if UseStateMachine
                 ZeroTrace.SystemLog(ServiceName, nameof(ConfigState), value, "StateMachine", StateMachine.GetTypeName());
-                //#else
-                //                ZeroTrace.SystemLog(StationName, nameof(ConfigState), value);
-                //#endif
             }
         }
 
@@ -284,7 +282,6 @@ namespace ZeroTeam.MessageMVC
             CancelToken.Dispose();
             CancelToken = null;
             RealState = StationState.Closed;
-            ZeroApplication.OnObjectClose(this);
         }
 
         /// <summary>
@@ -302,6 +299,7 @@ namespace ZeroTeam.MessageMVC
         protected virtual void DoEnd()
         {
             Transport.Dispose();
+            ZeroApplication.OnObjectClose(this);
         }
         #endregion
 
@@ -394,6 +392,12 @@ namespace ZeroTeam.MessageMVC
         /// <param name="info">反射信息</param>
         public void RegistAction(string name, ApiAction action, ApiActionInfo info = null)
         {
+            if (info != null && info.HaseArgument && action.ArgumentType != null)
+                action.ArgumentType = info.ArgumentType;
+            if (info != null && action.ResultType != null)
+                action.ResultType = info.ResultType;
+
+            action.Initialize();
             if (!ApiActions.ContainsKey(name))
             {
                 action.Name = name;
@@ -411,200 +415,6 @@ namespace ZeroTeam.MessageMVC
                         ? $"{name}({info.Name})"
                         : $"{name}({info.Controller}.{info.Name})");
         }
-
-        /// <summary>
-        ///     注册方法
-        /// </summary>
-        /// <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
-        /// <param name="action">动作</param>
-        /// <param name="info">反射信息</param>
-        /// <param name="access">访问设置</param>
-        public ApiAction RegistAction(string name, Func<Task<IApiResult>> action, ApiAccessOption access, ApiActionInfo info = null)
-        {
-            var a = new ApiTaskAction<IApiResult>
-            {
-                Name = name,
-                Action = action,
-                Access = access
-            };
-            RegistAction(name, a, info);
-            return a;
-        }
-
-        /// <summary>
-        ///     注册方法
-        /// </summary>
-        /// <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
-        /// <param name="action">动作</param>
-        /// <param name="info">反射信息</param>
-        /// <param name="access">访问设置</param>
-        public ApiAction RegistAction(string name, Func<object, Task<IApiResult>> action, ApiAccessOption access, ApiActionInfo info = null)
-        {
-            var a = new ApiTaskAction2<IApiResult>
-            {
-                Name = name,
-                Action = action,
-                Access = access
-            };
-            RegistAction(name, a, info);
-            return a;
-        }
-
-        /// <summary>
-        ///     注册方法
-        /// </summary>
-        /// <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
-        /// <param name="action">动作</param>
-        /// <param name="info">反射信息</param>
-        /// <param name="access">访问设置</param>
-        public ApiAction RegistAction(string name, Func<IApiResult> action, ApiAccessOption access, ApiActionInfo info = null)
-        {
-            var a = new ApiAction<IApiResult>
-            {
-                Name = name,
-                Action = action,
-                Access = access
-            };
-            RegistAction(name, a, info);
-            return a;
-        }
-
-        /// <summary>
-        ///     注册方法
-        /// </summary>
-        /// <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
-        /// <param name="action">动作</param>
-        /// <param name="access">访问设置</param>
-        /// <param name="info">反射信息</param>
-        public ApiAction RegistAction(string name, Func<object, object> action, ApiAccessOption access, ApiActionInfo info = null)
-        {
-            var a = new ApiActionObj
-            {
-                Name = name,
-                Action = action,
-                Access = access
-            };
-            RegistAction(name, a, info);
-            return a;
-        }
-
-        /// <summary>
-        ///     注册方法
-        /// </summary>
-        /// <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
-        /// <param name="action">动作</param>
-        /// <param name="access">访问设置</param>
-        /// <param name="info">反射信息</param>
-        public ApiAction RegistAction(string name, Func<object> action, ApiAccessOption access, ApiActionInfo info = null)
-        {
-            var a = new ApiActionObj2
-            {
-                Name = name,
-                Action = action,
-                Access = access
-            };
-            RegistAction(name, a, info);
-            return a;
-        }
-
-        /// <summary>
-        ///     注册方法
-        /// </summary>
-        /// <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
-        /// <param name="action">动作</param>
-        /// <param name="access">访问设置</param>
-        /// <param name="info">反射信息</param>
-        public ApiAction RegistAction<TResult>(string name, Func<TResult> action, ApiAccessOption access, ApiActionInfo info = null)
-            where TResult : IApiResult
-        {
-            var a = new ApiAction<TResult>
-            {
-                Name = name,
-                Action = action,
-                Access = access
-            };
-            RegistAction(name, a, info);
-            return a;
-        }
-        /// <summary>
-        ///     注册方法
-        /// </summary>
-        /// <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
-        /// <param name="action">动作</param>
-        /// <param name="access">访问设置</param>
-        /// <param name="info">反射信息</param>
-        public ApiAction RegistAction2<TResult>(string name, Func<TResult> action, ApiAccessOption access, ApiActionInfo info = null)
-        {
-            var a = new ApiAction2<TResult>
-            {
-                Name = name,
-                Action = action,
-                Access = access
-            };
-            RegistAction(name, a, info);
-            return a;
-        }
-
-        /// <summary>
-        ///     注册方法
-        /// </summary>
-        /// <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
-        /// <param name="action">动作</param>
-        /// <param name="access">访问设置</param>
-        /// <param name="info">反射信息</param>
-        public ApiAction RegistAction2<TArg, TResult>(string name, Func<TArg, TResult> action, ApiAccessOption access, ApiActionInfo info = null)
-        {
-            var a = new ApiAction2<TArg, TResult>
-            {
-                Name = name,
-                Action = action,
-                Access = access
-            };
-            RegistAction(name, a, info);
-            return a;
-        }
-
-        /// <summary>
-        ///     注册方法
-        /// </summary>
-        /// <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
-        /// <param name="action">动作</param>
-        /// <param name="access">访问设置</param>
-        /// <param name="info">反射信息</param>
-        public ApiAction RegistAction(string name, Func<IApiArgument, IApiResult> action, ApiAccessOption access, ApiActionInfo info = null)
-        {
-            var a = new ApiAction<IApiArgument, IApiResult>
-            {
-                Name = name,
-                Action = action,
-                Access = access
-            };
-            RegistAction(name, a, info);
-
-            return a;
-        }
-        /// <summary>
-        ///     注册方法
-        /// </summary>
-        /// <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
-        /// <param name="action">动作</param>
-        /// <param name="access">访问设置</param>
-        /// <param name="info">反射信息</param>
-        public ApiAction RegistAction<TArgument, TResult>(string name, Func<TArgument, TResult> action, ApiAccessOption access, ApiActionInfo info = null)
-            where TArgument : class, IApiArgument
-            where TResult : IApiResult
-        {
-            var a = new ApiAction<TArgument, TResult>
-            {
-                Name = name,
-                Action = action,
-                Access = access
-            };
-            RegistAction(name, a, info);
-
-            return a;
-        }
-
 
         #endregion
     }

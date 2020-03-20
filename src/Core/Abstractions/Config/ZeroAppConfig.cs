@@ -11,6 +11,12 @@ namespace ZeroTeam.MessageMVC
     public class ZeroAppConfig
     {
         /// <summary>
+        ///     当前应用名称
+        /// </summary>
+        [DataMember]
+        public string AppName { get; set; }
+
+        /// <summary>
         ///   线程池最大工作线程数
         /// </summary>
         [DataMember] 

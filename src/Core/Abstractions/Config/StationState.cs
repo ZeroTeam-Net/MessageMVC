@@ -61,21 +61,6 @@
         public const int Destroy = 10;
 
         /// <summary>
-        /// 已销毁，析构已调用
-        /// </summary>
-        public const int Disposed = 11;
-
-        /// <summary>
-        /// 已被关停
-        /// </summary>
-        public const int Stop = 12;
-
-        /// <summary>
-        /// 已被移除
-        /// </summary>
-        public const int Remove = 13;
-        
-        /// <summary>
         /// 返回状态文本
         /// </summary>
         /// <param name="state"></param>
@@ -106,12 +91,6 @@
                     return nameof(Closed);
                 case Destroy: // 10;
                     return nameof(Destroy);
-                case Disposed: // 11;
-                    return nameof(Disposed);
-                case Stop:
-                    return nameof(Stop);
-                case Remove:
-                    return nameof(Remove);
                 default:
                     return "Undefine";
             }

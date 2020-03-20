@@ -18,7 +18,7 @@ namespace KafkaTest
         /// <param name="message">当前消息</param>
         /// <param name="next">下一个处理方法</param>
         /// <returns></returns>
-        public async Task<MessageState> Handle(IService service, string message, Func<Task<MessageState>> next)
+        public async Task<MessageState> Handle(IService service, IMessageItem message, object tag, Func<Task<MessageState>> next)
         {
             await next();
             Console.WriteLine("MessageMiddleware 2");

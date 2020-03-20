@@ -4,6 +4,7 @@ using Confluent.Kafka;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Kafka
@@ -42,35 +43,63 @@ namespace ZeroTeam.MessageMVC.Kafka
 
         async Task<bool> INetTransport.Loop(CancellationToken token)
         {
-            try
+            while (!token.IsCancellationRequested)
             {
-                var tm = new TimeSpan(0, 0, 3);
-                while (!token.IsCancellationRequested)
+                try
                 {
-                    var cr = consumer.Consume(tm);
-                    //Console.WriteLine("...");
-                    //if (cr == null)
-                    //{
-                    //    Console.WriteLine("Empty");
-                    //    continue;
-                    //}
+                    var cr = consumer.Consume(token);
+                    if (cr == null)
+                    {
+                        //Console.WriteLine("Empty");
+                        continue;
+                    }
                     Interlocked.Increment(ref CallCount);
                     Interlocked.Increment(ref WaitCount);
-                    var state = await MessageProcess.OnMessagePush(Station, cr.Value);
-                    if (state == Messages.MessageState.Success)
-                        Interlocked.Increment(ref SuccessCount);
-                    else
+                    MessageItem item;
+                    try
+                    {
+                        item = JsonHelper.DeserializeObject<MessageItem>(cr.Value);
+                        OnMessagePush(item);
+                    }
+                    catch (Exception e)
+                    {
+                        OnError(e, new MessageItem
+                        {
+                            State = MessageState.FormalError,
+                        }, cr.Value);
                         Interlocked.Increment(ref ErrorCount);
-                    Interlocked.Decrement(ref WaitCount);
+                        continue;
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                LogRecorder.Exception(ex);
+                catch (OperationCanceledException)//取消为正常操作,不记录
+                {
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    LogRecorder.Exception(ex);
+                }
             }
             return true;
         }
 
+        /// <summary>
+        /// 消息处理
+        /// </summary>
+        /// <param name="message"></param>
+        void OnMessagePush(IMessageItem message)
+        {
+            var task = MessageProcess.OnMessagePush(Station, message);
+            task.ContinueWith(task =>
+            {
+                if (task.Result == MessageState.Success)
+                    Interlocked.Increment(ref SuccessCount);
+                else
+                    Interlocked.Increment(ref ErrorCount);
+                Interlocked.Decrement(ref WaitCount);
+            });
+            task.Wait();
+        }
         /// <summary>
         /// 将要开始
         /// </summary>
@@ -96,6 +125,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <returns></returns>
         public void LoopComplete()
         {
+            consumer.Close();
             consumer.Dispose();
         }
 
@@ -105,8 +135,9 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <returns></returns>
         public void Close()
         {
-            consumer.Close();
+            //
         }
+
         /// <summary>
         /// 表示已成功接收 
         /// </summary>
@@ -116,5 +147,12 @@ namespace ZeroTeam.MessageMVC.Kafka
             consumer.Commit();
         }
 
+        /// <summary>
+        /// 错误 
+        /// </summary>
+        /// <returns></returns>
+        public void OnError(Exception exception, IMessageItem message, object tag)
+        {
+        }
     }
 }

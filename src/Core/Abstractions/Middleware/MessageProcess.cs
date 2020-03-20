@@ -20,7 +20,12 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// 调用的内容
         /// </summary>
-        internal string Message;
+        internal IMessageItem Message;
+
+        /// <summary>
+        /// 调用的内容
+        /// </summary>
+        internal object Tag;
 
         /// <summary>
         /// 状态
@@ -49,7 +54,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             if (index >= middlewares.Length)
                 return MessageState.None;
             var next = middlewares[index++];
-            return State = await next.Handle(Service, Message, Handle);
+            return State = await next.Handle(Service, Message, Tag, Handle);
         }
 
         /// <summary>
@@ -66,12 +71,13 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         /// <param name="service"></param>
         /// <param name="message"></param>
-        public static async Task<MessageState> OnMessagePush(IService service, string message)
+        public static async Task<MessageState> OnMessagePush(IService service, IMessageItem message, object tag = null)
         {
             var process = new MessageProcess
             {
                 Service = service,
-                Message = message
+                Message = message,
+                Tag = tag
             };
             await process.SaveMessage();
 

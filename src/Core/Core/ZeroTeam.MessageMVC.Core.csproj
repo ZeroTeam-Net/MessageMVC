@@ -12,10 +12,10 @@
     <DebugType>portable</DebugType>
     <PackageId></PackageId>
     
-    <PackageProjectUrl>https://github.com/agebullhu/MicroZero</PackageProjectUrl>
-    <PackageLicenseExpression>MPL</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/ZeroTeam-Net/MessageMVC</PackageProjectUrl>
+    <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/agebullhu/MicroZero</RepositoryUrl>
+    <RepositoryUrl>https://github.com/ZeroTeam-Net/MessageMVC.git</RepositoryUrl>
     
     <IncludeSource>false</IncludeSource>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -23,9 +23,9 @@
     
     <Authors>Agebull</Authors>
     <Company>Agebull</Company>
-    <PackageReleaseNotes>以MVC方式进行消息处理,支持常用消息队列以及其它RPC方式的消息处理</PackageReleaseNotes>
+    <PackageReleaseNotes></PackageReleaseNotes>
     <Product>ZeroTeam.MessageMVC.Core</Product>
-    <Version>1.0.0.0-bate</Version>
+    <Version>1.0.0.1-bate</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -47,6 +47,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp3.1|AnyCPU'">
     <DocumentationFile>ZeroTeam.MessageMVC.Core.xml</DocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Application\ZeroApplication.Config.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Properties\" />

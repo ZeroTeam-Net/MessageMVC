@@ -60,6 +60,11 @@ namespace ZeroTeam.MessageMVC.Messages
         public string Result { get; set; }
 
         /// <summary>
+        ///     文件内容二进制数据
+        /// </summary>
+        public byte[] Bytes { get; set; }
+
+        /// <summary>
         /// 其他带外内容
         /// </summary>
         public string Tag { get; set; }
@@ -84,4 +89,5 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         public string Argument => Content;
     }
+
 }

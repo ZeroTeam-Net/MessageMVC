@@ -76,7 +76,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// 发送返回值 
         /// </summary>
         /// <returns></returns>
-        void OnResult(IMessageItem message)
+        void OnResult(IMessageItem message, object tag)
         {
         }
 
@@ -84,7 +84,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// 错误 
         /// </summary>
         /// <returns></returns>
-        void OnError(Exception exception, string message)
+        void OnError(Exception exception, IMessageItem message, object tag)
         {
         }
     }

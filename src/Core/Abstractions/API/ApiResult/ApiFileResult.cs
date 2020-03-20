@@ -12,7 +12,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ///     文件内容二进制数据
         /// </summary>
         [JsonIgnore]
-        public byte[] Data { get; set; }
+        public byte[] Bytes { get; set; }
 
         /// <summary>
         ///     文件名

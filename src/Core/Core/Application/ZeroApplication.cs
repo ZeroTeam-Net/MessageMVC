@@ -2,16 +2,13 @@ using System;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using ZeroTeam.MessageMVC.Context;
 using Agebull.Common.Ioc;
-using Agebull.Common.Logging;
 using ZeroTeam.MessageMVC.ZeroApis;
-using Agebull.EntityModel.Common;
-
-
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
+using ZeroTeam.MessageMVC.Messages;
+using System.Runtime.InteropServices;
+using Agebull.Common.Logging;
 
 namespace ZeroTeam.MessageMVC
 {
@@ -21,6 +18,18 @@ namespace ZeroTeam.MessageMVC
     public partial class ZeroApplication
     {
         #region State
+
+        private static IAppMiddleware[] Middlewares;
+
+        /// <summary>
+        ///     当前应用名称
+        /// </summary>
+        public static string AppName => Config.AppName;
+
+        /// <summary>
+        ///     站点配置
+        /// </summary>
+        public static ZeroAppConfigRuntime Config { get; set; }
 
         /// <summary>
         ///     运行状态
@@ -33,7 +42,7 @@ namespace ZeroTeam.MessageMVC
         public static int ApplicationState
         {
             get => _appState;
-            internal set
+            set
             {
                 Interlocked.Exchange(ref _appState, value);
             }
@@ -60,12 +69,12 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         ///     运行状态（本地未关闭）
         /// </summary>
-        public static bool IsAlive => ApplicationState < StationState.Destroy;
+        public static bool IsAlive => ApplicationState < StationState.Closing;
 
         /// <summary>
-        ///     已关闭
+        ///     已销毁
         /// </summary>
-        public static bool IsDisposed => ApplicationState == StationState.Disposed;
+        public static bool IsDestroy => ApplicationState == StationState.Destroy;
 
         /// <summary>
         ///     已关闭
@@ -76,14 +85,6 @@ namespace ZeroTeam.MessageMVC
 
         #region Flow
 
-        private static IAppMiddleware[] Middlewares;
-        private static readonly CancellationTokenSource CancelToken = new CancellationTokenSource();
-
-        /// <summary>
-        ///     应用程序等待结果的信号量对象
-        /// </summary>
-        private static readonly SemaphoreSlim WaitToken = new SemaphoreSlim(0);
-
         #region Option
 
         /// <summary>
@@ -91,11 +92,20 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public static void CheckOption()
         {
-            CheckConfig();
-            Middlewares = IocHelper.ServiceProvider.GetServices<IAppMiddleware>().ToArray();
-            foreach (var mid in Middlewares)
-                mid.CheckOption(Config);
-            ShowOptionInfo();
+            LogRecorder.Initialize();
+            Config = new ZeroAppConfigRuntime
+            {
+                BinPath = Environment.CurrentDirectory,
+                RootPath = Environment.CurrentDirectory,
+                IsLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
+            };
+            Middlewares = IocHelper.ServiceProvider.GetServices<IAppMiddleware>().OrderBy(p => p.Level).ToArray();
+            using (IocScope.CreateScope("CheckOption"))
+            {
+                foreach (var mid in Middlewares)
+                    mid.CheckOption(Config);
+            }
+            IocHelper.Update();
         }
 
         /// <summary>
@@ -157,9 +167,11 @@ namespace ZeroTeam.MessageMVC
             Start().Wait();
             Console.CancelKeyPress += OnConsoleOnCancelKeyPress;
             ZeroTrace.SystemLog("MicroZero services is runing. Press Ctrl+C to shutdown.");
-            WaitToken.Wait(CancelToken.Token);
+            waitTask = new TaskCompletionSource<bool>();
+            waitTask.Task.Wait();
         }
 
+        static TaskCompletionSource<bool> waitTask;
         /// <summary>
         ///     执行并等待
         /// </summary>
@@ -168,7 +180,8 @@ namespace ZeroTeam.MessageMVC
             await Start();
             Console.CancelKeyPress += OnConsoleOnCancelKeyPress;
             ZeroTrace.SystemLog("MicroZero services is runing. Press Ctrl+C to shutdown.");
-            await WaitToken.WaitAsync(CancelToken.Token);
+            waitTask = new TaskCompletionSource<bool>();
+            await waitTask.Task;
         }
 
         /// <summary>
@@ -196,24 +209,19 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public static void Shutdown()
         {
-            ZeroTrace.SystemLog("Begin shutdown...");
             if (ApplicationState >= StationState.Closing)
             {
                 return;
             }
-
+            ZeroTrace.SystemLog("Begin shutdown...");
             ApplicationState = StationState.Closing;
-            WaitToken.Release();
-            ApplicationState = StationState.Closed;
             OnZeroClose();
-
-            ApplicationState = StationState.Destroy;
+            WaitAllObjectSafeClose();
+            ApplicationState = StationState.Closed;
             OnZeroEnd();
-            if (GlobalObjects.Count > 0)
-                GlobalSemaphore.Wait();
-            ApplicationState = StationState.Disposed;
-            CancelToken.Cancel();
+            ApplicationState = StationState.Destroy;
             ZeroTrace.SystemLog("Application shutdown ,see you late.");
+            waitTask.TrySetResult(true);
         }
 
         #endregion
