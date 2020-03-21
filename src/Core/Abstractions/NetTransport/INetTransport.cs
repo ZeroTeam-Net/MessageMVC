@@ -65,6 +65,14 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         }
 
         /// <summary>
+        /// 表示已成功接收 
+        /// </summary>
+        /// <returns></returns>
+        void Commit()
+        {
+        }
+
+        /// <summary>
         /// 发送返回值 
         /// </summary>
         /// <returns></returns>

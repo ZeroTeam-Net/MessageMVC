@@ -15,6 +15,6 @@ namespace ZeroTeam.MessageMVC.ApiDocuments
         /// <summary>
         /// 网络传输对象构造器
         /// </summary>
-        public Func<string,INetTransport> NetBuilder { get; set; }
+        public Func<string, INetTransport> NetBuilder { get; set; }
     }
 }

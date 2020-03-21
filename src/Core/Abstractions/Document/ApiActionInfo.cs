@@ -38,8 +38,6 @@ namespace ZeroTeam.MessageMVC.ApiDocuments
         /// <summary>是否有调用参数</summary>
         public int ArgumentFeature;
 
-
-
         /// <summary>有参方法</summary>
         public Func<object, object> Action;
     }
