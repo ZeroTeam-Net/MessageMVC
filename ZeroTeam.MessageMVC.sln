@@ -28,6 +28,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{78391F4E-D2D
 		doc\flow mind.md = doc\flow mind.md
 		doc\INetTransport.md = doc\INetTransport.md
 		doc\MessageMVC.xmind = doc\MessageMVC.xmind
+		doc\MessageProcess.md = doc\MessageProcess.md
 		readme.md = readme.md
 		doc\ZeroFlowControl.md = doc\ZeroFlowControl.md
 		doc\流程.vsdx = doc\流程.vsdx
