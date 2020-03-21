@@ -25,8 +25,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7CF8A384-37F
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{78391F4E-D2DF-4373-B40C-28517937E5A5}"
 	ProjectSection(SolutionItems) = preProject
+		doc\flow mind.md = doc\flow mind.md
+		doc\INetTransport.md = doc\INetTransport.md
 		doc\MessageMVC.xmind = doc\MessageMVC.xmind
-		ZeroFlowControl.md = ZeroFlowControl.md
+		readme.md = readme.md
+		doc\ZeroFlowControl.md = doc\ZeroFlowControl.md
 		doc\流程.vsdx = doc\流程.vsdx
 	EndProjectSection
 EndProject

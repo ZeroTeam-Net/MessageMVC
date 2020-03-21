@@ -131,7 +131,6 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <returns></returns>
         public void Close()
         {
-            //
         }
 
         /// <summary>
@@ -150,5 +149,14 @@ namespace ZeroTeam.MessageMVC.Kafka
         public void OnError(Exception exception, IMessageItem message, object tag)
         {
         }
+
+        /// <summary>
+        /// 发送返回值 
+        /// </summary>
+        /// <returns></returns>
+        public void OnResult(IMessageItem message, object tag)
+        {
+        }
+
     }
 }

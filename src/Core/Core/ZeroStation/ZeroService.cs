@@ -223,9 +223,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         {
             bool success;
             LoopBegin();
+            RealState = StationState.Run;
+            _waitToken.Release();
             try
             {
-                RealState = StationState.Run;
                 success = await Transport.Loop(CancelToken.Token);
             }
             catch (Exception e)
@@ -268,7 +269,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 ZeroFlowControl.OnObjectFailed(this);
             }
             Transport.LoopBegin();
-            _waitToken.Release();
         }
 
         /// <summary>

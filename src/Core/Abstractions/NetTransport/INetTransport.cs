@@ -43,7 +43,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         void Close();
 
         /// <summary>
-        /// 同步运行状态
+        /// 开始轮询前的工作
         /// </summary>
         /// <returns></returns>
         void LoopBegin()
@@ -57,18 +57,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         Task<bool> Loop(CancellationToken token);
 
         /// <summary>
-        /// 同步关闭状态
+        /// 结束轮询前的工作
         /// </summary>
         /// <returns></returns>
         void LoopComplete()
-        {
-        }
-
-        /// <summary>
-        /// 表示已成功接收 
-        /// </summary>
-        /// <returns></returns>
-        void Commit()
         {
         }
 
