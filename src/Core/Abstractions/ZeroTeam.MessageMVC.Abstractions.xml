@@ -1438,6 +1438,36 @@
             页面
             </summary>
         </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.IService">
+            <summary>
+            站点连接池
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IService.Actions">
+            <summary>
+            注册的方法
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IService.ServiceName">
+            <summary>
+            服务名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IService.RealState">
+            <summary>
+                运行状态
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IService.Transport">
+            <summary>
+            网络传输对象
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IService.ConfigState">
+            <summary>
+                配置状态
+            </summary>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.ConsumerAttribute">
             <summary>
             表示一个消息队列消费者
@@ -1588,7 +1618,12 @@
             消息处理中间件
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IMessageMiddleware.Handle(ZeroTeam.MessageMVC.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object,System.Func{System.Threading.Tasks.Task{ZeroTeam.MessageMVC.Messages.MessageState}})">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IMessageMiddleware.Level">
+            <summary>
+            层级
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IMessageMiddleware.Handle(ZeroTeam.MessageMVC.ZeroApis.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object,System.Func{System.Threading.Tasks.Task{ZeroTeam.MessageMVC.Messages.MessageState}})">
             <summary>
             准备
             </summary>
@@ -1629,18 +1664,13 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.MessageProcess.SaveMessage">
-            <summary>
-            消息保存
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.MessageProcess.OnMessagePush(ZeroTeam.MessageMVC.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.MessageProcess.OnMessagePush(ZeroTeam.MessageMVC.ZeroApis.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
             <summary>
             消息处理
             </summary>
             <param name="service"></param>
             <param name="message"></param>
+            <param name="tag"></param>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.IMessageConsumer">
             <summary>
@@ -2302,94 +2332,44 @@
                 参数仅为定义,其实不使用
             </summary>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.IAppMiddleware">
+        <member name="T:ZeroTeam.MessageMVC.IFlowMiddleware">
             <summary>
             表示一个应用中间件
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.IAppMiddleware.Level">
-            <summary>
-            等级
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.IAppMiddleware.CheckOption(ZeroTeam.MessageMVC.ZeroAppConfigRuntime)">
-            <summary>
-                配置校验,作为第一步
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.IAppMiddleware.Initialize">
-            <summary>
-                初始化
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.IAppMiddleware.Start">
-            <summary>
-            开启
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.IAppMiddleware.Close">
-            <summary>
-            关闭
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.IAppMiddleware.Dispose">
-            <summary>
-            注销时调用
-            </summary>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.IService">
-            <summary>
-            站点连接池
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.IService.Actions">
-            <summary>
-            注册的方法
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.IService.InstanceName">
+        <member name="P:ZeroTeam.MessageMVC.IFlowMiddleware.RealName">
             <summary>
             实例名称
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.IService.ServiceName">
+        <member name="P:ZeroTeam.MessageMVC.IFlowMiddleware.Level">
             <summary>
-            服务名称
+            等级
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.IService.RealState">
+        <member name="M:ZeroTeam.MessageMVC.IFlowMiddleware.CheckOption(ZeroTeam.MessageMVC.ZeroAppConfigRuntime)">
             <summary>
-                运行状态
+                配置校验,作为第一步
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.IService.Transport">
+        <member name="M:ZeroTeam.MessageMVC.IFlowMiddleware.Initialize">
             <summary>
-            网络传输对象
+                初始化
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.IService.ConfigState">
-            <summary>
-                配置状态
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.IService.Initialize">
-            <summary>
-            系统初始化时调用
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.IService.Start">
+        <member name="M:ZeroTeam.MessageMVC.IFlowMiddleware.Start">
             <summary>
             开启
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.IService.Close">
+        <member name="M:ZeroTeam.MessageMVC.IFlowMiddleware.Close">
             <summary>
             关闭
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.IService.End">
+        <member name="M:ZeroTeam.MessageMVC.IFlowMiddleware.End">
             <summary>
-            结束
+            注销时调用
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.LockData">

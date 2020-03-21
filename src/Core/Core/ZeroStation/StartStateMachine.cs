@@ -1,4 +1,4 @@
-﻿namespace ZeroTeam.MessageMVC.ZeroServices.StateMachine
+﻿namespace ZeroTeam.MessageMVC.ZeroApis.StateMachine
 {
     /// <summary>
     /// 监控状态机
@@ -12,7 +12,7 @@
         {
             if (IsDisposed)
             {
-                ZeroApplication.OnObjectFailed(Service);
+                ZeroFlowControl.OnObjectFailed(Service);
                 return false;
             }
             IsDisposed = true;
@@ -24,7 +24,7 @@
         /// </summary>
         bool IStationStateMachine.Close()
         {
-            ZeroApplication.OnObjectClose(Service);
+            ZeroFlowControl.OnObjectClose(Service);
             return false;
         }
 

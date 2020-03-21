@@ -1,6 +1,7 @@
 ﻿using Agebull.Common.Ioc;
 using System;
 using System.Reflection;
+using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Kafka
@@ -15,22 +16,29 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// </summary>
         /// <param name="assembly"></param>
         /// <param name="waitEnd"></param>
-        public static void UseKafka(Assembly assembly, bool waitEnd)
+        public static Task UseKafka(Assembly assembly, bool waitEnd)
         {
             Console.WriteLine("Weconme ZeroTeam KafkaMVC");
-            IocHelper.AddTransient<IAppMiddleware, ZeroGlobal>();
-            IocHelper.AddTransient<IAppMiddleware, AddInImporter>();
-            IocHelper.AddTransient<IMessageConsumer, KafkaConsumer>();
-            IocHelper.AddSingleton<IMessageMiddleware, ApiExecuter>();
 
-            ZeroApplication.CheckOption();
+            IocHelper.AddTransient<IFlowMiddleware, ConfigMiddleware>();//配置\依赖对象初始化,系统配置获取
+            IocHelper.AddTransient<IFlowMiddleware, AddInImporter>();//插件载入
+            IocHelper.AddTransient<IMessageConsumer, KafkaConsumer>();//采用Kafka消费客户端
+            IocHelper.AddTransient<IMessageMiddleware, LoggerMiddleware>();//启用日志
+            IocHelper.AddTransient<IMessageMiddleware, GlobalContextMiddleware>();//启用全局上下文
+            IocHelper.AddTransient<IMessageMiddleware, ApiExecuter>();//API路由与执行
+
+            //消息存储与异常消息重新消费
+            IocHelper.AddTransient<IMessageMiddleware, StorageMiddleware>();
+            IocHelper.AddTransient<IFlowMiddleware, ReConsumerMiddleware>();
+            //主流程
+            ZeroFlowControl.CheckOption();
             KafkaProducer.Initialize();
-            ZeroApplication.Discove(assembly);
-            ZeroApplication.Initialize();
+            ZeroFlowControl.Discove(assembly);
+            ZeroFlowControl.Initialize();
             if (waitEnd)
-                ZeroApplication.RunAwaite();
+               return ZeroFlowControl.RunAwaiteAsync();
             else
-                _ = ZeroApplication.RunAsync();
+                return ZeroFlowControl.RunAsync();
         }
     }
 }

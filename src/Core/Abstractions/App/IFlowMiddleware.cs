@@ -8,8 +8,13 @@ namespace ZeroTeam.MessageMVC
     /// <summary>
     /// 表示一个应用中间件
     /// </summary>
-    public interface IAppMiddleware
+    public interface IFlowMiddleware
     {
+        /// <summary>
+        /// 实例名称
+        /// </summary>
+        string RealName { get; }
+
         /// <summary>
         /// 等级
         /// </summary>
@@ -43,7 +48,7 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 注销时调用
         /// </summary>
-        void Dispose() { }
+        void End() { }
 
     }
 }

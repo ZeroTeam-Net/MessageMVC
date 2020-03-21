@@ -99,15 +99,20 @@
         </member>
         <member name="T:ZeroTeam.MessageMVC.Kafka.KafkaProducer">
             <summary>
-                消息发布
+                Kafka消息发布
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaProducer.ZeroTeam#MessageMVC#IAppMiddleware#Level">
+        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaProducer.ZeroTeam#MessageMVC#IFlowMiddleware#RealName">
+            <summary>
+            实例名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaProducer.ZeroTeam#MessageMVC#IFlowMiddleware#Level">
             <summary>
             等级
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaProducer.ZeroTeam#MessageMVC#IAppMiddleware#Close">
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaProducer.ZeroTeam#MessageMVC#IFlowMiddleware#Close">
             <summary>
                 关闭
             </summary>
@@ -128,8 +133,8 @@
         </member>
         <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaProducer.PublishAsyncInner(System.String,System.String,System.String)">
             <param name="topic"></param>
-            <param name="command"></param>
-            <param name="argument"></param>
+            <param name="title"></param>
+            <param name="content"></param>
             <returns></returns>
         </member>
     </members>

@@ -2,22 +2,17 @@
 using System.Collections.Generic;
 using ZeroTeam.MessageMVC.ZeroApis;
 
-namespace ZeroTeam.MessageMVC
+namespace ZeroTeam.MessageMVC.ZeroApis
 {
     /// <summary>
     /// 站点连接池
     /// </summary>
-    public interface IService
+    public interface IService : IFlowMiddleware
     {
         /// <summary>
         /// 注册的方法
         /// </summary>
         Dictionary<string, IApiAction> Actions { get; }
-
-        /// <summary>
-        /// 实例名称
-        /// </summary>
-        string InstanceName { get; }
 
         /// <summary>
         /// 服务名称
@@ -38,29 +33,5 @@ namespace ZeroTeam.MessageMVC
         ///     配置状态
         /// </summary>
         StationStateType ConfigState { get; }
-
-        /// <summary>
-        /// 系统初始化时调用
-        /// </summary>
-        void Initialize();
-
-
-        /// <summary>
-        /// 开启
-        /// </summary>
-        bool Start();
-
-        /// <summary>
-        /// 关闭
-        /// </summary>
-        bool Close();
-
-        /// <summary>
-        /// 结束
-        /// </summary>
-        void End();
-        
-
     }
-
 }

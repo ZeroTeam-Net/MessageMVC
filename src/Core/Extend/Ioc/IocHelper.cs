@@ -88,7 +88,7 @@ namespace Agebull.Common.Ioc
                     Local.Value = null;
                 }
             }
-            return RootProvider;
+            return _rootProvider = ServiceCollection.BuildServiceProvider();
         }
 
         #endregion

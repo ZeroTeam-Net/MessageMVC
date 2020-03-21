@@ -9,11 +9,11 @@ namespace MicroZero.Kafka.QueueStation
 {
     class Program
     {
-        static void Main()
+        static async Task Main()
         {
-            KafkaMessageMVC.UseKafka(typeof(Program).Assembly,false);
+            await KafkaMessageMVC.UseKafka(typeof(Program).Assembly, false);
 
-            Task.Run(Test);
+            _ = Task.Run(Test);
 
             Console.ReadKey();
             Console.WriteLine("Bye bye.");
@@ -21,9 +21,9 @@ namespace MicroZero.Kafka.QueueStation
         static void Test()
         {
             var producer = IocHelper.Create<IMessageProducer>();
-            //for (int i = 0; ZeroApplication.CanDo && i < 10; i++)
+            for (int i = 0; ZeroFlowControl.CanDo && i < 10; i++)
             {
-                //Thread.Sleep(100);
+                Thread.Sleep(100);
                 producer.Producer("test1", "test/res", "agebull");
                 producer.Producer("test1", "test/arg", "{'Value':'test'}");
                 producer.Producer("test1", "test/full", "1");

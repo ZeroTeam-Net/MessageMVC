@@ -78,10 +78,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 if (sta.Aips.Count == 0)
                     continue;
-                var station = (ZeroService)ZeroApplication.TryGetZeroObject(sta.Name);
+                var station = (ZeroService)ZeroFlowControl.TryGetZeroObject(sta.Name);
                 if (station == null)
                 {
-                    ZeroApplication.RegistZeroObject(station = new ZeroService
+                    ZeroFlowControl.RegistZeroObject(station = new ZeroService
                     {
                         InstanceName = sta.Name,
                         ServiceName = sta.Name,

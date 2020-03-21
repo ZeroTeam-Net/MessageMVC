@@ -92,23 +92,23 @@ namespace Agebull.Common.Logging
         public static void Initialize()
         {
             ReadConfig();
-            if (!NoRegist)
-                IocHelper.ServiceCollection.AddLogging(builder =>
-                {
-                    builder.AddConfiguration(ConfigurationManager.Root.GetSection("Logging"));
-                    if (UseConsoleLogger)
-                        builder.AddConsole();
-                    if (!UseBaseLogger)
-                        return;
-                    builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, TextLoggerProvider>());
-                    LoggerProviderOptions.RegisterProviderOptions<TextLoggerOption, TextLoggerProvider>(builder.Services);
+            if (NoRegist)
+                return;
+            IocHelper.ServiceCollection.AddLogging(builder =>
+            {
+                builder.AddConfiguration(ConfigurationManager.Root.GetSection("Logging"));
+                if (UseConsoleLogger)
+                    builder.AddConsole();
+                if (!UseBaseLogger)
+                    return;
+                builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, TextLoggerProvider>());
+                LoggerProviderOptions.RegisterProviderOptions<TextLoggerOption, TextLoggerProvider>(builder.Services);
 
-                });
+            });
             IocHelper.Update();
             ConfigurationManager.RegistOnChange(ReadConfig, false);
-
-            SystemLog("日志开始");
         }
+
         /// <summary>
         /// 读取配置
         /// </summary>
@@ -194,6 +194,8 @@ namespace Agebull.Common.Logging
         /// <param name="formatArgs">格式化参数</param>
         public static void Record(LogType type, string name, string message, params object[] formatArgs)
         {
+            if (message == null)
+                return;
             try
             {
                 var eventId = new EventId((int)Interlocked.Increment(ref lastId), name);
@@ -234,6 +236,8 @@ namespace Agebull.Common.Logging
         {
             if (LogDataSql)
             {
+                if (message == null)
+                    return;
                 var eventId = new EventId((int)Interlocked.Increment(ref lastId), "DataLog");
                 Logger.LogTrace(eventId, message);
             }
@@ -246,6 +250,8 @@ namespace Agebull.Common.Logging
         ///<param name="formatArgs"> 格式化的参数 </param>
         public static void RecordLoginLog(string message, params object[] formatArgs)
         {
+            if (message == null)
+                return;
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Login");
             Logger.LogTrace(eventId, message);
         }
@@ -258,6 +264,8 @@ namespace Agebull.Common.Logging
 
         public static void RecordRequestLog(string message, params object[] formatArgs)
         {
+            if (message == null)
+                return;
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Request");
             Logger.LogTrace(eventId, message);
         }
@@ -270,6 +278,8 @@ namespace Agebull.Common.Logging
 
         public static void RecordNetLog(string message, params object[] formatArgs)
         {
+            if (message == null)
+                return;
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "NetWork");
             Logger.LogTrace(eventId, message);
         }
@@ -281,6 +291,8 @@ namespace Agebull.Common.Logging
         ///<param name="formatArgs"> 格式化的参数 </param>
         public static void Message(string message, params object[] formatArgs)
         {
+            if (message == null)
+                return;
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Message");
             Logger.LogInformation(eventId, message, formatArgs);
         }
@@ -291,6 +303,8 @@ namespace Agebull.Common.Logging
         /// <param name="message"> 消息 </param>
         public static void SystemLog(string message)
         {
+            if (message == null)
+                return;
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "System");
             Logger.LogInformation(eventId, message);
         }
@@ -302,6 +316,8 @@ namespace Agebull.Common.Logging
         /// <param name="formatArgs">格式化参数</param>
         public static void SystemLog(string message, params object[] formatArgs)
         {
+            if (message == null)
+                return;
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "System");
             Logger.LogInformation(eventId, message, formatArgs);
         }
@@ -312,6 +328,8 @@ namespace Agebull.Common.Logging
         /// <param name="message"> 消息 </param>
         public static void PlanLog(string message)
         {
+            if (message == null)
+                return;
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Plan");
             Logger.LogTrace(eventId, message);
         }
@@ -323,6 +341,8 @@ namespace Agebull.Common.Logging
         ///<param name="formatArgs"> 格式化的参数 </param>
         public static void RecordMessage(string message, params object[] formatArgs)
         {
+            if (message == null)
+                return;
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Message");
             Logger.LogInformation(eventId, message, formatArgs);
         }
@@ -334,6 +354,8 @@ namespace Agebull.Common.Logging
         ///<param name="formatArgs"> 格式化的参数 </param>
         public static void Warning(string message, params object[] formatArgs)
         {
+            if (message == null)
+                return;
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Warning");
             Logger.LogWarning(eventId, message, formatArgs);
         }
@@ -345,6 +367,8 @@ namespace Agebull.Common.Logging
         ///<param name="formatArgs"> 格式化的参数 </param>
         public static void Error(string message, params object[] formatArgs)
         {
+            if (message == null)
+                return;
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Error");
             Logger.LogError(eventId, message, formatArgs);
         }
@@ -385,6 +409,8 @@ namespace Agebull.Common.Logging
 
         public static void RecordStackTrace(string message, params object[] formatArgs)
         {
+            if (message == null)
+                return;
             if (MonitorTrace(() => StackTraceInfomation(message, formatArgs)))
                 return;
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Trace");
@@ -399,6 +425,8 @@ namespace Agebull.Common.Logging
 
         public static void Trace(string message, params object[] formatArgs)
         {
+            if (message == null)
+                return;
             if (MonitorTrace(message, formatArgs))
                 return;
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Trace");
@@ -414,6 +442,8 @@ namespace Agebull.Common.Logging
 
         public static void Trace(string name, string message, params object[] formatArgs)
         {
+            if (message == null)
+                return;
             if (MonitorTrace(message, formatArgs))
                 return;
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), name);
@@ -432,6 +462,8 @@ namespace Agebull.Common.Logging
 
         public static void DebugByStackTrace(string message, params object[] formatArgs)
         {
+            if (message == null)
+                return;
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Debug");
             Logger.LogDebug(eventId, StackTraceInfomation(message, formatArgs));
         }
@@ -444,6 +476,8 @@ namespace Agebull.Common.Logging
 
         public static void Debug(string message, params object[] formatArgs)
         {
+            if (message == null)
+                return;
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Debug");
             Logger.LogDebug(eventId, message, formatArgs);
         }
@@ -454,6 +488,8 @@ namespace Agebull.Common.Logging
 
         public static void Debug(object obj)
         {
+            if (obj == null)
+                return;
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Debug");
             Logger.LogDebug(eventId, obj?.ToString());
         }

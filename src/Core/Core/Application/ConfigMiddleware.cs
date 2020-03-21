@@ -15,26 +15,31 @@ using ZeroTeam.MessageMVC.Context;
 namespace ZeroTeam.MessageMVC
 {
     /// <summary>
-    /// 默认的全局对象
+    /// 配置的全局对象
     /// </summary>
-    public class ZeroGlobal : IAppMiddleware
+    public class ConfigMiddleware : IFlowMiddleware
     {
+        /// <summary>
+        /// 实例名称
+        /// </summary>
+        string IFlowMiddleware.RealName => "ZeroGlobal";
+
         /// <summary>
         /// 等级
         /// </summary>
-        int IAppMiddleware.Level => int.MinValue;
+        int IFlowMiddleware.Level => int.MinValue;
 
         /// <summary>
         ///     关闭
         /// </summary>
-        void IAppMiddleware.Close()
+        void IFlowMiddleware.Close()
         {
         }
 
         /// <summary>
         ///     配置校验,作为第一步
         /// </summary>
-        void IAppMiddleware.CheckOption(ZeroAppConfigRuntime config)
+        void IFlowMiddleware.CheckOption(ZeroAppConfigRuntime config)
         {
             CheckConfig(config);
             //上下文

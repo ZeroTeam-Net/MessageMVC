@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ZeroTeam.MessageMVC.ZeroServices.StateMachine
+namespace ZeroTeam.MessageMVC.ZeroApis.StateMachine
 {
     /// <summary>
     /// 监控状态机

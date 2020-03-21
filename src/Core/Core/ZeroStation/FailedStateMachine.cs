@@ -1,4 +1,4 @@
-﻿namespace ZeroTeam.MessageMVC.ZeroServices.StateMachine
+﻿namespace ZeroTeam.MessageMVC.ZeroApis.StateMachine
 {
     /// <summary>
     /// 监控状态机
@@ -10,7 +10,7 @@
         /// </summary>
         bool IStationStateMachine.Start()
         {
-            ZeroApplication.OnObjectFailed(Service);
+            ZeroFlowControl.OnObjectFailed(Service);
             return false;
         }
 
@@ -19,7 +19,7 @@
         /// </summary>
         bool IStationStateMachine.Close()
         {
-            ZeroApplication.OnObjectClose(Service);
+            ZeroFlowControl.OnObjectClose(Service);
             return false;
         }
 

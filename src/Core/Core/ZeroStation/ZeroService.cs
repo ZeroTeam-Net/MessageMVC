@@ -4,13 +4,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Agebull.Common.Logging;
 using Agebull.EntityModel.Common;
-using Newtonsoft.Json;
 using ZeroTeam.MessageMVC.ApiDocuments;
-using ZeroTeam.MessageMVC.ZeroApis;
-using ZeroTeam.MessageMVC.ZeroServices.StateMachine;
+using ZeroTeam.MessageMVC.ZeroApis.StateMachine;
 
 
-namespace ZeroTeam.MessageMVC
+namespace ZeroTeam.MessageMVC.ZeroApis
 {
 
     /// <summary>
@@ -23,12 +21,13 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 构造
         /// </summary>
-        /// <param name="type">站点类型</param>
         public ZeroService()
         {
             InstanceName = GetType().Name;
             ConfigState = StationStateType.None;
         }
+
+        int IFlowMiddleware.Level => short.MaxValue;
 
         /// <summary>
         /// 网络传输对象
@@ -108,7 +107,7 @@ namespace ZeroTeam.MessageMVC
                             StateMachine = new EmptyStateMachine { Service = this };
                         break;
                     case StationStateType.Run:
-                        if (ZeroApplication.CanDo)
+                        if (ZeroFlowControl.CanDo)
                             StateMachine = new RunStateMachine { Service = this };
                         else
                             StateMachine = new StartStateMachine { Service = this };
@@ -117,7 +116,7 @@ namespace ZeroTeam.MessageMVC
                         StateMachine = new CloseStateMachine { Service = this };
                         break;
                     case StationStateType.Failed:
-                        if (ZeroApplication.CanDo)
+                        if (ZeroFlowControl.CanDo)
                             StateMachine = new FailedStateMachine { Service = this };
                         else
                             StateMachine = new StartStateMachine { Service = this };
@@ -140,7 +139,7 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 能不能循环处理
         /// </summary>
-        protected internal bool CanLoop => ZeroApplication.CanDo &&
+        protected internal bool CanLoop => ZeroFlowControl.CanDo &&
                                   ConfigState == StationStateType.Run &&
                                   (RealState == StationState.BeginRun || RealState == StationState.Run) &&
                                   CancelToken != null && !CancelToken.IsCancellationRequested;
@@ -186,13 +185,13 @@ namespace ZeroTeam.MessageMVC
                         return false;
                     while (_waitToken.CurrentCount > 0)
                         _waitToken.Wait();
-                    if (ConfigState == StationStateType.None || ConfigState >= StationStateType.Stop || !ZeroApplication.CanDo)
+                    if (ConfigState == StationStateType.None || ConfigState >= StationStateType.Stop || !ZeroFlowControl.CanDo)
                         return false;
                     ConfigState = StationStateType.Run;
 
                     RealState = StationState.Start;
                     //名称初始化
-                    RealName = $"{ZeroApplication.Config.StationName}-{RandomOperate.Generate(6)}";
+                    RealName = $"{ZeroFlowControl.Config.StationName}-{RandomOperate.Generate(6)}";
                     ZeroTrace.SystemLog(ServiceName, InstanceName, RealName);
                     //扩展动作
                     if (!Transport.Prepare())
@@ -241,7 +240,7 @@ namespace ZeroTeam.MessageMVC
             }
 
             if (ConfigState < StationStateType.Stop)
-                ConfigState = !ZeroApplication.CanDo || success ? StationStateType.Closed : StationStateType.Failed;
+                ConfigState = !ZeroFlowControl.CanDo || success ? StationStateType.Closed : StationStateType.Failed;
             GC.Collect();
             //#if UseStateMachine
             StateMachine.End();
@@ -262,11 +261,11 @@ namespace ZeroTeam.MessageMVC
             RealState = StationState.BeginRun;
             if (ConfigState == StationStateType.Run)
             {
-                ZeroApplication.OnObjectActive(this);
+                ZeroFlowControl.OnObjectActive(this);
             }
             else
             {
-                ZeroApplication.OnObjectFailed(this);
+                ZeroFlowControl.OnObjectFailed(this);
             }
             Transport.LoopBegin();
             _waitToken.Release();
@@ -299,14 +298,14 @@ namespace ZeroTeam.MessageMVC
         protected virtual void DoEnd()
         {
             Transport.Dispose();
-            ZeroApplication.OnObjectClose(this);
+            ZeroFlowControl.OnObjectClose(this);
         }
         #endregion
 
-        #region IService
+        #region IAppMiddleware
 
 
-        void IService.Initialize()
+        void IFlowMiddleware.Initialize()
         {
             Initialize();
         }
@@ -315,19 +314,19 @@ namespace ZeroTeam.MessageMVC
         /// 开始
         /// </summary>
         /// <returns></returns>
-        bool IService.Start()
+        void IFlowMiddleware.Start()
         {
-            return StateMachine.Start();
+            StateMachine.Start();
         }
 
-        bool IService.Close()
+        void IFlowMiddleware.Close()
         {
-            return StateMachine.Close();
+            StateMachine.Close();
         }
 
         private bool _isDisposed;
         /// <inheritdoc/>
-        void IService.End()
+        void IFlowMiddleware.End()
         {
             if (_isDisposed)
                 return;
@@ -344,7 +343,7 @@ namespace ZeroTeam.MessageMVC
             if (DoStart())
                 return true;
             RealState = StationState.Failed;
-            ZeroApplication.OnObjectFailed(this);
+            ZeroFlowControl.OnObjectFailed(this);
             return false;
         }
 

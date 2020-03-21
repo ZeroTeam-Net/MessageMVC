@@ -22,7 +22,6 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// </summary>
         public void Initialize()
         {
-
             config = ConfigurationManager.Get<ConsumerConfig>("Kafka");
         }
         IConsumer<Ignore, string> consumer;
@@ -50,7 +49,6 @@ namespace ZeroTeam.MessageMVC.Kafka
                     var cr = consumer.Consume(token);
                     if (cr == null)
                     {
-                        //Console.WriteLine("Empty");
                         continue;
                     }
                     Interlocked.Increment(ref CallCount);
@@ -59,7 +57,8 @@ namespace ZeroTeam.MessageMVC.Kafka
                     try
                     {
                         item = JsonHelper.DeserializeObject<MessageItem>(cr.Value);
-                        OnMessagePush(item);
+                        await OnMessagePush(item);
+                        consumer.Commit();
                     }
                     catch (Exception e)
                     {
@@ -77,7 +76,7 @@ namespace ZeroTeam.MessageMVC.Kafka
                 }
                 catch (Exception ex)
                 {
-                    LogRecorder.Exception(ex);
+                    LogRecorder.Exception(ex, "KafkaConsumer.Loop");
                 }
             }
             return true;
@@ -87,19 +86,16 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// 消息处理
         /// </summary>
         /// <param name="message"></param>
-        void OnMessagePush(IMessageItem message)
+        async Task OnMessagePush(IMessageItem message)
         {
-            var task = MessageProcess.OnMessagePush(Station, message);
-            task.ContinueWith(task =>
-            {
-                if (task.Result == MessageState.Success)
-                    Interlocked.Increment(ref SuccessCount);
-                else
-                    Interlocked.Increment(ref ErrorCount);
-                Interlocked.Decrement(ref WaitCount);
-            });
-            task.Wait();
+            var state = await MessageProcess.OnMessagePush(Station, message);
+            if (state == MessageState.Success)
+                Interlocked.Increment(ref SuccessCount);
+            else
+                Interlocked.Increment(ref ErrorCount);
+            Interlocked.Decrement(ref WaitCount);
         }
+
         /// <summary>
         /// 将要开始
         /// </summary>

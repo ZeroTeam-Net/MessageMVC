@@ -9,12 +9,17 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     /// <summary>
     /// MEF插件导入器
     /// </summary>
-    public class AddInImporter : IAppMiddleware
+    public class AddInImporter : IFlowMiddleware
     {
+        /// <summary>
+        /// 实例名称
+        /// </summary>
+        string IFlowMiddleware.RealName => "AddInImporter";
+
         /// <summary>
         /// 等级
         /// </summary>
-        int IAppMiddleware.Level => -0xFFFF;
+        int IFlowMiddleware.Level => short.MinValue;
 
         /// <summary>
         /// 插件对象
@@ -27,12 +32,12 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         public void CheckOption(ZeroAppConfigRuntime config)
         {
-            if (string.IsNullOrEmpty(ZeroApplication.Config.AddInPath))
+            if (string.IsNullOrEmpty(ZeroFlowControl.Config.AddInPath))
                 return;
 
-            var path = ZeroApplication.Config.AddInPath[0] == '/'
-                ? ZeroApplication.Config.AddInPath
-                : IOHelper.CheckPath(ZeroApplication.Config.RootPath, ZeroApplication.Config.AddInPath);
+            var path = ZeroFlowControl.Config.AddInPath[0] == '/'
+                ? ZeroFlowControl.Config.AddInPath
+                : IOHelper.CheckPath(ZeroFlowControl.Config.RootPath, ZeroFlowControl.Config.AddInPath);
             ZeroTrace.SystemLog("AddIn(Service)", path);
             // 通过容器对象将宿主和部件组装到一起。 
             DirectoryCatalog directoryCatalog = new DirectoryCatalog(path);

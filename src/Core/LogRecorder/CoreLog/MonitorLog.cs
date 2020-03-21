@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 
@@ -70,7 +71,7 @@ namespace Agebull.Common.Logging
         /// </summary>
         public static bool MonitorTrace(string message,params object[] args)
         {
-            if (!LogMonitor)
+            if (!LogMonitor || message == null)
                 return false;
             var item = MonitorItem;
             if (!item.InMonitor)
@@ -129,7 +130,10 @@ namespace Agebull.Common.Logging
                 return;
             var log = item.End();
             if (log != null)
-                Record(LogType.Monitor, "Monitor", log);
+            {
+                var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Monitor");
+                Logger.LogInformation(eventId, log);
+            }
             _monitorItemLocal.Value = null;
         }
     }

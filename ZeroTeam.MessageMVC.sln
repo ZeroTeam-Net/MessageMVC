@@ -1,0 +1,81 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29806.167
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.Abstractions", "src\Core\Abstractions\ZeroTeam.MessageMVC.Abstractions.csproj", "{6D0D775B-D888-4E3C-BD68-A3FDAB04DE2C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{85554FA9-20AE-4261-A58E-CD36624FEFEB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.Core", "src\Core\Core\ZeroTeam.MessageMVC.Core.csproj", "{AF5BCF0B-E4EA-4C3F-B444-DFAF92711E28}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Kafka", "Kafka", "{D7F1C9FB-F240-43BE-AE80-4FDE698A3ECF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.Kafka", "src\Kafka\ZeroTeam.MessageMVC.Kafka.csproj", "{9643C0D2-90FB-4952-BAFA-0252559001BF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.Kafka.Sample", "src\Test\Kafka\ZeroTeam.MessageMVC.Kafka.Sample.csproj", "{09592D4A-91A1-4406-9583-EA668B73D7C8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Base", "Base", "{829C324D-4D1E-459F-B899-209699B342CB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Agebull.Common.Extend.Core", "src\Core\Extend\Agebull.Common.Extend.Core.csproj", "{4A05571F-5E94-4AF1-B319-98798AA744B2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Agebull.Common.LogRecorder", "src\Core\LogRecorder\Agebull.Common.LogRecorder.csproj", "{184BE221-0199-46A7-AAD1-9D86F9584DE1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7CF8A384-37FA-484D-8D99-61CED654D0FB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{78391F4E-D2DF-4373-B40C-28517937E5A5}"
+	ProjectSection(SolutionItems) = preProject
+		doc\MessageMVC.xmind = doc\MessageMVC.xmind
+		ZeroFlowControl.md = ZeroFlowControl.md
+		doc\流程.vsdx = doc\流程.vsdx
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6D0D775B-D888-4E3C-BD68-A3FDAB04DE2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D0D775B-D888-4E3C-BD68-A3FDAB04DE2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D0D775B-D888-4E3C-BD68-A3FDAB04DE2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D0D775B-D888-4E3C-BD68-A3FDAB04DE2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF5BCF0B-E4EA-4C3F-B444-DFAF92711E28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF5BCF0B-E4EA-4C3F-B444-DFAF92711E28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF5BCF0B-E4EA-4C3F-B444-DFAF92711E28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF5BCF0B-E4EA-4C3F-B444-DFAF92711E28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9643C0D2-90FB-4952-BAFA-0252559001BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9643C0D2-90FB-4952-BAFA-0252559001BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9643C0D2-90FB-4952-BAFA-0252559001BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9643C0D2-90FB-4952-BAFA-0252559001BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09592D4A-91A1-4406-9583-EA668B73D7C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09592D4A-91A1-4406-9583-EA668B73D7C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09592D4A-91A1-4406-9583-EA668B73D7C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09592D4A-91A1-4406-9583-EA668B73D7C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A05571F-5E94-4AF1-B319-98798AA744B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A05571F-5E94-4AF1-B319-98798AA744B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A05571F-5E94-4AF1-B319-98798AA744B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A05571F-5E94-4AF1-B319-98798AA744B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{184BE221-0199-46A7-AAD1-9D86F9584DE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{184BE221-0199-46A7-AAD1-9D86F9584DE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{184BE221-0199-46A7-AAD1-9D86F9584DE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{184BE221-0199-46A7-AAD1-9D86F9584DE1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6D0D775B-D888-4E3C-BD68-A3FDAB04DE2C} = {85554FA9-20AE-4261-A58E-CD36624FEFEB}
+		{85554FA9-20AE-4261-A58E-CD36624FEFEB} = {7CF8A384-37FA-484D-8D99-61CED654D0FB}
+		{AF5BCF0B-E4EA-4C3F-B444-DFAF92711E28} = {85554FA9-20AE-4261-A58E-CD36624FEFEB}
+		{D7F1C9FB-F240-43BE-AE80-4FDE698A3ECF} = {7CF8A384-37FA-484D-8D99-61CED654D0FB}
+		{9643C0D2-90FB-4952-BAFA-0252559001BF} = {D7F1C9FB-F240-43BE-AE80-4FDE698A3ECF}
+		{09592D4A-91A1-4406-9583-EA668B73D7C8} = {D7F1C9FB-F240-43BE-AE80-4FDE698A3ECF}
+		{829C324D-4D1E-459F-B899-209699B342CB} = {7CF8A384-37FA-484D-8D99-61CED654D0FB}
+		{4A05571F-5E94-4AF1-B319-98798AA744B2} = {829C324D-4D1E-459F-B899-209699B342CB}
+		{184BE221-0199-46A7-AAD1-9D86F9584DE1} = {829C324D-4D1E-459F-B899-209699B342CB}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {866CE928-6325-4962-BB28-9A3BAF4BBCD1}
+	EndGlobalSection
+EndGlobal

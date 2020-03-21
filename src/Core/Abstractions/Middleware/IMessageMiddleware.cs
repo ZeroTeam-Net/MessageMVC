@@ -10,6 +10,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     public interface IMessageMiddleware
     {
         /// <summary>
+        /// 层级
+        /// </summary>
+        int Level { get; }
+
+        /// <summary>
         /// 准备
         /// </summary>
         /// <param name="service">当前服务</param>

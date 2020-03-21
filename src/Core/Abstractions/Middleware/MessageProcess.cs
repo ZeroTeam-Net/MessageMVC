@@ -40,7 +40,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         {
             index = 0;
             State = MessageState.None;
-            middlewares = IocHelper.ServiceProvider.GetServices<IMessageMiddleware>().ToArray();
+            middlewares = IocHelper.ServiceProvider.GetServices<IMessageMiddleware>().OrderBy(p => p.Level).ToArray();
             await Handle();
             return State;
         }
@@ -58,31 +58,23 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         }
 
         /// <summary>
-        /// 消息保存
-        /// </summary>
-        /// <returns></returns>
-        Task SaveMessage()
-        {
-            return Task.CompletedTask;
-        }
-
-        /// <summary>
         /// 消息处理
         /// </summary>
         /// <param name="service"></param>
         /// <param name="message"></param>
+        /// <param name="tag"></param>
         public static async Task<MessageState> OnMessagePush(IService service, IMessageItem message, object tag = null)
         {
-            var process = new MessageProcess
+            using (IocScope.CreateScope())
             {
-                Service = service,
-                Message = message,
-                Tag = tag
-            };
-            await process.SaveMessage();
-
-            service.Transport.Commit();
-            return await process.Process();
+                var process = new MessageProcess
+                {
+                    Service = service,
+                    Message = message,
+                    Tag = tag
+                };
+                return await process.Process();
+            }
         }
     }
 }

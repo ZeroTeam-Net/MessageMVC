@@ -4,6 +4,7 @@ using Agebull.Common.Configuration;
 using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Confluent.Kafka;
+using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
 using ErrorCode = ZeroTeam.MessageMVC.ZeroApis.ErrorCode;
@@ -11,19 +12,24 @@ using ErrorCode = ZeroTeam.MessageMVC.ZeroApis.ErrorCode;
 namespace ZeroTeam.MessageMVC.Kafka
 {
     /// <summary>
-    ///     消息发布
+    ///     Kafka消息发布
     /// </summary>
-    internal class KafkaProducer : IMessageProducer, IAppMiddleware
+    internal class KafkaProducer : IMessageProducer, IFlowMiddleware
     {
+        /// <summary>
+        /// 实例名称
+        /// </summary>
+        string IFlowMiddleware.RealName => "KafkaProducer";
+
         /// <summary>
         /// 等级
         /// </summary>
-        int IAppMiddleware.Level => 0xFFFF;
+        int IFlowMiddleware.Level => 0;
 
         /// <summary>
         ///     关闭
         /// </summary>
-        void IAppMiddleware.Close()
+        void IFlowMiddleware.Close()
         {
             producer?.Dispose();
             producer = null;
@@ -39,7 +45,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         public static void Initialize()
         {
             IocHelper.AddTransient<IMessageProducer, KafkaProducer>();
-            IocHelper.AddTransient<IAppMiddleware, KafkaProducer>();
+            IocHelper.AddTransient<IFlowMiddleware, KafkaProducer>();
             ConsumerConfig config = ConfigurationManager.Get<ConsumerConfig>("Kafka");
             producer = new ProducerBuilder<Null, string>(new ProducerConfig
             {
@@ -62,9 +68,30 @@ namespace ZeroTeam.MessageMVC.Kafka
             return task.Result;
         }
 
+        public IApiResult Producer(string topic, string title, string content)
+        {
+            return PublishInner(topic, title, content);
+        }
+
+        public IApiResult Producer<T>(string topic, string title, T content)
+        {
+            return PublishInner(topic, title, JsonHelper.SerializeObject(content));
+        }
+
+        public Task<IApiResult> ProducerAsync(string topic, string title, string content)
+        {
+            return PublishAsyncInner(topic, title, content);
+        }
+
+        public Task<IApiResult> ProducerAsync<T>(string topic, string title, T content)
+        {
+            return PublishAsyncInner(topic, title, JsonHelper.SerializeObject(content));
+        }
+
+
         /// <param name="topic"></param>
-        /// <param name="command"></param>
-        /// <param name="argument"></param>
+        /// <param name="title"></param>
+        /// <param name="content"></param>
         /// <returns></returns>
         private static async Task<IApiResult> PublishAsyncInner(string topic, string title, string content)
         {
@@ -85,7 +112,14 @@ namespace ZeroTeam.MessageMVC.Kafka
                     Title = title,
                     Content = content
                 };
-                var msg = new Message<Null, string> { Value = JsonHelper.SerializeObject(item) };
+                if (GlobalContext.CurrentNoLazy != null)
+                {
+                    item.Context = JsonHelper.SerializeObject(GlobalContext.CurrentNoLazy);
+                }
+                var msg = new Message<Null, string>
+                {
+                    Value = JsonHelper.SerializeObject(item)
+                };
                 var ret = await producer.ProduceAsync(topic, msg);
                 return ret.Status == PersistenceStatus.Persisted
                     ? ApiResult.Succees()
@@ -112,27 +146,6 @@ namespace ZeroTeam.MessageMVC.Kafka
                 };
             }
         }
-
-        public IApiResult Producer(string topic, string title, string content)
-        {
-            return PublishInner(topic, title, content);
-        }
-
-        public IApiResult Producer<T>(string topic, string title, T content)
-        {
-            return PublishInner(topic, title, JsonHelper.SerializeObject(content));
-        }
-
-        public Task<IApiResult> ProducerAsync(string topic, string title, string content)
-        {
-            return PublishAsyncInner(topic, title, content);
-        }
-
-        public Task<IApiResult> ProducerAsync<T>(string topic, string title, T content)
-        {
-            return PublishAsyncInner(topic, title, JsonHelper.SerializeObject(content));
-        }
-
         #endregion
     }
 }
