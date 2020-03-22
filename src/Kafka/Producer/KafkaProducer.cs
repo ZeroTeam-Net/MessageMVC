@@ -42,10 +42,8 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <summary>
         /// 初始化
         /// </summary>
-        public static void Initialize()
+        public void Initialize()
         {
-            IocHelper.AddTransient<IMessageProducer, KafkaProducer>();
-            IocHelper.AddTransient<IFlowMiddleware, KafkaProducer>();
             ConsumerConfig config = ConfigurationManager.Get<ConsumerConfig>("Kafka");
             producer = new ProducerBuilder<Null, string>(new ProducerConfig
             {

@@ -418,6 +418,17 @@ namespace Agebull.Common.Logging
         }
 
         /// <summary>
+        /// 显示监视跟踪
+        /// </summary>
+        public static void Trace(Func<string> message)
+        {
+            if (MonitorTrace(message))
+                return;
+            var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Trace");
+            Logger.LogTrace(eventId, message());
+        }
+
+        /// <summary>
         ///   写入调试日志
         /// </summary>
         /// <param name="message"> 日志详细信息 </param>

@@ -11,6 +11,7 @@ using Agebull.EntityModel.Common;
 using Newtonsoft.Json;
 using Agebull.Common.Ioc;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -46,6 +47,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         {
             XmlMember.Load(type.Assembly);
 
+            TransportDiscories = IocHelper.RootProvider.GetServices<ITransportDiscory>().ToArray();
+            if (TransportDiscories.Length == 0)
+                TransportDiscories = new[] { new TransportDiscory() };
+
             FindApi(type, false);
             RegistToZero();
 
@@ -62,6 +67,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             //    {
             //        Name = StationName
             //    });
+            TransportDiscories = IocHelper.RootProvider.GetServices<ITransportDiscory>().ToArray();
+            if (TransportDiscories.Length == 0)
+                TransportDiscories = new[] { new TransportDiscory() };
             var types = Assembly.GetTypes().Where(p => p.IsSupperInterface(typeof(IApiControler))).ToArray();
             foreach (var type in types)
             {
@@ -98,24 +106,20 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                         Access = info.AccessOption,
                         ArgumentType = info.ArgumentType,
                         ResultType = info.ResultType,
-                        IsAsync= info.IsAsync
+                        IsAsync = info.IsAsync
                     };
                     station.RegistAction(api.Key, a, info);
                 }
             }
         }
-
-        static IMessageConsumer CreateMessageConsumer(string name)
-        {
-            return IocHelper.Create<IMessageConsumer>();
-        }
+        ITransportDiscory[] TransportDiscories;
 
         /// <summary>
         /// 查找API
         /// </summary>
         /// <param name="type"></param>
         /// <param name="onlyDoc"></param>
-        public void FindApi(Type type, bool onlyDoc)
+        private void FindApi(Type type, bool onlyDoc)
         {
             if (type.IsAbstract)
                 return;
@@ -124,66 +128,29 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 Name = type.Name
             };
-            ServiceInfo station;
+            ServiceInfo station = null;
             #region 服务类型检测
-            #region Api
-            var sa = type.GetCustomAttribute<ServiceAttribute>();
-            if (sa != null)
+            foreach (var dis in TransportDiscories)
             {
-                if (!ServiceInfos.TryGetValue(sa.Name, out station))
+                var builder = dis.DiscoryNetTransport(type, out var name);
+                if (builder == null)
+                    continue;
+
+                if (!ServiceInfos.TryGetValue(name, out station))
                 {
-                    ServiceInfos.Add(sa.Name, station = new ServiceInfo
+                    ServiceInfos.Add(name, station = new ServiceInfo
                     {
-                        Name = sa.Name,
-                        NetBuilder = name => IocHelper.Create<IRpcTransport>()
+                        Name = name,
+                        NetBuilder = builder
                     });
                     station.Copy(docx);
                 }
+                break;
             }
+            if (station == null)
+                return;
             #endregion
-            else
-            {
-                #region MQ
-                var ca = type.GetCustomAttribute<ConsumerAttribute>();
-                if (ca != null)
-                {
-                    if (!ServiceInfos.TryGetValue(ca.Topic, out station))
-                    {
-                        ServiceInfos.Add(ca.Topic, station = new ServiceInfo
-                        {
-                            Name = ca.Topic,
-                            NetBuilder = CreateMessageConsumer
-                        });
-                        station.Copy(docx);
-                    }
-                }
-
-                #endregion
-                else
-                {
-                    #region NetEvent
-                    var na = type.GetCustomAttribute<NetEventAttribute>();
-                    if (ca != null)
-                    {
-                        if (!ServiceInfos.TryGetValue(na.Name, out station))
-                        {
-                            ServiceInfos.Add(na.Name, station = new ServiceInfo
-                            {
-                                Name = na.Name,
-                                NetBuilder = name => IocHelper.Create<INetEvent>()
-                            });
-                            station.Copy(docx);
-                        }
-                    }
-                    else
-                    {
-                        throw new Exception($"控制器{type.FullName},缺少必要的服务类型声明,请使用ServiceAttribute\\ConsumerAttribute\\NetEventAttribute之一特性声明为Api服务\\消息队列订阅\\分布式事件处理");
-                    }
-                    #endregion
-                }
-            }
-            #endregion
-            string routeHead = type.GetCustomAttribute<RoutePrefixAttribute>()?.Name.SafeTrim(' ', '\t', '\r', '\n', '/');
+            string routeHead = type.GetCustomAttribute<RouteAttribute>()?.Name.SafeTrim(' ', '\t', '\r', '\n', '/');
             if (routeHead != null)
                 routeHead += "/";
             var defPage = type.GetCustomAttribute<ApiPageAttribute>()?.PageUrl?.SafeTrim();
@@ -308,7 +275,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <param name="argInfo">原始参数类型</param>
         /// <param name="methodName">原始调用方法</param>
         /// <returns>匿名委托</returns>
-        public static Func<object, object> CreateMethod(TypeInfo callInfo, string methodName, TypeInfo argInfo,out bool isAsync)
+        public static Func<object, object> CreateMethod(TypeInfo callInfo, string methodName, TypeInfo argInfo, out bool isAsync)
         {
             var constructor = callInfo.GetConstructor(Type.EmptyTypes);
             if (constructor == null)

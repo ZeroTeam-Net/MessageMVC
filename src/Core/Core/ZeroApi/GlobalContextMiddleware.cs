@@ -37,16 +37,18 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 {
                     GlobalContext.SetEmpty();
                 }
-                return next();
             }
             catch (Exception e)
             {
-                LogRecorder.Trace("Restory context exception:{0}", e.Message);
-                ZeroTrace.WriteException(service.ServiceName, e, message.Title, "restory context", message.Context);
-                message.Result = ApiResultIoc.ArgumentErrorJson;
-                message.State = MessageState.FormalError;
-                return Task.FromResult(MessageState.FormalError);
+                //LogRecorder.Trace(()=> "Restory context exception:{e.Message}");
+                //ZeroTrace.WriteException(service.ServiceName, e, message.Title, "restory context", message.Context);
+                //message.Result = ApiResultIoc.ArgumentErrorJson;
+                //message.State = MessageState.FormalError;
+                //return Task.FromResult(MessageState.FormalError);
+
+                GlobalContext.SetEmpty();
             }
+            return next();
         }
     }
 }

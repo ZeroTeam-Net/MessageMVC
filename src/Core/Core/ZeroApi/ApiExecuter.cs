@@ -99,7 +99,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         private bool CommandPrepare(out IApiAction action)
         {
             //1 查找调用方法
-            if (!Service.Actions.TryGetValue(Message.Title.Trim(), out action))
+            if (!Service.Actions.TryGetValue(Message.Title, out action))
             {
                 LogRecorder.Trace("Error: Action({0}) no find", Message.Title);
                 Message.Result = ApiResultIoc.NoFindJson;

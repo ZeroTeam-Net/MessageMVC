@@ -339,6 +339,11 @@
             <param name="message"> 日志详细信息 </param>
             <param name="formatArgs"> 格式化的参数 </param>
         </member>
+        <member name="M:Agebull.Common.Logging.LogRecorder.Trace(System.Func{System.String})">
+            <summary>
+            显示监视跟踪
+            </summary>
+        </member>
         <member name="M:Agebull.Common.Logging.LogRecorder.Trace(System.String,System.Object[])">
             <summary>
               写入调试日志

@@ -2,6 +2,7 @@
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Kafka
@@ -22,6 +23,8 @@ namespace ZeroTeam.MessageMVC.Kafka
 
             IocHelper.AddTransient<IFlowMiddleware, ConfigMiddleware>();//配置\依赖对象初始化,系统配置获取
             IocHelper.AddTransient<IFlowMiddleware, AddInImporter>();//插件载入
+            IocHelper.AddTransient<IFlowMiddleware, KafkaProducer>();//Kafka环境
+            IocHelper.AddTransient<IMessageProducer, KafkaProducer>();//采用Kafka生产端
             IocHelper.AddTransient<IMessageConsumer, KafkaConsumer>();//采用Kafka消费客户端
             IocHelper.AddTransient<IMessageMiddleware, LoggerMiddleware>();//启用日志
             IocHelper.AddTransient<IMessageMiddleware, GlobalContextMiddleware>();//启用全局上下文
@@ -32,7 +35,6 @@ namespace ZeroTeam.MessageMVC.Kafka
             IocHelper.AddTransient<IFlowMiddleware, ReConsumerMiddleware>();
             //主流程
             ZeroFlowControl.CheckOption();
-            KafkaProducer.Initialize();
             ZeroFlowControl.Discove(assembly);
             ZeroFlowControl.Initialize();
             if (waitEnd)

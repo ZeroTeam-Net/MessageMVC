@@ -40,7 +40,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// 关闭
         /// </summary>
         /// <returns></returns>
-        void Close();
+        void Close()
+        {
+        }
 
         /// <summary>
         /// 开始轮询前的工作

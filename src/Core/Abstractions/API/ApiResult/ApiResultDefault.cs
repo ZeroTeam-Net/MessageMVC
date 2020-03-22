@@ -1,6 +1,4 @@
-
 using ZeroTeam.MessageMVC.Context;
-using Newtonsoft.Json;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -15,7 +13,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <returns></returns>
         public IApiResult DeserializeObject(string json)
         {
-            return JsonConvert.DeserializeObject<ApiResult>(json);
+            return JsonHelper.DeserializeObject<ApiResult>(json);
         }
 
         /// <summary>
@@ -25,7 +23,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <returns></returns>
         public IApiResult<T> DeserializeObject<T>(string json)
         {
-            return JsonConvert.DeserializeObject<ApiResult<T>>(json);
+            return JsonHelper.DeserializeObject<ApiResult<T>>(json);
         }
 
         /// <summary>生成一个包含错误码的标准返回</summary>
