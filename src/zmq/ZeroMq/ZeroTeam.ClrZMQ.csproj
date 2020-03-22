@@ -1,0 +1,100 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>ClrZmq的MicroZero专用版本</Description>
+    <!--monoandroid60;xamarinios10-->
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    <DebugType>portable</DebugType>
+    
+    <PackageProjectUrl>https://github.com/agebullhu/MicroZero</PackageProjectUrl>
+    <PackageLicenseExpression>MPL2.0</PackageLicenseExpression>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/agebullhu/MicroZero</RepositoryUrl>
+    
+    <IncludeSource>false</IncludeSource>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    
+    <Authors>Agebull</Authors>
+    <Company>ZeroTeam</Company>
+    <PackageReleaseNotes>ClrZmq的ZeroTeam专用版本</PackageReleaseNotes>
+    <Product>1.0.0.3-bate</Product>
+    <!--<Version>1.3.0-alpha</Version>-->
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net472|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>1701;1702;1705;1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.1|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>1701;1702;1705;1591</NoWarn>
+    <DocumentationFile>1.0.0.3-bate.ClrZMQ.xml</DocumentationFile>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp3.1|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DocumentationFile>ZeroTeam.ClrZMQ.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="packages\**" />
+    <Compile Remove="ZeroMQTest\**" />
+    <EmbeddedResource Remove="packages\**" />
+    <EmbeddedResource Remove="ZeroMQTest\**" />
+    <None Remove="packages\**" />
+    <None Remove="ZeroMQTest\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="AssemblyInfo.cs" />
+    <Compile Remove="Extend\ZeroOperatorStateType.cs" />
+    <Compile Remove="zmq\DispoIntPtr.Ansi.cs" />
+    <Compile Remove="zmq\DispoIntPtr.cs" />
+    <Compile Remove="zmq\Platform.MacOSX.cs" />
+    <Compile Remove="zmq\Platform.Posix.cs" />
+    <Compile Remove="zmq\Platform.Win32.cs" />
+    <Compile Remove="zmq\Platform.__Internal.cs" />
+    <Compile Remove="zmq\UnmanagedLibrary.cs" />
+    <Compile Remove="MemoryCheck.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="appveyor.yml" />
+    <None Remove="build.sh" />
+    <None Remove="clrzmq4.mono.userprefs" />
+    <None Remove="install_deps.sh" />
+    <None Remove="LICENSE.txt" />
+    <None Remove="README.md" />
+    <None Remove="test.ps1" />
+    <None Remove="upload_coverage.ps1" />
+    <None Remove="ZeroMQ.7z.Release.cmd" />
+    <None Remove="ZeroMQ.gif" />
+    <None Remove="ZeroMQ.ico" />
+    <None Remove="ZeroMQ.nuspec" />
+    <None Remove="ZeroMQ.snk" />
+    <None Remove="ZeroMQ.targets" />
+    <None Remove="ZeroMQ.zip.Release.sh" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\Abstractions\ZeroTeam.MessageMVC.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="libzmq.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="libzmq.pdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="libzmq.so">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
