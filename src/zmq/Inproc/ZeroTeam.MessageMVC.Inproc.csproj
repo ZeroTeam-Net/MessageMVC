@@ -18,8 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Core\Core\ZeroTeam.MessageMVC.Core.csproj" />
-    <ProjectReference Include="..\..\ZeroMq\ZeroTeam.ClrZMQ.csproj" />
+    <ProjectReference Include="..\..\Core\Core\ZeroTeam.MessageMVC.Core.csproj" />
+    <ProjectReference Include="..\ZeroMq\ZeroTeam.ClrZMQ.csproj" />
   </ItemGroup>
 
   <ItemGroup>

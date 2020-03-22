@@ -85,6 +85,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.OnResult(ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
+            <summary>
+            发送返回值 
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Kafka.KafkaMessageMVC">
             <summary>
             KafkaMvc
