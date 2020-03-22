@@ -8,7 +8,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     /// <summary>
     /// 表示一个网络传输对象
     /// </summary>
-    public interface INetTransport : IDisposable
+    public interface INetTransfer : IDisposable
     {
         /// <summary>
         /// 服务

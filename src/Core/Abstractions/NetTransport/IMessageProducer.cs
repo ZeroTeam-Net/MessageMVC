@@ -7,7 +7,7 @@ namespace ZeroTeam.MessageMVC.Messages
     /// <summary>
     /// 消息生产对象
     /// </summary>
-    public interface IMessageProducer
+    public interface IMessageProducer 
     {
         /// <summary>
         /// 生产消息

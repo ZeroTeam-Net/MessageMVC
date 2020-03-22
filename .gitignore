@@ -16,3 +16,4 @@ packages
 *.~vsdx
 nuget
 /src/zmq/MicorZero
+/nuget_pack.bat

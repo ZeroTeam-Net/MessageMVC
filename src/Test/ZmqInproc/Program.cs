@@ -12,7 +12,8 @@ namespace MicroZero.Kafka.QueueStation
     {
         static async Task Main()
         {
-            await ZeroMQInporc.UseZeroMQ(typeof(Program).Assembly, false);
+            IocHelper.ServiceCollection.UseZeroMQInporc();
+            await IocHelper.ServiceCollection.UseFlow(typeof(Program).Assembly, false);
 
             await Test();
 
@@ -21,19 +22,19 @@ namespace MicroZero.Kafka.QueueStation
         }
         static async Task Test()
         {
-            var producer = IocHelper.Create<IMessageProducer>();
+            //var MessageProducer = IocHelper.Create<IMessageProducer>();
             for (int i = 0; ZeroFlowControl.CanDo && i < 10; i++)
             {
                 Thread.Sleep(100);
-                producer.Producer("test1", "test/res", "agebull");
-                producer.Producer("test1", "test/arg", "{\"Value\":\"test\"}");
-                producer.Producer("test1", "test/full", "1");
-                producer.Producer("test1", "test/void", "agebull");
+                MessageProducer.Producer("Inproc", "test/res", "agebull");
+                MessageProducer.Producer("Inproc", "test/arg", "{\"Value\":\"test\"}");
+                MessageProducer.Producer("Inproc", "test/full", "1");
+                MessageProducer.Producer("Inproc", "test/void", "agebull");
 
-                await producer.ProducerAsync("test1", "async/res", "{\"Value\":\"test\"}");
-                await producer.ProducerAsync("test1", "async/arg", "{\"Value\":\"test\"}");
-                await producer.ProducerAsync("test1", "async/full", "{\"Value\":\"test\"}");
-                await producer.ProducerAsync("test1", "async/void", "{\"Value\":\"test\"}");
+                await MessageProducer.ProducerAsync("Inproc", "async/res", "{\"Value\":\"test\"}");
+                await MessageProducer.ProducerAsync("Inproc", "async/arg", "{\"Value\":\"test\"}");
+                await MessageProducer.ProducerAsync("Inproc", "async/full", "{\"Value\":\"test\"}");
+                await MessageProducer.ProducerAsync("Inproc", "async/void", "{\"Value\":\"test\"}");
             }
         }
     }

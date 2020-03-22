@@ -57,7 +57,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
             zmqPool.RePrepare(ZPollEvent.In);
         }
 
-        Task<bool> INetTransport.Loop(CancellationToken token)
+        Task<bool> INetTransfer.Loop(CancellationToken token)
         {
             while (!token.IsCancellationRequested)
             {

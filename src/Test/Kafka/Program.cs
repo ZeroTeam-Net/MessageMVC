@@ -11,7 +11,8 @@ namespace MicroZero.Kafka.QueueStation
     {
         static async Task Main()
         {
-            await KafkaMessageMVC.UseKafka(typeof(Program).Assembly, false);
+            IocHelper.ServiceCollection.UseKafka();
+            await IocHelper.ServiceCollection.UseFlow(typeof(Program).Assembly, false);
 
             _ = Task.Run(Test);
 

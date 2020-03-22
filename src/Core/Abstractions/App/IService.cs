@@ -27,7 +27,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// 网络传输对象
         /// </summary>
-        public INetTransport Transport { get; }
+        public INetTransfer Transport { get; }
 
         /// <summary>
         ///     配置状态

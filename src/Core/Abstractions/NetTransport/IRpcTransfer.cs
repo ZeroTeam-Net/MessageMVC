@@ -5,7 +5,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     /// <summary>
     /// 表示一个RPC传输对象
     /// </summary>
-    public interface IRpcTransport : INetTransport
+    public interface IRpcTransfer : INetTransfer
     {
     }
 

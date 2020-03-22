@@ -328,22 +328,22 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         ///     注册对象
         /// </summary>
-        public static bool RegistZeroObject(IService obj)
+        public static bool RegistService(IService service)
         {
-            if (!Services.TryAdd(obj.ServiceName, obj))
+            if (!Services.TryAdd(service.ServiceName, service))
                 return false;
-            ZeroTrace.SystemLog(obj.ServiceName, "RegistZeroObject");
+            ZeroTrace.SystemLog(service.ServiceName, "RegistZeroObject");
 
             if (ApplicationState >= StationState.Initialized)
             {
                 try
                 {
-                    obj.Initialize();
-                    ZeroTrace.SystemLog(obj.ServiceName, "Initialize");
+                    service.Initialize();
+                    ZeroTrace.SystemLog(service.ServiceName, "Initialize");
                 }
                 catch (Exception e)
                 {
-                    ZeroTrace.WriteException(obj.ServiceName, e, "Initialize");
+                    ZeroTrace.WriteException(service.ServiceName, e, "Initialize");
                 }
             }
 
@@ -361,12 +361,12 @@ namespace ZeroTeam.MessageMVC
                 return true;
             try
             {
-                ZeroTrace.SystemLog(obj.ServiceName, "Start");
-                obj.Start();
+                ZeroTrace.SystemLog(service.ServiceName, "Start");
+                service.Start();
             }
             catch (Exception e)
             {
-                ZeroTrace.WriteException(obj.ServiceName, e, "Start");
+                ZeroTrace.WriteException(service.ServiceName, e, "Start");
             }
             return true;
         }

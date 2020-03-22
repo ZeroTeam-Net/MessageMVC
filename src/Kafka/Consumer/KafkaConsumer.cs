@@ -33,14 +33,14 @@ namespace ZeroTeam.MessageMVC.Kafka
 
         public string Name { get; set; }
 
-        IService INetTransport.Service { get => Station; set => Station = value as ZeroService; }
+        IService INetTransfer.Service { get => Station; set => Station = value as ZeroService; }
 
 
         void IDisposable.Dispose()
         {
         }
 
-        async Task<bool> INetTransport.Loop(CancellationToken token)
+        async Task<bool> INetTransfer.Loop(CancellationToken token)
         {
             while (!token.IsCancellationRequested)
             {

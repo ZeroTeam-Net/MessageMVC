@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Agebull.Common.Logging;
 using Agebull.MicroZero;
-using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
 
@@ -17,6 +15,19 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         #region Properties
 
         /// <summary>
+        /// 实例
+        /// </summary>
+        public static ZmqProducer Instance = new ZmqProducer();
+
+        /// <summary>
+        /// 构造
+        /// </summary>
+        public ZmqProducer()
+        {
+            Instance = this;
+        }
+
+        /// <summary>
         ///     文件
         /// </summary>
         public Dictionary<string, byte[]> Files
@@ -25,13 +36,8 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
             set => _core.Files = value;
         }
 
-        /*// <summary>
-        ///     返回的数据
-        /// </summary>
-        private readonly ProxyCaller _core = new ProxyCaller();*/
-
         /// <summary>
-        ///     返回的数据
+        ///     调用器
         /// </summary>
         private readonly ZmqCaller _core = new ZmqCaller();
 

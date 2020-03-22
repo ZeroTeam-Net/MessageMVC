@@ -89,7 +89,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 var station = (ZeroService)ZeroFlowControl.TryGetZeroObject(sta.Name);
                 if (station == null)
                 {
-                    ZeroFlowControl.RegistZeroObject(station = new ZeroService
+                    ZeroFlowControl.RegistService(station = new ZeroService
                     {
                         InstanceName = sta.Name,
                         ServiceName = sta.Name,

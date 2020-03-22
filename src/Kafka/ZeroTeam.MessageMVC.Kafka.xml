@@ -96,12 +96,11 @@
             KafkaMvc
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaMessageMVC.UseKafka(System.Reflection.Assembly,System.Boolean)">
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaMessageMVC.UseKafka(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             使用KafkaMVC
             </summary>
-            <param name="assembly"></param>
-            <param name="waitEnd"></param>
+            <param name="services"></param>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Kafka.KafkaProducer">
             <summary>

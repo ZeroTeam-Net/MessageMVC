@@ -208,6 +208,14 @@
             <param name="name">发现的服务名称</param>
             <returns>传输对象构造器</returns>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.TransportDiscory.DiscoryNetTransport(System.Type,System.String@)">
+            <summary>
+            发现传输对象
+            </summary>
+            <param name="type">控制器类型</param>
+            <param name="name">发现的服务名称</param>
+            <returns>传输对象构造器</returns>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.LoggerMiddleware">
             <summary>
             日志处理中间件
@@ -664,6 +672,25 @@
                 配置校验
             </summary>
         </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroApp">
+            <summary>
+            应用扩展方法
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlow(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly,System.Boolean)">
+            <summary>
+            使用主流程控制器
+            </summary>
+            <param name="services"></param>
+            <param name="assembly">需要发现服务的程序集</param>
+            <param name="waitEnd"></param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlow(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            使用主流程控制器
+            </summary>
+            <param name="services"></param>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroFlowControl">
             <summary>
                 主流程控制器
@@ -809,7 +836,7 @@
                 取已注册对象
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.RegistZeroObject(ZeroTeam.MessageMVC.ZeroApis.IService)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.RegistService(ZeroTeam.MessageMVC.ZeroApis.IService)">
             <summary>
                 注册对象
             </summary>

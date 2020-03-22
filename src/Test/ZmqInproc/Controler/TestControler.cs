@@ -5,7 +5,7 @@ using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Sample.Controllers
 {
-    [Consumer("test1")]
+    [Inproc("Inproc")]
     public class TestControler : IApiControler
     {
         [Route("test/res")]
