@@ -34,15 +34,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{78391F4E-D2D
 		doc\流程.vsdx = doc\流程.vsdx
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZeroTeam.MessageMVC.Inproc", "src\zmq\Inproc\ConsoleApp1\ZeroTeam.MessageMVC.Inproc.csproj", "{C04F9A5B-CC9F-4FE4-8F76-2BE0F85DE8DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.Inproc", "src\zmq\Inproc\ConsoleApp1\ZeroTeam.MessageMVC.Inproc.csproj", "{C04F9A5B-CC9F-4FE4-8F76-2BE0F85DE8DF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "zmq", "zmq", "{EB2EC8D7-FA6B-4540-A015-378F59EAF098}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.ClrZMQ", "src\zmq\ZeroMq\ZeroTeam.ClrZMQ.csproj", "{2453729C-0182-4F93-B567-2CE64352569A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.ZmqInproc.Sample", "src\Test\ZmqInproc\ZeroTeam.MessageMVC.ZmqInproc.Sample.csproj", "{AB9BCF2E-532C-4A5B-8513-5B3796B3BB5A}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Agebull.MicroZero.Core", "src\zmq\MicorZero\Agebull.MicroZero.Core.csproj", "{4A2EFB3A-199F-4C27-AC64-C33E229BBADA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -86,10 +84,6 @@ Global
 		{AB9BCF2E-532C-4A5B-8513-5B3796B3BB5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB9BCF2E-532C-4A5B-8513-5B3796B3BB5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB9BCF2E-532C-4A5B-8513-5B3796B3BB5A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4A2EFB3A-199F-4C27-AC64-C33E229BBADA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4A2EFB3A-199F-4C27-AC64-C33E229BBADA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4A2EFB3A-199F-4C27-AC64-C33E229BBADA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4A2EFB3A-199F-4C27-AC64-C33E229BBADA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -108,7 +102,6 @@ Global
 		{EB2EC8D7-FA6B-4540-A015-378F59EAF098} = {7CF8A384-37FA-484D-8D99-61CED654D0FB}
 		{2453729C-0182-4F93-B567-2CE64352569A} = {EB2EC8D7-FA6B-4540-A015-378F59EAF098}
 		{AB9BCF2E-532C-4A5B-8513-5B3796B3BB5A} = {EB2EC8D7-FA6B-4540-A015-378F59EAF098}
-		{4A2EFB3A-199F-4C27-AC64-C33E229BBADA} = {EB2EC8D7-FA6B-4540-A015-378F59EAF098}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {866CE928-6325-4962-BB28-9A3BAF4BBCD1}
