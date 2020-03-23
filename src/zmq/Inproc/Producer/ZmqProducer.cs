@@ -28,15 +28,6 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         }
 
         /// <summary>
-        ///     文件
-        /// </summary>
-        public Dictionary<string, byte[]> Files
-        {
-            get => _core.Files;
-            set => _core.Files = value;
-        }
-
-        /// <summary>
         ///     调用器
         /// </summary>
         private readonly ZmqCaller _core = new ZmqCaller();

@@ -89,5 +89,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         void OnError(Exception exception, IMessageItem message, object tag)
         {
         }
+
     }
 }

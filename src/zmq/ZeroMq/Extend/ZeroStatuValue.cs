@@ -5,7 +5,7 @@ namespace ZeroTeam.MessageMVC
     /// <summary>
     /// MicroZero状态值
     /// </summary>
-    public static class ZeroStatuValue
+    public static class ZeroStatusValue
     {
         /// <summary>
         /// 正常状态
@@ -201,7 +201,7 @@ namespace ZeroTeam.MessageMVC
                 case ZeroOperatorStateType.RemoteRecvError:
                     return "-error. remote station or ZeroCenter recv error";
                 case ZeroOperatorStateType.LocalNoReady:
-                    return "-error. ZeroApplication no ready.";
+                    return "-error. ZeroFlowControl no ready.";
                 case ZeroOperatorStateType.LocalZmqError:
                     return "-error. ZeroMQ  error.";
                 case ZeroOperatorStateType.DenyAccess:

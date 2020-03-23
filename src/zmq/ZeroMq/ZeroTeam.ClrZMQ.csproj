@@ -53,7 +53,11 @@
 
   <ItemGroup>
     <Compile Remove="AssemblyInfo.cs" />
+    <Compile Remove="Extend\StationConfig.cs" />
     <Compile Remove="Extend\ZeroOperatorStateType.cs" />
+    <Compile Remove="Extend\ZeroStationOption.cs" />
+    <Compile Remove="Extend\ZeroStationType.cs" />
+    <Compile Remove="Extend\ZeroWorkModel.cs" />
     <Compile Remove="zmq\DispoIntPtr.Ansi.cs" />
     <Compile Remove="zmq\DispoIntPtr.cs" />
     <Compile Remove="zmq\Platform.MacOSX.cs" />

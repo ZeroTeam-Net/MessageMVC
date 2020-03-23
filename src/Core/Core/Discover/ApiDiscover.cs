@@ -571,9 +571,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             //{
             //    if (sta.Aips.Count == 0)
             //        continue;
-            //    if (!ZeroApplication.Config.Documents.TryGetValue(sta.Name, out var doc))
+            //    if (!ZeroFlowControl.Config.Documents.TryGetValue(sta.Name, out var doc))
             //    {
-            //        ZeroApplication.Config.Documents.Add(sta.Name, sta);
+            //        ZeroFlowControl.Config.Documents.Add(sta.Name, sta);
             //        continue;
             //    }
             //    foreach (var api in sta.Aips)

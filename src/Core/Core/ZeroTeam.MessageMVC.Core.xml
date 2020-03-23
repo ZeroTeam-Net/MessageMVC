@@ -691,6 +691,26 @@
             </summary>
             <param name="services"></param>
         </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroApplication">
+            <summary>
+                站点应用
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApplication.AppName">
+            <summary>
+                当前应用名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApplication.Config">
+            <summary>
+                站点配置
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApplication.CheckConfig">
+            <summary>
+                配置校验
+            </summary>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroFlowControl">
             <summary>
                 主流程控制器

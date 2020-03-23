@@ -50,11 +50,36 @@ namespace Agebull.MicroZero
         public bool ApiTimeoutKill { get; set; }
 
         /// <summary>
+        ///     服务名称
+        /// </summary>
+        [DataMember]
+        public string ServiceName { get; set; }
+
+
+        /// <summary>
+        ///     短名称
+        /// </summary>
+        [DataMember]
+        public string ShortName { get; set; }
+
+        /// <summary>
+        ///     站点名称，注意唯一性
+        /// </summary>
+        [DataMember]
+        public string StationName { get; set; }
+
+        /// <summary>
         /// 复制
         /// </summary>
         /// <param name="option"></param>
         public void CopyByEmpty(ZeroStationOption option)
         {
+            if (string.IsNullOrWhiteSpace(StationName))
+                StationName = option.StationName;
+            if (string.IsNullOrWhiteSpace(ShortName))
+                ShortName = option.ShortName;
+            if (string.IsNullOrWhiteSpace(ServiceName))
+                ServiceName = option.ServiceName;
             if (SpeedLimitModel == SpeedLimitType.None)
                 SpeedLimitModel = option.SpeedLimitModel;
             if (TaskCpuMultiple <= 0)
@@ -73,6 +98,12 @@ namespace Agebull.MicroZero
         /// <param name="option"></param>
         public void CopyByHase(ZeroStationOption option)
         {
+            if (!string.IsNullOrWhiteSpace(option.StationName))
+                StationName = option.StationName;
+            if (!string.IsNullOrWhiteSpace(option.ShortName))
+                ShortName = option.ShortName;
+            if (!string.IsNullOrWhiteSpace(option.ServiceName))
+                ServiceName = option.ServiceName;
             if (option.SpeedLimitModel > SpeedLimitType.None)
                 SpeedLimitModel = option.SpeedLimitModel;
             if (option.TaskCpuMultiple > 0)

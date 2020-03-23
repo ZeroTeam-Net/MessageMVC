@@ -77,6 +77,11 @@ ThreadPool : {worker:N0}worker|{ io:N0}threads");
             #region 配置组合
 
             var name = ConfigurationManager.Root["AppName"];
+            if (name != null)
+                config.AppName = name;
+
+            if (string.IsNullOrWhiteSpace(config.AppName))
+                throw new Exception("无法找到配置[AppName],请在appsettings.json或代码中设置");
 
             var curPath = Environment.CurrentDirectory;
             string rootPath;
@@ -102,27 +107,9 @@ ThreadPool : {worker:N0}worker|{ io:N0}threads");
                 = config.RootPath 
                 = rootPath;
 
-            var sec = ConfigurationManager.Get("Zero");
-            if (sec == null)
-                throw new Exception("无法找到主配置节点,路径为Zero,在zero.json或appsettings.json中设置");
-
-            if (name != null)
-                config.AppName = name;
-            if (string.IsNullOrWhiteSpace(config.AppName))
-                throw new Exception("无法找到配置[AppName],请在appsettings.json或代码中设置");
-            var cfg = sec.Child<ZeroAppConfig>(config.AppName);
+            var cfg = ConfigurationManager.Get<ZeroAppConfig>(config.AppName);
             if (cfg != null)
                 config.CopyByEmpty(cfg);
-            cfg = sec.Child<ZeroAppConfig>("default");
-            if (cfg != null)
-                config.CopyByEmpty(cfg);
-            if (string.IsNullOrWhiteSpace(config.StationName))
-                config.StationName = config.AppName;
-
-            var glc = sec.Child<ZeroAppConfig>("Global");
-            if (glc != null)
-                config.CopyByEmpty(glc);
-
             #endregion
 
             #region ServiceName

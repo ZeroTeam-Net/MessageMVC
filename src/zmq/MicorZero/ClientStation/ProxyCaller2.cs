@@ -1,33 +1,29 @@
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Agebull.Common.Logging;
-using Agebull.MicroZero;
+using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.ZeroApis;
 
-namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
+namespace Agebull.MicroZero.ZeroApis
 {
     /// <summary>
     ///     Api站点
     /// </summary>
-    internal class ZmqCaller
+    internal class ProxyCaller2
     {
         #region Properties
 
-        static private long id;
         /// <summary>
-        /// 取得Id
+        ///     文件
         /// </summary>
-        /// <returns></returns>
-        static long GetId()
-        {
-            return Interlocked.Increment(ref id);
-        }
+        internal Dictionary<string, byte[]> Files;
+
+        internal StationConfig Config;
         /// <summary>
         ///     调用时使用的名称
         /// </summary>
-        internal long Name = GetId();
+        internal long Name = ApiProxy.Instance.GetId();
 
         /// <summary>
         ///     返回值
@@ -107,6 +103,27 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         internal Task<bool> CallAsync()
         {
             return CallApi();
+        }
+
+
+        /// <summary>
+        ///     远程调用
+        /// </summary>
+        /// <returns></returns>
+        internal bool Plan(ZeroPlanInfo plan)
+        {
+            var task = CallPlan(plan);
+            task.Wait();
+            return task.Result;
+        }
+
+        /// <summary>
+        ///     远程调用
+        /// </summary>
+        /// <returns></returns>
+        internal Task<bool> PlanAsync(ZeroPlanInfo plan)
+        {
+            return CallPlan(plan);
         }
 
         /// <summary>
@@ -219,23 +236,112 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
 
         private async Task<bool> CallApi()
         {
-            LastResult = await ZmqProxy.Instance.CallZero(this,
-                 CallDescription,
-                 Commmand.ToZeroBytes(),
-                 Argument.ToZeroBytes(),
-                 ExtendArgument.ToZeroBytes(),
-                 GlobalContext.RequestInfo.RequestId.ToZeroBytes(),
-                 Name.ToString().ToZeroBytes(),
-                 "".ToZeroBytes(),// GlobalContext.Current.Organizational.RouteName.ToZeroBytes(),
-                 GlobalContext.RequestInfo.LocalGlobalId.ToZeroBytes(),
-                 ContextJson.ToZeroBytes() ?? GlobalContext.CurrentNoLazy.ToZeroBytes());
-
+            if (Files == null || Files.Count <= 0)
+                LastResult = await CallNoFileApi();
+            else
+                LastResult = await CallByFileApi();
+            
             State = LastResult.State;
             Result = LastResult.Result;
             Binary = LastResult.Binary;
             ResultType = LastResult.ResultType;
             LogRecorder.MonitorTrace(() => $"result:{Result}");
             return LastResult.InteractiveSuccess;
+        }
+        private Task<ZeroResult> CallNoFileApi()
+        {
+            return ApiProxy.Instance.CallZero(this,
+                 CallDescription,
+                 Commmand.ToZeroBytes(),
+                 Argument.ToZeroBytes(),
+                 ExtendArgument.ToZeroBytes(),
+                 GlobalContext.RequestInfo.RequestId.ToZeroBytes(),
+                 Name.ToString().ToZeroBytes(),
+               "".ToZeroBytes(),// GlobalContext.Current.Organizational.RouteName.ToZeroBytes(),
+                 GlobalContext.RequestInfo.LocalGlobalId.ToZeroBytes(),
+                 (ContextJson ?? (GlobalContext.CurrentNoLazy == null ? null : JsonHelper.SerializeObject(GlobalContext.CurrentNoLazy))).ToZeroBytes());
+        }
+
+        private Task<ZeroResult> CallByFileApi()
+        {
+            var frames = new List<byte[]>
+            {
+                Commmand.ToZeroBytes(),
+                Argument.ToZeroBytes(),
+                ExtendArgument.ToZeroBytes(),
+                GlobalContext.RequestInfo.RequestId.ToZeroBytes(),
+                Name.ToString().ToZeroBytes(),
+               "".ToZeroBytes(),// GlobalContext.Current.Organizational.RouteName.ToZeroBytes(),
+                GlobalContext.RequestInfo.LocalGlobalId.ToZeroBytes(),
+                (ContextJson ?? (GlobalContext.CurrentNoLazy == null ? null : JsonHelper.SerializeObject(GlobalContext.CurrentNoLazy))).ToZeroBytes()
+            };
+
+            var len = 16 + Files.Count * 2;
+            var description = new byte[len];
+            var i = 0;
+            description[i++] = (byte)(9 + Files.Count * 2);
+            description[i++] = (byte)ZeroByteCommand.General;
+            description[i++] = ZeroFrameType.Command;
+            description[i++] = ZeroFrameType.Argument;
+            description[i++] = ZeroFrameType.TextContent;
+            description[i++] = ZeroFrameType.RequestId;
+            description[i++] = ZeroFrameType.Requester;
+            description[i++] = ZeroFrameType.Responser;
+            description[i++] = ZeroFrameType.CallId;
+            description[i++] = ZeroFrameType.Context;
+            foreach (var file in Files)
+            {
+                description[i++] = ZeroFrameType.ExtendText;
+                description[i++] = ZeroFrameType.BinaryContent;
+                frames.Add(file.Key.ToZeroBytes());
+                frames.Add(file.Value);
+            }
+            description[i++] = ZeroFrameType.SerivceKey;
+            description[i] = ZeroFrameType.End;
+
+            return ApiProxy.Instance.CallZero(this, description, frames);
+        }
+
+        /// <summary>
+        ///     请求格式说明
+        /// </summary>
+        private static readonly byte[] PlanDescription =
+        {
+            10,
+            (byte)ZeroByteCommand.Plan,
+            ZeroFrameType.Command,
+            ZeroFrameType.Argument,
+            ZeroFrameType.TextContent,
+            ZeroFrameType.RequestId,
+            ZeroFrameType.Requester,
+            ZeroFrameType.Responser,
+            ZeroFrameType.CallId,
+            ZeroFrameType.Context,
+            ZeroFrameType.Plan,
+            ZeroFrameType.SerivceKey,
+            ZeroFrameType.End
+        };
+
+        private async Task<bool> CallPlan(ZeroPlanInfo plan)
+        {
+            LastResult = await ApiProxy.Instance.CallZero(this,
+                PlanDescription,
+                Commmand.ToZeroBytes(),
+                Argument.ToZeroBytes(),
+                ExtendArgument.ToZeroBytes(),
+                GlobalContext.RequestInfo.RequestId.ToZeroBytes(),
+                Name.ToString().ToZeroBytes(),
+               "".ToZeroBytes(),// GlobalContext.Current.Organizational.RouteName.ToZeroBytes(),
+                GlobalContext.RequestInfo.LocalGlobalId.ToZeroBytes(),
+                (ContextJson ?? (GlobalContext.CurrentNoLazy == null ? null : JsonHelper.SerializeObject(GlobalContext.CurrentNoLazy))).ToZeroBytes(),
+                plan.ToZeroBytes());
+
+            Result = LastResult.Result;
+            Binary = LastResult.Binary;
+            ResultType = LastResult.ResultType;
+            LogRecorder.MonitorTrace(() => $"result:{Result}");
+            return LastResult.InteractiveSuccess;
+
         }
         #endregion
 

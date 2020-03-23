@@ -2395,158 +2395,83 @@
             非法请求
             </summary>
         </member>
-        <member name="T:Agebull.MicroZero.SpeedLimitType">
+        <member name="T:Agebull.MicroZero.PublishItem">
             <summary>
-            限速模式（0 按线程数限制 1 按等待数限制）
+                广播节点
             </summary>
         </member>
-        <member name="F:Agebull.MicroZero.SpeedLimitType.None">
+        <member name="P:Agebull.MicroZero.PublishItem.IsBadValue">
             <summary>
-            未设置
+            是否非正常值
             </summary>
         </member>
-        <member name="F:Agebull.MicroZero.SpeedLimitType.Single">
+        <member name="P:Agebull.MicroZero.PublishItem.ZeroEvent">
             <summary>
-            单线程数处理
+            带外事件
             </summary>
         </member>
-        <member name="F:Agebull.MicroZero.SpeedLimitType.ThreadCount">
+        <member name="P:Agebull.MicroZero.PublishItem.Publisher">
             <summary>
-            按线程数限制
+             发布者的Identity(可能已消失)
             </summary>
         </member>
-        <member name="F:Agebull.MicroZero.SpeedLimitType.WaitCount">
+        <member name="P:Agebull.MicroZero.PublishItem.Title">
             <summary>
-            按等待数限制
+                主标题
             </summary>
         </member>
-        <member name="T:Agebull.MicroZero.StationConfig">
+        <member name="P:Agebull.MicroZero.PublishItem.SubTitle">
             <summary>
-                站点配置
+                副标题
             </summary>
         </member>
-        <member name="P:Agebull.MicroZero.StationConfig.Group">
+        <member name="P:Agebull.MicroZero.PublishItem.Buffer">
             <summary>
-                所在组
+                内容
             </summary>
         </member>
-        <member name="P:Agebull.MicroZero.StationConfig.ServiceKey">
+        <member name="P:Agebull.MicroZero.PublishItem.Status">
             <summary>
-                站点名称
+                内容
             </summary>
         </member>
-        <member name="P:Agebull.MicroZero.StationConfig.StationName">
+        <member name="P:Agebull.MicroZero.PublishItem.Tson">
             <summary>
-                站点名称
+                内容
             </summary>
         </member>
-        <member name="P:Agebull.MicroZero.StationConfig.IsBaseStation">
+        <member name="M:Agebull.MicroZero.PublishItem.Unpack(ZeroMQ.ZMessage,Agebull.MicroZero.PublishItem@)">
             <summary>
-                是否基础站点
+                广播消息解包
             </summary>
+            <param name="msg"></param>
+            <param name="publishItem"></param>
+            <returns></returns>
         </member>
-        <member name="P:Agebull.MicroZero.StationConfig.StationType">
+        <member name="M:Agebull.MicroZero.PublishItem.Unpack2``1(ZeroMQ.ZMessage,``0@)">
             <summary>
-                站点类型
+                广播消息解包
             </summary>
+            <param name="msg"></param>
+            <param name="publishItem"></param>
+            <returns></returns>
         </member>
-        <member name="P:Agebull.MicroZero.StationConfig.IsSystem">
+        <member name="M:Agebull.MicroZero.PublishItem.Unpack``1(ZeroMQ.ZMessage,``0@)">
             <summary>
-                是否系统支撑站点
+                广播消息解包
             </summary>
-            <remarks></remarks>
+            <param name="msg"></param>
+            <param name="publishItem"></param>
+            <returns></returns>
         </member>
-        <member name="P:Agebull.MicroZero.StationConfig.IsApi">
+        <member name="M:Agebull.MicroZero.PublishItem.Unpack``1(ZeroMQ.ZMessage,``0@,System.Func{``0,System.Byte,System.Byte[],System.Boolean})">
             <summary>
-                是否接口站点
+                广播消息解包
             </summary>
-        </member>
-        <member name="P:Agebull.MicroZero.StationConfig.IsNotify">
-            <summary>
-                是否广播站点
-            </summary>
-        </member>
-        <member name="P:Agebull.MicroZero.StationConfig.IsGeneral">
-            <summary>
-                是否普通站点（区别于基础站点）
-            </summary>
-            <remarks></remarks>
-        </member>
-        <member name="P:Agebull.MicroZero.StationConfig.ShortName">
-            <summary>
-                站点简称
-            </summary>
-        </member>
-        <member name="P:Agebull.MicroZero.StationConfig.StationAlias">
-            <summary>
-                站点别名
-            </summary>
-        </member>
-        <member name="P:Agebull.MicroZero.StationConfig.Type">
-            <summary>
-                站点类型
-            </summary>
-        </member>
-        <member name="P:Agebull.MicroZero.StationConfig.RequestPort">
-            <summary>
-                入站端口
-            </summary>
-        </member>
-        <member name="P:Agebull.MicroZero.StationConfig.Address">
-            <summary>
-            地址
-            </summary>
-        </member>
-        <member name="P:Agebull.MicroZero.StationConfig.RequestAddress">
-            <summary>
-                入站地址
-            </summary>
-        </member>
-        <member name="P:Agebull.MicroZero.StationConfig.WorkerCallPort">
-            <summary>
-                入站端口
-            </summary>
-        </member>
-        <member name="P:Agebull.MicroZero.StationConfig.WorkerResultPort">
-            <summary>
-                入站端口
-            </summary>
-        </member>
-        <member name="P:Agebull.MicroZero.StationConfig.WorkerResultAddress">
-            <summary>
-                出站地址
-            </summary>
-        </member>
-        <member name="P:Agebull.MicroZero.StationConfig.WorkerCallAddress">
-            <summary>
-                出站地址
-            </summary>
-        </member>
-        <member name="P:Agebull.MicroZero.StationConfig.SubAddress">
-            <summary>
-                出站地址
-            </summary>
-        </member>
-        <member name="P:Agebull.MicroZero.StationConfig.State">
-            <summary>
-                运行状态
-            </summary>
-        </member>
-        <member name="M:Agebull.MicroZero.StationConfig.ChangedState(Agebull.MicroZero.ZeroCenterState)">
-            <summary>
-                运行状态
-            </summary>
-        </member>
-        <member name="M:Agebull.MicroZero.StationConfig.Copy(Agebull.MicroZero.StationConfig)">
-            <summary>
-                复制
-            </summary>
-            <param name="src"></param>
-        </member>
-        <member name="M:Agebull.MicroZero.StationConfig.TypeName(Agebull.MicroZero.ZeroStationType)">
-            <summary>
-            构造
-            </summary>
+            <param name="msg"></param>
+            <param name="publishItem"></param>
+            <param name="action"></param>
+            <returns></returns>
         </member>
         <member name="T:Agebull.MicroZero.StationState">
             <summary>
@@ -2815,6 +2740,11 @@
                 Zmq帮助类
             </summary>
         </member>
+        <member name="P:Agebull.MicroZero.ZeroCommandExtend.AppNameBytes">
+            <summary>
+            应用名称字节内容
+            </summary>
+        </member>
         <member name="M:Agebull.MicroZero.ZeroCommandExtend.ReceiveString(ZeroMQ.ZSocketEx,System.Boolean)">
             <summary>
                 接收文本
@@ -2829,11 +2759,6 @@
             </summary>
             <param name="socket"></param>
             <returns></returns>
-        </member>
-        <member name="P:Agebull.MicroZero.ZeroCommandExtend.AppNameBytes">
-            <summary>
-            应用名称字节内容
-            </summary>
         </member>
         <member name="T:Agebull.MicroZero.ZeroFrameType">
             <summary>
@@ -3530,121 +3455,6 @@
             二进制内容
             </summary>
         </member>
-        <member name="T:Agebull.MicroZero.ZeroStationOption">
-            <summary>
-                本地站点配置
-            </summary>
-        </member>
-        <member name="P:Agebull.MicroZero.ZeroStationOption.SpeedLimitModel">
-            <summary>
-                ApiClient与ApiStation限速模式
-            </summary>
-            <remarks>
-                Single：单线程无等待
-                ThreadCount:按线程数限制,线程内无等待
-                线程数计算公式 : 机器CPU数量 X TaskCpuMultiple 最小为1,请合理设置并测试
-                WaitCount: 单线程,每个请求起一个新Task,直到最高未完成数量达MaxWait时,
-                ApiClient休眠直到等待数量 低于 MaxWait
-                ApiStation返回服务器忙(熔断)
-            </remarks>
-        </member>
-        <member name="P:Agebull.MicroZero.ZeroStationOption.MaxWait">
-            <summary>
-                最大等待数(0xFF-0xFFFFF)
-            </summary>
-        </member>
-        <member name="P:Agebull.MicroZero.ZeroStationOption.TaskCpuMultiple">
-            <summary>
-                最大Task与Cpu核心数的倍数关系(0-128)
-            </summary>
-        </member>
-        <member name="P:Agebull.MicroZero.ZeroStationOption.ApiTimeout">
-            <summary>
-                API最大执行超时时间(单位秒)
-            </summary>
-        </member>
-        <member name="P:Agebull.MicroZero.ZeroStationOption.ApiTimeoutKill">
-            <summary>
-                检测到API执行超时是否强行清除资源
-            </summary>
-        </member>
-        <member name="M:Agebull.MicroZero.ZeroStationOption.CopyByEmpty(Agebull.MicroZero.ZeroStationOption)">
-            <summary>
-            复制
-            </summary>
-            <param name="option"></param>
-        </member>
-        <member name="M:Agebull.MicroZero.ZeroStationOption.CopyByHase(Agebull.MicroZero.ZeroStationOption)">
-            <summary>
-            复制
-            </summary>
-            <param name="option"></param>
-        </member>
-        <member name="T:Agebull.MicroZero.ZeroStationType">
-            <summary>
-            站点类型
-            </summary>
-        </member>
-        <member name="F:Agebull.MicroZero.ZeroStationType.Dispatcher">
-            <summary>
-            调度器
-            </summary>
-        </member>
-        <member name="F:Agebull.MicroZero.ZeroStationType.Notify">
-            <summary>
-            广播
-            </summary>
-        </member>
-        <member name="F:Agebull.MicroZero.ZeroStationType.Api">
-            <summary>
-            API
-            </summary>
-        </member>
-        <member name="F:Agebull.MicroZero.ZeroStationType.Vote">
-            <summary>
-            投票器
-            </summary>
-        </member>
-        <member name="F:Agebull.MicroZero.ZeroStationType.RouteApi">
-            <summary>
-            定向路由API
-            </summary>
-        </member>
-        <member name="F:Agebull.MicroZero.ZeroStationType.Queue">
-            <summary>
-            队列任务
-            </summary>
-        </member>
-        <member name="F:Agebull.MicroZero.ZeroStationType.Trace">
-            <summary>
-            流程跟踪
-            </summary>
-        </member>
-        <member name="F:Agebull.MicroZero.ZeroStationType.Proxy">
-            <summary>
-            代理
-            </summary>
-        </member>
-        <member name="F:Agebull.MicroZero.ZeroStationType.Plan">
-            <summary>
-            计划任务
-            </summary>
-        </member>
-        <member name="T:Agebull.MicroZero.ZeroWorkModel">
-            <summary>
-            工作模式
-            </summary>
-        </member>
-        <member name="F:Agebull.MicroZero.ZeroWorkModel.Service">
-            <summary>
-            服务模式（默认）
-            </summary>
-        </member>
-        <member name="F:Agebull.MicroZero.ZeroWorkModel.Client">
-            <summary>
-            客户模式，仅可调用
-            </summary>
-        </member>
         <member name="T:ZeroTeam.MessageMVC.IZeroState">
             <summary>
             返回值
@@ -3675,134 +3485,134 @@
             消息
             </summary>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroStatuValue">
+        <member name="T:ZeroTeam.MessageMVC.ZeroStatusValue">
             <summary>
             MicroZero状态值
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroStatuValue.ZeroStatusSuccess">
+        <member name="F:ZeroTeam.MessageMVC.ZeroStatusValue.ZeroStatusSuccess">
             <summary>
             正常状态
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroStatuValue.ZeroStatusBad">
+        <member name="F:ZeroTeam.MessageMVC.ZeroStatusValue.ZeroStatusBad">
             <summary>
             错误状态
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroStatuValue.ZeroCommandOk">
+        <member name="F:ZeroTeam.MessageMVC.ZeroStatusValue.ZeroCommandOk">
             <summary>
             成功
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroStatuValue.ZeroCommandPlan">
+        <member name="F:ZeroTeam.MessageMVC.ZeroStatusValue.ZeroCommandPlan">
             <summary>
             计划执行
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroStatuValue.ZeroCommandError">
+        <member name="F:ZeroTeam.MessageMVC.ZeroStatusValue.ZeroCommandError">
             <summary>
             错误
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroStatuValue.ZeroCommandRuning">
+        <member name="F:ZeroTeam.MessageMVC.ZeroStatusValue.ZeroCommandRuning">
             <summary>
             正在执行
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroStatuValue.ZeroCommandBye">
+        <member name="F:ZeroTeam.MessageMVC.ZeroStatusValue.ZeroCommandBye">
             <summary>
             成功退出
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroStatuValue.ZeroCommandWecome">
+        <member name="F:ZeroTeam.MessageMVC.ZeroStatusValue.ZeroCommandWecome">
             <summary>
             成功加入
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroStatuValue.ZeroVoteSended">
+        <member name="F:ZeroTeam.MessageMVC.ZeroStatusValue.ZeroVoteSended">
             <summary>
             投票已发出
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroStatuValue.ZeroVoteClosed">
+        <member name="F:ZeroTeam.MessageMVC.ZeroStatusValue.ZeroVoteClosed">
             <summary>
             投票已关闭
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroStatuValue.ZeroVoteBye">
+        <member name="F:ZeroTeam.MessageMVC.ZeroStatusValue.ZeroVoteBye">
             <summary>
             已退出投票
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroStatuValue.ZeroVoteWaiting">
+        <member name="F:ZeroTeam.MessageMVC.ZeroStatusValue.ZeroVoteWaiting">
             <summary>
             投票正在进行中
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroStatuValue.ZeroVoteStart">
+        <member name="F:ZeroTeam.MessageMVC.ZeroStatusValue.ZeroVoteStart">
             <summary>
             投票已开始
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroStatuValue.ZeroVoteEnd">
+        <member name="F:ZeroTeam.MessageMVC.ZeroStatusValue.ZeroVoteEnd">
             <summary>
             投票已完成
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroStatuValue.ZeroCommandNoFind">
+        <member name="F:ZeroTeam.MessageMVC.ZeroStatusValue.ZeroCommandNoFind">
             <summary>
             找不到主机
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroStatuValue.ZeroCommandInvalid">
+        <member name="F:ZeroTeam.MessageMVC.ZeroStatusValue.ZeroCommandInvalid">
             <summary>
             帧错误
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroStatuValue.ZeroCommandNoSupport">
+        <member name="F:ZeroTeam.MessageMVC.ZeroStatusValue.ZeroCommandNoSupport">
             <summary>
             不支持的操作
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroStatuValue.ZeroCommandFailed">
+        <member name="F:ZeroTeam.MessageMVC.ZeroStatusValue.ZeroCommandFailed">
             <summary>
             执行失败
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroStatuValue.ZeroCommandTimeout">
+        <member name="F:ZeroTeam.MessageMVC.ZeroStatusValue.ZeroCommandTimeout">
             <summary>
             执行超时
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroStatuValue.ZeroCommandNetError">
+        <member name="F:ZeroTeam.MessageMVC.ZeroStatusValue.ZeroCommandNetError">
             <summary>
             发生网络异常
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroStatuValue.ZeroCommandNotWorker">
+        <member name="F:ZeroTeam.MessageMVC.ZeroStatusValue.ZeroCommandNotWorker">
             <summary>
             找不到实际处理者
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroStatuValue.ZeroUnknowError">
+        <member name="F:ZeroTeam.MessageMVC.ZeroStatusValue.ZeroUnknowError">
             <summary>
             未知错误
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroStatuValue.DenyAccess">
+        <member name="F:ZeroTeam.MessageMVC.ZeroStatusValue.DenyAccess">
             <summary>
             拒绝访问
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroStatuValue.Text(ZeroTeam.MessageMVC.ZeroOperatorStateType)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroStatusValue.Text(ZeroTeam.MessageMVC.ZeroOperatorStateType)">
             <summary>
             状态原始文本
             </summary>
             <param name="state"></param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroStatuValue.ToOperatorStatus(ZeroTeam.MessageMVC.ZeroOperatorStateType,System.Boolean)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroStatusValue.ToOperatorStatus(ZeroTeam.MessageMVC.ZeroOperatorStateType,System.Boolean)">
             <summary>
             状态转换
             </summary>
