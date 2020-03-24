@@ -1,6 +1,5 @@
-﻿using ZeroMQ;
-
-namespace Agebull.MicroZero
+﻿
+namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
     /// <summary>
     /// 工作模式

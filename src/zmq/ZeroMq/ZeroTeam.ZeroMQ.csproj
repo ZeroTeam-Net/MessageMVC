@@ -1,15 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>ClrZmq的MicroZero专用版本</Description>
+    <Description>ClrZmq的ZeroTeam专用版本</Description>
     <!--monoandroid60;xamarinios10-->
     <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     <DebugType>portable</DebugType>
-    
     <PackageProjectUrl>https://github.com/ZeroTeam-Net/MessageMVC</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ZeroTeam-Net/MessageMVC.git</RepositoryUrl>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/agebullhu/MicroZero.git</RepositoryUrl>
     
     <IncludeSource>false</IncludeSource>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -54,10 +53,6 @@
   <ItemGroup>
     <Compile Remove="AssemblyInfo.cs" />
     <Compile Remove="Extend\StationConfig.cs" />
-    <Compile Remove="Extend\ZeroOperatorStateType.cs" />
-    <Compile Remove="Extend\ZeroStationOption.cs" />
-    <Compile Remove="Extend\ZeroStationType.cs" />
-    <Compile Remove="Extend\ZeroWorkModel.cs" />
     <Compile Remove="zmq\DispoIntPtr.Ansi.cs" />
     <Compile Remove="zmq\DispoIntPtr.cs" />
     <Compile Remove="zmq\Platform.MacOSX.cs" />

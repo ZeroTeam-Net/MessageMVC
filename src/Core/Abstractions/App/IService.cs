@@ -32,6 +32,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         ///     配置状态
         /// </summary>
-        StationStateType ConfigState { get; }
+        StationStateType ConfigState { get; set; }
     }
 }

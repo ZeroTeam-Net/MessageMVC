@@ -1,4 +1,4 @@
-﻿namespace ZeroMQ
+﻿namespace ZeroTeam.ZeroMQ
 {
     /// <summary>
     /// Socket默认配置

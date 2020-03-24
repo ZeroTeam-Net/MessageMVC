@@ -1,7 +1,6 @@
 ﻿using System;
-using ZeroMQ;
 
-namespace ZeroTeam.MessageMVC
+namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
     /// <summary>
     /// 返回值

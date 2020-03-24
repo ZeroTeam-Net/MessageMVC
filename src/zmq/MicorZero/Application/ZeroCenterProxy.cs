@@ -1,6 +1,6 @@
 using ZeroTeam.MessageMVC.Context;
 
-namespace Agebull.MicroZero.ZeroManagemant
+namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
 {
     /// <summary>
     /// 服务中心代理

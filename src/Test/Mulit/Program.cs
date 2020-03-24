@@ -2,9 +2,8 @@
 using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
-using ZeroTeam.MessageMVC.Kafka;
-using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.ZeroMQ.Inporc;
+using ZeroTeam.MessageMVC.ZeroApis;
+using ZeroTeam.ZeroMQ.ZeroRPC;
 
 namespace MicroZero.Kafka.QueueStation
 {
@@ -12,12 +11,16 @@ namespace MicroZero.Kafka.QueueStation
     {
         static async Task Main()
         {
-            IocHelper.ServiceCollection.UseKafka();
-            IocHelper.ServiceCollection.UseZeroMQInporc();
+            IocHelper.AddTransient<IFlowMiddleware, MicroZeroApplication>();
+            IocHelper.AddSingleton<IRpcTransfer, ZmqRpcTransport>();
+            //IocHelper.AddTransient<IP, MicroZeroApplication>();
+
+            //IocHelper.ServiceCollection.UseKafka();
+            //IocHelper.ServiceCollection.UseZeroMQInporc();
             await IocHelper.ServiceCollection.UseFlow(typeof(Program).Assembly, false);
 
-            MessageProducer.Producer("test1", "test", "");
-            MessageProducer.Producer("Inproc", "test", "");
+            //MessageProducer.Producer("test1", "test", "");
+            //MessageProducer.Producer("Inproc", "test", "");
 
             Console.ReadKey();
             Console.WriteLine("Bye bye.");

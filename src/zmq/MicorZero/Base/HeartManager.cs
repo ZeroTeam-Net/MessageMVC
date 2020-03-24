@@ -1,6 +1,6 @@
 using ZeroTeam.MessageMVC;
 
-namespace Agebull.MicroZero
+namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
     /// <summary>
     /// 心跳

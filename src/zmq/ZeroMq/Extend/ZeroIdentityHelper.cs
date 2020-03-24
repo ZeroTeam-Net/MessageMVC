@@ -1,4 +1,4 @@
-namespace Agebull.MicroZero
+namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
     /// <summary>
     ///     命名辅助类

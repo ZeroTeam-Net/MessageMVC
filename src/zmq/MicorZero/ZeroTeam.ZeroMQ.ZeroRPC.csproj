@@ -7,25 +7,26 @@
     <SccLocalPath>SAK</SccLocalPath>
   </PropertyGroup>
   <PropertyGroup>
-    <Description>微服务框架MicroZero的核心程序集</Description>
+    <Description>ZeroMQ实现的RPC网络通讯</Description>
     <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     <DebugType>portable</DebugType>
     <PackageId></PackageId>
+
+    <PackageProjectUrl>https://github.com/ZeroTeam-Net/MessageMVC</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ZeroTeam-Net/MessageMVC.git</RepositoryUrl>
     
-    <PackageProjectUrl>https://github.com/agebullhu/MicroZero</PackageProjectUrl>
-    <PackageLicenseExpression>MPL</PackageLicenseExpression>
+    <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/agebullhu/MicroZero</RepositoryUrl>
     
     <IncludeSource>false</IncludeSource>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     
     <Authors>Agebull</Authors>
-    <Company>Agebull</Company>
-    <PackageReleaseNotes>MicroZero核心</PackageReleaseNotes>
-    <Product>Agebull.MicroZero</Product>
-    <Version>1.5.0.35-bate</Version>
+    <Company>ZeroTeam</Company>
+    <PackageReleaseNotes>ZeroMQ实现的RPC网络通讯</PackageReleaseNotes>
+    <Product>ZeroTeam.ZeroMQ.ZeroRPC</Product>
+    <Version>1.0.0.3-bate</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -41,11 +42,11 @@
     <Optimize>true</Optimize>
     <DefineConstants>UseStateMachine</DefineConstants>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>Agebull.MicroZero.Core.xml</DocumentationFile>
+    <DocumentationFile>ZeroTeam.ZeroMQ.ZeroRPC.ZeroApis.Core.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp3.1|AnyCPU'">
-    <DocumentationFile>Agebull.MicroZero.Core.xml</DocumentationFile>
+    <DocumentationFile>ZeroTeam.ZeroMQ.ZeroRPC.ZeroApis.Core.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -129,7 +130,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Core\ZeroTeam.MessageMVC.Core.csproj" />
-    <ProjectReference Include="..\ZeroMq\ZeroTeam.ClrZMQ.csproj" />
+    <ProjectReference Include="..\ZeroMq\ZeroTeam.ZeroMQ.csproj" />
   </ItemGroup>
 
 </Project>

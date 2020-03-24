@@ -1,4 +1,4 @@
-﻿namespace ZeroMQ
+﻿namespace ZeroTeam.ZeroMQ
 {
     using lib;
     /// <summary>

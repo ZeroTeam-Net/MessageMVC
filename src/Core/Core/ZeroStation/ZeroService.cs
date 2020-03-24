@@ -187,7 +187,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                         _waitToken.Wait();
                     if (ConfigState == StationStateType.None || ConfigState >= StationStateType.Stop || !ZeroFlowControl.CanDo)
                         return false;
-                    ConfigState = StationStateType.Run;
 
                     RealState = StationState.Start;
                     //名称初始化
@@ -196,8 +195,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     //扩展动作
                     if (!Transport.Prepare())
                     {
+                        RealState = StationState.Failed;
+                        ConfigState = StationStateType.Failed;
                         return false;
                     }
+                    ConfigState = StationStateType.Run;
                 }
                 //可执行
                 //Hearter.HeartJoin(Config.StationName, RealName);
@@ -222,7 +224,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         private async void Run()
         {
             bool success;
-            LoopBegin();
+            RealState = StationState.BeginRun;
+            if (!LoopBegin())
+            {
+                return;
+            }
             RealState = StationState.Run;
             _waitToken.Release();
             try
@@ -243,9 +249,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             if (ConfigState < StationStateType.Stop)
                 ConfigState = !ZeroFlowControl.CanDo || success ? StationStateType.Closed : StationStateType.Failed;
             GC.Collect();
-            //#if UseStateMachine
-            StateMachine.End();
-            //#endif
         }
 
 
@@ -257,18 +260,22 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// 同步运行状态
         /// </summary>
         /// <returns></returns>
-        private void LoopBegin()
+        private bool LoopBegin()
         {
-            RealState = StationState.BeginRun;
-            if (ConfigState == StationStateType.Run)
-            {
-                ZeroFlowControl.OnObjectActive(this);
-            }
-            else
+            if (ConfigState != StationStateType.Run)
             {
                 ZeroFlowControl.OnObjectFailed(this);
+                return false;
             }
-            Transport.LoopBegin();
+            if (!Transport.LoopBegin())
+            {
+                RealState = StationState.Failed;
+                ConfigState = StationStateType.Failed;
+                ZeroFlowControl.OnObjectFailed(this);
+                return false;
+            }
+            ZeroFlowControl.OnObjectActive(this);
+            return true;
         }
 
         /// <summary>
@@ -280,6 +287,14 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             Transport.LoopComplete();
             CancelToken.Dispose();
             CancelToken = null;
+            if (ConfigState == StationStateType.Failed)
+            {
+                ZeroFlowControl.OnObjectFailed(this);
+            }
+            else
+            {
+                ZeroFlowControl.OnObjectClose(this);
+            }
             RealState = StationState.Closed;
         }
 
@@ -298,7 +313,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         protected virtual void DoEnd()
         {
             Transport.Dispose();
-            ZeroFlowControl.OnObjectClose(this);
         }
         #endregion
 

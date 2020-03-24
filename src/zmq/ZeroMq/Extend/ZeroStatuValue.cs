@@ -1,6 +1,4 @@
-using Agebull.MicroZero.ZeroApis;
-
-namespace ZeroTeam.MessageMVC
+namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
     /// <summary>
     /// MicroZero状态值
@@ -203,7 +201,7 @@ namespace ZeroTeam.MessageMVC
                 case ZeroOperatorStateType.LocalNoReady:
                     return "-error. ZeroFlowControl no ready.";
                 case ZeroOperatorStateType.LocalZmqError:
-                    return "-error. ZeroMQ  error.";
+                    return "-error. ZeroTeam.ZeroMQ  error.";
                 case ZeroOperatorStateType.DenyAccess:
                     return DenyAccess;
                 default:

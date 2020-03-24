@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Concurrent;
 using Agebull.Common.Logging;
-using ZeroMQ;
 using System.Threading.Tasks;
-using Agebull.MicroZero;
+using ZeroTeam.ZeroMQ.ZeroRPC;
+using ZeroTeam.ZeroMQ;
 
 namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
 {
@@ -64,7 +64,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         public void Initialize()
         {
             Instance = this;
-            ZContext.Initialize();
+            //ZContext.Initialize();
         }
 
 
@@ -73,7 +73,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// </summary>
         public void End()
         {
-            ZContext.Destroy();
+            //ZContext.Destroy();
         }
 
         #endregion

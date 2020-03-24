@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ZeroMQ
+namespace ZeroTeam.ZeroMQ
 {
     /// <summary>
     /// 状态

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 
-namespace ZeroMQ.Monitoring
+namespace ZeroTeam.ZeroMQ.Monitoring
 {
 
     /// <summary>

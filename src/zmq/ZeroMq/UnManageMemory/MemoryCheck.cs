@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
-namespace ZeroMQ
+namespace ZeroTeam.ZeroMQ
 {
     /// <summary>
     /// 内存检查对象

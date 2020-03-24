@@ -1,10 +1,9 @@
 using System;
 using System.Linq;
 using System.Text;
-using ZeroMQ;
 using ZeroTeam.MessageMVC;
 
-namespace Agebull.MicroZero
+namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
 
     /// <summary>

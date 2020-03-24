@@ -2,7 +2,7 @@
 using System.Text;
 using ZeroTeam.MessageMVC;
 
-namespace Agebull.MicroZero
+namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
     internal static class ZSocketHelper
     {

@@ -48,8 +48,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// 开始轮询前的工作
         /// </summary>
         /// <returns></returns>
-        void LoopBegin()
+        bool LoopBegin()
         {
+            return true;
         }
 
         /// <summary>

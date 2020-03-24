@@ -10,12 +10,6 @@
         /// </summary>
         bool IStationStateMachine.Start()
         {
-            if (IsDisposed)
-            {
-                ZeroFlowControl.OnObjectFailed(Service);
-                return false;
-            }
-            IsDisposed = true;
             return Control.DoStart();
         }
 
@@ -24,7 +18,7 @@
         /// </summary>
         bool IStationStateMachine.Close()
         {
-            return false;
+            return true;
         }
 
         /// <summary>

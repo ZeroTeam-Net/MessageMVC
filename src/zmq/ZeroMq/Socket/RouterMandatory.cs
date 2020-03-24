@@ -1,4 +1,4 @@
-namespace ZeroMQ
+namespace ZeroTeam.ZeroMQ
 {
 	/// <summary>
 	/// Specifies <see cref="ZSocketType.ROUTER"/> socket behavior when

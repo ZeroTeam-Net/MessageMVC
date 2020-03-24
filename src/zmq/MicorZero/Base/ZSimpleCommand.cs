@@ -1,8 +1,5 @@
 using System;
-using ZeroMQ;
-using ZeroTeam.MessageMVC;
-
-namespace Agebull.MicroZero
+namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
     /// <summary>
     /// 管理命令

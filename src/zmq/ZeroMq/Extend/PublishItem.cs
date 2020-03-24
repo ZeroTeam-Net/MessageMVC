@@ -2,10 +2,9 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using Newtonsoft.Json;
-using ZeroMQ;
 using ZeroTeam.MessageMVC;
 
-namespace Agebull.MicroZero
+namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
 
     /// <summary>

@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using ZeroMQ.lib;
+using ZeroTeam.ZeroMQ.lib;
 
-namespace ZeroMQ
+namespace ZeroTeam.ZeroMQ
 {
     /// <summary>
     /// pool对象

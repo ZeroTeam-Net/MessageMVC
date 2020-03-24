@@ -1,4 +1,4 @@
-namespace ZeroMQ
+namespace ZeroTeam.ZeroMQ
 {
 	/// <summary>
 	/// Keep-alive packets behavior for a <see cref="ZSocket"/> connection.

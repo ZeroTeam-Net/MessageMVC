@@ -3,58 +3,68 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Agebull.Common.Logging;
-using Agebull.MicroZero.ZeroManagemant;
-using ZeroMQ;
+using ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant;
 using Agebull.EntityModel.Common;
 using ZeroTeam.MessageMVC.ZeroApis;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Messages;
 
-namespace Agebull.MicroZero.ZeroApis
+namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
     /// <summary>
     ///  ZeroMQ实现的RPC
     /// </summary>
-    public abstract class ZmqRpcTransport : IRpcTransfer
+    public sealed class ZmqRpcTransport : IRpcTransfer
     {
-        ///<inheritdoc/>
-        public IService Service { get; set; }
 
-
-        ///<inheritdoc/>
-        public string Name { get; set; }
-
+        #region 控制反转
 
         /// <summary>
-        /// 实例名称
+        /// 初始化
         /// </summary>
-        public string RealName { get; protected set; }
+        void INetTransfer.Initialize()
+        {
+            MicroZeroApplication.ZeroNetEvents.Add(OnZeroNetEvent);
+            MicroZeroApplication.Transports.Add(this);
+        }
 
         /// <summary>
-        /// 实例名称
+        /// 将要开始
         /// </summary>
-        public byte[] Identity { get; protected set; }
+        bool INetTransfer.Prepare()
+        {
+            if (!MicroZeroApplication.ZerCenterIsRun)
+                return false;
+            return CheckConfig();
+        }
+        /// <summary>
+        /// 轮询
+        /// </summary>
+        /// <returns>返回False表明需要重启</returns>
+        public Task<bool> Loop(CancellationToken token)
+        {
+            RunTaskCancel = token;
+            while (CanLoop)
+            {
+                Listen(pool);
+            }
+            return Task.FromResult(true);
+        }
+        /// <summary>
+        /// 析构
+        /// </summary>
+        void IDisposable.Dispose()
+        {
+            MicroZeroApplication.Transports.Remove(this);
+        }
 
-        /// <summary>
-        /// 取消标记
-        /// </summary>
-        protected CancellationTokenSource RunTaskCancel { get; set; }
 
+        #endregion
+        #region 状态
         /// <summary>
-        /// 能不能循环处理
+        /// 调用计数
         /// </summary>
-        protected internal bool CanLoop => MicroZeroApplication.CanDo &&
-                                  (RealState == StationState.BeginRun || RealState == StationState.Run) &&
-                                  RunTaskCancel != null && !RunTaskCancel.IsCancellationRequested;
-        /// <summary>
-        /// 站点配置
-        /// </summary>
-        public StationConfig Config { get; set; }
-
-        /// <summary>
-        /// 心跳器
-        /// </summary>
-        protected HeartManager Hearter => ZeroCenterProxy.Master;
+        public int CallCount, ErrorCount, SuccessCount, RecvCount, SendCount, SendError;
 
         /// <summary>
         ///     运行状态
@@ -76,18 +86,90 @@ namespace Agebull.MicroZero.ZeroApis
             }
         }
 
+
         /// <summary>
-        /// 将要开始
+        /// 取消标记
         /// </summary>
-        bool INetTransfer.Prepare()
+        private CancellationToken RunTaskCancel { get; set; }
+
+        /// <summary>
+        /// 能不能循环处理
+        /// </summary>
+        private bool CanLoop => MicroZeroApplication.CanDo && 
+            RunTaskCancel != null && !RunTaskCancel.IsCancellationRequested &&
+            (RealState == StationState.BeginRun || RealState == StationState.Run);
+
+        /// <summary>
+        /// 心跳器
+        /// </summary>
+        private HeartManager Hearter => ZeroCenterProxy.Master;
+
+        #endregion
+        #region 配置
+
+        /// <summary>
+        /// 超时时长
+        /// </summary>
+        private int timeout;
+        /// <summary>
+        /// 是否检查Task超时
+        /// </summary>
+        bool checkWait;
+
+        ///<inheritdoc/>
+        public IService Service { get; set; }
+
+
+        ///<inheritdoc/>
+        public string Name { get; set; }
+
+
+        /// <summary>
+        /// 实例名称
+        /// </summary>
+        public string RealName { get; private set; }
+
+        /// <summary>
+        /// 实例名称
+        /// </summary>
+        public byte[] Identity { get; private set; }
+
+
+        /// <summary>
+        /// 站点配置
+        /// </summary>
+        public StationConfig Config { get; set; }
+
+
+        /// <summary>
+        /// 站点选项
+        /// </summary>
+        ZeroStationOption _option;
+
+        /// <summary>
+        /// 配置检查
+        /// </summary>
+        /// <returns></returns>
+        bool CheckConfig()
         {
             //取配置
-            Config = MicroZeroApplication.Config[Name] ?? OnNofindConfig();
+            Config = MicroZeroApplication.Config[Name];
+
             if (Config == null)
             {
-                ZeroTrace.WriteError(Name, "Station no find");
-                RealState = StationState.ConfigError;
-                return false;
+                var mg = new ConfigManager(MicroZeroApplication.Config.Master);
+                if (mg.TryInstall(Name, "Api"))
+                {
+                    Config = mg.LoadConfig(Name);
+                    if (Config == null)
+                    {
+                        ZeroTrace.WriteError(Name, "Station no find");
+                        RealState = StationState.ConfigError;
+                        return false;
+                    }
+                    ZeroTrace.SystemLog(Name, "successfully");
+                }
+                Config.State = ZeroCenterState.Run;
             }
             //Config.OnStateChanged = OnConfigStateChanged;
             switch (Config.State)
@@ -129,43 +211,126 @@ namespace Agebull.MicroZero.ZeroApis
             return true;
         }
 
-        /// <summary>
-        /// 初始化
+        /*// <summary>
+        /// 站点状态变更时调用
         /// </summary>
-        StationConfig OnNofindConfig()
+        void OnStationStateChanged(StationConfig config)
         {
-            var mg = new ConfigManager(MicroZeroApplication.Config.Master);
-            if (!mg.TryInstall(Name, "Api"))
-                return null;
-            var config = mg.LoadConfig(Name);
-            if (config == null)
-                return null;
-            config.State = ZeroCenterState.Run;
-            ZeroTrace.SystemLog(Name, "successfully");
-            return config;
+            while (RealState == StationState.Start || RealState == StationState.BeginRun || RealState == StationState.Closing)
+                Thread.Sleep(10);
+            //#if UseStateMachine
+            switch (config.State)
+            {
+                case ZeroCenterState.Initialize:
+                case ZeroCenterState.Start:
+                case ZeroCenterState.Run:
+                case ZeroCenterState.Pause:
+                    break;
+                case ZeroCenterState.Failed:
+                    if (!CanLoop)
+                        break;
+                    //运行状态中，与ZeroCenter一起重启
+                    if (RealState == StationState.Run)
+                        RealState = StationState.Closing;
+                    ConfigState = StationStateType.Failed;
+                    return;
+                //以下状态如在运行，均可自动关闭
+                case ZeroCenterState.Closing:
+                case ZeroCenterState.Closed:
+                case ZeroCenterState.Destroy:
+                    if (RealState == StationState.Run)
+                        RealState = StationState.Closing;
+                    ConfigState = StationStateType.Closed;
+                    return;
+                case ZeroCenterState.NoFind:
+                case ZeroCenterState.Remove:
+                    if (RealState == StationState.Run)
+                        RealState = StationState.Closing;
+                    ConfigState = StationStateType.Remove;
+                    return;
+                default:
+                    //case ZeroCenterState.None:
+                    //case ZeroCenterState.Stop:
+                    if (RealState == StationState.Run)
+                        RealState = StationState.Closing;
+                    ConfigState = StationStateType.Stop;
+                    return;
+            }
+            if (!ZeroApplication.CanDo)
+            {
+                return;
+            }
+            //可启动状态检查是否未运行
+            if (CanLoop)//这是一个可以正常运行的状态，无需要改变
+                return;
+            //是否未进行初始化
+            if (ConfigState == StationStateType.None)
+                Initialize();
+            else
+                ConfigState = StationStateType.Initialized;
+
+            Task.Run(Start);
+            //#else
+            //            ConfigState = config.State;
+            //            if (RealState < StationState.Start || RealState > StationState.Closing)
+            //            {
+            //                if (config.State <= ZeroCenterState.Pause && ZeroApplication.CanDo)
+            //                {
+            //                    ZeroTrace.SystemLog(StationName, $"Start by config state({config.State}) changed");
+            //                    Start();
+            //                }
+            //            }
+            //            else
+            //            {
+            //                if (config.State >= ZeroCenterState.Failed || !ZeroApplication.CanDo)
+            //                {
+            //                    ZeroTrace.SystemLog(StationName, $"Close by config state({config.State}) changed");
+            //                    Close();
+            //                }
+            //            }
+            //#endif
+        }*/
+
+        private Task OnZeroNetEvent(MicroZeroRuntimeConfig config, ZeroNetEventArgument e)
+        {
+            if (e.EventConfig?.StationName != Service.ServiceName)
+                return Task.CompletedTask;
+            switch (e.Event)
+            {
+                case ZeroNetEventType.ConfigUpdate:
+                case ZeroNetEventType.CenterStationUpdate:
+                    if (e.EventConfig?.StationName == Service.ServiceName)
+                        Config = e.EventConfig;
+                    break;
+                //case ZeroNetEventType.CenterStationLeft:
+                //case ZeroNetEventType.CenterStationPause:
+                case ZeroNetEventType.CenterStationClosing:
+                case ZeroNetEventType.CenterStationRemove:
+                case ZeroNetEventType.CenterStationStop:
+                    Service.ConfigState = ZeroTeam.MessageMVC.StationStateType.Failed;
+                    break;
+                case ZeroNetEventType.CenterSystemStart:
+                case ZeroNetEventType.CenterStationInstall:
+                case ZeroNetEventType.CenterStationResume:
+                    Service.ConfigState = ZeroTeam.MessageMVC.StationStateType.Run;
+                    break;
+            }
+
+            return Task.CompletedTask;
         }
+
+        #endregion
         #region 主循环
-
-        private int timeout;
-        bool checkWait;
-        /// <summary>
-        /// 调用计数
-        /// </summary>
-        public int CallCount, ErrorCount, SuccessCount, RecvCount, SendCount, SendError;
-
-
-
-        ZeroStationOption _option;
 
         /// <summary>
         /// 代理地址
         /// </summary>
-        protected string InprocAddress = "inproc://ApiProxy.req";
+        private string InprocAddress = "inproc://ApiProxy.req";
 
         /// <summary>
         /// 本地代理
         /// </summary>
-        protected ZSocket _proxyServiceSocket;
+        private ZSocket _proxyServiceSocket;
 
         IZmqPool pool;
 
@@ -173,56 +338,38 @@ namespace Agebull.MicroZero.ZeroApis
         /// 同步运行状态
         /// </summary>
         /// <returns></returns>
-        void INetTransfer.LoopBegin()
+        bool INetTransfer.LoopBegin()
         {
-            ZeroTrace.SystemLog(Name, "Task", "start", RealName);
-
-            var pSocket = ZSocketEx.CreatePoolSocket(Config.WorkerCallAddress, Config.ServiceKey, ZSocketType.PULL, Identity);
-            pool = ZmqPool.CreateZmqPool();
-            pool.Prepare(ZPollEvent.In,
-                ZSocketEx.CreatePoolSocket(Config.WorkerResultAddress, Config.ServiceKey, ZSocketType.DEALER, Identity),
-                pSocket,
-                ZSocketEx.CreateServiceSocket(InprocAddress, null, ZSocketType.ROUTER));
-
-            Hearter.HeartReady(Name, RealName);
-            RealState = StationState.Run;
-        }
-
-        /// <summary>
-        /// 同步关闭状态
-        /// </summary>
-        /// <returns></returns>
-        void INetTransfer.LoopComplete()
-        {
-            pool.Sockets[0].Disconnect(Config.WorkerCallAddress);
-            Hearter.HeartLeft(Name, RealName);
-            ZeroTrace.SystemLog(Name, "closing");
             try
             {
-                int num = 0;
-                while (Listen(pool))
+                ZeroTrace.SystemLog(Name, "Task", "start", RealName);
+
+                var pSocket = ZSocketEx.CreatePoolSocket(Config.WorkerCallAddress, Config.ServiceKey, ZSocketType.PULL, Identity);
+                if (pSocket == null)
                 {
-                    LogRecorder.Trace("处理堆积任务{0}", ++num);
+                    RealState = StationState.Failed;
+                    return false;
                 }
+                pool = ZmqPool.CreateZmqPool();
+                pool.Prepare(ZPollEvent.In,
+                    ZSocketEx.CreatePoolSocket(Config.WorkerResultAddress, Config.ServiceKey, ZSocketType.DEALER, Identity),
+                    pSocket,
+                    ZSocketEx.CreateServiceSocket(InprocAddress, null, ZSocketType.ROUTER));
+
+                if (!Hearter.HeartReady(Name, RealName))
+                {
+                    RealState = StationState.Failed;
+                    return false;
+                }
+                RealState = StationState.Run;
+                return true;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LogRecorder.Exception(e, "处理堆积任务出错{0}", Name);
+                LogRecorder.Exception(ex);
+                RealState = StationState.Failed;
+                return false;
             }
-            pool.Dispose();
-            ZeroTrace.SystemLog(Name, "Task", "end", RealName);
-        }
-        /// <summary>
-        /// 轮询
-        /// </summary>
-        /// <returns>返回False表明需要重启</returns>
-        public Task<bool> Loop(CancellationToken token)
-        {
-            while (CanLoop)
-            {
-                Listen(pool);
-            }
-            return Task.FromResult(true);
         }
 
         private bool Listen(IZmqPool pool)
@@ -241,57 +388,56 @@ namespace Agebull.MicroZero.ZeroApis
                 if (pool.CheckIn(1, out message))
                 {
                     Interlocked.Increment(ref RecvCount);
-                    OnCall(message);
+                    Interlocked.Increment(ref CallCount);
+                    if (!ApiCallItem.Unpack(message, out var item) || string.IsNullOrWhiteSpace(item.ApiName))
+                    {
+                        SendLayoutErrorResult(item);
+                        return false;
+                    }
+                    OnCall(item);
                 }
                 if (pool.CheckIn(2, out message))
                 {
                     OnResult(pool.Sockets[0], message);
                 }
+                return true;
             }
             catch (Exception e)
             {
                 LogRecorder.Exception(e);
+                return false;
             }
 
-            return true;
         }
 
         /// <summary>
-        /// 发送返回值 
+        /// 同步关闭状态
         /// </summary>
         /// <returns></returns>
-        public void OnResult(IMessageItem message, object tag)
+        void INetTransfer.LoopComplete()
         {
-            OnExecuestEnd(message.Result,
-                (ApiCallItem)tag,
-                message.State == MessageState.Success ? ZeroOperatorStateType.Ok : ZeroOperatorStateType.Failed);
-        }
-
-        /// <summary>
-        /// 错误 
-        /// </summary>
-        /// <returns></returns>
-        public void OnError(Exception exception, IMessageItem message, object tag)
-        {
-            LogRecorder.Exception(exception);
-            OnExecuestEnd(ApiResultIoc.LocalExceptionJson,
-                (ApiCallItem)tag,
-                ZeroOperatorStateType.LocalException);
-        }
-        #endregion
-
-        #region 方法
-
-        #region 方法调用
-
-        private void OnCall(ZMessage message)
-        {
-            Interlocked.Increment(ref CallCount);
-            if (!ApiCallItem.Unpack(message, out var item) || string.IsNullOrWhiteSpace(item.ApiName))
+            pool.Sockets[0].Disconnect(Config.WorkerCallAddress, out _);
+            Hearter.HeartLeft(Name, RealName);
+            ZeroTrace.SystemLog(Name, "closing");
+            try
             {
-                SendLayoutErrorResult(item);
-                return;
+                int num = 0;
+                while (Listen(pool))
+                {
+                    LogRecorder.Trace("处理堆积任务{0}", ++num);
+                }
             }
+            catch (Exception e)
+            {
+                LogRecorder.Exception(e, "处理堆积任务出错{0}", Name);
+            }
+            pool.Dispose();
+            ZeroTrace.SystemLog(Name, "Task", "end", RealName);
+        }
+
+
+        private void OnCall(ApiCallItem item)
+        {
             switch (item.ApiName[0])
             {
                 case '$':
@@ -322,9 +468,31 @@ namespace Agebull.MicroZero.ZeroApis
 
         #endregion
 
-        #endregion
 
         #region 返回
+
+        /// <summary>
+        /// 发送返回值 
+        /// </summary>
+        /// <returns></returns>
+        public void OnResult(IMessageItem message, object tag)
+        {
+            OnExecuestEnd(message.Result,
+                (ApiCallItem)tag,
+                message.State == MessageState.Success ? ZeroOperatorStateType.Ok : ZeroOperatorStateType.Failed);
+        }
+
+        /// <summary>
+        /// 错误 
+        /// </summary>
+        /// <returns></returns>
+        public void OnError(Exception exception, IMessageItem message, object tag)
+        {
+            LogRecorder.Exception(exception);
+            OnExecuestEnd(ApiResultIoc.LocalExceptionJson,
+                (ApiCallItem)tag,
+                ZeroOperatorStateType.LocalException);
+        }
 
         /// <summary>
         /// 调用
@@ -356,7 +524,7 @@ namespace Agebull.MicroZero.ZeroApis
         /// <param name="item"></param>
         /// <param name="state"></param>
         /// <returns></returns>
-        internal virtual bool OnExecuestEnd(string result, ApiCallItem item, ZeroOperatorStateType state)
+        internal bool OnExecuestEnd(string result, ApiCallItem item, ZeroOperatorStateType state)
         {
             int i = 0;
             var des = new byte[10 + item.Originals.Count];
@@ -407,7 +575,7 @@ namespace Agebull.MicroZero.ZeroApis
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        internal virtual void SendLayoutErrorResult(ApiCallItem item)
+        internal void SendLayoutErrorResult(ApiCallItem item)
         {
             if (item == null)
             {
@@ -429,7 +597,7 @@ namespace Agebull.MicroZero.ZeroApis
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        protected bool SendResult(ZMessage message)
+        private bool SendResult(ZMessage message)
         {
             using (message)
             {
@@ -472,9 +640,6 @@ namespace Agebull.MicroZero.ZeroApis
             return false;
         }
 
-        void IDisposable.Dispose()
-        {
-        }
         #endregion
 
     }

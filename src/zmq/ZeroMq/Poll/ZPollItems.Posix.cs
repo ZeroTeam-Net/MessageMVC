@@ -1,4 +1,4 @@
-﻿namespace ZeroMQ
+﻿namespace ZeroTeam.ZeroMQ
 {
     using System;
     using System.Collections.Generic;

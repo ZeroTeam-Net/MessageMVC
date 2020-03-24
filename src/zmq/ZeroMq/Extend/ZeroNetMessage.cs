@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Agebull.Common.Logging;
@@ -9,7 +8,7 @@ using Newtonsoft.Json;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Context;
 
-namespace Agebull.MicroZero
+namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
     /// <summary>
     /// 一次传输的消息

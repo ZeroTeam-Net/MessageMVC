@@ -1,4 +1,4 @@
-﻿namespace ZeroMQ.Devices
+﻿namespace ZeroTeam.ZeroMQ.Devices
 {
 	/// <summary>
 	/// A Device on Routers and Dealers

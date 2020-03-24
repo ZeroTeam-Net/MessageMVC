@@ -173,7 +173,7 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public static void RunAwaite()
         {
-            Start().Wait();
+            OnZeroStart().Wait();
             Console.CancelKeyPress += OnConsoleOnCancelKeyPress;
             ZeroTrace.SystemLog("MicroZero services is runing. Press Ctrl+C to shutdown.");
             waitTask = new TaskCompletionSource<bool>();
@@ -186,7 +186,7 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public static async Task RunAwaiteAsync()
         {
-            await Start();
+            await OnZeroStart();
             Console.CancelKeyPress += OnConsoleOnCancelKeyPress;
             ZeroTrace.SystemLog("MicroZero services is runing. Press Ctrl+C to shutdown.");
             waitTask = new TaskCompletionSource<bool>();
@@ -196,11 +196,9 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         ///     启动
         /// </summary>
-        private static async Task<bool> Start()
+        private static Task<bool> Start()
         {
-            ApplicationState = StationState.BeginRun;
-            await OnZeroStart();
-            return true;
+            return OnZeroStart();
         }
 
         #endregion
@@ -397,8 +395,9 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         ///     系统启动时调用
         /// </summary>
-        internal static async Task OnZeroStart()
+        internal static async Task<bool> OnZeroStart()
         {
+            ApplicationState = StationState.BeginRun;
             ZeroTrace.SystemLog("Application", "[OnZeroStart>>");
             foreach (var mid in Middlewares)
                 _ = Task.Factory.StartNew(mid.Start);
@@ -421,8 +420,41 @@ namespace ZeroTeam.MessageMVC
 
             ApplicationState = StationState.Run;
             ZeroTrace.SystemLog("Application", "<<OnZeroStart]");
+            return true;
         }
+        static int inFailed = 0;
 
+        /// <summary>
+        ///     重新启动未正常启动的项目
+        /// </summary>
+        public static void StartFailed()
+        {
+            if (Interlocked.Increment(ref inFailed) != 1)
+                return;
+            var faileds = FailedObjects.ToArray();
+            if (faileds.Length == 0)
+                return;
+            FailedObjects.Clear();
+            ZeroTrace.SystemLog("Application", "[OnFailedStart>>");
+
+            foreach (var obj in faileds)
+            {
+                try
+                {
+                    ZeroTrace.SystemLog(obj.ServiceName, $"Try start by {StationState.Text(obj.RealState)}");
+                    obj.Start();
+                }
+                catch (Exception e)
+                {
+                    ZeroTrace.WriteException(obj.ServiceName, e, "*Start");
+                }
+            }
+
+            //等待所有对象信号(全开或全关)
+            ActiveSemaphore.Wait();
+            Interlocked.Decrement(ref inFailed);
+            ZeroTrace.SystemLog("Application", "<<OnFailedStart]");
+        }
         /// <summary>
         ///     注销时调用
         /// </summary>

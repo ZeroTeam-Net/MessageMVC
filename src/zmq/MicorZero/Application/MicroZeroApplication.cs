@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Agebull.MicroZero.ZeroManagemant;
-using ZeroMQ;
+using ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant;
 using ZeroTeam.MessageMVC;
 using Agebull.Common.Configuration;
+using ZeroTeam.ZeroMQ.ZeroRPC;
 
-namespace Agebull.MicroZero
+namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
     /// <summary>
     ///     MicroZero流程控制器
@@ -14,6 +14,7 @@ namespace Agebull.MicroZero
     public partial class MicroZeroApplication : IFlowMiddleware
     {
         #region 配置
+
         /// <summary>
         ///     当前应用名称
         /// </summary>
@@ -52,13 +53,14 @@ namespace Agebull.MicroZero
             var cfg = sec.Child<MicroZeroConfig>(AppName);
             if (cfg != null)
                 Config.CopyByEmpty(cfg);
-            if (string.IsNullOrWhiteSpace(Config.StationName))
-                Config.StationName = AppName;
 
 
             #endregion
 
             #region ServiceName
+
+            if (string.IsNullOrWhiteSpace(Config.StationName))
+                Config.StationName = AppName;
 
             Config.ShortName = string.IsNullOrWhiteSpace(Config.ShortName)
                 ? Config.StationName
@@ -78,27 +80,7 @@ namespace Agebull.MicroZero
             Config.Master = Config.ZeroGroup[0];
             if (Config.ApiTimeout <= 1)
                 Config.ApiTimeout = 60;
-            //if (WorkModel == ZeroWorkModel.Bridge)
-            //    return;
-
-            //if (string.IsNullOrWhiteSpace(Config.ZeroAddress))
-            //    Config.ZeroAddress = "127.0.0.1";
-
-            //if (Config.ZeroManagePort <= 1024 || Config.ZeroManagePort >= 65000)
-            //    Config.ZeroManagePort = 8000;
-
-            //if (Config.ZeroMonitorPort <= 1024 || Config.ZeroMonitorPort >= 65000)
-            //    Config.ZeroMonitorPort = 8001;
-
-            //if (Config.PoolSize > 4096 || Config.PoolSize < 10)
-            //    Config.PoolSize = 100;
-
-            //Config.ZeroManageAddress = $"tcp://{Config.Master.Address}:{Config.Master.ManagePort}";
-            //Config.ZeroMonitorAddress = $"tcp://{Config.Master.Address}:{Config.Master.MonitorPort}";
-
             #endregion
-
-            ZeroCommandExtend.AppNameBytes = AppName.ToZeroBytes();
         }
 
 
@@ -160,21 +142,29 @@ namespace Agebull.MicroZero
         int IFlowMiddleware.Level => short.MinValue;
 
         /// <summary>
-        ///     应用中心状态
+        ///     运行状态
         /// </summary>
-        public static ZeroCenterState ZeroCenterState { get; internal set; }
+        private static ZeroCenterState _state;
 
         /// <summary>
-        ///     状态
+        ///     应用中心状态
         /// </summary>
-        public static int ApplicationState
+        public static ZeroCenterState ZeroCenterState
         {
-            get => ZeroFlowControl.ApplicationState;
+            get => _state;
             internal set
             {
-                ZeroFlowControl.ApplicationState = value;
+                _state = value;
+                if (IsAlive)
+                {
+                    MonitorStateMachine.SyncAppState();
+                    ZeroTrace.SystemLog("ZeroApplication",
+                        _state.ToString(),
+                        MonitorStateMachine.StateMachine.GetTypeName());
+                }
             }
         }
+
 
         /// <summary>
         /// 设置ZeroCenter与Application状态都为Failed
@@ -182,7 +172,6 @@ namespace Agebull.MicroZero
         public static void SetFailed()
         {
             ZeroCenterState = ZeroCenterState.Failed;
-            ApplicationState = StationState.Failed;
         }
 
         /// <summary>
@@ -191,29 +180,14 @@ namespace Agebull.MicroZero
         public static bool ZerCenterIsRun => ZeroCenterState == ZeroCenterState.Run;
 
         /// <summary>
-        ///     本地应用是否正在运行
-        /// </summary>
-        public static bool ApplicationIsRun => ApplicationState == StationState.BeginRun || ApplicationState == StationState.Run;
-
-        /// <summary>
         ///     运行状态（本地与服务器均正常）
         /// </summary>
-        public static bool CanDo => ApplicationIsRun && ZerCenterIsRun;
+        public static bool CanDo => ZeroFlowControl.ApplicationIsRun && ZerCenterIsRun;
 
         /// <summary>
         ///     运行状态（本地未关闭）
         /// </summary>
-        public static bool IsAlive => ApplicationState < StationState.Destroy;
-
-        /// <summary>
-        ///     已关闭
-        /// </summary>
-        public static bool IsDisposed => ApplicationState == StationState.Disposed;
-
-        /// <summary>
-        ///     已关闭
-        /// </summary>
-        public static bool IsClosed => ApplicationState >= StationState.Closed;
+        public static bool IsAlive => ZeroFlowControl.ApplicationState < StationState.Destroy;
 
         /// <summary>
         /// 中心事件监控对象
@@ -228,8 +202,6 @@ namespace Agebull.MicroZero
         public void Initialize()
         {
             ZeroCenterProxy.Master = new ZeroCenterProxy(Config.Master);
-
-            ZeroCenterState = ZeroCenterState.None;
             JoinCenter();
         }
 
@@ -239,10 +211,9 @@ namespace Agebull.MicroZero
         /// </summary>
         internal static bool JoinCenter()
         {
-            if (ApplicationIsRun)
+            if (ZeroCenterState == ZeroCenterState.Start || ZeroCenterState == ZeroCenterState.Run)
                 return false;
             ZeroCenterState = ZeroCenterState.Start;
-            ApplicationState = StationState.BeginRun;
             ZeroTrace.SystemLog("ZeroCenter", "JoinCenter", $"try connect zero center ({Config.Master.ManageAddress})...");
             if (!ZeroCenterProxy.Master.PingCenter())
             {
@@ -250,6 +221,7 @@ namespace Agebull.MicroZero
                 ZeroTrace.WriteError("ZeroCenter", "JoinCenter", "zero center can`t connection.");
                 return false;
             }
+            ZeroCenterState = ZeroCenterState.Run;
             if (!ZeroCenterProxy.Master.HeartJoin())
             {
                 SetFailed();
@@ -264,10 +236,17 @@ namespace Agebull.MicroZero
                 ZeroTrace.WriteError("ZeroCenter", "JoinCenter", "station configs can`t loaded.");
                 return false;
             }
-            ZeroCenterState = ZeroCenterState.Run;
-
             ZeroTrace.SystemLog("ZeroCenter", "JoinCenter", "be connected successfully,start local stations.");
 
+            if (ZeroFlowControl.ApplicationState == (int)StationState.Run)
+            {
+                ZeroFlowControl.StartFailed();
+                if (WorkModel == ZeroWorkModel.Service)
+                {
+                    var m = new ConfigManager(Config.Master);
+                    m.UploadDocument();
+                }
+            }
             return true;
         }
 
@@ -279,8 +258,7 @@ namespace Agebull.MicroZero
         public void Start()
         {
             SystemMonitor.Start();
-            ApplicationState = StationState.Start;
-            if (ApplicationState == StationState.Run && WorkModel == ZeroWorkModel.Service)
+            if (ZeroFlowControl.ApplicationState == (int)StationState.Run && WorkModel == ZeroWorkModel.Service)
             {
                 var m = new ConfigManager(Config.Master);
                 m.UploadDocument();
@@ -357,62 +335,19 @@ namespace Agebull.MicroZero
             Task.WaitAll(tasks.ToArray());
         }
 
-        /// <summary>
-        ///     系统启动时调用
-        /// </summary>
-        internal static void OnStationStateChanged(StationConfig config)
-        {
-            //foreach (var obj in ZeroObjects.Values.Where(p => p.StationName == config.StationName).ToArray())
-            //{
-            //    try
-            //    {
-            //        ZeroTrace.SystemLog(obj.Name, "[OnStationStateChanged>>", config.State);
-            //        obj.OnStationStateChanged(config);
-            //        ZeroTrace.SystemLog(obj.Name, "<<OnStationStateChanged]");
-            //    }
-            //    catch (Exception e)
-            //    {
-            //        ZeroTrace.WriteException(obj.StationName, e, "OnStationStateChanged");
-            //    }
-            //}
-        }
-
+        internal static List<ZmqRpcTransport> Transports = new List<ZmqRpcTransport>();
         /// <summary>
         ///     系统关闭时调用
         /// </summary>
-        internal static async Task OnZeroCenterClose(bool fromCenter = true)
+        internal static Task OnZeroCenterClose(bool fromCenter = true)
         {
-            if (ApplicationState >= StationState.Closing || ApplicationState == StationState.Failed)
+            foreach(var transfer in Transports)
             {
-                return;
+                transfer.Service.ConfigState = ZeroTeam.MessageMVC.StationStateType.Closed;
             }
-            ZeroTrace.SystemLog(StationState.Text(ApplicationState), "[OnZeroEnd>>");
-            ApplicationState = StationState.Closing;
-
-            //RaiseEvent(ZeroNetEventType.AppStop, true);
-            ////using (OnceScope.CreateScope(ZeroObjects))
-            //{
-            //    IZeroObject[] array;
-            //    lock (ActiveObjects)
-            //        array = ActiveObjects.ToArray();
-            //    foreach (var obj in array)
-            //    {
-            //        try
-            //        {
-            //            ZeroTrace.SystemLog("OnZeroEnd", obj.StationName);
-            //            obj.OnZeroEnd();
-            //        }
-            //        catch (Exception e)
-            //        {
-            //            ZeroTrace.WriteException("OnZeroEnd", e, obj.StationName);
-            //        }
-            //    }
-            //    await WaitAllObjectSafeClose();
-            //}
-            //ApplicationState = /*fromCenter ? StationState.Failed :*/ StationState.Closed;
-            GC.Collect();
-            ZeroTrace.SystemLog(StationState.Text(ApplicationState), "<<OnZeroEnd]");
+            return Task.CompletedTask;
         }
+
 
         #endregion
     }

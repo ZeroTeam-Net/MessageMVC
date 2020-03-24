@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ZeroMQ
+namespace ZeroTeam.ZeroMQ
 {
     /// <summary>
     /// A single or multi-part message, sent or received via a <see cref="ZSocket"/>.
@@ -144,7 +144,7 @@ namespace ZeroMQ
         /// <summary>
         /// Removes ZFrames. Note: Disposes the ZFrame.
         /// </summary>
-        /// <returns>The <see cref="ZeroMQ.ZFrame"/>.</returns>
+        /// <returns>The <see cref="ZeroTeam.ZeroMQ.ZFrame"/>.</returns>
         public void RemoveAt(int index)
         {
             RemoveAt(index, true);
@@ -153,7 +153,7 @@ namespace ZeroMQ
         /// <summary>
         /// Removes ZFrames.
         /// </summary>
-        /// <returns>The <see cref="ZeroMQ.ZFrame"/>.</returns>
+        /// <returns>The <see cref="ZeroTeam.ZeroMQ.ZFrame"/>.</returns>
         /// <param name="index"></param>
         /// <param name="dispose">If set to <c>false</c>, do not dispose the ZFrame.</param>
         public ZFrame RemoveAt(int index, bool dispose)

@@ -1,4 +1,4 @@
-﻿namespace ZeroMQ
+﻿namespace ZeroTeam.ZeroMQ
 {
     using System;
     using System.Runtime.Serialization;
@@ -40,7 +40,7 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="ZException"/> class.
         /// </summary>
-        /// <param name="errorSymbol">The error code returned by the ZeroMQ library call.</param>
+        /// <param name="errorSymbol">The error code returned by the ZeroTeam.ZeroMQ library call.</param>
         public ZException(ZError errorSymbol)
 			: this(errorSymbol, default, default)
 		{ }
@@ -48,7 +48,7 @@
 	    /// <summary>
 	    /// Initializes a new instance of the <see cref="ZException"/> class.
 	    /// </summary>
-	    /// <param name="errorSymbol">The error code returned by the ZeroMQ library call.</param>
+	    /// <param name="errorSymbol">The error code returned by the ZeroTeam.ZeroMQ library call.</param>
 	    /// <param name="message"></param>
 	    public ZException(ZError errorSymbol, string message)
 			: this(errorSymbol, message, default)

@@ -3,7 +3,7 @@ using System;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.ApiDocuments;
 
-namespace Agebull.MicroZero.ZeroManagemant
+namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
 {
     /// <summary>
     /// 系统侦听器

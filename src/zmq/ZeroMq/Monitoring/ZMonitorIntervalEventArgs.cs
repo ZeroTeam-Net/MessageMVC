@@ -1,4 +1,4 @@
-namespace ZeroMQ.Monitoring
+namespace ZeroTeam.ZeroMQ.Monitoring
 {
 	/// <summary>
 	/// Provides data for <see cref="ZMonitor.ConnectRetried"/> event.

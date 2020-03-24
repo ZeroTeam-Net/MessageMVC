@@ -1,8 +1,8 @@
 ﻿using System;
 
-using ZeroMQ.lib;
+using ZeroTeam.ZeroMQ.lib;
 
-namespace ZeroMQ.Monitoring
+namespace ZeroTeam.ZeroMQ.Monitoring
 {
 
     /// <summary>

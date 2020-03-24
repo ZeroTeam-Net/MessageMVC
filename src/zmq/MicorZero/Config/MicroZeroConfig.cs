@@ -9,7 +9,7 @@ using System.Runtime.Serialization;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.ApiDocuments;
 
-namespace Agebull.MicroZero
+namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
     /// <summary>
     ///     本地站点配置
@@ -64,10 +64,10 @@ namespace Agebull.MicroZero
             if (option.CanRaiseEvent != null)
                 CanRaiseEvent = option.CanRaiseEvent;
 
-            if (ZeroGroup == null || option.ZeroGroup == null)
-                ZeroGroup = option.ZeroGroup;
-            else if (option.ZeroGroup.Count > 0)
+            if (option.ZeroGroup != null && option.ZeroGroup.Count > 0)
             {
+                if (ZeroGroup == null)
+                    ZeroGroup = new List<ZeroItem>();
                 foreach (var item in option.ZeroGroup)
                 {
                     if (ZeroGroup.Any(p => p.Address == item.Address))
@@ -106,9 +106,9 @@ namespace Agebull.MicroZero
             if (CanRaiseEvent == null)
                 CanRaiseEvent = option.CanRaiseEvent;
 
-            if (ZeroGroup == null || option.ZeroGroup == null)
+            if (ZeroGroup == null)
                 ZeroGroup = option.ZeroGroup;
-            else if (option.ZeroGroup.Count > 0)
+            else if (option.ZeroGroup != null && option.ZeroGroup.Count > 0)
             {
                 foreach (var item in option.ZeroGroup)
                 {

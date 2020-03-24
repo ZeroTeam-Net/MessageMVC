@@ -25,6 +25,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Config\SpeedLimitType.cs" />
+    <Compile Remove="Config\UserOperatorStateType.cs" />
+    <Compile Remove="Config\ZeroOperatorStateType.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
   </ItemGroup>
 

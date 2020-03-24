@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using ZeroMQ;
 using ZeroTeam.MessageMVC;
 
-namespace Agebull.MicroZero.ZeroManagemant
+namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
 {
     /// <summary>
     /// 系统侦听器
@@ -72,8 +71,6 @@ namespace Agebull.MicroZero.ZeroManagemant
                         ZeroTrace.WriteError("Zero center event monitor failed,there was no message for a long time");
                         MicroZeroApplication.ZeroCenterState = ZeroCenterState.Failed;
                         await MicroZeroApplication.OnZeroCenterClose();
-                        if (MicroZeroApplication.ApplicationState != StationState.Failed)
-                            MicroZeroApplication.ApplicationState = StationState.Failed;
                         Thread.Sleep(500);
                         break;
                     }

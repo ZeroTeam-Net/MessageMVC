@@ -1,6 +1,6 @@
 using System;
 
-namespace Agebull.MicroZero
+namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
     /// <summary>
     /// 站点事件参数

@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using Agebull.Common.Logging;
-using Agebull.MicroZero;
+using ZeroTeam.MessageMVC;
 
-namespace ZeroMQ
+namespace ZeroTeam.ZeroMQ
 {
 
     /// <summary>
-    ///     Sends and receives messages, single frames and byte frames across ZeroMQ.
+    ///     Sends and receives messages, single frames and byte frames across ZeroTeam.ZeroMQ.
     /// </summary>
     public sealed class ZSocketEx : ZSocket
     {

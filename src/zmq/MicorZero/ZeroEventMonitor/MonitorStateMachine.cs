@@ -6,7 +6,7 @@ using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.ApiDocuments;
 #pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
 
-namespace Agebull.MicroZero.ZeroManagemant
+namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
 {
     /// <summary>
     /// 系统侦听器状态机
@@ -37,24 +37,20 @@ namespace Agebull.MicroZero.ZeroManagemant
         /// </summary>
         public static void SyncAppState()
         {
-            switch (MicroZeroApplication.ApplicationState)
+            switch (MicroZeroApplication.ZeroCenterState)
             {
-                case StationState.None: // 刚构造
-                case StationState.ConfigError: // 配置错误
-                case StationState.Initialized: // 已初始化
-                case StationState.Start: // 正在启动
-                case StationState.BeginRun: // 开始运行
-                case StationState.Closing: // 将要关闭
-                case StationState.Closed: // 已关闭
-                case StationState.Destroy: // 已销毁，析构已调用
-                case StationState.Disposed: // 已销毁，析构已调用
+                case ZeroCenterState.None: // 刚构造
+                case ZeroCenterState.Start: // 正在启动
+                case ZeroCenterState.Closing: // 将要关闭
+                case ZeroCenterState.Closed: // 已关闭
+                case ZeroCenterState.Destroy: // 已销毁，析构已调用
                     StateMachine = new EmptyStateMachine();
                     return;
-                case StationState.Failed: // 错误状态
+                case ZeroCenterState.Failed: // 错误状态
                     ZeroMachineState = 3;
                     StateMachine = new FailedStateMachine();
                     return;
-                case StationState.Run: // 正在运行
+                case ZeroCenterState.Run: // 正在运行
                     ZeroMachineState = 1;
                     StateMachine = new RuningStateMachine();
                     return;
@@ -112,14 +108,12 @@ namespace Agebull.MicroZero.ZeroManagemant
             MicroZeroApplication.ZeroCenterState = ZeroCenterState.Closing;
             MicroZeroApplication.RaiseEvent(ZeroNetEventType.CenterSystemClosing);
             await MicroZeroApplication.OnZeroCenterClose();
-            MicroZeroApplication.ApplicationState = StationState.Failed;
         }
         internal static async Task center_stop()
         {
             MicroZeroApplication.ZeroCenterState = ZeroCenterState.Closed;
             MicroZeroApplication.RaiseEvent(ZeroNetEventType.CenterSystemStop);
             await MicroZeroApplication.OnZeroCenterClose();
-            MicroZeroApplication.ApplicationState = StationState.Failed;
         }
         #endregion
 
@@ -130,7 +124,7 @@ namespace Agebull.MicroZero.ZeroManagemant
         /// </summary>
         internal static void worker_sound_off()
         {
-            if (MicroZeroApplication.ApplicationState != StationState.Run || MicroZeroApplication.ZeroCenterState != ZeroCenterState.Run)
+            if (ZeroFlowControl.ApplicationState != StationState.Run || MicroZeroApplication.ZeroCenterState != ZeroCenterState.Run)
                 return;
             ZeroCenterProxy.Master.Heartbeat();
         }
@@ -157,7 +151,6 @@ namespace Agebull.MicroZero.ZeroManagemant
             ZeroTrace.SystemLog(name, "station_update", content);
             if (MicroZeroApplication.Config.UpdateConfig(MicroZeroApplication.Config.Master, name, content, out var config))
             {
-                MicroZeroApplication.OnStationStateChanged(config);
                 MicroZeroApplication.InvokeEvent(ZeroNetEventType.CenterStationUpdate, name, content, config);
             }
         }
@@ -166,7 +159,6 @@ namespace Agebull.MicroZero.ZeroManagemant
             ZeroTrace.SystemLog(name, "station_install", content);
             if (MicroZeroApplication.Config.UpdateConfig(MicroZeroApplication.Config.Master, name, content, out var config))
             {
-                MicroZeroApplication.OnStationStateChanged(config);
                 MicroZeroApplication.InvokeEvent(ZeroNetEventType.CenterStationInstall, name, content, config);
             }
         }
@@ -176,17 +168,15 @@ namespace Agebull.MicroZero.ZeroManagemant
             ZeroTrace.SystemLog(name, "station_join", content);
             if (MicroZeroApplication.Config.UpdateConfig(MicroZeroApplication.Config.Master, name, content, out var config))
             {
-                MicroZeroApplication.OnStationStateChanged(config);
                 MicroZeroApplication.InvokeEvent(ZeroNetEventType.CenterStationJoin, name, content, config);
             }
         }
         internal static void ChangeStationState(string name, ZeroCenterState state, ZeroNetEventType eventType)
         {
-            if (MicroZeroApplication.ApplicationState != StationState.Run || MicroZeroApplication.ZeroCenterState != ZeroCenterState.Run)
+            if (ZeroFlowControl.ApplicationState != StationState.Run || MicroZeroApplication.ZeroCenterState != ZeroCenterState.Run)
                 return;
             if (!MicroZeroApplication.Config.TryGetConfig(name, out var config) || !config.ChangedState(state))
                 return;
-            MicroZeroApplication.OnStationStateChanged(config);
             MicroZeroApplication.InvokeEvent(eventType, name, null, config);
         }
 

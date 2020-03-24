@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using ZeroMQ.lib;
+using ZeroTeam.ZeroMQ.lib;
 
-namespace ZeroMQ
+namespace ZeroTeam.ZeroMQ
 {
     /// <summary>
     /// 原始封装的Pool对象

@@ -13,6 +13,7 @@
             ZeroFlowControl.OnObjectFailed(Service);
             return false;
         }
+
         /// <summary>
         ///     结束的处理
         /// </summary>
@@ -26,7 +27,6 @@
         /// </summary>
         bool IStationStateMachine.Close()
         {
-            ZeroFlowControl.OnObjectClose(Service);
             return false;
         }
     }

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Agebull.Common.Logging;
-using ZeroMQ.lib;
+using ZeroTeam.ZeroMQ.lib;
 
-namespace ZeroMQ
+namespace ZeroTeam.ZeroMQ
 {
     /// <summary>
     /// Creates <see cref="ZSocket"/> instances within a process boundary.
@@ -98,7 +98,7 @@ namespace ZeroMQ
         private IntPtr _contextPtr;
 
         /// <summary>
-        /// Gets a handle to the native ZeroMQ context.
+        /// Gets a handle to the native ZeroTeam.ZeroMQ context.
         /// </summary>
         public IntPtr ContextPtr => _contextPtr;
         ///
@@ -307,7 +307,7 @@ namespace ZeroMQ
         }
 
         /// <summary>
-        /// Shutdown the ZeroMQ context.
+        /// Shutdown the ZeroTeam.ZeroMQ context.
         /// </summary>
         public static bool Shutdown()
         {
@@ -315,7 +315,7 @@ namespace ZeroMQ
         }
 
         /// <summary>
-        /// Shutdown the ZeroMQ context.
+        /// Shutdown the ZeroTeam.ZeroMQ context.
         /// </summary>
         public bool Shutdown(out ZError error)
         {
@@ -336,7 +336,7 @@ namespace ZeroMQ
         }
 
         /// <summary>
-        /// Terminate the ZeroMQ context.
+        /// Terminate the ZeroTeam.ZeroMQ context.
         /// </summary>
         public static void AddSocket(ZSocket socket)
         {
@@ -363,7 +363,7 @@ namespace ZeroMQ
             {
                 return true;
             }
-            LogRecorder.SystemLog("Terminate the ZeroMQ context.");
+            LogRecorder.SystemLog("Terminate the ZeroTeam.ZeroMQ context.");
             
             var ptr = _contextPtr;
             _contextPtr = IntPtr.Zero;
@@ -385,7 +385,7 @@ namespace ZeroMQ
         }
 
         /// <summary>
-        /// Terminate the ZeroMQ context.
+        /// Terminate the ZeroTeam.ZeroMQ context.
         /// </summary>
         public void Terminate()
         {

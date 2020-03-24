@@ -4,18 +4,15 @@ using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Text;
 using Agebull.Common.Logging;
 
-using Agebull.MicroZero;
-using Agebull.EntityModel.Common;
-using ZeroMQ.lib;
+using ZeroTeam.ZeroMQ.lib;
 
-namespace ZeroMQ
+namespace ZeroTeam.ZeroMQ
 {
 #pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
     /// <summary>
-    ///     Sends and receives messages, single frames and byte frames across ZeroMQ.
+    ///     Sends and receives messages, single frames and byte frames across ZeroTeam.ZeroMQ.
     /// </summary>
     public class ZSocket : MemoryCheck
     {
@@ -45,7 +42,7 @@ namespace ZeroMQ
         public IntPtr SocketPtr { get; private set; }
 
         /// <summary>
-        ///     Gets the <see cref="ZeroMQ.ZSocketType" /> value for the current socket.
+        ///     Gets the <see cref="ZeroTeam.ZeroMQ.ZSocketType" /> value for the current socket.
         /// </summary>
         public ZSocketType SocketType { get; }
 
@@ -1014,7 +1011,7 @@ namespace ZeroMQ
         ///     Subscribe to all messages.
         /// </summary>
         /// <remarks>
-        ///     Only applies to <see cref="ZeroMQ.ZSocketType.SUB" /> and <see cref="ZeroMQ.ZSocketType.XSUB" /> sockets.
+        ///     Only applies to <see cref="ZeroTeam.ZeroMQ.ZSocketType.SUB" /> and <see cref="ZeroTeam.ZeroMQ.ZSocketType.XSUB" /> sockets.
         /// </remarks>
         public void SubscribeAll()
         {
@@ -1025,7 +1022,7 @@ namespace ZeroMQ
         ///     Subscribe to messages that begin with a specified prefix.
         /// </summary>
         /// <remarks>
-        ///     Only applies to <see cref="ZeroMQ.ZSocketType.SUB" /> and <see cref="ZeroMQ.ZSocketType.XSUB" /> sockets.
+        ///     Only applies to <see cref="ZeroTeam.ZeroMQ.ZSocketType.SUB" /> and <see cref="ZeroTeam.ZeroMQ.ZSocketType.XSUB" /> sockets.
         /// </remarks>
         /// <param name="prefix">Prefix for subscribed messages.</param>
         public void Subscribe(byte[] prefix)
@@ -1037,7 +1034,7 @@ namespace ZeroMQ
         ///     Subscribe to messages that begin with a specified prefix.
         /// </summary>
         /// <remarks>
-        ///     Only applies to <see cref="ZeroMQ.ZSocketType.SUB" /> and <see cref="ZeroMQ.ZSocketType.XSUB" /> sockets.
+        ///     Only applies to <see cref="ZeroTeam.ZeroMQ.ZSocketType.SUB" /> and <see cref="ZeroTeam.ZeroMQ.ZSocketType.XSUB" /> sockets.
         /// </remarks>
         /// <param name="prefix">Prefix for subscribed messages.</param>
         public void Subscribe(string prefix)
@@ -1049,7 +1046,7 @@ namespace ZeroMQ
         ///     Unsubscribe from all messages.
         /// </summary>
         /// <remarks>
-        ///     Only applies to <see cref="ZeroMQ.ZSocketType.SUB" /> and <see cref="ZeroMQ.ZSocketType.XSUB" /> sockets.
+        ///     Only applies to <see cref="ZeroTeam.ZeroMQ.ZSocketType.SUB" /> and <see cref="ZeroTeam.ZeroMQ.ZSocketType.XSUB" /> sockets.
         /// </remarks>
         public void UnsubscribeAll()
         {
@@ -1060,7 +1057,7 @@ namespace ZeroMQ
         ///     Unsubscribe from messages that begin with a specified prefix.
         /// </summary>
         /// <remarks>
-        ///     Only applies to <see cref="ZeroMQ.ZSocketType.SUB" /> and <see cref="ZeroMQ.ZSocketType.XSUB" /> sockets.
+        ///     Only applies to <see cref="ZeroTeam.ZeroMQ.ZSocketType.SUB" /> and <see cref="ZeroTeam.ZeroMQ.ZSocketType.XSUB" /> sockets.
         /// </remarks>
         /// <param name="prefix">Prefix for subscribed messages.</param>
         public void Unsubscribe(byte[] prefix)
@@ -1072,7 +1069,7 @@ namespace ZeroMQ
         ///     Unsubscribe from messages that begin with a specified prefix.
         /// </summary>
         /// <remarks>
-        ///     Only applies to <see cref="ZeroMQ.ZSocketType.SUB" /> and <see cref="ZeroMQ.ZSocketType.XSUB" /> sockets.
+        ///     Only applies to <see cref="ZeroTeam.ZeroMQ.ZSocketType.SUB" /> and <see cref="ZeroTeam.ZeroMQ.ZSocketType.XSUB" /> sockets.
         /// </remarks>
         /// <param name="prefix">Prefix for subscribed messages.</param>
         public void Unsubscribe(string prefix)

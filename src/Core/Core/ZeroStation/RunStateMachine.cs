@@ -10,7 +10,6 @@
         /// </summary>
         bool IStationStateMachine.Start()
         {
-            ZeroFlowControl.OnObjectFailed(Service);
             return false;
         }
 
@@ -33,7 +32,7 @@
         /// </summary>
         bool IStationStateMachine.End()
         {
-            return false;
+            return true;
         }
     }
 

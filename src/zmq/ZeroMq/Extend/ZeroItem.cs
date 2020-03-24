@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using Agebull.EntityModel.Common;
-
-namespace Agebull.MicroZero
+namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
     /// <summary>
     ///     分组节点

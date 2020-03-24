@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Agebull.EntityModel.Common;
 using Newtonsoft.Json;
-using ZeroMQ;
 using ZeroTeam.MessageMVC;
 
-namespace Agebull.MicroZero.ZeroApis
+namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
 
     /// <summary>

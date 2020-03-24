@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Agebull.MicroZero.ZeroManagemant
+namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
 {
     internal partial class MonitorStateMachine
     {

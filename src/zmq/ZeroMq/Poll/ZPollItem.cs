@@ -1,4 +1,4 @@
-namespace ZeroMQ
+namespace ZeroTeam.ZeroMQ
 {
     /// <summary>
     /// pool½Úµã

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using ZeroTeam.MessageMVC;
-
-namespace Agebull.MicroZero
+namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
     /// <summary>
     ///     本地站点配置

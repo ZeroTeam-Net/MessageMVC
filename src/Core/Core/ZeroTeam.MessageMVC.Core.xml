@@ -871,6 +871,11 @@
                 系统启动时调用
             </summary>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.StartFailed">
+            <summary>
+                重新启动未正常启动的项目
+            </summary>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.OnZeroClose">
             <summary>
                 注销时调用
