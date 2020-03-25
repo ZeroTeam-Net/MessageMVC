@@ -273,6 +273,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>生成动态匿名调用内部方法（参数由TArg转为实际类型后调用，并将调用返回值转为TRes）</summary>
         /// <param name="callInfo">调用对象类型</param>
         /// <param name="argInfo">原始参数类型</param>
+        /// <param name="isAsync">此调用是否异步方法</param>
         /// <param name="methodName">原始调用方法</param>
         /// <returns>匿名委托</returns>
         public static Func<object, object> CreateMethod(TypeInfo callInfo, string methodName, TypeInfo argInfo, out bool isAsync)

@@ -10,7 +10,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
     /// <summary>
     ///     API客户端代理
     /// </summary>
-    internal class ZmqProxy : IFlowMiddleware
+    public class ZmqProxy : IFlowMiddleware
     {
         #region Socket
 
@@ -48,10 +48,10 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// </summary>
         int IFlowMiddleware.Level => short.MinValue;
 
-        /// <summary>
+        /*// <summary>
         /// 等待数量
         /// </summary>
-        public int WaitCount;
+        public int WaitCount;*/
 
         /// <summary>
         /// 实例
@@ -64,7 +64,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         public void Initialize()
         {
             Instance = this;
-            //ZContext.Initialize();
+            ZContext.Initialize();
         }
 
 
@@ -73,7 +73,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// </summary>
         public void End()
         {
-            //ZContext.Destroy();
+            ZContext.Destroy();
         }
 
         #endregion

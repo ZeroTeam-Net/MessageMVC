@@ -10,10 +10,10 @@ namespace ZeroTeam.MessageMVC.Web
     /// <summary>
     /// 表示一个WebSocket连接
     /// </summary>
-    public class WebSocketClient : IDisposable
+    internal class WebSocketClient : IDisposable
     {
-        public readonly List<string> Subscriber = new List<string>();
-        public const int BufferSize = 4096;
+        internal readonly List<string> Subscriber = new List<string>();
+        internal const int BufferSize = 4096;
         private readonly WebSocket _socket;
         public readonly string Classify;
         private readonly List<WebSocketClient> _clients;

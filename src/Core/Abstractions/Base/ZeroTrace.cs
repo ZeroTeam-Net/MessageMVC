@@ -21,6 +21,7 @@ namespace ZeroTeam.MessageMVC
             else
                 LogRecorder.SystemLog("{0} : {1}", title, messages.LinkToString(" $ "));
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -30,6 +31,7 @@ namespace ZeroTeam.MessageMVC
         {
             LogRecorder.Error("{0} : {1}", title, messages.LinkToString(" * "));
         }
+
         /// <summary>
         /// 
         /// </summary>

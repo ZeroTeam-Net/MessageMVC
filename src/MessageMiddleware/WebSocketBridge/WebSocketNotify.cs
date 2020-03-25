@@ -13,7 +13,9 @@ using Agebull.Common.Ioc;
 
 namespace ZeroTeam.MessageMVC.Web
 {
-
+    /// <summary>
+    /// 消息转发到WebSocket中间件
+    /// </summary>
     public class WebSocketNotify : IMessageMiddleware
     {
         #region IMessageMiddleware
@@ -47,11 +49,14 @@ namespace ZeroTeam.MessageMVC.Web
         /// <summary>
         /// 所有客户端连接实例
         /// </summary>
-        public static Dictionary<string, List<WebSocketClient>> Handlers = new Dictionary<string, List<WebSocketClient>>();
+        internal static Dictionary<string, List<WebSocketClient>> Handlers = new Dictionary<string, List<WebSocketClient>>();
 
 
         private static WebSocketConfig _config;
-        public static WebSocketConfig Config
+        /// <summary>
+        /// 配置对象
+        /// </summary>
+        internal static WebSocketConfig Config
         {
             get
             {
@@ -87,7 +92,9 @@ namespace ZeroTeam.MessageMVC.Web
                 app.Map($"/{folder}", Map);
             }
         }
-
+        /// <summary>
+        /// 关闭
+        /// </summary>
         public static void Close()
         {
             foreach (var handler in Handlers.Values)
@@ -134,7 +141,13 @@ namespace ZeroTeam.MessageMVC.Web
 
         #region 广播管理
 
-
+        /// <summary>
+        /// 发出广播
+        /// </summary>
+        /// <param name="classify"></param>
+        /// <param name="title"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static async Task Publish(string classify, string title, string value)
         {
             if (string.IsNullOrEmpty(value))

@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\zmq\Inproc\ZeroTeam.MessageMVC.Inproc.csproj" />
+    <ProjectReference Include="..\..\zmq\Inproc\ZeroTeam.ZeroMQ.Inproc.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">

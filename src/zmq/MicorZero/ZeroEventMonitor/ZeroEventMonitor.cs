@@ -36,22 +36,22 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         {
             ZeroTrace.SystemLog("Zero center in monitor...");
             List<string> subs = new List<string>();
-            if (MicroZeroApplication.Config.CanRaiseEvent != true)
+            if (ZeroRpcFlow.Config.CanRaiseEvent != true)
             {
                 subs.Add("system");
                 subs.Add("station");
             }
-            while (MicroZeroApplication.IsAlive)
+            while (ZeroRpcFlow.IsAlive)
             {
                 DateTime failed = DateTime.MinValue;
                 using var poll = ZmqPool.CreateZmqPool();
                 var socket = ZSocketEx.CreateSubSocket(
-                    MicroZeroApplication.Config.Master.MonitorAddress, 
-                    MicroZeroApplication.Config.Master.ServiceKey.ToZeroBytes(),
+                    ZeroRpcFlow.Config.Master.MonitorAddress, 
+                    ZeroRpcFlow.Config.Master.ServiceKey.ToZeroBytes(),
                     ZSocketHelper.CreateIdentity(false, "Monitor"), subs);
 
                 poll.Prepare(ZPollEvent.In, socket);
-                while (MicroZeroApplication.IsAlive)
+                while (ZeroRpcFlow.IsAlive)
                 {
                     if (poll.Poll())
                     {
@@ -65,12 +65,12 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
                     }
                     else if (failed == DateTime.MinValue)
                         failed = DateTime.Now;
-                    else if ((DateTime.Now - failed).TotalMinutes > 1)
+                    else if ((DateTime.Now - failed).TotalSeconds > 10)
                     {
                         //超时，连接重置
                         ZeroTrace.WriteError("Zero center event monitor failed,there was no message for a long time");
-                        MicroZeroApplication.ZeroCenterState = ZeroCenterState.Failed;
-                        await MicroZeroApplication.OnZeroCenterClose();
+                        ZeroRpcFlow.ZeroCenterState = ZeroCenterState.Failed;
+                        ZeroRpcFlow.RaiseEvent(ZeroNetEventType.CenterSystemStop,true);
                         Thread.Sleep(500);
                         break;
                     }

@@ -25,7 +25,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
                         //ZeroTrace.SystemLog("Restart");
                         //await ZeroApplication.JoinCenter();
                         //StateMachine = new EmptyStateMachine();
-                        await center_start(MicroZeroApplication.Config.ServiceName, content);
+                        await center_start(ZeroRpcFlow.Config.ServiceName, content);
                         return;
                 }
             }

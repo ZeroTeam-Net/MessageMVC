@@ -52,7 +52,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
             #region NetEvent
             var na = type.GetCustomAttribute<NetEventAttribute>();
-            if (ca != null)
+            if (na != null)
             {
                 name = na.Name;
                 return NetEventTransportBuilder;

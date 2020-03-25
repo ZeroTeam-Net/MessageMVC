@@ -33,5 +33,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ///     配置状态
         /// </summary>
         StationStateType ConfigState { get; set; }
+
+        /// <summary>
+        /// 重置状态机,请谨慎使用
+        /// </summary>
+         void ResetStateMachine();
     }
 }

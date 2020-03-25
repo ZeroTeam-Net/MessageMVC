@@ -26,7 +26,7 @@
     <Company>ZeroTeam</Company>
     <PackageReleaseNotes>ZeroMQ实现的RPC网络通讯</PackageReleaseNotes>
     <Product>ZeroTeam.ZeroMQ.ZeroRPC</Product>
-    <Version>1.0.0.3-bate</Version>
+    <Version>1.0.0.5-bate</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -42,11 +42,11 @@
     <Optimize>true</Optimize>
     <DefineConstants>UseStateMachine</DefineConstants>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>ZeroTeam.ZeroMQ.ZeroRPC.ZeroApis.Core.xml</DocumentationFile>
+    <DocumentationFile>ZeroTeam.ZeroMQ.ZeroRPC.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp3.1|AnyCPU'">
-    <DocumentationFile>ZeroTeam.ZeroMQ.ZeroRPC.ZeroApis.Core.xml</DocumentationFile>
+    <DocumentationFile>ZeroTeam.ZeroMQ.ZeroRPC.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -113,6 +113,7 @@
     <Compile Remove="Application\ZeroStationOption.cs" />
     <Compile Remove="Base\SyncBatchQueue.cs" />
     <Compile Remove="Base\ZeroManageCommand.cs" />
+    <Compile Remove="Producer\ZmqProxy.cs" />
     <Compile Remove="Properties\AssemblyInfo.cs" />
     <Compile Remove="ZeroApi\ApiAction.cs" />
     <Compile Remove="ZeroApi\ApiCallItem.cs" />
@@ -129,7 +130,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\Core\ZeroTeam.MessageMVC.Core.csproj" />
     <ProjectReference Include="..\ZeroMq\ZeroTeam.ZeroMQ.csproj" />
   </ItemGroup>
 

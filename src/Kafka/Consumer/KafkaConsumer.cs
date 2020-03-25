@@ -14,7 +14,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <summary>
         /// 调用计数
         /// </summary>
-        public int CallCount, WaitCount, ErrorCount, SuccessCount, RecvCount, SendCount, SendError;
+        public int CallCount, WaitCount, ErrorCount, SuccessCount;//, RecvCount, SendCount, SendError;
 
 
         /// <summary>

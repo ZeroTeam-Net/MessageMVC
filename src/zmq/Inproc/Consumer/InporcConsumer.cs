@@ -12,7 +12,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
     /// <summary>
     /// 表示进程内通讯
     /// </summary>
-    internal class InporcConsumer : IMessageConsumer
+    public class InporcConsumer : IMessageConsumer
     {
 
         public string Name { get; set; }
@@ -46,12 +46,15 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// 同步运行状态
         /// </summary>
         /// <returns></returns>
-        public void LoopBegin()
+        public bool LoopBegin()
         {
             socket = ZSocketEx.CreateServiceSocket(ZmqProxy.InprocAddress, null, ZSocketType.ROUTER);
+            if (socket == null)
+                return false;
             zmqPool = ZmqPool.CreateZmqPool();
             zmqPool.Sockets = new[] { socket };
             zmqPool.RePrepare(ZPollEvent.In);
+            return true;
         }
 
         Task<bool> INetTransfer.Loop(CancellationToken token)

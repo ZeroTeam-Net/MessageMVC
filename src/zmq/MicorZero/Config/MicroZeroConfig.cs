@@ -1,10 +1,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.ApiDocuments;
@@ -16,7 +13,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
     /// </summary>
     [Serializable]
     [DataContract]
-    public class MicroZeroConfig : ZeroStationOption
+    public class ZeroRpcConfig : ZeroStationOption
     {
         /// <summary>
         ///   服务中心组，第一个为主
@@ -51,7 +48,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// 如果目标配置存在,则复制之
         /// </summary>
         /// <param name="option"></param>
-        internal void CopyByHase(MicroZeroConfig option)
+        internal void CopyByHase(ZeroRpcConfig option)
         {
             base.CopyByHase(option);
             if (option.StationIsolate != null)
@@ -97,7 +94,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// 如果本配置内容为空则用目标配置补全
         /// </summary>
         /// <param name="option"></param>
-        public void CopyByEmpty(MicroZeroConfig option)
+        public void CopyByEmpty(ZeroRpcConfig option)
         {
             base.CopyByEmpty(option);
             if (StationIsolate == null)
@@ -123,7 +120,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
     /// <summary>
     ///     本地站点配置
     /// </summary>
-    public class MicroZeroRuntimeConfig : MicroZeroConfig
+    public class ZeroRpcOption : ZeroRpcConfig
     {
         /// <summary>
         ///   主服务中心
@@ -207,7 +204,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     foreach (var ali in station.StationAlias)
                         _configMap.Remove(ali);
             }
-            MicroZeroApplication.InvokeEvent(ZeroNetEventType.CenterStationRemove, station.Group, null, station, true);
+            ZeroRpcFlow.InvokeEvent(ZeroNetEventType.CenterStationRemove, station.Group, null, station, true);
         }
 
         private void AddStation(StationConfig station, bool raiseEvent = true)
@@ -240,7 +237,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 //        _configMap[ali] = config;
             }
             if (raiseEvent)
-                MicroZeroApplication.InvokeEvent(ZeroNetEventType.CenterStationUpdate, station.Group, null, station, true);
+                ZeroRpcFlow.InvokeEvent(ZeroNetEventType.CenterStationUpdate, station.Group, null, station, true);
         }
 
         /// <summary>

@@ -37,15 +37,15 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         /// </summary>
         public static void SyncAppState()
         {
-            switch (MicroZeroApplication.ZeroCenterState)
+            switch (ZeroRpcFlow.ZeroCenterState)
             {
                 case ZeroCenterState.None: // 刚构造
                 case ZeroCenterState.Start: // 正在启动
                 case ZeroCenterState.Closing: // 将要关闭
                 case ZeroCenterState.Closed: // 已关闭
                 case ZeroCenterState.Destroy: // 已销毁，析构已调用
-                    StateMachine = new EmptyStateMachine();
-                    return;
+                    //StateMachine = new EmptyStateMachine();
+                    //return;
                 case ZeroCenterState.Failed: // 错误状态
                     ZeroMachineState = 3;
                     StateMachine = new FailedStateMachine();
@@ -63,20 +63,22 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
 
         static int ZeroMachineState;
 
-        internal static async Task center_start(string identity, string content)
+        internal static Task center_start(string identity, string content)
         {
             if (ZeroMachineState == 1)
-                return;
+                return Task.CompletedTask;
             ZeroMachineState = 1;
-            ZeroTrace.SystemLog("ZeroCenter", "center_start", $"{identity}:{MicroZeroApplication.ZeroCenterState}:{ZeroMachineState}");
-            if (MicroZeroApplication.ZeroCenterState >= ZeroCenterState.Failed || MicroZeroApplication.ZeroCenterState < ZeroCenterState.Start)
+            ZeroTrace.SystemLog("ZeroCenter", "center_start", $"{identity}:{ZeroRpcFlow.ZeroCenterState}:{ZeroMachineState}");
+            if (ZeroRpcFlow.ZeroCenterState >= ZeroCenterState.Failed || ZeroRpcFlow.ZeroCenterState < ZeroCenterState.Start)
             {
-                MicroZeroApplication.JoinCenter();
+                ZeroRpcFlow.JoinCenter();
             }
             else
             {
                 ConfigManager.LoadAllConfig();
             }
+            ZeroRpcFlow.RaiseEvent(ZeroNetEventType.CenterSystemStart, true);
+            return Task.CompletedTask;
         }
 
         internal static async Task center_closing(string identity, string content)
@@ -84,8 +86,8 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
             if (ZeroMachineState >= 2)
                 return;
             ZeroMachineState = 2;
-            ZeroTrace.SystemLog("ZeroCenter", "center_closing", $"{identity}:{MicroZeroApplication.ZeroCenterState}:{ZeroMachineState}");
-            if (MicroZeroApplication.ZeroCenterState < ZeroCenterState.Closing)
+            ZeroTrace.SystemLog("ZeroCenter", "center_closing", $"{identity}:{ZeroRpcFlow.ZeroCenterState}:{ZeroMachineState}");
+            if (ZeroRpcFlow.ZeroCenterState < ZeroCenterState.Closing)
             {
                 await center_closing();
             }
@@ -96,8 +98,8 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
             if (ZeroMachineState == 3)
                 return;
             ZeroMachineState = 3;
-            ZeroTrace.SystemLog("ZeroCenter", "center_stop", $"{identity}:{MicroZeroApplication.ZeroCenterState}:{ZeroMachineState}");
-            if (MicroZeroApplication.ZeroCenterState < ZeroCenterState.Closing)
+            ZeroTrace.SystemLog("ZeroCenter", "center_stop", $"{identity}:{ZeroRpcFlow.ZeroCenterState}:{ZeroMachineState}");
+            if (ZeroRpcFlow.ZeroCenterState < ZeroCenterState.Closing)
             {
                 await center_stop();
             }
@@ -105,15 +107,13 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
 
         internal static async Task center_closing()
         {
-            MicroZeroApplication.ZeroCenterState = ZeroCenterState.Closing;
-            MicroZeroApplication.RaiseEvent(ZeroNetEventType.CenterSystemClosing);
-            await MicroZeroApplication.OnZeroCenterClose();
+            ZeroRpcFlow.ZeroCenterState = ZeroCenterState.Closing;
+            ZeroRpcFlow.RaiseEvent(ZeroNetEventType.CenterSystemClosing);
         }
         internal static async Task center_stop()
         {
-            MicroZeroApplication.ZeroCenterState = ZeroCenterState.Closed;
-            MicroZeroApplication.RaiseEvent(ZeroNetEventType.CenterSystemStop);
-            await MicroZeroApplication.OnZeroCenterClose();
+            ZeroRpcFlow.ZeroCenterState = ZeroCenterState.Closed;
+            ZeroRpcFlow.RaiseEvent(ZeroNetEventType.CenterSystemStop);
         }
         #endregion
 
@@ -124,7 +124,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         /// </summary>
         internal static void worker_sound_off()
         {
-            if (ZeroFlowControl.ApplicationState != StationState.Run || MicroZeroApplication.ZeroCenterState != ZeroCenterState.Run)
+            if (ZeroFlowControl.ApplicationState != StationRealState.Run || ZeroRpcFlow.ZeroCenterState != ZeroCenterState.Run)
                 return;
             ZeroCenterProxy.Master.Heartbeat();
         }
@@ -138,7 +138,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         {
             try
             {
-                MicroZeroApplication.InvokeEvent(ZeroNetEventType.CenterStationTrends, name, content, null);
+                ZeroRpcFlow.InvokeEvent(ZeroNetEventType.CenterStationTrends, name, content, null);
             }
             catch (Exception e)
             {
@@ -149,35 +149,35 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         internal static void station_update(string name, string content)
         {
             ZeroTrace.SystemLog(name, "station_update", content);
-            if (MicroZeroApplication.Config.UpdateConfig(MicroZeroApplication.Config.Master, name, content, out var config))
+            if (ZeroRpcFlow.Config.UpdateConfig(ZeroRpcFlow.Config.Master, name, content, out var config))
             {
-                MicroZeroApplication.InvokeEvent(ZeroNetEventType.CenterStationUpdate, name, content, config);
+                ZeroRpcFlow.InvokeEvent(ZeroNetEventType.CenterStationUpdate, name, content, config);
             }
         }
         internal static void station_install(string name, string content)
         {
             ZeroTrace.SystemLog(name, "station_install", content);
-            if (MicroZeroApplication.Config.UpdateConfig(MicroZeroApplication.Config.Master, name, content, out var config))
+            if (ZeroRpcFlow.Config.UpdateConfig(ZeroRpcFlow.Config.Master, name, content, out var config))
             {
-                MicroZeroApplication.InvokeEvent(ZeroNetEventType.CenterStationInstall, name, content, config);
+                ZeroRpcFlow.InvokeEvent(ZeroNetEventType.CenterStationInstall, name, content, config);
             }
         }
 
         internal static void station_join(string name, string content)
         {
             ZeroTrace.SystemLog(name, "station_join", content);
-            if (MicroZeroApplication.Config.UpdateConfig(MicroZeroApplication.Config.Master, name, content, out var config))
+            if (ZeroRpcFlow.Config.UpdateConfig(ZeroRpcFlow.Config.Master, name, content, out var config))
             {
-                MicroZeroApplication.InvokeEvent(ZeroNetEventType.CenterStationJoin, name, content, config);
+                ZeroRpcFlow.InvokeEvent(ZeroNetEventType.CenterStationJoin, name, content, config);
             }
         }
         internal static void ChangeStationState(string name, ZeroCenterState state, ZeroNetEventType eventType)
         {
-            if (ZeroFlowControl.ApplicationState != StationState.Run || MicroZeroApplication.ZeroCenterState != ZeroCenterState.Run)
+            if (ZeroFlowControl.ApplicationState != StationRealState.Run || ZeroRpcFlow.ZeroCenterState != ZeroCenterState.Run)
                 return;
-            if (!MicroZeroApplication.Config.TryGetConfig(name, out var config) || !config.ChangedState(state))
+            if (!ZeroRpcFlow.Config.TryGetConfig(name, out var config) || !config.ChangedState(state))
                 return;
-            MicroZeroApplication.InvokeEvent(eventType, name, null, config);
+            ZeroRpcFlow.InvokeEvent(eventType, name, null, config);
         }
 
 
@@ -223,20 +223,20 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
 
         internal static void station_document(string name, string content)
         {
-            if (!MicroZeroApplication.Config.TryGetConfig(name, out var config))
+            if (!ZeroRpcFlow.Config.TryGetConfig(name, out var config))
                 return;
             ZeroTrace.SystemLog(name, "station_document");
             var doc = JsonConvert.DeserializeObject<ServiceDocument>(content);
-            if (MicroZeroApplication.Config.Documents.ContainsKey(name))
+            if (ZeroRpcFlow.Config.Documents.ContainsKey(name))
             {
-                if (!MicroZeroApplication.Config.Documents[name].IsLocal)
-                    MicroZeroApplication.Config.Documents[name] = doc;
+                if (!ZeroRpcFlow.Config.Documents[name].IsLocal)
+                    ZeroRpcFlow.Config.Documents[name] = doc;
             }
             else
             {
-                MicroZeroApplication.Config.Documents.Add(name, doc);
+                ZeroRpcFlow.Config.Documents.Add(name, doc);
             }
-            MicroZeroApplication.InvokeEvent(ZeroNetEventType.CenterStationDocument, name, content, config);
+            ZeroRpcFlow.InvokeEvent(ZeroNetEventType.CenterStationDocument, name, content, config);
         }
 
 
@@ -249,18 +249,18 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
 
         internal static void client_join(string name, string content)
         {
-            if (!MicroZeroApplication.Config.TryGetConfig(name, out var config))
+            if (!ZeroRpcFlow.Config.TryGetConfig(name, out var config))
                 return;
             ZeroTrace.SystemLog(name, "client_join", content);
-            MicroZeroApplication.InvokeEvent(ZeroNetEventType.CenterClientJoin, name, content, config);
+            ZeroRpcFlow.InvokeEvent(ZeroNetEventType.CenterClientJoin, name, content, config);
         }
 
         internal static void client_left(string name, string content)
         {
-            if (!MicroZeroApplication.Config.TryGetConfig(name, out var config))
+            if (!ZeroRpcFlow.Config.TryGetConfig(name, out var config))
                 return;
             ZeroTrace.SystemLog(name, "client_left", content);
-            MicroZeroApplication.InvokeEvent(ZeroNetEventType.CenterClientLeft, name, content, config);
+            ZeroRpcFlow.InvokeEvent(ZeroNetEventType.CenterClientLeft, name, content, config);
         }
 
         #endregion

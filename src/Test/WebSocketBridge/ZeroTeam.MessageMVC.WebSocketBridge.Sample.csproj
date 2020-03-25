@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\MessageMiddleware\WebSocketBridge\ZeroTeam.MessageMVC.WebSocketBridge.csproj" />
-    <ProjectReference Include="..\..\zmq\Inproc\ZeroTeam.MessageMVC.Inproc.csproj" />
+    <ProjectReference Include="..\..\zmq\Inproc\ZeroTeam.ZeroMQ.Inproc.csproj" />
   </ItemGroup>
 
 </Project>

@@ -12,7 +12,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// </summary>
         public bool HeartLeft(string station, string realName)
         {
-            return MicroZeroApplication.ZerCenterIsRun && ByteCommand(ZeroByteCommand.HeartLeft, station, realName);
+            return ZeroRpcFlow.ZerCenterIsRun && ByteCommand(ZeroByteCommand.HeartLeft, station, realName);
         }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// </summary>
         public bool HeartReady(string station, string realName)
         {
-            return MicroZeroApplication.ZerCenterIsRun && ByteCommand(ZeroByteCommand.HeartReady, station, realName);
+            return ZeroRpcFlow.ZerCenterIsRun && ByteCommand(ZeroByteCommand.HeartReady, station, realName);
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// </summary>
         public bool HeartJoin(string station, string realName)
         {
-            return MicroZeroApplication.ZerCenterIsRun && ByteCommand(ZeroByteCommand.HeartJoin, station, realName, ZeroFlowControl.Config.LocalIpAddress);
+            return ZeroRpcFlow.ZerCenterIsRun && ByteCommand(ZeroByteCommand.HeartJoin, station, realName, ZeroFlowControl.Config.LocalIpAddress);
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// </summary>
         public bool Heartbeat(string station, string realName)
         {
-            return MicroZeroApplication.ZerCenterIsRun && ByteCommand(ZeroByteCommand.HeartPitpat, station, realName);
+            return ZeroRpcFlow.ZerCenterIsRun && ByteCommand(ZeroByteCommand.HeartPitpat, station, realName);
         }
 
     }

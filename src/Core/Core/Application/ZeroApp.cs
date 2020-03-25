@@ -44,6 +44,29 @@ namespace ZeroTeam.MessageMVC
         }
 
 
+
+        /// <summary>
+        /// 使用主流程控制器
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="assembly">需要发现服务的程序集</param>
+        public static bool UseTest(this IServiceCollection services, Assembly assembly)
+        {
+            services.AddTransient<IFlowMiddleware, MessageProducer>();//消息选择器
+            services.AddTransient<IFlowMiddleware, ConfigMiddleware>();//配置\依赖对象初始化,系统配置获取
+            services.AddTransient<IMessageMiddleware, LoggerMiddleware>();//启用日志
+            //services.AddTransient<IMessageMiddleware, GlobalContextMiddleware>();//启用全局上下文
+            services.AddTransient<IMessageMiddleware, ApiExecuter>();//API路由与执行
+
+            if (IocHelper.ServiceCollection != services)
+                IocHelper.SetServiceCollection(services);
+            IocHelper.Update();
+            ZeroFlowControl.CheckOption();
+            ZeroFlowControl.Discove(assembly);
+            ZeroFlowControl.Initialize();
+            return ZeroFlowControl.Run();
+        }
+
         /// <summary>
         /// 使用主流程控制器
         /// </summary>

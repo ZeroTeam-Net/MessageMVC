@@ -7,7 +7,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
     public class RpcControler : IApiControler
     {
         [Route("test")]
-        public ApiResult Result()
+        public ApiResult Result(Argument argument)
         {
             LogRecorder.Trace(GetType().FullName);
             return ApiResult.Succees();

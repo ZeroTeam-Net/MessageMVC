@@ -153,6 +153,7 @@
             <summary>生成动态匿名调用内部方法（参数由TArg转为实际类型后调用，并将调用返回值转为TRes）</summary>
             <param name="callInfo">调用对象类型</param>
             <param name="argInfo">原始参数类型</param>
+            <param name="isAsync">此调用是否异步方法</param>
             <param name="methodName">原始调用方法</param>
             <returns>匿名委托</returns>
         </member>
@@ -216,6 +217,26 @@
             <param name="name">发现的服务名称</param>
             <returns>传输对象构造器</returns>
         </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.GlobalContextMiddleware">
+            <summary>
+            上下文对象
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.GlobalContextMiddleware.ZeroTeam#MessageMVC#ZeroApis#IMessageMiddleware#Level">
+            <summary>
+            层级
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.GlobalContextMiddleware.ZeroTeam#MessageMVC#ZeroApis#IMessageMiddleware#Handle(ZeroTeam.MessageMVC.ZeroApis.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object,System.Func{System.Threading.Tasks.Task{ZeroTeam.MessageMVC.Messages.MessageState}})">
+            <summary>
+            准备
+            </summary>
+            <param name="service">当前服务</param>
+            <param name="message">当前消息</param>
+            <param name="tag">扩展信息</param>
+            <param name="next">下一个处理方法</param>
+            <returns></returns>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.LoggerMiddleware">
             <summary>
             日志处理中间件
@@ -256,32 +277,32 @@
             <param name="next">下一个处理方法</param>
             <returns></returns>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiControllerBase">
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiController">
             <summary>
             ZeroApi控制器基类
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiControllerBase.UserInfo">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiController.UserInfo">
             <summary>
             当前登录用户
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiControllerBase.Caller">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiController.Caller">
             <summary>
             调用者（机器名）
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiControllerBase.RequestId">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiController.RequestId">
             <summary>
             调用标识
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiControllerBase.UserAgent">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiController.UserAgent">
             <summary>
             HTTP调用时的UserAgent
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiControllerBase.Message">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiController.Message">
             <summary>
             原始调用帧消息
             </summary>
@@ -333,26 +354,6 @@
                 执行命令
             </summary>
             <param name="action"></param>
-            <returns></returns>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.GlobalContextMiddleware">
-            <summary>
-            上下文对象
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.GlobalContextMiddleware.ZeroTeam#MessageMVC#ZeroApis#IMessageMiddleware#Level">
-            <summary>
-            层级
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.GlobalContextMiddleware.ZeroTeam#MessageMVC#ZeroApis#IMessageMiddleware#Handle(ZeroTeam.MessageMVC.ZeroApis.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object,System.Func{System.Threading.Tasks.Task{ZeroTeam.MessageMVC.Messages.MessageState}})">
-            <summary>
-            准备
-            </summary>
-            <param name="service">当前服务</param>
-            <param name="message">当前消息</param>
-            <param name="tag">扩展信息</param>
-            <param name="next">下一个处理方法</param>
             <returns></returns>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.StateMachine.CloseStateMachine">
@@ -560,6 +561,11 @@
                 配置状态
             </summary>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ZeroService.ResetStateMachine">
+            <summary>
+            重置状态机,请谨慎使用
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.ZeroService.CancelToken">
             <summary>
             取消标记
@@ -571,6 +577,11 @@
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.ZeroApis.ZeroService._waitToken">
+            <summary>
+            应用程序等待结果的信号量对象
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ZeroService.mutex">
             <summary>
             应用程序等待结果的信号量对象
             </summary>
@@ -685,31 +696,18 @@
             <param name="assembly">需要发现服务的程序集</param>
             <param name="waitEnd"></param>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseTest(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly)">
+            <summary>
+            使用主流程控制器
+            </summary>
+            <param name="services"></param>
+            <param name="assembly">需要发现服务的程序集</param>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlow(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             使用主流程控制器
             </summary>
             <param name="services"></param>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApplication">
-            <summary>
-                站点应用
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApplication.AppName">
-            <summary>
-                当前应用名称
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApplication.Config">
-            <summary>
-                站点配置
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApplication.CheckConfig">
-            <summary>
-                配置校验
-            </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroFlowControl">
             <summary>

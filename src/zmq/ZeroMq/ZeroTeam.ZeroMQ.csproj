@@ -17,8 +17,8 @@
     <Authors>Agebull</Authors>
     <Company>ZeroTeam</Company>
     <PackageReleaseNotes>ClrZmq的ZeroTeam专用版本</PackageReleaseNotes>
-    <Product>1.0.0.3-bate</Product>
-    <Version>1.0.0.3-bate</Version>
+    <Product>1.0.0.5-bate</Product>
+    <Version>1.0.0.5-bate</Version>
     <!--<Version>1.3.0-alpha</Version>-->
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -32,13 +32,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.1|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <NoWarn>1701;1702;1705;1591</NoWarn>
-    <DocumentationFile>1.0.0.3-bate.ClrZMQ.xml</DocumentationFile>
+    <DocumentationFile>ZeroTeam.ZeroMQ.xml</DocumentationFile>
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp3.1|AnyCPU'">
     <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <DocumentationFile>ZeroTeam.ClrZMQ.xml</DocumentationFile>
+    <DocumentationFile>ZeroTeam.ZeroMQ.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -53,6 +53,8 @@
   <ItemGroup>
     <Compile Remove="AssemblyInfo.cs" />
     <Compile Remove="Extend\StationConfig.cs" />
+    <Compile Remove="Extend\ZeroStationOption.cs" />
+    <Compile Remove="Extend\ZeroStationType.cs" />
     <Compile Remove="zmq\DispoIntPtr.Ansi.cs" />
     <Compile Remove="zmq\DispoIntPtr.cs" />
     <Compile Remove="zmq\Platform.MacOSX.cs" />
@@ -82,17 +84,23 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\Abstractions\ZeroTeam.MessageMVC.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Core\Core\ZeroTeam.MessageMVC.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="libzmq.dll">
+    <None Update="lib\x64\libzmq.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="libzmq.pdb">
+    <None Update="lib\x64\libzmq.pdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="libzmq.so">
+    <None Update="lib\ubuntu64\libzmq.so">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="lib\x86\libzmq.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="lib\x86\libzmq.pdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

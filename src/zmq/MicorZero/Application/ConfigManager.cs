@@ -40,7 +40,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         /// <returns></returns>
         public bool TryInstall(string station, string type)
         {
-            if (MicroZeroApplication.Config.TryGetConfig(station, out _))
+            if (ZeroRpcFlow.Config.TryGetConfig(station, out _))
                 return true;
             ZeroTrace.SystemLog(station, "No find,try install ...");
             var r = CallCommand("install", type, station, station, station);
@@ -73,7 +73,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         /// <returns></returns>
         public bool TryStart(string station)
         {
-            if (!MicroZeroApplication.Config.TryGetConfig(station, out _))
+            if (!ZeroRpcFlow.Config.TryGetConfig(station, out _))
                 return false;
             ZeroTrace.SystemLog(station, "Try start it ...");
             var r = CallCommand("start", station);
@@ -93,7 +93,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         public bool UploadDocument()
         {
             bool success = true;
-            foreach (var doc in MicroZeroApplication.Config.Documents.Values)
+            foreach (var doc in ZeroRpcFlow.Config.Documents.Values)
             {
                 if (!doc.IsLocal)
                     continue;
@@ -150,25 +150,25 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         /// <returns></returns>
         public static bool LoadAllConfig()
         {
-            var item = MicroZeroApplication.Config.Master;
+            var item = ZeroRpcFlow.Config.Master;
             var cm = new ConfigManager(item);
             var json = cm.LoadGroupConfig();
             if (string.IsNullOrWhiteSpace(json))
             {
                 return false;
             }
-            if (!MicroZeroApplication.Config.FlushConfigs(MicroZeroApplication.Config.Master, json, false))
+            if (!ZeroRpcFlow.Config.FlushConfigs(ZeroRpcFlow.Config.Master, json, false))
             {
                 return false;
             }
-            for (int i = 1; i < MicroZeroApplication.Config.ZeroGroup.Count; i++)
+            for (int i = 1; i < ZeroRpcFlow.Config.ZeroGroup.Count; i++)
             {
-                item = MicroZeroApplication.Config.ZeroGroup[i];
+                item = ZeroRpcFlow.Config.ZeroGroup[i];
                 cm = new ConfigManager(item);
                 json = cm.LoadGroupConfig();
                 if (!string.IsNullOrWhiteSpace(json))
                 {
-                    MicroZeroApplication.Config.FlushConfigs(item, json, false);
+                    ZeroRpcFlow.Config.FlushConfigs(item, json, false);
                 }
             }
             return true;
@@ -202,7 +202,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         /// <returns></returns>
         public StationConfig LoadConfig(string stationName)
         {
-            if (!MicroZeroApplication.ZerCenterIsRun)
+            if (!ZeroRpcFlow.ZerCenterIsRun)
             {
                 ZeroTrace.WriteError("LoadConfig", "No ready");
                 return null;
@@ -220,7 +220,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
                 return null;
             }
 
-            return !MicroZeroApplication.Config.UpdateConfig(Center, stationName, json, out var config) ? null : config;
+            return !ZeroRpcFlow.Config.UpdateConfig(Center, stationName, json, out var config) ? null : config;
         }
 
 

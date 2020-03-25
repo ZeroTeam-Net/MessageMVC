@@ -20,11 +20,11 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
                         return;
                     case ZeroNetEventType.CenterSystemClosing:
                         StateMachine = new EmptyStateMachine();
-                        await center_closing(MicroZeroApplication.Config.ServiceName, content);
+                        await center_closing(ZeroRpcFlow.Config.ServiceName, content);
                         return;
                     case ZeroNetEventType.CenterSystemStop:
                         StateMachine = new EmptyStateMachine();
-                        await center_stop(MicroZeroApplication.Config.ServiceName, content);
+                        await center_stop(ZeroRpcFlow.Config.ServiceName, content);
                         return;
                     case ZeroNetEventType.CenterWorkerSoundOff:
                         worker_sound_off();
