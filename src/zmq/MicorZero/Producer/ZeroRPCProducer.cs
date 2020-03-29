@@ -12,6 +12,11 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         #region Properties
 
         /// <summary>
+        /// 运行状态
+        /// </summary>
+        public StationStateType State { get; set; }
+
+        /// <summary>
         /// 实例
         /// </summary>
         public static ZeroRPCProducer Instance = new ZeroRPCProducer();
@@ -78,7 +83,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         ///     结果状态
         /// </summary>
-        public ZeroOperatorStateType State => _core.State;
+        public ZeroOperatorStateType OperatorState => _core.State;
 
         /// <summary>
         /// 最后一个返回值

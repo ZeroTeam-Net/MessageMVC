@@ -961,6 +961,11 @@
                 ZMQ生产者
             </summary>
         </member>
+        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCProducer.State">
+            <summary>
+            运行状态
+            </summary>
+        </member>
         <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCProducer.Instance">
             <summary>
             实例
@@ -1021,7 +1026,7 @@
                 扩展参数
             </summary>
         </member>
-        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCProducer.State">
+        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCProducer.OperatorState">
             <summary>
                 结果状态
             </summary>

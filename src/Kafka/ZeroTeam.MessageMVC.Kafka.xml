@@ -92,6 +92,11 @@
                 Kafka消息发布
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaProducer.State">
+            <summary>
+            运行状态
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaProducer.ZeroTeam#MessageMVC#IFlowMiddleware#RealName">
             <summary>
             实例名称

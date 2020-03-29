@@ -13,6 +13,11 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         #region Properties
 
         /// <summary>
+        /// 运行状态
+        /// </summary>
+        public StationStateType State { get; set; }
+
+        /// <summary>
         /// 实例
         /// </summary>
         public static InporcProducer Instance = new InporcProducer();
@@ -79,7 +84,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// <summary>
         ///     结果状态
         /// </summary>
-        public ZeroOperatorStateType State => _core.State;
+        public ZeroOperatorStateType OperatorState => _core.State;
 
         /// <summary>
         /// 最后一个返回值
@@ -176,7 +181,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
                 Argument = arg == null ? null : JsonHelper.SerializeObject(arg)
             };
             client.CallCommand();
-            if (client.State != ZeroOperatorStateType.Ok)
+            if (client.OperatorState != ZeroOperatorStateType.Ok)
             {
                 client._core.CheckStateResult();
             }
@@ -199,7 +204,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
                 Argument = arg == null ? null : JsonHelper.SerializeObject(arg)
             };
             client.CallCommand();
-            if (client.State != ZeroOperatorStateType.Ok)
+            if (client.OperatorState != ZeroOperatorStateType.Ok)
             {
                 client._core.CheckStateResult();
             }
@@ -221,7 +226,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
                 Commmand = api
             };
             client.CallCommand();
-            if (client.State != ZeroOperatorStateType.Ok)
+            if (client.OperatorState != ZeroOperatorStateType.Ok)
             {
                 client._core.CheckStateResult();
             }
@@ -242,7 +247,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
                 Commmand = api
             };
             client.CallCommand();
-            if (client.State != ZeroOperatorStateType.Ok)
+            if (client.OperatorState != ZeroOperatorStateType.Ok)
             {
                 client._core.CheckStateResult();
             }
@@ -267,7 +272,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
                 Argument = arg == null ? null : JsonHelper.SerializeObject(arg)
             };
             client.CallCommand();
-            if (client.State != ZeroOperatorStateType.Ok)
+            if (client.OperatorState != ZeroOperatorStateType.Ok)
             {
                 client._core.CheckStateResult();
             }
@@ -289,7 +294,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
                 Commmand = api
             };
             client.CallCommand();
-            if (client.State != ZeroOperatorStateType.Ok)
+            if (client.OperatorState != ZeroOperatorStateType.Ok)
             {
                 client._core.CheckStateResult();
             }

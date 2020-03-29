@@ -16,6 +16,11 @@ namespace ZeroTeam.MessageMVC.Kafka
 
         #region IFlowMiddleware 
 
+        /// <summary>
+        /// 运行状态
+        /// </summary>
+        public StationStateType State { get; set; }
+
         private IProducer<Null, string> producer;
 
         /// <summary>
@@ -38,6 +43,7 @@ namespace ZeroTeam.MessageMVC.Kafka
             {
                 BootstrapServers = config.BootstrapServers
             }).Build();
+            State = StationStateType.Run;
         }
 
         /// <summary>
@@ -45,6 +51,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// </summary>
         void IFlowMiddleware.Close()
         {
+            State = StationStateType.Closed;
             producer?.Dispose();
             producer = null;
         }

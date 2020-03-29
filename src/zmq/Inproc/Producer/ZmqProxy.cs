@@ -65,8 +65,16 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         {
             Instance = this;
             ZContext.Initialize();
+            InporcProducer.Instance.State = StationStateType.Run;
         }
 
+        /// <summary>
+        /// 注销时调用
+        /// </summary>
+        public void Close()
+        {
+            InporcProducer.Instance.State = StationStateType.Closed;
+        }
 
         /// <summary>
         /// 注销时调用

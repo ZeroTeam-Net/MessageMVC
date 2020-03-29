@@ -307,6 +307,8 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         public bool Loop()
         {
             Prepare();
+
+            ZeroRPCProducer.Instance.State = StationStateType.Run;
             while (CanLoopEx)
             {
                 try
@@ -336,6 +338,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     LogRecorder.Exception(e);
                 }
             }
+            ZeroRPCProducer.Instance.State = StationStateType.Closed;
             return true;
         }
 

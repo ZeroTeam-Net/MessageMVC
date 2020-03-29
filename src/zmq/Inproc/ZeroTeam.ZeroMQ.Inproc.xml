@@ -66,6 +66,11 @@
                 ZMQ生产者
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcProducer.State">
+            <summary>
+            运行状态
+            </summary>
+        </member>
         <member name="F:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcProducer.Instance">
             <summary>
             实例
@@ -126,7 +131,7 @@
                 扩展参数
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcProducer.State">
+        <member name="P:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcProducer.OperatorState">
             <summary>
                 结果状态
             </summary>
@@ -363,6 +368,11 @@
         <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqProxy.Initialize">
             <summary>
                 初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqProxy.Close">
+            <summary>
+            注销时调用
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqProxy.End">

@@ -3457,14 +3457,11 @@
             消息生产对象
             </summary>
         </member>
-<<<<<<< HEAD
         <member name="P:ZeroTeam.MessageMVC.Messages.IMessageProducer.State">
             <summary>
             运行状态
             </summary>
         </member>
-=======
->>>>>>> c9fa0596fe7d47bbd0bf81699d533fa3d886c8e2
         <member name="M:ZeroTeam.MessageMVC.Messages.IMessageProducer.Producer``2(System.String,System.String,``0)">
             <summary>
             生产消息
