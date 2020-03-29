@@ -3,7 +3,6 @@ using Agebull.Common.Configuration;
 using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Agebull.EntityModel.Common;
-using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Net;

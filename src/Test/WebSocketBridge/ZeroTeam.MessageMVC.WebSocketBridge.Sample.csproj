@@ -9,4 +9,16 @@
     <ProjectReference Include="..\..\zmq\Inproc\ZeroTeam.ZeroMQ.Inproc.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.Threading" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="libzmq.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="libzmq.pdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

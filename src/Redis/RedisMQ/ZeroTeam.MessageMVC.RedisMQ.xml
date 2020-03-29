@@ -1,0 +1,168 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ZeroTeam.MessageMVC.RedisMQ</name>
+    </assembly>
+    <members>
+        <member name="T:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer">
+            <summary>
+            表示进程内通讯
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.Name">
+            <summary>
+            名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.Service">
+            <summary>
+            服务
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.Option">
+            <summary>
+            连接字符串
+            </summary>
+            <example>
+            $"{Address}:{Port},password={PassWord},defaultDatabase={db},poolsize=50,ssl=false,writeBuffer=10240";
+            </example>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.client">
+            <summary>
+            本地代理
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.subscribeObject">
+            <summary>
+            订阅对象
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.Initialize">
+            <summary>
+            初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.ZeroTeam#MessageMVC#ZeroApis#INetTransfer#LoopBegin">
+            <summary>
+            同步运行状态
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.ZeroTeam#MessageMVC#ZeroApis#INetTransfer#Close">
+            <summary>
+            关闭
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.ZeroTeam#MessageMVC#ZeroApis#INetTransfer#LoopComplete">
+            <summary>
+            同步关闭状态
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.Guard">
+            <summary>
+            异常守护
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.isBusy">
+            <summary>
+            单处理守卫变量
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.OnMessagePush">
+            <summary>
+            消息处理
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.ReadList">
+            <summary>
+            取出队列,全部处理,为空后退出
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer">
+            <summary>
+                ZMQ生产者
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer.Instance">
+            <summary>
+            单例
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer.State">
+            <summary>
+            运行状态
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer.ZeroTeam#MessageMVC#IFlowMiddleware#RealName">
+            <summary>
+            实例名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer.ZeroTeam#MessageMVC#IFlowMiddleware#Level">
+            <summary>
+            等级
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer.Initialize">
+            <summary>
+                初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer.Close">
+            <summary>
+            关闭
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer.End">
+            <summary>
+            注销时调用
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.RedisMQ.RedisOption">
+            <summary>
+            Redis的配置项
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisOption.ConnectionString">
+            <summary>
+            连接字符串
+            </summary>
+            <example>
+            $"{Address}:{Port},password={PassWord},defaultDatabase={db},poolsize=50,ssl=false,writeBuffer=10240";
+            </example>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisOption.GuardCheckTime">
+            <summary>
+            异常守卫多久检查一次
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisOption.MessageLockTime">
+            <summary>
+            消息处理过程锁定时长
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisOption.FailedIsError">
+            <summary>
+            消息处理失败按发生异常处理
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisOption.NoSupperIsError">
+            <summary>
+            无处理方法按发生异常处理
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.RedisMQ.RedisHelper">
+            <summary>
+            通过ZMQ实现的进程内通讯
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisHelper.UseCsRedis(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            使用KafkaMVC
+            </summary>
+        </member>
+    </members>
+</doc>

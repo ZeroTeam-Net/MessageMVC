@@ -5,44 +5,50 @@ namespace ZeroTeam.MessageMVC.Messages
     /// <summary>
     /// 消息交互格式
     /// </summary>
-    [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
+    [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class MessageItem : IMessageItem
     {
         /// <summary>
         /// 唯一标识，UUID
         /// </summary>
-        [JsonProperty()]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public string ID { get; set; }
 
         /// <summary>
         /// 处理状态
         /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public MessageState State { get; set; }
 
         /// <summary>
         /// 生产时间戳,UNIX时间戳,自1970起秒数
         /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public int Timestamp { get; set; }
 
         /// <summary>
         /// 生产者信息
         /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public string ProducerInfo { get; set; }
 
         /// <summary>
         /// 分类
         /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public string Topic { get; set; }
 
         /// <summary>
         /// 标题
         /// </summary>
 
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public string Title { get; set; }
 
         /// <summary>
         /// 内容
         /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public string Content { get; set; }
 
         /// <summary>
@@ -57,6 +63,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 处理失败 : 失败内容或原因
         /// 处理成功 : 结果信息或无
         /// </remarks>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public string Result { get; set; }
 
         /// <summary>
@@ -67,11 +74,13 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 其他带外内容
         /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public string Tag { get; set; }
 
         /// <summary>
         /// 上下文信息
         /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public string Context { get; set; }
 
         /// <summary>

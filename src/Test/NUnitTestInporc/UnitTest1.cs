@@ -1,5 +1,9 @@
 using Agebull.Common.Ioc;
 using NUnit.Framework;
+<<<<<<< HEAD
+using System.Threading.Tasks;
+=======
+>>>>>>> c9fa0596fe7d47bbd0bf81699d533fa3d886c8e2
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.Sample.Controllers;
@@ -21,11 +25,20 @@ namespace NUnitTestInporc
         }
 
         [Test]
+<<<<<<< HEAD
+        public async Task Test1()
+        {
+            for (int i = 0; i < 1000; i++)
+            {
+                MessageProducer.ProducerAsync<Argument, ApiResult>("Markpoint2", "test", new Argument { Value = "Test" });
+            }
+=======
         public void Test1()
         {
             var task = MessageProducer.ProducerAsync<Argument, ApiResult>("Markpoint2", "test", new Argument { Value = "Test" });
             task.Wait();
             Assert.IsTrue(task.Result.Success, "²âÊÔÍ¨¹ý");
+>>>>>>> c9fa0596fe7d47bbd0bf81699d533fa3d886c8e2
         }
     }
 }

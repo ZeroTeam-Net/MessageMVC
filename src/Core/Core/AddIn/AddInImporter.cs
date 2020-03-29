@@ -12,6 +12,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     public class AddInImporter : IFlowMiddleware
     {
         /// <summary>
+        /// 运行状态
+        /// </summary>
+        public StationStateType State { get; } = StationStateType.Run;
+
+        /// <summary>
         /// 实例名称
         /// </summary>
         string IFlowMiddleware.RealName => "AddInImporter";

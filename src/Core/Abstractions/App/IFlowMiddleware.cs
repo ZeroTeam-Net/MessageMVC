@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ZeroTeam.MessageMVC
+﻿namespace ZeroTeam.MessageMVC
 {
     /// <summary>
     /// 表示一个应用中间件
@@ -18,7 +13,7 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 等级
         /// </summary>
-        int Level { get;}
+        int Level { get; }
 
         /// <summary>
         ///     配置校验,作为第一步

@@ -18,7 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
+<<<<<<< HEAD
+=======
     <ProjectReference Include="..\..\Kafka\ZeroTeam.MessageMVC.Kafka.csproj" />
+>>>>>>> c9fa0596fe7d47bbd0bf81699d533fa3d886c8e2
     <ProjectReference Include="..\..\zmq\Inproc\ZeroTeam.ZeroMQ.Inproc.csproj" />
     <ProjectReference Include="..\..\zmq\MicorZero\ZeroTeam.ZeroMQ.ZeroRPC.csproj" />
   </ItemGroup>

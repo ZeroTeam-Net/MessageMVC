@@ -158,7 +158,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             ConfigState = ServiceName == null ? StationStateType.Stop : StationStateType.Initialized;
             ResetStateMachine();
             if (ServiceName != null)
+<<<<<<< HEAD:src/Core/Core/ZeroService/ZeroService.cs
+                mutex = new Mutex();
+=======
                 mutex = new Mutex(false, ServiceName);
+>>>>>>> c9fa0596fe7d47bbd0bf81699d533fa3d886c8e2:src/Core/Core/ZeroService/ZeroService.cs
         }
 
         /// <summary>

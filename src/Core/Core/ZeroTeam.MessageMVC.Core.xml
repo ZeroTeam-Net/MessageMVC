@@ -9,6 +9,11 @@
             MEF插件导入器
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.AddInImporter.State">
+            <summary>
+            运行状态
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.AddInImporter.ZeroTeam#MessageMVC#IFlowMiddleware#RealName">
             <summary>
             实例名称
@@ -797,11 +802,6 @@
         <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.RunAwaiteAsync">
             <summary>
                 执行并等待
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.Start">
-            <summary>
-                启动
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.Shutdown">

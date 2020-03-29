@@ -141,6 +141,12 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public static void Initialize()
         {
+            var servcies = IocHelper.RootProvider.GetServices<IService>();
+            if(servcies != null)
+            {
+                foreach (var service in servcies)
+                    Services.TryAdd(service.ServiceName, service);
+            }
             OnZeroInitialize();
             ApplicationState = StationState.Initialized;
             IocHelper.Update();
@@ -155,7 +161,7 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public static bool Run()
         {
-            var task = Start();
+            var task = OnZeroStart();
             task.Wait();
             return task.Result;
         }
@@ -165,7 +171,7 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public static async Task<bool> RunAsync()
         {
-            return await Start();
+            return await OnZeroStart();
         }
 
         /// <summary>
@@ -174,8 +180,6 @@ namespace ZeroTeam.MessageMVC
         public static void RunAwaite()
         {
             OnZeroStart().Wait();
-            Console.CancelKeyPress += OnConsoleOnCancelKeyPress;
-            ZeroTrace.SystemLog("MicroZero services is runing. Press Ctrl+C to shutdown.");
             waitTask = new TaskCompletionSource<bool>();
             waitTask.Task.Wait();
         }
@@ -187,18 +191,8 @@ namespace ZeroTeam.MessageMVC
         public static async Task RunAwaiteAsync()
         {
             await OnZeroStart();
-            Console.CancelKeyPress += OnConsoleOnCancelKeyPress;
-            ZeroTrace.SystemLog("MicroZero services is runing. Press Ctrl+C to shutdown.");
             waitTask = new TaskCompletionSource<bool>();
             await waitTask.Task;
-        }
-
-        /// <summary>
-        ///     启动
-        /// </summary>
-        private static Task<bool> Start()
-        {
-            return OnZeroStart();
         }
 
         #endregion
@@ -420,6 +414,8 @@ namespace ZeroTeam.MessageMVC
 
             ApplicationState = StationState.Run;
             ZeroTrace.SystemLog("Application", "<<OnZeroStart]");
+            Console.CancelKeyPress += OnConsoleOnCancelKeyPress;
+            ZeroTrace.SystemLog("MicroZero services is runing. Press Ctrl+C to shutdown.");
             return true;
         }
         static int inFailed = 0;

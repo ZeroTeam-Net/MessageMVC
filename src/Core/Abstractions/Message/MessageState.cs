@@ -13,6 +13,7 @@
 		/// 已接受
 		/// </summary>
 		Accept = 	1,
+
 		/// <summary>
 		/// 格式错误
 		/// </summary>
