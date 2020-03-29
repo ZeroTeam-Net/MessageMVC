@@ -17,9 +17,7 @@
     <Authors>Agebull</Authors>
     <Company>ZeroTeam</Company>
     <PackageReleaseNotes>ClrZmq的ZeroTeam专用版本</PackageReleaseNotes>
-    <Product>1.0.0.5-bate</Product>
-    <Version>1.0.0.5-bate</Version>
-    <!--<Version>1.3.0-alpha</Version>-->
+    <Product>1.0.0.6-bate</Product>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

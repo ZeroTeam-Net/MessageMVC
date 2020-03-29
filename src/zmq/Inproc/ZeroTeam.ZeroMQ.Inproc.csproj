@@ -16,7 +16,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/ZeroTeam-Net/MessageMVC</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ZeroTeam-Net/MessageMVC.git</RepositoryUrl>
-    <Version>1.0.0.5-bate</Version>
+    <Version>1.0.0.6-bate</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
