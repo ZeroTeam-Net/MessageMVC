@@ -171,7 +171,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             }
             else
             {
-                ArgumentConvert = arg => JsonConvert.DeserializeObject(arg, ArgumentType);
+                ArgumentConvert = arg => JsonHelper.DeserializeObject(arg, ArgumentType);
             }
         }
 

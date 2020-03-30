@@ -35,7 +35,7 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         ///     配置校验,作为第一步
         /// </summary>
-        void IFlowMiddleware.CheckOption(ZeroAppConfigRuntime config)
+        void IFlowMiddleware.CheckOption(ZeroAppOption config)
         {
             path = IOHelper.CheckPath(ZeroFlowControl.Config.DataFolder, "message");
         }

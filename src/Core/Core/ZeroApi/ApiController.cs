@@ -7,7 +7,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     /// <summary>
     /// ZeroApi控制器基类
     /// </summary>
-    public class ApiController : IApiControler
+    public abstract class ApiController : IApiControler
     {
         /// <summary>
         /// 当前登录用户

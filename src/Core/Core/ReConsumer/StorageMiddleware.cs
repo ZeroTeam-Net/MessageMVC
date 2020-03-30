@@ -13,6 +13,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     public class StorageMiddleware : IMessageMiddleware
     {
         /// <summary>
+        /// 当前处理器
+        /// </summary>
+        public MessageProcess Process { get; set; }
+
+        /// <summary>
         /// 层级
         /// </summary>
         int IMessageMiddleware.Level => -1;

@@ -25,6 +25,7 @@ namespace Agebull.Common.Logging
     public static partial class LogRecorder
     {
         #region 配置
+
         /// <summary>
         /// 日志序号
         /// </summary>

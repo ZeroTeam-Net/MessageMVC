@@ -12,6 +12,30 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     /// </summary>
     public class MessageProcess
     {
+        #region 处理入口
+
+        /// <summary>
+        /// 消息处理
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="message"></param>
+        /// <param name="tag"></param>
+        public static Task<MessageState> OnMessagePush(IService service, IMessageItem message, object tag = null)
+        {
+            var process = new MessageProcess
+            {
+                Service = service,
+                Message = message,
+                taskCompletionSource = new TaskCompletionSource<MessageState>(),
+                Tag = tag
+            };
+            Task.Run(process.Process);
+            return process.taskCompletionSource.Task;
+        }
+        #endregion
+
+        #region 中间件链式调用
+
         /// <summary>
         /// 当前站点
         /// </summary>
@@ -36,13 +60,16 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
         int index = 0;
 
-        async Task<MessageState> Process()
+        async Task Process()
         {
-            index = 0;
-            State = MessageState.None;
-            middlewares = IocHelper.ServiceProvider.GetServices<IMessageMiddleware>().OrderBy(p => p.Level).ToArray();
-            await Handle();
-            return State;
+            using (IocScope.CreateScope())
+            {
+                index = 0;
+                State = MessageState.None;
+                middlewares = IocHelper.ServiceProvider.GetServices<IMessageMiddleware>().OrderBy(p => p.Level).ToArray();
+                await Handle();
+                PushResult();
+            }
         }
 
         /// <summary>
@@ -54,27 +81,34 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             if (index >= middlewares.Length)
                 return MessageState.None;
             var next = middlewares[index++];
+            next.Process = this;
             return State = await next.Handle(Service, Message, Tag, Handle);
+        }
+        #endregion
+
+        #region 处理结果返回
+
+        TaskCompletionSource<MessageState> taskCompletionSource;
+
+        int isPushed;
+        /// <summary>
+        /// 结果推到调用处
+        /// </summary>
+        public void PushResult()
+        {
+            if (Interlocked.Increment(ref isPushed)==1)
+                taskCompletionSource.TrySetResult(Message.State = State);
         }
 
         /// <summary>
-        /// 消息处理
+        /// 结果推到调用处
         /// </summary>
-        /// <param name="service"></param>
-        /// <param name="message"></param>
-        /// <param name="tag"></param>
-        public static async Task<MessageState> OnMessagePush(IService service, IMessageItem message, object tag = null)
+        public void PushResult(MessageState state)
         {
-            using (IocScope.CreateScope())
-            {
-                var process = new MessageProcess
-                {
-                    Service = service,
-                    Message = message,
-                    Tag = tag
-                };
-                return await process.Process();
-            }
+            if (Interlocked.Increment(ref isPushed) == 1)
+                taskCompletionSource.TrySetResult(Message.State = state);
         }
+
+        #endregion
     }
 }

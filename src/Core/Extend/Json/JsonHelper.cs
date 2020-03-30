@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using Newtonsoft.Json;
 
 namespace ZeroTeam.MessageMVC
@@ -50,6 +51,22 @@ namespace ZeroTeam.MessageMVC
                 case '{':
                 case '[':
                     return JsonConvert.DeserializeObject<T>(json);
+            }
+            return default;
+        }
+
+        /// <summary>
+        /// 反序列化
+        /// </summary>
+        public static object DeserializeObject(string json,Type type)
+        {
+            if (string.IsNullOrEmpty(json))
+                return default;
+            switch (json[0])
+            {
+                case '{':
+                case '[':
+                    return JsonConvert.DeserializeObject(json, type);
             }
             return default;
         }

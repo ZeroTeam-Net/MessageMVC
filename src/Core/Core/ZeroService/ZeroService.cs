@@ -32,7 +32,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// 网络传输对象
         /// </summary>
-        public INetTransfer Transport { get; protected set; }
+        public INetTransfer Transport { get;  set; }
 
 
         /// <summary>

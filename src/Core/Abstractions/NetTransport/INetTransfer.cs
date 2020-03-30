@@ -89,7 +89,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <returns></returns>
         void OnError(Exception exception, IMessageItem message, object tag)
         {
+            message.State = MessageState.Exception;
+            message.Result = exception.Message;
         }
-
     }
 }

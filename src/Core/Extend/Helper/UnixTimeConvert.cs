@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Agebull.Common
+﻿namespace System
 {
     /// <summary>
     /// Unix时间互转
@@ -12,7 +10,7 @@ namespace Agebull.Common
         /// </summary>
         /// <param name="unix">double 型数字</param>
         /// <returns>DateTime</returns>
-        public static DateTime ConvertUnixTimeToDateTime(this double unix)
+        public static DateTime ToDateTime(this int unix)
         {
             return new DateTime(1970, 1, 1).AddSeconds(unix);
         }
@@ -22,9 +20,9 @@ namespace Agebull.Common
         /// </summary>
         /// <param name="time">时间</param>
         /// <returns>long</returns>
-        public static double ConvertDateTimeToUnixTime(this DateTime time)
+        public static int ToTimestamp(this DateTime time)
         {
-            return (DateTime.Now - new DateTime(1970, 1, 1)).TotalSeconds;
+            return (int)(time - new DateTime(1970, 1, 1)).TotalSeconds;
         }
     }
 }

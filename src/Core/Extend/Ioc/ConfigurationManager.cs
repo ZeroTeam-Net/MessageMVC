@@ -318,6 +318,14 @@ namespace Agebull.Common.Configuration
         {
             return Root.GetSection(section).Get<TConfig>();
         }
+
+        /// <summary>
+        /// 强类型取根节点
+        /// </summary>
+        public static TConfig Option<TConfig>(string section)
+        {
+            return Root.GetSection(section).Get<TConfig>();
+        }
         #endregion
 
 

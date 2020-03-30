@@ -35,7 +35,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         ///     配置校验,作为第一步
         /// </summary>
-        public void CheckOption(ZeroAppConfigRuntime config)
+        public void CheckOption(ZeroAppOption config)
         {
             if (string.IsNullOrEmpty(ZeroFlowControl.Config.AddInPath))
                 return;

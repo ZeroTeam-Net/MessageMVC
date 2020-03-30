@@ -12,6 +12,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     public class GlobalContextMiddleware : IMessageMiddleware
     {
         /// <summary>
+        /// 当前处理器
+        /// </summary>
+        public MessageProcess Process { get; set; }
+
+        /// <summary>
         /// 层级
         /// </summary>
         int IMessageMiddleware.Level => -1;
@@ -37,7 +42,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     GlobalContext.SetEmpty();
                 }
             }
-            catch (Exception e)
+            catch// (Exception e)
             {
                 //LogRecorder.Trace(()=> "Restory context exception:{e.Message}");
                 //ZeroTrace.WriteException(service.ServiceName, e, message.Title, "restory context", message.Context);

@@ -29,7 +29,7 @@
             插件对象
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.AddInImporter.CheckOption(ZeroTeam.MessageMVC.ZeroAppConfigRuntime)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.AddInImporter.CheckOption(ZeroTeam.MessageMVC.ZeroAppOption)">
             <summary>
                 配置校验,作为第一步
             </summary>
@@ -154,51 +154,12 @@
             <param name="type"></param>
             <param name="onlyDoc"></param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.CreateMethod(System.Reflection.TypeInfo,System.String,System.Reflection.TypeInfo,System.Boolean@)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.CreateMethod(System.Reflection.TypeInfo,System.String,System.Reflection.ParameterInfo@,System.Boolean@)">
             <summary>生成动态匿名调用内部方法（参数由TArg转为实际类型后调用，并将调用返回值转为TRes）</summary>
             <param name="callInfo">调用对象类型</param>
-            <param name="argInfo">原始参数类型</param>
             <param name="isAsync">此调用是否异步方法</param>
             <param name="methodName">原始调用方法</param>
-            <returns>匿名委托</returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.CreateFunc(System.Reflection.TypeInfo,System.String,System.Reflection.TypeInfo,System.Reflection.TypeInfo)">
-            <summary>生成动态匿名调用内部方法（参数由TArg转为实际类型后调用，并将调用返回值转为TRes）</summary>
-            <param name="callInfo">调用对象类型</param>
-            <param name="argInfo">原始参数类型</param>
-            <param name="resInfo">原始返回值类型</param>
-            <param name="methodName">原始调用方法</param>
-            <returns>匿名委托</returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.CreateFunc``2(System.Reflection.TypeInfo,System.String,System.Reflection.TypeInfo,System.Reflection.TypeInfo)">
-            <summary>生成动态匿名调用内部方法（参数由TArg转为实际类型后调用，并将调用返回值转为TRes）</summary>
-            <typeparam name="TArg">参数类型（接口）</typeparam>
-            <typeparam name="TRes">返回值类型（接口）</typeparam>
-            <param name="callInfo">调用对象类型</param>
-            <param name="argInfo">原始参数类型</param>
-            <param name="resInfo">原始返回值类型</param>
-            <param name="methodName">原始调用方法</param>
-            <returns>匿名委托</returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.CreateFunc``1(System.Reflection.TypeInfo,System.String,System.Reflection.TypeInfo)">
-            <summary>生成动态匿名调用内部方法（无参，调用返回值转为TRes）</summary>
-            <typeparam name="TRes">返回值类型（接口）</typeparam>
-            <param name="callInfo">调用对象类型</param>
-            <param name="resInfo">原始返回值类型</param>
-            <param name="methodName">原始调用方法</param>
-            <returns>匿名委托</returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.CreateStringFunc(System.Reflection.TypeInfo,System.String)">
-            <summary>生成动态匿名调用内部方法（无参，调用返回值转为TRes）</summary>
-            <param name="callInfo">调用对象类型</param>
-            <param name="methodName">原始调用方法</param>
-            <returns>匿名委托</returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.CreateFunc(System.Reflection.TypeInfo,System.String,System.Reflection.TypeInfo)">
-            <summary>生成动态匿名调用内部方法（无参，调用返回值转为TRes）</summary>
-            <param name="callInfo">调用对象类型</param>
-            <param name="resInfo">原始返回值类型</param>
-            <param name="methodName">原始调用方法</param>
+            <param name="argInfo">参数类型</param>
             <returns>匿名委托</returns>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.TransportDiscory">
@@ -227,6 +188,11 @@
             上下文对象
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.GlobalContextMiddleware.Process">
+            <summary>
+            当前处理器
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.GlobalContextMiddleware.ZeroTeam#MessageMVC#ZeroApis#IMessageMiddleware#Level">
             <summary>
             层级
@@ -247,6 +213,11 @@
             日志处理中间件
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.LoggerMiddleware.Process">
+            <summary>
+            当前处理器
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.LoggerMiddleware.ZeroTeam#MessageMVC#ZeroApis#IMessageMiddleware#Level">
             <summary>
             层级
@@ -262,9 +233,39 @@
             <param name="next">下一个处理方法</param>
             <returns></returns>
         </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.MarkPointMiddleware">
+            <summary>
+            埋点处理中间件
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.MarkPointMiddleware.Process">
+            <summary>
+            当前处理器
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.MarkPointMiddleware.ZeroTeam#MessageMVC#ZeroApis#IMessageMiddleware#Level">
+            <summary>
+            层级
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.MarkPointMiddleware.ZeroTeam#MessageMVC#ZeroApis#IMessageMiddleware#Handle(ZeroTeam.MessageMVC.ZeroApis.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object,System.Func{System.Threading.Tasks.Task{ZeroTeam.MessageMVC.Messages.MessageState}})">
+            <summary>
+            准备
+            </summary>
+            <param name="service">当前服务</param>
+            <param name="message">当前消息</param>
+            <param name="tag">扩展信息</param>
+            <param name="next">下一个处理方法</param>
+            <returns></returns>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.StorageMiddleware">
             <summary>
             消息存储中间件
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.StorageMiddleware.Process">
+            <summary>
+            当前处理器
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.StorageMiddleware.ZeroTeam#MessageMVC#ZeroApis#IMessageMiddleware#Level">
@@ -317,6 +318,11 @@
                 Api调用器
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.Process">
+            <summary>
+            当前处理器
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.ZeroTeam#MessageMVC#ZeroApis#IMessageMiddleware#Level">
             <summary>
             层级
@@ -337,7 +343,7 @@
             调用的内容
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.ZeroTeam#MessageMVC#ZeroApis#IMessageMiddleware#Handle(ZeroTeam.MessageMVC.ZeroApis.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object,System.Func{System.Threading.Tasks.Task{ZeroTeam.MessageMVC.Messages.MessageState}})">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.Handle(ZeroTeam.MessageMVC.ZeroApis.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object,System.Func{System.Threading.Tasks.Task{ZeroTeam.MessageMVC.Messages.MessageState}})">
             <summary>
             处理
             </summary>
@@ -678,12 +684,12 @@
                 关闭
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ConfigMiddleware.ZeroTeam#MessageMVC#IFlowMiddleware#CheckOption(ZeroTeam.MessageMVC.ZeroAppConfigRuntime)">
+        <member name="M:ZeroTeam.MessageMVC.ConfigMiddleware.ZeroTeam#MessageMVC#IFlowMiddleware#CheckOption(ZeroTeam.MessageMVC.ZeroAppOption)">
             <summary>
                 配置校验,作为第一步
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ConfigMiddleware.CheckConfig(ZeroTeam.MessageMVC.ZeroAppConfigRuntime)">
+        <member name="M:ZeroTeam.MessageMVC.ConfigMiddleware.CheckConfig(ZeroTeam.MessageMVC.ZeroAppOption)">
             <summary>
                 配置校验
             </summary>
@@ -692,6 +698,12 @@
             <summary>
             应用扩展方法
             </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.CheckOption(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            检查并注入配置
+            </summary>
+            <param name="services"></param>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlow(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly,System.Boolean)">
             <summary>
@@ -709,6 +721,12 @@
             <param name="assembly">需要发现服务的程序集</param>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlow(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            使用主流程控制器
+            </summary>
+            <param name="services"></param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlowByAutoDiscory(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             使用主流程控制器
             </summary>
@@ -779,6 +797,11 @@
                 发现
             </summary>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.Discove">
+            <summary>
+                发现
+            </summary>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.Initialize">
             <summary>
                 初始化
@@ -827,6 +850,11 @@
         <member name="F:ZeroTeam.MessageMVC.ZeroFlowControl.ActiveSemaphore">
             <summary>
                 对象活动状态记录器锁定
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.GetService(System.String)">
+            <summary>
+                取服务，内部使用
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.OnObjectActive(ZeroTeam.MessageMVC.ZeroApis.IService)">
@@ -904,7 +932,7 @@
                 关闭
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ReConsumerMiddleware.ZeroTeam#MessageMVC#IFlowMiddleware#CheckOption(ZeroTeam.MessageMVC.ZeroAppConfigRuntime)">
+        <member name="M:ZeroTeam.MessageMVC.ReConsumerMiddleware.ZeroTeam#MessageMVC#IFlowMiddleware#CheckOption(ZeroTeam.MessageMVC.ZeroAppOption)">
             <summary>
                 配置校验,作为第一步
             </summary>

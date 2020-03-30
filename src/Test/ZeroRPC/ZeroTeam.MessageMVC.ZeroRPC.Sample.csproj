@@ -14,14 +14,10 @@
   <ItemGroup>
     <Compile Include="Controler\RpcControler.cs" />
   </ItemGroup>
-<<<<<<< HEAD
-=======
-
   <ItemGroup>
     <ProjectReference Include="..\..\zmq\Inproc\ZeroTeam.ZeroMQ.Inproc.csproj" />
     <ProjectReference Include="..\..\zmq\MicorZero\ZeroTeam.ZeroMQ.ZeroRPC.csproj" />
   </ItemGroup>
->>>>>>> c9fa0596fe7d47bbd0bf81699d533fa3d886c8e2
   <ItemGroup>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

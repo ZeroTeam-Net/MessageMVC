@@ -30,7 +30,7 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         ///     站点配置
         /// </summary>
-        public static ZeroAppConfigRuntime Config { get; set; }
+        public static ZeroAppOption Config { get; set; }
 
         /// <summary>
         ///     运行状态
@@ -94,7 +94,7 @@ namespace ZeroTeam.MessageMVC
         public static void CheckOption()
         {
             LogRecorder.Initialize();
-            Config = new ZeroAppConfigRuntime
+            Config = new ZeroAppOption
             {
                 BinPath = Environment.CurrentDirectory,
                 RootPath = Environment.CurrentDirectory,
@@ -128,10 +128,30 @@ namespace ZeroTeam.MessageMVC
             {
                 Assembly = assembly
             };
-            ZeroTrace.SystemLog("Discove", discover.Assembly.FullName);
+            LogRecorder.Trace("Api discove : {0}", discover.Assembly.FullName);
             discover.FindApies();
         }
 
+
+        /// <summary>
+        ///     发现
+        /// </summary>
+        public static void Discove()
+        {
+            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                if (asm.FullName?.Contains("netstandard") == true ||
+                    asm.FullName?.Contains("System.") == true ||
+                    asm.FullName?.Contains("Microsoft.") == true ||
+                    asm.FullName?.Contains("Newtonsoft.") == true ||
+                    asm.FullName?.Contains("Agebull.Common.") == true ||
+                    asm.FullName?.Contains("ZeroTeam.MessageMVC.Abstractions") == true ||
+                    asm.FullName?.Contains("ZeroTeam.MessageMVC.Core") == true)
+                    continue;//
+                Discove(asm);
+            }
+            
+        }
         #endregion
 
         #region Initialize
@@ -142,7 +162,7 @@ namespace ZeroTeam.MessageMVC
         public static void Initialize()
         {
             var servcies = IocHelper.RootProvider.GetServices<IService>();
-            if(servcies != null)
+            if (servcies != null)
             {
                 foreach (var service in servcies)
                     Services.TryAdd(service.ServiceName, service);
@@ -250,6 +270,13 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         private static readonly SemaphoreSlim ActiveSemaphore = new SemaphoreSlim(0, short.MaxValue);
 
+        /// <summary>
+        ///     取服务，内部使用
+        /// </summary>
+        public static IService GetService(string name)
+        {
+            return name != null && Services.TryGetValue(name, out var service) ? service : null;
+        }
         /// <summary>
         ///     对象活动时登记
         /// </summary>

@@ -2,6 +2,7 @@
 using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
+using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
 using ZeroTeam.ZeroMQ.ZeroRPC;
 
@@ -11,8 +12,12 @@ namespace MicroZero.Kafka.QueueStation
     {
         static async Task Main()
         {
-            IocHelper.AddTransient<IFlowMiddleware, ZeroRpcFlow>();
+            IocHelper.AddSingleton<IFlowMiddleware, ZeroRpcFlow>();
+            IocHelper.AddSingleton<IFlowMiddleware, ZeroRPCProxy>();
             IocHelper.AddSingleton<IRpcTransfer, ZeroRpcTransport>();
+            IocHelper.AddSingleton<IMessageProducer, ZeroRPCProducer>();
+
+
             await IocHelper.ServiceCollection.UseFlow(typeof(Program).Assembly, false);
 
             //MessageProducer.Producer("test1", "test", "");

@@ -4,13 +4,9 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
-<<<<<<< HEAD
-=======
-
   <ItemGroup>
     <ProjectReference Include="..\..\zmq\Inproc\ZeroTeam.ZeroMQ.Inproc.csproj" />
   </ItemGroup>
->>>>>>> c9fa0596fe7d47bbd0bf81699d533fa3d886c8e2
   <ItemGroup>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

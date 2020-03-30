@@ -12,21 +12,6 @@
         string ID { get; set; }
 
         /// <summary>
-        /// 处理状态
-        /// </summary>
-        MessageState State { get; set; }
-
-        /// <summary>
-        /// 生产时间戳,UNIX时间戳,自1970起秒数
-        /// </summary>
-        int Timestamp { get; set; }
-
-        /// <summary>
-        /// 生产者信息
-        /// </summary>
-        string ProducerInfo { get; set; }
-
-        /// <summary>
         /// 分类
         /// </summary>
         string Topic { get; set; }
@@ -57,9 +42,15 @@
         string Result { get; set; }
 
         /// <summary>
-        ///     文件内容二进制数据
+        /// 处理状态
         /// </summary>
-        byte[] Bytes { get; set; }
+        MessageState State { get; set; }
+
+        /// <summary>
+        /// 生产时间戳,UNIX时间戳,自1970起秒数
+        /// </summary>
+        int Timestamp { get; set; }
+
 
         /// <summary>
         /// 其他带外内容
@@ -71,5 +62,22 @@
         /// </summary>
         string Context { get; set; }
 
+        /// <summary>
+        /// 刷新操作
+        /// </summary>
+        void Flush()
+        {
+
+        }
+
+        /*// <summary>
+        /// 生产者信息
+        /// </summary>
+        string ProducerInfo { get; set; }
+
+        /// <summary>
+        ///     文件内容二进制数据
+        /// </summary>
+        byte[] Bytes { get; set; }*/
     }
 }

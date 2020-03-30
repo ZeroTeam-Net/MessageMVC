@@ -43,7 +43,7 @@ namespace Agebull.Common.Logging
                 LogRecorder.BeginStepMonitor(name);
             else
             {
-                IocScope.Logger = IocHelper.Create<ILoggerFactory>().CreateLogger(name);
+                IocScope.Logger = IocHelper.LoggerFactory.CreateLogger(name);
                 LogRecorder.BeginMonitor(name);
             }
             return scope;

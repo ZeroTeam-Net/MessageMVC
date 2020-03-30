@@ -162,7 +162,8 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         public StationStateType State { get; set; }
 
 
-        string IMessageProducer.Producer(string channel, string title, string content)
+        /// <inheritdoc/>
+        public string Producer(string channel, string title, string content)
         {
             return DoProducer(channel, title, content);
         }
@@ -172,7 +173,9 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             DoProducer(channel, title, JsonHelper.SerializeObject(content));
             return default;
         }
-        void IMessageProducer.Producer<TArg>(string channel, string title, TArg content)
+
+        /// <inheritdoc/>
+        public void Producer<TArg>(string channel, string title, TArg content)
         {
             DoProducer(channel, title, JsonHelper.SerializeObject(content));
         }

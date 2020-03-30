@@ -15,6 +15,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         int Level { get; }
 
         /// <summary>
+        /// 当前处理器
+        /// </summary>
+        MessageProcess Process { get; set; }
+        
+        /// <summary>
         /// 准备
         /// </summary>
         /// <param name="service">当前服务</param>

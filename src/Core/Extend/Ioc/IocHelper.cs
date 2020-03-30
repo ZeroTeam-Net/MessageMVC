@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Agebull.Common.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Agebull.Common.Ioc
 {
@@ -18,6 +20,21 @@ namespace Agebull.Common.Ioc
         }
 
         #region ServiceCollection
+
+        static ILoggerFactory loggerFactory = new LoggerFactory();
+
+        /// <summary>
+        ///     全局依赖
+        /// </summary>
+        public static ILoggerFactory LoggerFactory
+        {
+            get
+            {
+                if (loggerFactory != null)
+                    return loggerFactory;
+                return loggerFactory = new LoggerFactory();
+            }
+        }
 
         private static IServiceCollection _serviceCollection;
 
@@ -138,6 +155,16 @@ namespace Agebull.Common.Ioc
             return ServiceProvider.GetService<TInterface>();
         }
 
+        /// <summary>
+        ///     生成接口实例
+        /// </summary>
+        /// <typeparam name="TInterface"></typeparam>
+        /// <returns></returns>
+        public static IEnumerable<TInterface>  GetServices<TInterface>()
+        //where TInterface : class
+        {
+            return ServiceProvider.GetServices<TInterface>();
+        }
         /// <summary>
         ///     生成接口实例(如果没有注册则使用默认实现)
         /// </summary>

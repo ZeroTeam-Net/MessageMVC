@@ -89,6 +89,43 @@ namespace ZeroTeam.MessageMVC
         public string AddInPath { get; set; }
 
         /// <summary>
+        ///     启用插件自动加载
+        /// </summary>
+        [DataMember]
+        public bool EnableAddIn { get; set; }
+
+        /// <summary>
+        ///     启用全局上下文
+        /// </summary>
+        [DataMember]
+        public bool EnableGlobalContext { get; set; } = true;
+
+        /// <summary>
+        ///     启用日志记录器LogRecorder
+        /// </summary>
+        [DataMember]
+        public bool EnableLogRecorder { get; set; } = true;
+
+        /// <summary>
+        ///     启用埋点
+        /// </summary>
+        [DataMember]
+        public bool EnableMarkPoint { get; set; }
+
+        /// <summary>
+        ///     埋点服务名称
+        /// </summary>
+        [DataMember]
+        public string MarkPointName { get; set; }
+
+        /// <summary>
+        ///     启用异常消息本地重放
+        /// </summary>
+        [DataMember]
+        public bool EnableMessageReConsumer{ get; set; }
+
+        
+        /// <summary>
         /// 如果目标配置存在,则复制之
         /// </summary>
         /// <param name="option"></param>
@@ -110,6 +147,18 @@ namespace ZeroTeam.MessageMVC
                 ServiceName = option.ServiceName;
             if (option.StationIsolate != null)
                 StationIsolate = option.StationIsolate;
+
+
+            if (!string.IsNullOrWhiteSpace(option.MarkPointName))
+                MarkPointName = option.MarkPointName;
+            if (option.EnableGlobalContext)
+                EnableGlobalContext = option.EnableGlobalContext;
+            if (option.EnableLogRecorder)
+                EnableLogRecorder = option.EnableLogRecorder;
+            if (option.EnableMarkPoint)
+                EnableMarkPoint = option.EnableMarkPoint;
+            if (option.EnableMessageReConsumer)
+                EnableMessageReConsumer = option.EnableMessageReConsumer;
         }
 
         /// <summary>
@@ -132,9 +181,16 @@ namespace ZeroTeam.MessageMVC
                 ShortName = option.ShortName;
             if (string.IsNullOrWhiteSpace(ServiceName))
                 ServiceName = option.ServiceName;
-            if (StationIsolate == null)
-                StationIsolate = option.StationIsolate;
-
+            if (string.IsNullOrWhiteSpace(MarkPointName))
+                MarkPointName = option.MarkPointName;
+            if (!EnableGlobalContext)
+                EnableGlobalContext = option.EnableGlobalContext;
+            if (!EnableLogRecorder)
+                EnableLogRecorder = option.EnableLogRecorder;
+            if (!EnableMarkPoint)
+                EnableMarkPoint = option.EnableMarkPoint;
+            if (!EnableMessageReConsumer)
+                EnableMessageReConsumer = option.EnableMessageReConsumer;
         }
     }
 }

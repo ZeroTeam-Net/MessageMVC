@@ -11,7 +11,7 @@ namespace ZeroTeam.MessageMVC.Kafka
     /// <summary>
     ///     Kafka消息发布
     /// </summary>
-    internal class KafkaProducer : IMessageProducer, IFlowMiddleware
+    public class KafkaProducer : IMessageProducer, IFlowMiddleware
     {
 
         #region IFlowMiddleware 
@@ -21,7 +21,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// </summary>
         public StationStateType State { get; set; }
 
-        private IProducer<Null, string> producer;
+        private static IProducer<Null, string> producer;
 
         /// <summary>
         /// 实例名称

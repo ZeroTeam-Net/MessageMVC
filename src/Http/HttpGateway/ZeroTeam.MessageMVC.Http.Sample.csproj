@@ -1,0 +1,116 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup Label="Globals">
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>3909b577-6324-4fb6-b394-f48db7e0ad07</UserSecretsId>
+    <StartupObject></StartupObject>
+    <ApplicationIcon />
+    <OutputType>Exe</OutputType>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="AddIn\**" />
+    <Compile Remove="App\**" />
+    <Compile Remove="Cache\**" />
+    <Compile Remove="Chahe\**" />
+    <Compile Remove="config\**" />
+    <Compile Remove="Context\**" />
+    <Compile Remove="Controllers\**" />
+    <Compile Remove="Datas\**" />
+    <Compile Remove="Http\**" />
+    <Compile Remove="logs\**" />
+    <Compile Remove="Option\**" />
+    <Compile Remove="Security\**" />
+    <Compile Remove="wwwroot\**" />
+    <Compile Remove="Zero\**" />
+    <Content Remove="AddIn\**" />
+    <Content Remove="App\**" />
+    <Content Remove="Cache\**" />
+    <Content Remove="Chahe\**" />
+    <Content Remove="config\**" />
+    <Content Remove="Context\**" />
+    <Content Remove="Controllers\**" />
+    <Content Remove="Datas\**" />
+    <Content Remove="Http\**" />
+    <Content Remove="logs\**" />
+    <Content Remove="Option\**" />
+    <Content Remove="Security\**" />
+    <Content Remove="wwwroot\**" />
+    <Content Remove="Zero\**" />
+    <EmbeddedResource Remove="AddIn\**" />
+    <EmbeddedResource Remove="App\**" />
+    <EmbeddedResource Remove="Cache\**" />
+    <EmbeddedResource Remove="Chahe\**" />
+    <EmbeddedResource Remove="config\**" />
+    <EmbeddedResource Remove="Context\**" />
+    <EmbeddedResource Remove="Controllers\**" />
+    <EmbeddedResource Remove="Datas\**" />
+    <EmbeddedResource Remove="Http\**" />
+    <EmbeddedResource Remove="logs\**" />
+    <EmbeddedResource Remove="Option\**" />
+    <EmbeddedResource Remove="Security\**" />
+    <EmbeddedResource Remove="wwwroot\**" />
+    <EmbeddedResource Remove="Zero\**" />
+    <None Remove="AddIn\**" />
+    <None Remove="App\**" />
+    <None Remove="Cache\**" />
+    <None Remove="Chahe\**" />
+    <None Remove="config\**" />
+    <None Remove="Context\**" />
+    <None Remove="Controllers\**" />
+    <None Remove="Datas\**" />
+    <None Remove="Http\**" />
+    <None Remove="logs\**" />
+    <None Remove="Option\**" />
+    <None Remove="Security\**" />
+    <None Remove="wwwroot\**" />
+    <None Remove="Zero\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="appsettings.Development.json" />
+    <Content Remove="appsettings.json" />
+    <Content Remove="bower.json" />
+    <Content Remove="bundleconfig.json" />
+    <Content Remove="cache.json" />
+    <Content Remove="machine.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove=".bowerrc" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Kafka\ZeroTeam.MessageMVC.Kafka.csproj" />
+    <ProjectReference Include="..\..\Redis\RedisMQ\ZeroTeam.MessageMVC.RedisMQ.csproj" />
+    <ProjectReference Include="..\GatewayBase\ZeroTeam.MessageMVC.Http.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="cert.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+
+</Project>

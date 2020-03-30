@@ -5,7 +5,7 @@ namespace ZeroTeam.MessageMVC
     /// <summary>
     ///     本地站点配置
     /// </summary>
-    public class ZeroAppConfigRuntime : ZeroAppConfig
+    public class ZeroAppOption : ZeroAppConfig
     {
         /// <summary>
         ///     程序所在地址

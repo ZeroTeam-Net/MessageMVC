@@ -18,7 +18,7 @@
         /// <summary>
         ///     配置校验,作为第一步
         /// </summary>
-        void CheckOption(ZeroAppConfigRuntime config) { }
+        void CheckOption(ZeroAppOption config) { }
 
 
         /// <summary>

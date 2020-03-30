@@ -7,7 +7,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
     /// <summary>
     ///     ZMQ生产者
     /// </summary>
-    internal class ZeroRPCProducer : IMessageProducer
+    public class ZeroRPCProducer : IMessageProducer
     {
         #region Properties
 

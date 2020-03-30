@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 
 namespace ZeroTeam.MessageMVC.Messages
 {
@@ -12,7 +13,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 唯一标识，UUID
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public string ID { get; set; }
+        public string ID { get; set; } = Guid.NewGuid().ToString("N");
 
         /// <summary>
         /// 处理状态
@@ -24,13 +25,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 生产时间戳,UNIX时间戳,自1970起秒数
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public int Timestamp { get; set; }
-
-        /// <summary>
-        /// 生产者信息
-        /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public string ProducerInfo { get; set; }
+        public int Timestamp { get; set; } = DateTime.Now.ToTimestamp();
 
         /// <summary>
         /// 分类
@@ -67,11 +62,6 @@ namespace ZeroTeam.MessageMVC.Messages
         public string Result { get; set; }
 
         /// <summary>
-        ///     文件内容二进制数据
-        /// </summary>
-        public byte[] Bytes { get; set; }
-
-        /// <summary>
         /// 其他带外内容
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
@@ -97,6 +87,19 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 接口参数,即Content
         /// </summary>
         public string Argument => Content;
+
+
+        /*// <summary>
+        ///     文件内容二进制数据
+        /// </summary>
+        public byte[] Bytes { get; set; }
+
+        /// <summary>
+        /// 生产者信息
+        /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+        public string ProducerInfo { get; set; }*/
+
     }
 
 }

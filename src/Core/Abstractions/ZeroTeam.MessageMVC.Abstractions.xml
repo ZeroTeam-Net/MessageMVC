@@ -1505,6 +1505,14 @@
                消息处理器
             </summary>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.MessageProcess.OnMessagePush(ZeroTeam.MessageMVC.ZeroApis.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
+            <summary>
+            消息处理
+            </summary>
+            <param name="service"></param>
+            <param name="message"></param>
+            <param name="tag"></param>
+        </member>
         <member name="F:ZeroTeam.MessageMVC.ZeroApis.MessageProcess.Service">
             <summary>
             当前站点
@@ -1531,13 +1539,15 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.MessageProcess.OnMessagePush(ZeroTeam.MessageMVC.ZeroApis.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.MessageProcess.PushResult">
             <summary>
-            消息处理
+            结果推到调用处
             </summary>
-            <param name="service"></param>
-            <param name="message"></param>
-            <param name="tag"></param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.MessageProcess.PushResult(ZeroTeam.MessageMVC.Messages.MessageState)">
+            <summary>
+            结果推到调用处
+            </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.IMessageMiddleware">
             <summary>
@@ -1547,6 +1557,11 @@
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.IMessageMiddleware.Level">
             <summary>
             层级
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IMessageMiddleware.Process">
+            <summary>
+            当前处理器
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApis.IMessageMiddleware.Handle(ZeroTeam.MessageMVC.ZeroApis.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object,System.Func{System.Threading.Tasks.Task{ZeroTeam.MessageMVC.Messages.MessageState}})">
@@ -1909,7 +1924,7 @@
             等级
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.IFlowMiddleware.CheckOption(ZeroTeam.MessageMVC.ZeroAppConfigRuntime)">
+        <member name="M:ZeroTeam.MessageMVC.IFlowMiddleware.CheckOption(ZeroTeam.MessageMVC.ZeroAppOption)">
             <summary>
                 配置校验,作为第一步
             </summary>
@@ -2193,6 +2208,36 @@
                 插件地址,如为空则与运行目录相同
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.EnableAddIn">
+            <summary>
+                启用插件自动加载
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.EnableGlobalContext">
+            <summary>
+                启用全局上下文
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.EnableLogRecorder">
+            <summary>
+                启用日志记录器LogRecorder
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.EnableMarkPoint">
+            <summary>
+                启用埋点
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.MarkPointName">
+            <summary>
+                埋点服务名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.EnableMessageReConsumer">
+            <summary>
+                启用异常消息本地重放
+            </summary>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroAppConfig.CopyByHase(ZeroTeam.MessageMVC.ZeroAppConfig)">
             <summary>
             如果目标配置存在,则复制之
@@ -2205,22 +2250,22 @@
             </summary>
             <param name="option"></param>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroAppConfigRuntime">
+        <member name="T:ZeroTeam.MessageMVC.ZeroAppOption">
             <summary>
                 本地站点配置
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroAppConfigRuntime.BinPath">
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppOption.BinPath">
             <summary>
                 程序所在地址
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroAppConfigRuntime.LocalIpAddress">
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppOption.LocalIpAddress">
             <summary>
                 本机IP地址
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroAppConfigRuntime.IsLinux">
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppOption.IsLinux">
             <summary>
                 是否在Linux黑环境下
             </summary>
@@ -2885,13 +2930,10 @@
                 是否有调用参数
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ApiDocuments.ApiActionInfo.IsAsync">
+        <member name="F:ZeroTeam.MessageMVC.ApiDocuments.ApiActionInfo.IsAsync">
             <summary>
                 是否异步任务
             </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ApiDocuments.ApiActionInfo.ArgumentFeature">
-            <summary>是否有调用参数</summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.ApiDocuments.ApiActionInfo.Action">
             <summary>有参方法</summary>
@@ -3167,21 +3209,6 @@
             唯一标识，UUID
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.IMessageItem.State">
-            <summary>
-            处理状态
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.IMessageItem.Timestamp">
-            <summary>
-            生产时间戳,UNIX时间戳,自1970起秒数
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.IMessageItem.ProducerInfo">
-            <summary>
-            生产者信息
-            </summary>
-        </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.IMessageItem.Topic">
             <summary>
             分类
@@ -3211,9 +3238,14 @@
             处理成功 : 结果信息或无
             </remarks>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.IMessageItem.Bytes">
+        <member name="P:ZeroTeam.MessageMVC.Messages.IMessageItem.State">
             <summary>
-                文件内容二进制数据
+            处理状态
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.IMessageItem.Timestamp">
+            <summary>
+            生产时间戳,UNIX时间戳,自1970起秒数
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.IMessageItem.Tag">
@@ -3224,6 +3256,11 @@
         <member name="P:ZeroTeam.MessageMVC.Messages.IMessageItem.Context">
             <summary>
             上下文信息
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageItem.Flush">
+            <summary>
+            刷新操作
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Messages.MessageItem">
@@ -3244,11 +3281,6 @@
         <member name="P:ZeroTeam.MessageMVC.Messages.MessageItem.Timestamp">
             <summary>
             生产时间戳,UNIX时间戳,自1970起秒数
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.MessageItem.ProducerInfo">
-            <summary>
-            生产者信息
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.MessageItem.Topic">
@@ -3279,11 +3311,6 @@
             处理失败 : 失败内容或原因
             处理成功 : 结果信息或无
             </remarks>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.MessageItem.Bytes">
-            <summary>
-                文件内容二进制数据
-            </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.MessageItem.Tag">
             <summary>

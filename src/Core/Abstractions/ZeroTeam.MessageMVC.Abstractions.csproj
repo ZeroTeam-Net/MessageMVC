@@ -35,7 +35,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Agebull.Common.LogRecorder" Version="3.1.40.10" />
     <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LogRecorder\Agebull.Common.LogRecorder.csproj" />
   </ItemGroup>
 </Project>

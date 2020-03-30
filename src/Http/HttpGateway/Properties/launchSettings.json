@@ -1,0 +1,19 @@
+{
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iis": {
+      "applicationUrl": "http://localhost/MicroZero.Http.Gateway",
+      "sslPort": 0
+    },
+    "iisExpress": {
+      "applicationUrl": "http://localhost:6000/",
+      "sslPort": 0
+    }
+  },
+  "profiles": {
+    "newProfile1": {
+      "commandName": "Project"
+    }
+  }
+}

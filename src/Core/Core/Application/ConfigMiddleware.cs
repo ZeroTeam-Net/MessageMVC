@@ -38,7 +38,7 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         ///     配置校验,作为第一步
         /// </summary>
-        void IFlowMiddleware.CheckOption(ZeroAppConfigRuntime config)
+        void IFlowMiddleware.CheckOption(ZeroAppOption config)
         {
             CheckConfig(config);
             //上下文
@@ -71,7 +71,7 @@ ThreadPool : {worker:N0}worker|{ io:N0}threads");
         /// <summary>
         ///     配置校验
         /// </summary>
-        void CheckConfig(ZeroAppConfigRuntime config)
+        void CheckConfig(ZeroAppOption config)
         {
             #region 配置组合
 

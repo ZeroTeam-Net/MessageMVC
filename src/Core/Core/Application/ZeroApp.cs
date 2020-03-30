@@ -12,6 +12,32 @@ namespace ZeroTeam.MessageMVC
     /// </summary>
     public static class ZeroApp
     {
+        /// <summary>
+        /// 检查并注入配置
+        /// </summary>
+        /// <param name="services"></param>
+        static void CheckOption(IServiceCollection services)
+        {
+            services.AddTransient<IFlowMiddleware, MessageProducer>();//消息选择器
+            services.AddTransient<IFlowMiddleware, ConfigMiddleware>();//配置\依赖对象初始化,系统配置获取
+            ZeroFlowControl.CheckOption();
+            if (ZeroFlowControl.Config.EnableAddIn)
+                services.AddTransient<IFlowMiddleware, AddInImporter>();//插件载入
+            if (ZeroFlowControl.Config.EnableLogRecorder)
+                services.AddTransient<IMessageMiddleware, LoggerMiddleware>();//启用日志
+            if (ZeroFlowControl.Config.EnableGlobalContext)
+                services.AddTransient<IMessageMiddleware, GlobalContextMiddleware>();//启用全局上下文
+            //消息存储与异常消息重新消费
+            if (ZeroFlowControl.Config.EnableMessageReConsumer)
+            {
+                services.AddTransient<IMessageMiddleware, StorageMiddleware>();
+                services.AddTransient<IFlowMiddleware, ReConsumerMiddleware>();
+            }
+            services.AddTransient<IMessageMiddleware, ApiExecuter>();//API路由与执行
+            if (IocHelper.ServiceCollection != services)
+                IocHelper.SetServiceCollection(services);
+            IocHelper.Update();
+        }
 
         /// <summary>
         /// 使用主流程控制器
@@ -21,20 +47,7 @@ namespace ZeroTeam.MessageMVC
         /// <param name="waitEnd"></param>
         public static Task UseFlow(this IServiceCollection services, Assembly assembly, bool waitEnd)
         {
-            services.AddTransient<IFlowMiddleware, MessageProducer>();//消息选择器
-            services.AddTransient<IFlowMiddleware, ConfigMiddleware>();//配置\依赖对象初始化,系统配置获取
-            services.AddTransient<IFlowMiddleware, AddInImporter>();//插件载入
-            services.AddTransient<IMessageMiddleware, LoggerMiddleware>();//启用日志
-            //services.AddTransient<IMessageMiddleware, GlobalContextMiddleware>();//启用全局上下文
-            services.AddTransient<IMessageMiddleware, ApiExecuter>();//API路由与执行
-            //消息存储与异常消息重新消费
-            //services.AddTransient<IMessageMiddleware, StorageMiddleware>();
-            //services.AddTransient<IFlowMiddleware, ReConsumerMiddleware>();
-
-            if (IocHelper.ServiceCollection != services)
-                IocHelper.SetServiceCollection(services);
-            IocHelper.Update();
-            ZeroFlowControl.CheckOption();
+            CheckOption(services);
             ZeroFlowControl.Discove(assembly);
             ZeroFlowControl.Initialize();
             if (waitEnd)
@@ -42,7 +55,6 @@ namespace ZeroTeam.MessageMVC
             else
                 return ZeroFlowControl.RunAsync();
         }
-
 
 
         /// <summary>
@@ -71,25 +83,24 @@ namespace ZeroTeam.MessageMVC
         /// 使用主流程控制器
         /// </summary>
         /// <param name="services"></param>
-        public static void UseFlow(this IServiceCollection services)
+        public static Task UseFlow(this IServiceCollection services)
         {
-            services.AddTransient<IFlowMiddleware, MessageProducer>();//消息选择器
-            services.AddTransient<IFlowMiddleware, ConfigMiddleware>();//配置\依赖对象初始化,系统配置获取
-            services.AddTransient<IFlowMiddleware, AddInImporter>();//插件载入
-            services.AddTransient<IMessageMiddleware, LoggerMiddleware>();//启用日志
-            //services.AddTransient<IMessageMiddleware, GlobalContextMiddleware>();//启用全局上下文
-            services.AddTransient<IMessageMiddleware, ApiExecuter>();//API路由与执行
-            //消息存储与异常消息重新消费
-            //services.AddTransient<IMessageMiddleware, StorageMiddleware>();
-            //services.AddTransient<IFlowMiddleware, ReConsumerMiddleware>();
-
-            if (IocHelper.ServiceCollection != services)
-                IocHelper.SetServiceCollection(services);
-            IocHelper.Update();
-            ZeroFlowControl.CheckOption();
+            CheckOption(services);
             ZeroFlowControl.Initialize();
+            return ZeroFlowControl.RunAsync();
+        }
 
-            Task.Factory.StartNew(ZeroFlowControl.Run,TaskCreationOptions.DenyChildAttach);
+
+        /// <summary>
+        /// 使用主流程控制器
+        /// </summary>
+        /// <param name="services"></param>
+        public static Task UseFlowByAutoDiscory(this IServiceCollection services)
+        {
+            CheckOption(services);
+            ZeroFlowControl.Discove();
+            ZeroFlowControl.Initialize();
+            return ZeroFlowControl.RunAsync();
         }
     }
 }

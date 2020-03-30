@@ -12,6 +12,8 @@ using Newtonsoft.Json;
 using Agebull.Common.Ioc;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Agebull.Common.Configuration;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -121,14 +123,15 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <param name="onlyDoc"></param>
         private void FindApi(Type type, bool onlyDoc)
         {
-            if (type.IsAbstract)
+            //泛型与纯虚类
+            if (type.IsAbstract || type.IsGenericType)
                 return;
 
             var docx = XmlMember.Find(type) ?? new XmlMember
             {
                 Name = type.Name
             };
-            ServiceInfo station = null;
+            ServiceInfo service = null;
             #region 服务类型检测
             foreach (var dis in TransportDiscories)
             {
@@ -136,20 +139,22 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 if (builder == null)
                     continue;
 
-                if (!ServiceInfos.TryGetValue(name, out station))
+                if (!ServiceInfos.TryGetValue(name, out service))
                 {
-                    ServiceInfos.Add(name, station = new ServiceInfo
+                    ServiceInfos.Add(name, service = new ServiceInfo
                     {
                         Name = name,
                         NetBuilder = builder
                     });
-                    station.Copy(docx);
                 }
+                service.Copy(docx);
                 break;
             }
-            if (station == null)
+            if (service == null)
                 return;
             #endregion
+
+            #region API发现
             string routeHead = type.GetCustomAttribute<RouteAttribute>()?.Name.SafeTrim(' ', '\t', '\r', '\n', '/');
             if (routeHead != null)
                 routeHead += "/";
@@ -159,8 +164,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
             foreach (var method in type.GetMethods(BindingFlags.Instance | BindingFlags.Public))
             {
-                CheckMethod(type, onlyDoc, docx, station, routeHead, defPage, defOption, defCategory, method);
+                CheckMethod(type, onlyDoc, docx, service, routeHead, defPage, defOption, defCategory, method);
             }
+            #endregion
         }
 
         private void CheckMethod(Type type, bool onlyDoc, XmlMember docx, ServiceInfo station, string routeHead, string defPage, ApiAccessOption? defOption, string defCategory, MethodInfo method)
@@ -173,11 +179,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             }
             if (method.Name.Length > 4 && (method.Name.IndexOf("get_", StringComparison.Ordinal) == 0 || method.Name.IndexOf("set_", StringComparison.Ordinal) == 0))
                 return;
-            if (method.GetParameters().Length > 1)
-            {
-                //ZeroTrace.WriteError("ApiDiscover", "argument size must 0 or 1", station.Name, type.Name, method.Name);
-                return;
-            }
+            //if (method.GetParameters().Length > 1)
+            //{
+            //    ZeroTrace.WriteError("ApiDiscover", "argument size must 0 or 1", station.Name, type.Name, method.Name);
+            //    return;
+            //}
 
             var head = routeHead;
             if (routeHead == null && method.DeclaringType != type)//基类方法,即增加自动前缀
@@ -194,7 +200,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             else if (defOption != null)
                 option = defOption.Value;
             else
-                option = ApiAccessOption.Internal | ApiAccessOption.Customer | ApiAccessOption.Employe;
+                option = ApiAccessOption.Internal | ApiAccessOption.Customer | ApiAccessOption.Employe | ApiAccessOption.ArgumentCanNil;
 
             var category = method.GetCustomAttribute<CategoryAttribute>()?.Category.SafeTrim();
             var page = method.GetCustomAttribute<ApiPageAttribute>()?.PageUrl.SafeTrim();
@@ -215,17 +221,20 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             api.HaseArgument = arg != null;
             api.ResultType = method.ReturnType;
 
+            //动态生成并编译
+            api.Action = CreateMethod(type.GetTypeInfo(),
+                    method.Name,
+                    out var argInfo,
+                    out api.IsAsync);
+            api.HaseArgument = argInfo != null;
             if (api.HaseArgument)
             {
-                api.ArgumentInfo = ReadEntity(arg.ParameterType, "argument") ?? new TypeDocument();
+                api.ArgumentInfo = ReadEntity(argInfo.ParameterType, argInfo.Name ?? "argument") ?? new TypeDocument();
                 api.ArgumentInfo.Name = arg.Name;
                 api.ArgumentType = arg.ParameterType;
                 if (doc != null)
                     api.ArgumentInfo.Caption = doc.Arguments.Values.FirstOrDefault();
             }
-            //动态生成并编译
-            if (!onlyDoc)
-                BuildMethod(type, method, api, arg);
             station.Aips.Add(api.RouteName, api);
         }
 
@@ -233,95 +242,156 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
         #region Api调用方法生成
 
-        private void BuildMethod(Type type, MethodInfo method, ApiActionInfo api, ParameterInfo arg)
-        {
-
-            if (api.HaseArgument)
-            {
-                if (api.ArgumentType.IsSupperInterface(typeof(IApiArgument)) && method.ReturnType.IsSupperInterface(typeof(IApiResult)))
-                {
-                    api.ArgumentFeature = 1;
-                }
-                else
-                {
-                    api.ArgumentFeature = 2;
-                }
-            }
-            else
-            {
-                if (method.ReturnType.IsSupperInterface(typeof(IApiResult)))
-                {
-                    api.ArgumentFeature = 0;
-                }
-                else if (method.ReturnType == typeof(string))
-                {
-                    api.ArgumentFeature = 4;
-                }
-                else
-                {
-                    api.ArgumentFeature = 3;
-                }
-            }
-            api.Action = CreateMethod(type.GetTypeInfo(),
-                method.Name,
-                arg?.ParameterType.GetTypeInfo(),
-                out var isAsync);
-            api.IsAsync = isAsync;
-        }
-
 
         /// <summary>生成动态匿名调用内部方法（参数由TArg转为实际类型后调用，并将调用返回值转为TRes）</summary>
         /// <param name="callInfo">调用对象类型</param>
-        /// <param name="argInfo">原始参数类型</param>
         /// <param name="isAsync">此调用是否异步方法</param>
         /// <param name="methodName">原始调用方法</param>
+        /// <param name="argInfo">参数类型</param>
         /// <returns>匿名委托</returns>
-        public static Func<object, object> CreateMethod(TypeInfo callInfo, string methodName, TypeInfo argInfo, out bool isAsync)
+        public static Func<object, object> CreateMethod(TypeInfo callInfo, string methodName, out ParameterInfo argInfo, out bool isAsync)
         {
-            var constructor = callInfo.GetConstructor(Type.EmptyTypes);
-            if (constructor == null)
-                throw new ArgumentException("类型" + callInfo.FullName + "没有无参构造函数");
             var method = callInfo.GetMethod(methodName);
             if (method == null)
                 throw new ArgumentException("类型" + callInfo.FullName + "没有名称为" + methodName + "的方法");
 
             var parameters = method.GetParameters();
-            if (parameters.Length > 1)
-                throw new ArgumentException("类型" + callInfo.FullName + "的方法" + methodName + "参数不是一个");
-            if (argInfo != null && parameters[0].ParameterType != argInfo)
-                throw new ArgumentException("类型" + callInfo.FullName + "的方法" + methodName + "唯一参数不为" + argInfo.FullName);
+            //if (parameters.Length > 1)
+            //    throw new ArgumentException("类型" + callInfo.FullName + "的方法" + methodName + "参数不是一个");
+            //if (argInfo != null && parameters[0].ParameterType != argInfo)
+            //    throw new ArgumentException("类型" + callInfo.FullName + "的方法" + methodName + "唯一参数不为" + argInfo.FullName);
+
+            //TypeInfo argInfo,
 
             var dynamicMethod = new DynamicMethod(methodName, typeof(object), new[]
             {
                 typeof(object)
             });
-            var ilGenerator = dynamicMethod.GetILGenerator();
+            ILGenerator ilGenerator = dynamicMethod.GetILGenerator();
             //如果修补操作码，则填充空间。 尽管可能消耗处理周期，但未执行任何有意义的操作。
             ilGenerator.Emit(OpCodes.Nop);
-            //参数入栈 : 将自变量（由指定索引值引用）加载到堆栈上。
-            LocalBuilder arg = null;
-            if (parameters.Length == 1)
-            {
-                ilGenerator.Emit(OpCodes.Ldarg, 0);
-                ilGenerator.Emit(OpCodes.Castclass, argInfo);
-                arg = ilGenerator.DeclareLocal(argInfo);
-                ilGenerator.Emit(OpCodes.Stloc, arg);
-            }
+
 
             //new Controler;
-            ilGenerator.Emit(OpCodes.Newobj, constructor);
-
-            // action() | action(arg)
+            var constructor = callInfo.GetConstructor(Type.EmptyTypes);
+            if (constructor != null)
+            {
+                ilGenerator.Emit(OpCodes.Newobj, constructor);
+            }
+            else
+            {
+                //构造参数
+                var info = callInfo.GetConstructors()[0];
+                List<LocalBuilder> locals = new List<LocalBuilder>();
+                foreach (var parameter in info.GetParameters())
+                {
+                    var ca = parameter.GetCustomAttribute<FromConfigAttribute>();
+                    if (ca != null)
+                        ConfigCreate(ilGenerator, ca.Name, parameter.ParameterType);
+                    else
+                    {
+                        var sa = parameter.GetCustomAttribute<FromServicesAttribute>();
+                        if (sa != null)
+                            IocCreate(ilGenerator, parameter.ParameterType);
+                        else if (parameter.ParameterType == typeof(IServiceCollection))
+                            ServiceCollection(ilGenerator);
+                        else if (parameter.ParameterType.IsGenericType && parameter.ParameterType.GetGenericTypeDefinition() == typeof(ILogger<>))
+                            Logger(ilGenerator, parameter.ParameterType);
+                        else
+                            IocCreate(ilGenerator, parameter.ParameterType);
+                    }
+                    var builder = ilGenerator.DeclareLocal(parameter.ParameterType.GetTypeInfo());
+                    ilGenerator.Emit(OpCodes.Stloc, builder);
+                    locals.Add(builder);
+                }
+                foreach (var builder in locals)
+                {
+                    ilGenerator.Emit(OpCodes.Ldloc, builder);
+                }
+                ilGenerator.Emit(OpCodes.Newobj, info);
+            }
             //声明局部变量。
-            var local2 = ilGenerator.DeclareLocal(callInfo);
+            var controler = ilGenerator.DeclareLocal(callInfo);
             //从计算堆栈的顶部弹出当前值并将其存储到指定索引处的局部变量列表中。
-            ilGenerator.Emit(OpCodes.Stloc, local2);
-            //将指定索引处的局部变量加载到计算堆栈上。
-            ilGenerator.Emit(OpCodes.Ldloc, local2);
-            if (parameters.Length == 1)
-                ilGenerator.Emit(OpCodes.Ldloc, arg);
-            //对对象调用后期绑定方法，并且将返回值推送到计算堆栈上。
+            ilGenerator.Emit(OpCodes.Stloc, controler);
+
+            //构造属性
+            var properties = callInfo.GetProperties();
+            foreach (var pro in properties)
+            {
+                var ca = pro.GetCustomAttribute<FromConfigAttribute>();
+                if (ca != null)
+                {
+                    ConfigCreate(ilGenerator, ca.Name, pro.PropertyType);
+                }
+                else
+                {
+                    var sa = pro.GetCustomAttribute<FromServicesAttribute>();
+                    if (sa != null)
+                    {
+                        IocCreate(ilGenerator, pro.PropertyType);
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+                var b = ilGenerator.DeclareLocal(pro.PropertyType);
+                ilGenerator.Emit(OpCodes.Stloc, b);
+                ilGenerator.Emit(OpCodes.Ldloc, controler);
+                ilGenerator.Emit(OpCodes.Ldloc, b);
+                ilGenerator.Emit(OpCodes.Callvirt, pro.GetSetMethod());
+            }
+
+            argInfo = null;
+            //调用方法 controler.Api();
+            List<LocalBuilder> paras = new List<LocalBuilder>();
+            foreach (var parameter in parameters)
+            {
+                //第一个不特殊构造的
+                LocalBuilder arg;
+                //第一个不特殊构造的
+                if (argInfo == null &&
+                    !parameter.ParameterType.IsInterface &&
+                    parameter.GetCustomAttribute<FromConfigAttribute>() == null &&
+                    parameter.GetCustomAttribute<FromServicesAttribute>() == null)
+                {
+                    argInfo = parameter;
+                    ilGenerator.Emit(OpCodes.Ldarg, 0);
+                    ilGenerator.Emit(OpCodes.Castclass, parameter.ParameterType.GetTypeInfo());
+                }
+                else
+                {
+                    var ca = parameter.GetCustomAttribute<FromConfigAttribute>();
+                    if (ca != null)
+                    {
+                        ConfigCreate(ilGenerator, ca.Name, parameter.ParameterType);
+                    }
+                    else
+                    {
+                        var sa = parameter.GetCustomAttribute<FromServicesAttribute>();
+                        if (sa != null)
+                        {
+                            IocCreate(ilGenerator, parameter.ParameterType);
+                        }
+                        else
+                        {
+                            ilGenerator.Emit(OpCodes.Newobj, parameter.ParameterType.GetConstructor(Type.EmptyTypes));
+                        }
+                    }
+                }
+                arg = ilGenerator.DeclareLocal(parameter.ParameterType.GetTypeInfo());
+                ilGenerator.Emit(OpCodes.Stloc, arg);
+                paras.Add(arg);
+            }
+
+            ilGenerator.Emit(OpCodes.Ldloc, controler);
+            foreach (var builder in paras)
+            {
+                ilGenerator.Emit(OpCodes.Ldloc, builder);
+            }
             ilGenerator.Emit(OpCodes.Callvirt, method);
+            //对对象调用后期绑定方法，并且将返回值推送到计算堆栈上。
             var resInfo = typeof(object).GetTypeInfo();
             if (method.ReturnType == null || method.ReturnType == typeof(void))
             {
@@ -347,221 +417,45 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return dynamicMethod.CreateDelegate(typeof(Func<object, object>)) as Func<object, object>;
         }
 
-
-        /// <summary>生成动态匿名调用内部方法（参数由TArg转为实际类型后调用，并将调用返回值转为TRes）</summary>
-        /// <param name="callInfo">调用对象类型</param>
-        /// <param name="argInfo">原始参数类型</param>
-        /// <param name="resInfo">原始返回值类型</param>
-        /// <param name="methodName">原始调用方法</param>
-        /// <returns>匿名委托</returns>
-        public static Func<object, object> CreateFunc(TypeInfo callInfo, string methodName, TypeInfo argInfo, TypeInfo resInfo)
+        static void ServiceCollection(ILGenerator ilGenerator)
         {
-            var constructor = callInfo.GetConstructor(Type.EmptyTypes);
-            if (constructor == null)
-                throw new ArgumentException("类型" + callInfo.FullName + "没有无参构造函数");
-            var method = callInfo.GetMethod(methodName);
-            if (method == null)
-                throw new ArgumentException("类型" + callInfo.FullName + "没有名称为" + methodName + "的方法");
-            if (method.ReturnType != resInfo)
-                throw new ArgumentException("类型" + callInfo.FullName + "的方法" + methodName + "返回值不为" + resInfo.FullName);
-            var parameters = method.GetParameters();
-            if (parameters.Length != 1)
-                throw new ArgumentException("类型" + callInfo.FullName + "的方法" + methodName + "参数不是一个");
-            if (parameters[0].ParameterType != argInfo)
-                throw new ArgumentException("类型" + callInfo.FullName + "的方法" + methodName + "唯一参数不为" + argInfo.FullName);
-            var dynamicMethod = new DynamicMethod(methodName, typeof(object), new[]
+            var method = typeof(IocHelper).GetProperty($"ServiceCollection").GetGetMethod();
+            ilGenerator.Emit(OpCodes.Call, method);
+        }
+
+        static void Logger(ILGenerator ilGenerator, Type type)
+        {
+            var method = typeof(IocHelper).GetProperty($"LoggerFactory").GetGetMethod();
+            ilGenerator.Emit(OpCodes.Call, method);
+            var local = ilGenerator.DeclareLocal(typeof(ILoggerFactory));
+            ilGenerator.Emit(OpCodes.Stloc, local);
+            ilGenerator.Emit(OpCodes.Ldloc, local);
+            var methods = typeof(LoggerFactoryExtensions).GetMethods();
+            method = methods.First(p => p.Name == "CreateLogger" && p.GetParameters().Length == 1);
+            method = method.MakeGenericMethod(type);
+            ilGenerator.Emit(OpCodes.Call, method);
+        }
+
+        static void ConfigCreate(ILGenerator ilGenerator, string name, Type type)
+        {
+            ilGenerator.Emit(OpCodes.Ldstr, name);
+            var method = typeof(ConfigurationManager).GetMethod($"Option").MakeGenericMethod(type);
+            ilGenerator.Emit(OpCodes.Call, method);
+        }
+        static void IocCreate(ILGenerator ilGenerator, Type type)
+        {
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
             {
-                typeof(object)
-            });
-            var ilGenerator = dynamicMethod.GetILGenerator();
-            ilGenerator.Emit(OpCodes.Nop);
-            ilGenerator.Emit(OpCodes.Ldarg, 0);
-            ilGenerator.Emit(OpCodes.Castclass, argInfo);
-            var local1 = ilGenerator.DeclareLocal(argInfo);
-            ilGenerator.Emit(OpCodes.Stloc, local1);
-            ilGenerator.Emit(OpCodes.Newobj, constructor);
-
-            //声明局部变量。
-            var local2 = ilGenerator.DeclareLocal(callInfo);
-            //从计算堆栈的顶部弹出当前值并将其存储到指定索引处的局部变量列表中。
-            ilGenerator.Emit(OpCodes.Stloc, local2);
-            //将指定索引处的局部变量加载到计算堆栈上。
-            ilGenerator.Emit(OpCodes.Ldloc, local2);
-            ilGenerator.Emit(OpCodes.Ldloc, local1);
-            //对对象调用后期绑定方法，并且将返回值推送到计算堆栈上。
-            ilGenerator.Emit(OpCodes.Callvirt, method);
-
-            var local3 = ilGenerator.DeclareLocal(method.ReturnType);
-            ilGenerator.Emit(OpCodes.Stloc, local3);
-            ilGenerator.Emit(OpCodes.Ldloc, local3);
-            resInfo = typeof(object).GetTypeInfo();
-            ilGenerator.Emit(OpCodes.Castclass, resInfo);
-            var local4 = ilGenerator.DeclareLocal(resInfo);
-            ilGenerator.Emit(OpCodes.Stloc, local4);
-            ilGenerator.Emit(OpCodes.Ldloc, local4);
-            ilGenerator.Emit(OpCodes.Ret);
-            return dynamicMethod.CreateDelegate(typeof(Func<object, object>)) as Func<object, object>;
-        }
-
-        /// <summary>生成动态匿名调用内部方法（参数由TArg转为实际类型后调用，并将调用返回值转为TRes）</summary>
-        /// <typeparam name="TArg">参数类型（接口）</typeparam>
-        /// <typeparam name="TRes">返回值类型（接口）</typeparam>
-        /// <param name="callInfo">调用对象类型</param>
-        /// <param name="argInfo">原始参数类型</param>
-        /// <param name="resInfo">原始返回值类型</param>
-        /// <param name="methodName">原始调用方法</param>
-        /// <returns>匿名委托</returns>
-        public static Func<TArg, TRes> CreateFunc<TArg, TRes>(TypeInfo callInfo, string methodName, TypeInfo argInfo, TypeInfo resInfo)
-        {
-            var constructor = callInfo.GetConstructor(Type.EmptyTypes);
-            if (constructor == null)
-                throw new ArgumentException("类型" + callInfo.FullName + "没有无参构造函数");
-            var method = callInfo.GetMethod(methodName);
-            if (method == null)
-                throw new ArgumentException("类型" + callInfo.FullName + "没有名称为" + methodName + "的方法");
-            if (method.ReturnType != resInfo)
-                throw new ArgumentException("类型" + callInfo.FullName + "的方法" + methodName + "返回值不为" + resInfo.FullName);
-            var parameters = method.GetParameters();
-            if (parameters.Length != 1)
-                throw new ArgumentException("类型" + callInfo.FullName + "的方法" + methodName + "参数不是一个");
-            if (parameters[0].ParameterType != argInfo)
-                throw new ArgumentException("类型" + callInfo.FullName + "的方法" + methodName + "唯一参数不为" + argInfo.FullName);
-            var dynamicMethod = new DynamicMethod(methodName, typeof(TRes), new[]
+                var method = typeof(IocHelper).GetMethod($"GetServices").MakeGenericMethod(type.GetGenericArguments()[0]);
+                ilGenerator.Emit(OpCodes.Call, method);
+            }
+            else
             {
-                typeof (TArg)
-            });
-            var ilGenerator = dynamicMethod.GetILGenerator();
-            ilGenerator.Emit(OpCodes.Nop);
-            ilGenerator.Emit(OpCodes.Ldarg, 0);
-            ilGenerator.Emit(OpCodes.Castclass, argInfo);
-            var local1 = ilGenerator.DeclareLocal(argInfo);
-            ilGenerator.Emit(OpCodes.Stloc, local1);
-            ilGenerator.Emit(OpCodes.Newobj, constructor);
-            var local2 = ilGenerator.DeclareLocal(callInfo);
-            ilGenerator.Emit(OpCodes.Stloc, local2);
-            ilGenerator.Emit(OpCodes.Ldloc, local2);
-            ilGenerator.Emit(OpCodes.Ldloc, local1);
-            ilGenerator.Emit(OpCodes.Callvirt, method);
-            var local3 = ilGenerator.DeclareLocal(method.ReturnType);
-            ilGenerator.Emit(OpCodes.Stloc, local3);
-            ilGenerator.Emit(OpCodes.Ldloc, local3);
-            resInfo = typeof(TRes).GetTypeInfo();
-            ilGenerator.Emit(OpCodes.Castclass, resInfo);
-            var local4 = ilGenerator.DeclareLocal(resInfo);
-            ilGenerator.Emit(OpCodes.Stloc, local4);
-            ilGenerator.Emit(OpCodes.Ldloc, local4);
-            ilGenerator.Emit(OpCodes.Ret);
-            return dynamicMethod.CreateDelegate(typeof(Func<TArg, TRes>)) as Func<TArg, TRes>;
+                var method = typeof(IocHelper).GetMethod($"Create").MakeGenericMethod(type);
+                ilGenerator.Emit(OpCodes.Call, method);
+            }
         }
 
-        /// <summary>生成动态匿名调用内部方法（无参，调用返回值转为TRes）</summary>
-        /// <typeparam name="TRes">返回值类型（接口）</typeparam>
-        /// <param name="callInfo">调用对象类型</param>
-        /// <param name="resInfo">原始返回值类型</param>
-        /// <param name="methodName">原始调用方法</param>
-        /// <returns>匿名委托</returns>
-        public static Func<TRes> CreateFunc<TRes>(TypeInfo callInfo, string methodName, TypeInfo resInfo)
-        {
-            var constructor = callInfo.GetConstructor(Type.EmptyTypes);
-            if (constructor == null)
-                throw new ArgumentException("类型" + callInfo.FullName + "没有无参构造函数");
-            var method = callInfo.GetMethod(methodName);
-            if (method == null)
-                throw new ArgumentException("类型" + callInfo.FullName + "没有名称为" + methodName + "的方法");
-            if (!method.ReturnType.IsSupperInterface(resInfo))
-                throw new ArgumentException("类型" + callInfo.FullName + "的方法" + methodName + "返回值不为" + resInfo.FullName);
-            if ((uint)method.GetParameters().Length > 0U)
-                throw new ArgumentException("类型" + callInfo.FullName + "的方法" + methodName + "参数不为空");
-            var dynamicMethod = new DynamicMethod(methodName, typeof(TRes), null);
-            var ilGenerator = dynamicMethod.GetILGenerator();
-            ilGenerator.Emit(OpCodes.Nop);
-            ilGenerator.Emit(OpCodes.Newobj, constructor);
-            var local1 = ilGenerator.DeclareLocal(callInfo);
-            ilGenerator.Emit(OpCodes.Stloc, local1);
-            ilGenerator.Emit(OpCodes.Ldloc, local1);
-            ilGenerator.Emit(OpCodes.Callvirt, method);
-            var local2 = ilGenerator.DeclareLocal(method.ReturnType);
-            ilGenerator.Emit(OpCodes.Stloc, local2);
-            ilGenerator.Emit(OpCodes.Ldloc, local2);
-            resInfo = typeof(TRes).GetTypeInfo();
-            ilGenerator.Emit(OpCodes.Castclass, resInfo);
-            var local3 = ilGenerator.DeclareLocal(resInfo);
-            ilGenerator.Emit(OpCodes.Stloc, local3);
-            ilGenerator.Emit(OpCodes.Ldloc, local3);
-            ilGenerator.Emit(OpCodes.Ret);
-            return dynamicMethod.CreateDelegate(typeof(Func<TRes>)) as Func<TRes>;
-        }
-
-        /// <summary>生成动态匿名调用内部方法（无参，调用返回值转为TRes）</summary>
-        /// <param name="callInfo">调用对象类型</param>
-        /// <param name="methodName">原始调用方法</param>
-        /// <returns>匿名委托</returns>
-        public static Func<string> CreateStringFunc(TypeInfo callInfo, string methodName)
-        {
-            var constructor = callInfo.GetConstructor(Type.EmptyTypes);
-            if (constructor == null)
-                throw new ArgumentException("类型" + callInfo.FullName + "没有无参构造函数");
-            var method = callInfo.GetMethod(methodName);
-            if (method == null)
-                throw new ArgumentException("类型" + callInfo.FullName + "没有名称为" + methodName + "的方法");
-            if ((uint)method.GetParameters().Length > 0U)
-                throw new ArgumentException("类型" + callInfo.FullName + "的方法" + methodName + "参数不为空");
-            var dynamicMethod = new DynamicMethod(methodName, typeof(string), null, true);
-            var ilGenerator = dynamicMethod.GetILGenerator();
-            ilGenerator.Emit(OpCodes.Nop);
-            ilGenerator.Emit(OpCodes.Newobj, constructor);
-            var local1 = ilGenerator.DeclareLocal(callInfo);
-            ilGenerator.Emit(OpCodes.Stloc, local1);
-            ilGenerator.Emit(OpCodes.Ldloc, local1);
-            ilGenerator.Emit(OpCodes.Callvirt, method);
-            var local2 = ilGenerator.DeclareLocal(method.ReturnType);
-            ilGenerator.Emit(OpCodes.Stloc, local2);
-            ilGenerator.Emit(OpCodes.Ldloc, local2);
-            var resInfo = typeof(string).GetTypeInfo();
-            ilGenerator.Emit(OpCodes.Castclass, resInfo);
-            var local3 = ilGenerator.DeclareLocal(resInfo);
-            ilGenerator.Emit(OpCodes.Stloc, local3);
-            ilGenerator.Emit(OpCodes.Ldloc, local3);
-            ilGenerator.Emit(OpCodes.Ret);
-            return dynamicMethod.CreateDelegate(typeof(Func<string>)) as Func<string>;
-        }
-
-        /// <summary>生成动态匿名调用内部方法（无参，调用返回值转为TRes）</summary>
-        /// <param name="callInfo">调用对象类型</param>
-        /// <param name="resInfo">原始返回值类型</param>
-        /// <param name="methodName">原始调用方法</param>
-        /// <returns>匿名委托</returns>
-        public static Func<object> CreateFunc(TypeInfo callInfo, string methodName, TypeInfo resInfo)
-        {
-            var constructor = callInfo.GetConstructor(Type.EmptyTypes);
-            if (constructor == null)
-                throw new ArgumentException("类型" + callInfo.FullName + "没有无参构造函数");
-            var method = callInfo.GetMethod(methodName);
-            if (method == null)
-                throw new ArgumentException("类型" + callInfo.FullName + "没有名称为" + methodName + "的方法");
-            if (method.ReturnType != resInfo)
-                throw new ArgumentException("类型" + callInfo.FullName + "的方法" + methodName + "返回值不为" + resInfo.FullName);
-            if ((uint)method.GetParameters().Length > 0U)
-                throw new ArgumentException("类型" + callInfo.FullName + "的方法" + methodName + "参数不为空");
-            var dynamicMethod = new DynamicMethod(methodName, typeof(object), null, true);
-            var ilGenerator = dynamicMethod.GetILGenerator();
-            ilGenerator.Emit(OpCodes.Nop);
-            ilGenerator.Emit(OpCodes.Newobj, constructor);
-            var local1 = ilGenerator.DeclareLocal(callInfo);
-            ilGenerator.Emit(OpCodes.Stloc, local1);
-            ilGenerator.Emit(OpCodes.Ldloc, local1);
-            ilGenerator.Emit(OpCodes.Callvirt, method);
-            var local2 = ilGenerator.DeclareLocal(method.ReturnType);
-            ilGenerator.Emit(OpCodes.Stloc, local2);
-            ilGenerator.Emit(OpCodes.Ldloc, local2);
-            resInfo = typeof(object).GetTypeInfo();
-            ilGenerator.Emit(OpCodes.Castclass, resInfo);
-            var local3 = ilGenerator.DeclareLocal(resInfo);
-            ilGenerator.Emit(OpCodes.Stloc, local3);
-            ilGenerator.Emit(OpCodes.Ldloc, local3);
-            ilGenerator.Emit(OpCodes.Ret);
-            return dynamicMethod.CreateDelegate(typeof(Func<object>)) as Func<object>;
-        }
         #endregion
 
         #region XML文档
@@ -596,7 +490,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         private readonly Dictionary<Type, TypeDocument> _typeDocs2 = new Dictionary<Type, TypeDocument>();
 
         private readonly Dictionary<Type, TypeDocument> _typeDocs = new Dictionary<Type, TypeDocument>();
-        private string _stationName;
+
 
         private TypeDocument ReadEntity(Type type, string name)
         {

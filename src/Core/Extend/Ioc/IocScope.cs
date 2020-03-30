@@ -20,7 +20,7 @@ namespace Agebull.Common.Ioc
         /// <returns></returns>
         public static IDisposable CreateScope(string name = null)
         {
-            Local.Value = new LocalValueType(name ?? "Scope", new DependencyObjects(), new List<Action>(), IocHelper.Create<ILoggerFactory>().CreateLogger(name ?? "Log"));
+            Local.Value = new LocalValueType(name ?? "Scope", new DependencyObjects(), new List<Action>(), IocHelper.LoggerFactory.CreateLogger(name ?? "Log"));
             return new IocScope
             {
                 _scope = IocHelper.CreateScope()
@@ -67,7 +67,7 @@ namespace Agebull.Common.Ioc
         /// <summary>
         /// 析构方法
         /// </summary>
-        static LocalValueType LocalValue => Local.Value ?? (Local.Value = new LocalValueType("Scope", new DependencyObjects(), new List<Action>(), IocHelper.Create<ILoggerFactory>().CreateLogger("Log")));
+        static LocalValueType LocalValue => Local.Value ?? (Local.Value = new LocalValueType("Scope", new DependencyObjects(), new List<Action>(), IocHelper.LoggerFactory.CreateLogger("Log")));
 
         /// <summary>
         /// 范围名称

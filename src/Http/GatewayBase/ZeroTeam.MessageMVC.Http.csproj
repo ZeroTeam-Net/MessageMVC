@@ -1,0 +1,65 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <Compile Remove="Cache\**" />
+    <Compile Remove="Content\**" />
+    <Compile Remove="Map\**" />
+    <Compile Remove="Result\**" />
+    <Compile Remove="runtimes\**" />
+    <Compile Remove="Security\**" />
+    <Compile Remove="Zero\**" />
+    <EmbeddedResource Remove="Cache\**" />
+    <EmbeddedResource Remove="Content\**" />
+    <EmbeddedResource Remove="Map\**" />
+    <EmbeddedResource Remove="Result\**" />
+    <EmbeddedResource Remove="runtimes\**" />
+    <EmbeddedResource Remove="Security\**" />
+    <EmbeddedResource Remove="Zero\**" />
+    <None Remove="Cache\**" />
+    <None Remove="Content\**" />
+    <None Remove="Map\**" />
+    <None Remove="Result\**" />
+    <None Remove="runtimes\**" />
+    <None Remove="Security\**" />
+    <None Remove="Zero\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="MicroZero.Http.GatewayBase.deps.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.13.1" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.13.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Core" Version="2.2.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\Core\ZeroTeam.MessageMVC.Core.csproj" />
+  </ItemGroup>
+  <PropertyGroup>
+    <Description>MicroZero的HttpGateway基础库,以便打包及扩展</Description>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <DebugType>portable</DebugType>
+    
+    <PackageProjectUrl>https://github.com/agebullhu/MicroZero</PackageProjectUrl>
+    <PackageLicenseExpression>MPL</PackageLicenseExpression>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/agebullhu/MicroZero</RepositoryUrl>
+    
+    <IncludeSource>false</IncludeSource>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    
+    <Authors>Agebull</Authors>
+    <Company>Agebull</Company>
+    <PackageReleaseNotes>MicroZero的HttpGateway基础库</PackageReleaseNotes>
+    <Product>MicroZero.Http.GatewayBase</Product>
+    <Version>1.5.0.35-bate</Version>
+    <ApplicationIcon />
+    <OutputType>Library</OutputType>
+    <StartupObject />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>ZeroTeam.MessageMVC.Http.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>ZeroTeam.MessageMVC.Http.xml</DocumentationFile>
+  </PropertyGroup>
+</Project>

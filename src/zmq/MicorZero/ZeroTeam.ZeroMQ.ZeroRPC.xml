@@ -191,6 +191,16 @@
                 进入系统分布式消息侦听处理
             </summary>
         </member>
+        <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCApp">
+            <summary>
+            通过ZMQ实现的进程内通讯
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCApp.UseZeroMQInporc(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            使用KafkaMVC
+            </summary>
+        </member>
         <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroNetEventArgument">
             <summary>
             站点事件参数

@@ -632,6 +632,25 @@
               出栈
             </summary>
         </member>
+        <member name="T:System.UnixTimeConvert">
+            <summary>
+            Unix时间互转
+            </summary>
+        </member>
+        <member name="M:System.UnixTimeConvert.ToDateTime(System.Int32)">
+            <summary>
+            将Unix时间戳转换为DateTime类型时间
+            </summary>
+            <param name="unix">double 型数字</param>
+            <returns>DateTime</returns>
+        </member>
+        <member name="M:System.UnixTimeConvert.ToTimestamp(System.DateTime)">
+            <summary>
+            将c# DateTime时间格式转换为Unix时间戳格式
+            </summary>
+            <param name="time">时间</param>
+            <returns>long</returns>
+        </member>
         <member name="T:System.EnumExtend">
             <summary>
             枚举静态扩展
@@ -2327,25 +2346,6 @@
               析构
             </summary>
         </member>
-        <member name="T:Agebull.Common.UnixTimeConvert">
-            <summary>
-            Unix时间互转
-            </summary>
-        </member>
-        <member name="M:Agebull.Common.UnixTimeConvert.ConvertUnixTimeToDateTime(System.Double)">
-            <summary>
-            将Unix时间戳转换为DateTime类型时间
-            </summary>
-            <param name="unix">double 型数字</param>
-            <returns>DateTime</returns>
-        </member>
-        <member name="M:Agebull.Common.UnixTimeConvert.ConvertDateTimeToUnixTime(System.DateTime)">
-            <summary>
-            将c# DateTime时间格式转换为Unix时间戳格式
-            </summary>
-            <param name="time">时间</param>
-            <returns>long</returns>
-        </member>
         <member name="T:Agebull.Common.UrlHelper">
             <summary>
             对URL的扩展
@@ -2522,6 +2522,11 @@
             强类型取根节点
             </summary>
         </member>
+        <member name="M:Agebull.Common.Configuration.ConfigurationManager.Option``1(System.String)">
+            <summary>
+            强类型取根节点
+            </summary>
+        </member>
         <member name="P:Agebull.Common.Configuration.ConfigurationManager.Builder">
             <summary>
             全局配置
@@ -2618,9 +2623,35 @@
             <param name="key">名称</param>
             <param name="connectionString">连接字符</param>
         </member>
+        <member name="T:Agebull.Common.Configuration.FromConfigAttribute">
+            <summary>
+            表示来自配置文件构造的选项对象
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Configuration.FromConfigAttribute.Name">
+            <summary>
+            节点名称
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Configuration.FromConfigAttribute.#ctor(System.String)">
+            <summary>
+            构造
+            </summary>
+            <param name="name"></param>
+        </member>
+        <member name="T:Agebull.Common.Ioc.FromServicesAttribute">
+            <summary>
+            表示来自依赖构造的对象
+            </summary>
+        </member>
         <member name="T:Agebull.Common.Ioc.IocHelper">
             <summary>
                 简单的依赖注入器(框架内部使用,请不要调用)
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Ioc.IocHelper.LoggerFactory">
+            <summary>
+                全局依赖
             </summary>
         </member>
         <member name="P:Agebull.Common.Ioc.IocHelper.RootProvider">
@@ -2667,6 +2698,13 @@
             </summary>
         </member>
         <member name="M:Agebull.Common.Ioc.IocHelper.Create``1">
+            <summary>
+                生成接口实例
+            </summary>
+            <typeparam name="TInterface"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Agebull.Common.Ioc.IocHelper.GetServices``1">
             <summary>
                 生成接口实例
             </summary>
@@ -4478,6 +4516,11 @@
             <returns></returns>
         </member>
         <member name="M:ZeroTeam.MessageMVC.JsonHelper.DeserializeObject``1(System.String)">
+            <summary>
+            反序列化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.JsonHelper.DeserializeObject(System.String,System.Type)">
             <summary>
             反序列化
             </summary>

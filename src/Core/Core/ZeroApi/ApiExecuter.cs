@@ -17,6 +17,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         #region 对象
 
         /// <summary>
+        /// 当前处理器
+        /// </summary>
+        public MessageProcess Process { get; set; }
+
+        /// <summary>
         /// 层级
         /// </summary>
         int IMessageMiddleware.Level => short.MaxValue;
@@ -48,7 +53,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <param name="tag"></param>
         /// <param name="next">下一个处理方法</param>
         /// <returns></returns>
-        async Task<MessageState> IMessageMiddleware.Handle(IService service, IMessageItem message, object tag, Func<Task<MessageState>> next)
+        public async Task<MessageState> Handle(IService service, IMessageItem message, object tag, Func<Task<MessageState>> next)
         {
             Service = service;
             Message = message;
@@ -76,15 +81,12 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             }
             catch (Exception ex)
             {
-                Service.Transport.OnError(ex, new MessageItem
-                {
-                    State = MessageState.Exception,
-                    Result = ex.Message
-                }, Tag);
+                Service.Transport.OnError(ex, Message, Tag);
                 ZeroTrace.SystemLog("Exception", Message.Title, Message.Content, Message.Content, Message.Context);
                 return MessageState.Exception;
             }
-            await next();
+            if (next != null)
+                await next();
             return Message.State;
         }
 

@@ -33,10 +33,7 @@ namespace ZeroTeam.MessageMVC.ApiDocuments
         /// <summary>
         ///     是否异步任务
         /// </summary>
-        public bool IsAsync { get; set; }
-
-        /// <summary>是否有调用参数</summary>
-        public int ArgumentFeature;
+        public bool IsAsync;
 
         /// <summary>有参方法</summary>
         public Func<object, object> Action;
