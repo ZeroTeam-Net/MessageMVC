@@ -40,8 +40,6 @@ namespace MicroZero.Http.Gateway
         {
             IocHelper.SetServiceCollection(services);
             services.UseCsRedis();
-            services.AddTransient<IApiResult, ApiResult>();
-            services.AddSingleton<IMessageMiddleware, MarkPointMiddleware>();
             //services.AddSingleton<IFlowMiddleware, KafkaProducer>();//Kafka环境
             //services.AddSingleton<IMessageProducer, KafkaProducer>();//采用Kafka生产端
             MessageRoute.Initialize(services);

@@ -27,6 +27,8 @@ namespace ZeroTeam.MessageMVC
                 services.AddTransient<IMessageMiddleware, LoggerMiddleware>();//启用日志
             if (ZeroFlowControl.Config.EnableGlobalContext)
                 services.AddTransient<IMessageMiddleware, GlobalContextMiddleware>();//启用全局上下文
+            if (ZeroFlowControl.Config.EnableMarkPoint)
+                services.AddSingleton<IMessageMiddleware, MarkPointMiddleware>();
             //消息存储与异常消息重新消费
             if (ZeroFlowControl.Config.EnableMessageReConsumer)
             {
