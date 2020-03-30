@@ -15,14 +15,14 @@ using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
 
-namespace MicroZero.Http.Gateway
+namespace ZeroTeam.MessageMVC.Http
 {
     /// <summary>
     ///     路由数据
     /// </summary>
     [JsonObject(MemberSerialization.OptIn,ItemNullValueHandling = NullValueHandling.Ignore)]
     [DataContract]
-    public class RouteData : IMessageItem
+    public class HttpMessage : IMessageItem
     {
 
         #region IMessageItem
@@ -253,7 +253,7 @@ namespace MicroZero.Http.Gateway
             HttpMethod = request.Method.ToUpper();
             CheckHeaders(context, request);
 
-            if (MessageRoute.Option.EnableGlobalContext)
+            if (ZeroFlowControl.Config.EnableGlobalContext)
             {
                 GlobalContext.SetRequestContext(new RequestInfo
                 {
@@ -271,7 +271,7 @@ namespace MicroZero.Http.Gateway
 
         private void CheckHeaders(HttpContext context, HttpRequest request)
         {
-            if (MessageRoute.Option.EnableAuthToken)
+            if (HttpRoute.Option.EnableAuthToken)
             {
                 Token = request.Headers["AUTHORIZATION"].LastOrDefault()?
                 .Trim()
@@ -283,9 +283,9 @@ namespace MicroZero.Http.Gateway
                     Token = null;
                 }
             }
-            if (MessageRoute.Option.EnableUserAgent)
+            if (HttpRoute.Option.EnableUserAgent)
                 UserAgent = request.Headers["USER-AGENT"].LinkToString("|");
-            if (MessageRoute.Option.EnableHttpHeader)
+            if (HttpRoute.Option.EnableHttpHeader)
             {
                 foreach (var head in request.Headers)
                 {
@@ -318,7 +318,7 @@ namespace MicroZero.Http.Gateway
                 return false;
             }
             var idx = 0;
-            MessageRoute.Option.HostPaths?.TryGetValue(Uri.Host, out idx);
+            HttpRoute.Option.HostPaths?.TryGetValue(Uri.Host, out idx);
             if (words.Length <= idx + 1)
             {
                 //UserState = UserOperatorStateType.FormalError;
@@ -372,7 +372,7 @@ namespace MicroZero.Http.Gateway
 
         private async Task<bool> ReadFiles(HttpRequest request)
         {
-            if (!MessageRoute.Option.EnableFormFile)
+            if (!HttpRoute.Option.EnableFormFile)
             {
                 return true;
             }

@@ -9,7 +9,7 @@ using System.IO;
 using System;
 using Microsoft.Extensions.Hosting;
 
-namespace MicroZero.Http.Gateway
+namespace ZeroTeam.MessageMVC.Http
 {
     public class Program
     {

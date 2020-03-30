@@ -11,7 +11,7 @@ using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
 
-namespace MicroZero.Http.Gateway
+namespace ZeroTeam.MessageMVC.Http
 {
     /// <summary>
     /// HTTP协议相关的支持

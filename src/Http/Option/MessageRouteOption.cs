@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace MicroZero.Http.Gateway
+namespace ZeroTeam.MessageMVC.Http
 {
     /// <summary>
     ///     路由配置
@@ -11,11 +11,6 @@ namespace MicroZero.Http.Gateway
         /// 启用文件上传
         /// </summary>
         public bool EnableFormFile { get; set; }
-
-        /// <summary>
-        /// 启用全局上下文
-        /// </summary>
-        public bool EnableGlobalContext { get; set; }
 
         /// <summary>
         /// 启用身份令牌

@@ -11,12 +11,12 @@ using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
 
-namespace MicroZero.Http.Gateway
+namespace ZeroTeam.MessageMVC.Http
 {
     /// <summary>
     ///     调用映射核心类
     /// </summary>
-    public class MessageRoute
+    public class HttpRoute
     {
         #region 初始化
 
@@ -30,7 +30,7 @@ namespace MicroZero.Http.Gateway
         /// </summary>
         public static void Initialize(IServiceCollection services)
         {
-            Option = ConfigurationManager.Get<MessageRouteOption>("Route");
+            Option = ConfigurationManager.Get<MessageRouteOption>("HttpRoute");
 
             services.AddTransient<IRpcTransfer, HttpTransfer>();
 
@@ -123,7 +123,7 @@ namespace MicroZero.Http.Gateway
             //命令
             using (MonitorScope.CreateScope(uri.AbsolutePath))
             {
-                var data = new RouteData();
+                var data = new HttpMessage();
                 try
                 {
                     //开始调用

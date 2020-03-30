@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iis": {
-      "applicationUrl": "http://localhost/MicroZero.Http.Gateway",
+      "applicationUrl": "http://localhost/ZeroTeam.MessageMVC.Http",
       "sslPort": 0
     },
     "iisExpress": {

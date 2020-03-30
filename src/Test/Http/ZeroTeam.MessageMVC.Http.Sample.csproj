@@ -100,9 +100,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Http\ZeroTeam.MessageMVC.Http.csproj" />
     <ProjectReference Include="..\..\Kafka\ZeroTeam.MessageMVC.Kafka.csproj" />
     <ProjectReference Include="..\..\Redis\RedisMQ\ZeroTeam.MessageMVC.RedisMQ.csproj" />
-    <ProjectReference Include="..\GatewayBase\ZeroTeam.MessageMVC.Http.csproj" />
   </ItemGroup>
 
   <ItemGroup>

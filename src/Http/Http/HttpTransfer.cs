@@ -3,7 +3,7 @@ using ZeroTeam.MessageMVC.ZeroApis;
 using System.Threading.Tasks;
 using System.Threading;
 
-namespace MicroZero.Http.Gateway
+namespace ZeroTeam.MessageMVC.Http
 {
     /// <summary>
     ///     Http进站出站的处理类
