@@ -201,6 +201,11 @@
                 初始化
             </summary>
         </member>
+        <member name="M:Agebull.Common.Logging.LogRecorder.DoInitialize">
+            <summary>
+                初始化
+            </summary>
+        </member>
         <member name="M:Agebull.Common.Logging.LogRecorder.ReadConfig">
             <summary>
             读取配置

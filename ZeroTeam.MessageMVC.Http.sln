@@ -31,6 +31,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.Http", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.Http.Sample", "src\Test\Http\ZeroTeam.MessageMVC.Http.Sample.csproj", "{8C189721-5B46-4E16-AA39-9228DDD66590}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsMVC", "src\Test\MsMVC\MsMVC.csproj", "{CDF33313-D484-4B25-8E3C-86C0DE0A957F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,10 @@ Global
 		{8C189721-5B46-4E16-AA39-9228DDD66590}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C189721-5B46-4E16-AA39-9228DDD66590}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C189721-5B46-4E16-AA39-9228DDD66590}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDF33313-D484-4B25-8E3C-86C0DE0A957F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDF33313-D484-4B25-8E3C-86C0DE0A957F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDF33313-D484-4B25-8E3C-86C0DE0A957F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDF33313-D484-4B25-8E3C-86C0DE0A957F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -87,6 +93,7 @@ Global
 		{AD71E492-D611-420A-B4E7-67DF2AC774B9} = {2D8C9682-D48A-4494-A5E9-03DAB0C855F9}
 		{B06D5D4D-C895-461D-91EE-142EEB1B2FA0} = {A5DD66A3-2EAA-4BFB-982B-0E389F6D3472}
 		{8C189721-5B46-4E16-AA39-9228DDD66590} = {2D8C9682-D48A-4494-A5E9-03DAB0C855F9}
+		{CDF33313-D484-4B25-8E3C-86C0DE0A957F} = {2D8C9682-D48A-4494-A5E9-03DAB0C855F9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {866CE928-6325-4962-BB28-9A3BAF4BBCD1}

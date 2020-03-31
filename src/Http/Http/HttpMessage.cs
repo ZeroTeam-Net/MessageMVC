@@ -76,7 +76,7 @@ namespace ZeroTeam.MessageMVC.Http
         ///     请求地址
         /// </summary>
         [JsonProperty("uri", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public Uri Uri { get; private set; }
+        public string Uri { get; private set; }
         /// <summary>
         ///     当前请求调用的主机名称
         /// </summary>
@@ -246,12 +246,13 @@ namespace ZeroTeam.MessageMVC.Http
         {
             HttpContext = context;
             var request = context.Request;
-            Uri = request.GetUri();
+            Uri = request.Path.Value;
             if (!CheckApiRoute())
                 return Task.FromResult(false);
 
             HttpMethod = request.Method.ToUpper();
-            CheckHeaders(context, request);
+            if (HttpRoute.Option.EnableHttpHeader)
+                CheckHeaders(context, request);
 
             if (ZeroFlowControl.Config.EnableGlobalContext)
             {
@@ -285,7 +286,7 @@ namespace ZeroTeam.MessageMVC.Http
             }
             if (HttpRoute.Option.EnableUserAgent)
                 UserAgent = request.Headers["USER-AGENT"].LinkToString("|");
-            if (HttpRoute.Option.EnableHttpHeader)
+            
             {
                 foreach (var head in request.Headers)
                 {
@@ -309,7 +310,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// <returns></returns>
         private bool CheckApiRoute()
         {
-            var words = Uri.LocalPath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+            var words = Uri.Split('/', StringSplitOptions.RemoveEmptyEntries);
             if (words.Length <= 1)
             {
                 //UserState = UserOperatorStateType.FormalError;
@@ -318,7 +319,7 @@ namespace ZeroTeam.MessageMVC.Http
                 return false;
             }
             var idx = 0;
-            HttpRoute.Option.HostPaths?.TryGetValue(Uri.Host, out idx);
+            HttpRoute.Option.HostPaths?.TryGetValue(words[0], out idx);
             if (words.Length <= idx + 1)
             {
                 //UserState = UserOperatorStateType.FormalError;

@@ -2,13 +2,10 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 using Agebull.Common.Configuration;
-using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using ZeroTeam.MessageMVC;
-using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Http

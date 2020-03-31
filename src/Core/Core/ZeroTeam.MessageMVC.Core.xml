@@ -360,13 +360,6 @@
             <param name="action"></param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.CommandExec(ZeroTeam.MessageMVC.ZeroApis.IApiAction)">
-            <summary>
-                执行命令
-            </summary>
-            <param name="action"></param>
-            <returns></returns>
-        </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.StateMachine.CloseStateMachine">
             <summary>
             监控状态机

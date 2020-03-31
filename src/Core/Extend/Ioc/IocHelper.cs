@@ -21,7 +21,7 @@ namespace Agebull.Common.Ioc
 
         #region ServiceCollection
 
-        static ILoggerFactory loggerFactory = new LoggerFactory();
+        static ILoggerFactory loggerFactory;
 
         /// <summary>
         ///     »´æ÷“¿¿µ
@@ -32,7 +32,11 @@ namespace Agebull.Common.Ioc
             {
                 if (loggerFactory != null)
                     return loggerFactory;
-                return loggerFactory = new LoggerFactory();
+                return loggerFactory =IocHelper.Create< ILoggerFactory >() ??  new LoggerFactory();
+            }
+            set
+            {
+                loggerFactory = value;
             }
         }
 
@@ -97,6 +101,7 @@ namespace Agebull.Common.Ioc
         /// <returns></returns>
         public static IServiceProvider Update()
         {
+            loggerFactory = null;
             _rootProvider = null;
             //lock (Local)
             {

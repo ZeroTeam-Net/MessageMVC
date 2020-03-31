@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Configuration;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 
 #endregion
@@ -110,6 +111,27 @@ namespace Agebull.Common.Logging
             ConfigurationManager.RegistOnChange(ReadConfig, false);
         }
 
+        /// <summary>
+        ///     初始化
+        /// </summary>
+        public static void DoInitialize()
+        {
+            if (!NoRegist)
+                return;
+            IocHelper.ServiceCollection.AddLogging(builder =>
+            {
+                builder.AddConfiguration(ConfigurationManager.Root.GetSection("Logging"));
+                if (UseConsoleLogger)
+                    builder.AddConsole();
+                if (!UseBaseLogger)
+                    return;
+                builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, TextLoggerProvider>());
+                LoggerProviderOptions.RegisterProviderOptions<TextLoggerOption, TextLoggerProvider>(builder.Services);
+
+            });
+            IocHelper.Update();
+            ConfigurationManager.RegistOnChange(ReadConfig, false);
+        }
         /// <summary>
         /// 读取配置
         /// </summary>

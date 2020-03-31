@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using ZeroTeam.MessageMVC.ZeroApis;
+﻿using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Sample.Controllers
 {
@@ -9,10 +7,9 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
     public class TestControler : IApiControler
     {
         [Route("v1/test")]
-        public async Task<ApiResult> OnOrderNew(Argument argument)
+        public string Test()
         {
-            await Task.Yield();
-            return ApiResult.Succees(argument?.Value);
+            return "Hello world";
         }
     }
 }

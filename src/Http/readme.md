@@ -184,4 +184,4 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
 
 # 性能
 
-阿里云4核8G机器，最高达18000+QPS,比使用默认WebApi快了3倍
+阿里云4核8G机器，最高达18000+QPS,与用默认WebApi快了10%

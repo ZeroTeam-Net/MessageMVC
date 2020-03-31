@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using ZeroTeam.MessageMVC.RedisMQ;
 
 namespace ZeroTeam.MessageMVC.Http
 {
@@ -18,7 +17,7 @@ namespace ZeroTeam.MessageMVC.Http
         public void ConfigureServices(IServiceCollection services)
         {
             IocHelper.SetServiceCollection(services);
-            services.UseCsRedis();
+            //services.UseCsRedis();
             //services.AddSingleton<IFlowMiddleware, KafkaProducer>();//Kafka环境
             //services.AddSingleton<IMessageProducer, KafkaProducer>();//采用Kafka生产端
             HttpRoute.Initialize(services);

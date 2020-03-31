@@ -2,9 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
-using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
-using Newtonsoft.Json;
 using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
@@ -60,10 +58,17 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             Tag = tag;
             try
             {
-                GlobalContext.Current.DependencyObjects.Annex(Message);
+                if (ZeroFlowControl.Config.EnableGlobalContext)
+                    GlobalContext.Current.DependencyObjects.Annex(Message);
                 if (CommandPrepare(out var action))
                 {
-                    var res = await CommandExec(action);
+                    if (ZeroFlowControl.Config.EnableGlobalContext)
+                    {
+                        GlobalContext.Current.DependencyObjects.Annex(Message);
+                        GlobalContext.Current.DependencyObjects.Annex(this);
+                        GlobalContext.Current.DependencyObjects.Annex(action);
+                    }
+                    var res = await action.Execute();
                     Message.State = res.Item1;
                     Message.Result = res.Item2;
                 }
@@ -109,7 +114,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 Message.State = MessageState.NoSupper;
                 return false;
             }
-
             //2 确定调用方法及对应权限
             //if (action.NeedLogin && (GlobalContext.Customer == null || GlobalContext.Customer.UserId <= 0))
             //{
@@ -162,20 +166,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 return false;
             }
         }
-
-        /// <summary>
-        ///     执行命令
-        /// </summary>
-        /// <param name="action"></param>
-        /// <returns></returns>
-        private Task<Tuple<MessageState, string>> CommandExec(IApiAction action)
-        {
-            GlobalContext.Current.DependencyObjects.Annex(Message);
-            GlobalContext.Current.DependencyObjects.Annex(this);
-            GlobalContext.Current.DependencyObjects.Annex(action);
-            return action.Execute();
-        }
-
 
         #endregion
     }
