@@ -1,15 +1,15 @@
-using System;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using Agebull.Common.Ioc;
-using ZeroTeam.MessageMVC.ZeroApis;
-using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
-using System.Runtime.InteropServices;
 using Agebull.Common.Logging;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
+using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC
 {
@@ -93,29 +93,31 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public static void CheckOption()
         {
+            var asName = Assembly.GetExecutingAssembly().GetName();
             LogRecorder.Initialize();
             Config = new ZeroAppOption
             {
+                AppName = asName.Name,
+                AppVersion = asName.Version?.ToString(),
                 BinPath = Environment.CurrentDirectory,
                 RootPath = Environment.CurrentDirectory,
                 IsLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
             };
-            Middlewares = IocHelper.ServiceProvider.GetServices<IFlowMiddleware>().OrderBy(p => p.Level).ToArray();
-            using (IocScope.CreateScope("CheckOption"))
+
+            Middlewares = IocHelper.RootProvider.GetServices<IFlowMiddleware>().OrderBy(p => p.Level).ToArray();
+            foreach (var mid in Middlewares)
             {
-                foreach (var mid in Middlewares)
+                try
                 {
-                    try
-                    {
-                        mid.CheckOption(Config);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogRecorder.Exception(ex, "ZeroFlowControl.CheckOption:{0}", mid.GetTypeName());
-                        throw;
-                    }
+                    mid.CheckOption(Config);
+                }
+                catch (Exception ex)
+                {
+                    LogRecorder.Exception(ex, "ZeroFlowControl.CheckOption:{0}", mid.GetTypeName());
+                    throw;
                 }
             }
+            IocHelper.ServiceCollection.AddSingleton(Config);
             IocHelper.Update();
         }
 
@@ -147,10 +149,13 @@ namespace ZeroTeam.MessageMVC
                     asm.FullName?.Contains("Agebull.Common.") == true ||
                     asm.FullName?.Contains("ZeroTeam.MessageMVC.Abstractions") == true ||
                     asm.FullName?.Contains("ZeroTeam.MessageMVC.Core") == true)
+                {
                     continue;//
+                }
+
                 Discove(asm);
             }
-            
+
         }
         #endregion
 
@@ -161,11 +166,14 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public static void Initialize()
         {
+            Middlewares = IocHelper.RootProvider.GetServices<IFlowMiddleware>().OrderBy(p => p.Level).ToArray();
             var servcies = IocHelper.RootProvider.GetServices<IService>();
             if (servcies != null)
             {
                 foreach (var service in servcies)
+                {
                     Services.TryAdd(service.ServiceName, service);
+                }
             }
             OnZeroInitialize();
             ApplicationState = StationState.Initialized;
@@ -204,7 +212,7 @@ namespace ZeroTeam.MessageMVC
             waitTask.Task.Wait();
         }
 
-        static TaskCompletionSource<bool> waitTask;
+        private static TaskCompletionSource<bool> waitTask;
         /// <summary>
         ///     执行并等待
         /// </summary>
@@ -290,7 +298,9 @@ namespace ZeroTeam.MessageMVC
                 can = ActiveObjects.Count + FailedObjects.Count == Services.Count;
             }
             if (can)
+            {
                 ActiveSemaphore.Release(); //发出完成信号
+            }
         }
 
         /// <summary>
@@ -306,7 +316,9 @@ namespace ZeroTeam.MessageMVC
                 can = ActiveObjects.Count + FailedObjects.Count == Services.Count;
             }
             if (can)
+            {
                 ActiveSemaphore.Release(); //发出完成信号
+            }
         }
 
         /// <summary>
@@ -322,7 +334,9 @@ namespace ZeroTeam.MessageMVC
                 can = ActiveObjects.Count == 0;
             }
             if (can)
+            {
                 ActiveSemaphore.Release(); //发出完成信号
+            }
         }
 
         /// <summary>
@@ -331,8 +345,13 @@ namespace ZeroTeam.MessageMVC
         private static void WaitAllObjectSafeClose()
         {
             lock (ActiveObjects)
+            {
                 if (Services.Count == 0 || ActiveObjects.Count == 0)
+                {
                     return;
+                }
+            }
+
             ActiveSemaphore.Wait();
         }
 
@@ -350,7 +369,10 @@ namespace ZeroTeam.MessageMVC
         public static bool RegistService(IService service)
         {
             if (!Services.TryAdd(service.ServiceName, service))
+            {
                 return false;
+            }
+
             ZeroTrace.SystemLog(service.ServiceName, "RegistZeroObject");
 
             if (ApplicationState >= StationState.Initialized)
@@ -377,7 +399,10 @@ namespace ZeroTeam.MessageMVC
             //}
 
             if (ApplicationState != StationState.Run)
+            {
                 return true;
+            }
+
             try
             {
                 ZeroTrace.SystemLog(service.ServiceName, "Start");
@@ -397,7 +422,10 @@ namespace ZeroTeam.MessageMVC
         {
             ZeroTrace.SystemLog("Application", "[OnZeroInitialize>>");
             foreach (var mid in Middlewares)
+            {
                 mid.Initialize();
+            }
+
             foreach (var obj in Services.Values.ToArray())
             {
                 try
@@ -421,7 +449,9 @@ namespace ZeroTeam.MessageMVC
             ApplicationState = StationState.BeginRun;
             ZeroTrace.SystemLog("Application", "[OnZeroStart>>");
             foreach (var mid in Middlewares)
+            {
                 _ = Task.Factory.StartNew(mid.Start);
+            }
 
             foreach (var obj in Services.Values.ToArray())
             {
@@ -445,7 +475,8 @@ namespace ZeroTeam.MessageMVC
             ZeroTrace.SystemLog("MicroZero services is runing. Press Ctrl+C to shutdown.");
             return true;
         }
-        static int inFailed = 0;
+
+        private static int inFailed = 0;
 
         /// <summary>
         ///     重新启动未正常启动的项目
@@ -453,10 +484,16 @@ namespace ZeroTeam.MessageMVC
         public static void StartFailed()
         {
             if (Interlocked.Increment(ref inFailed) != 1)
+            {
                 return;
+            }
+
             var faileds = FailedObjects.ToArray();
             if (faileds.Length == 0)
+            {
                 return;
+            }
+
             FailedObjects.Clear();
             ZeroTrace.SystemLog("Application", "[OnFailedStart>>");
 
@@ -485,7 +522,10 @@ namespace ZeroTeam.MessageMVC
         {
             ZeroTrace.SystemLog("Application", "[OnZeroClose>>");
             foreach (var mid in Middlewares)
+            {
                 mid.Close();
+            }
+
             foreach (var obj in Services.Values)
             {
                 try
@@ -510,7 +550,10 @@ namespace ZeroTeam.MessageMVC
         {
             ZeroTrace.SystemLog("Application", "[OnZeroEnd>>");
             foreach (var mid in Middlewares)
+            {
                 mid.End();
+            }
+
             foreach (var obj in Services.Values)
             {
                 try

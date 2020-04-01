@@ -39,8 +39,9 @@ namespace ZeroTeam.MessageMVC
         {
             path = IOHelper.CheckPath(ZeroFlowControl.Config.DataFolder, "message");
         }
-        string path;
-        List<string> files;
+
+        private string path;
+        private List<string> files;
         /// <summary>
         /// 开启
         /// </summary>
@@ -48,20 +49,25 @@ namespace ZeroTeam.MessageMVC
         {
             files = IOHelper.GetAllFiles(path, "*.msg");
             if (files.Count > 0)
+            {
                 _ = ReConsumer();
+            }
         }
 
         /// <summary>
         ///     重新消费错误消息
         /// </summary>
-        async Task ReConsumer()
+        private async Task ReConsumer()
         {
             var service = new ZeroService();
             await Task.Yield();
             foreach (var file in files)
             {
                 if (!ZeroFlowControl.CanDo)
+                {
                     return;
+                }
+
                 Thread.Sleep(10);
                 try
                 {

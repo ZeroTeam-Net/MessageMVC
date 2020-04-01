@@ -1,5 +1,5 @@
-using ZeroTeam.MessageMVC.Context;
 using Newtonsoft.Json;
+using ZeroTeam.MessageMVC.Context;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -32,7 +32,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             set
             {
                 if (Status == null)
+                {
                     Status = new OperatorStatus();
+                }
+
                 Status.Code = value;
             }
         }
@@ -46,7 +49,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             set
             {
                 if (Status == null)
+                {
                     Status = new OperatorStatus();
+                }
+
                 Status.Message = value;
             }
         }

@@ -5,9 +5,9 @@
 
 #region
 
+using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
-using Microsoft.Extensions.Logging;
 #endregion
 
 namespace Agebull.Common.Logging
@@ -80,14 +80,26 @@ namespace Agebull.Common.Logging
             try
             {
                 if (disable)
+                {
                     return;
+                }
+
                 if (split <= 0)
+                {
                     split = 10;
+                }
+
                 split <<= 20;
                 if (minFreeSize <= 0)
+                {
                     minFreeSize = 1;
+                }
+
                 if (maxFile <= 0)
+                {
                     maxFile = 999;
+                }
+
                 if (string.IsNullOrWhiteSpace(LogPath))
                 {
                     path = LogRecorder.LogPath;
@@ -106,7 +118,9 @@ namespace Agebull.Common.Logging
             {
                 var size = IOHelper.FolderDiskInfo(LogPath);
                 if (size.AvailableSize < MinFreeSize)
+                {
                     disable = true;
+                }
             }
             catch (Exception ex)
             {

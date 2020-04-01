@@ -27,7 +27,10 @@
         bool IStationStateMachine.End()
         {
             if (IsDisposed)
+            {
                 return false;
+            }
+
             IsDisposed = true;
             Control.DoEnd();
             return true;

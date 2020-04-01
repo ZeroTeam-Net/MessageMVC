@@ -30,9 +30,13 @@ namespace Agebull.Common.Logging
         public void BeginMonitor(string title)
         {
             if (!InMonitor)
+            {
                 Begin(title);
+            }
             else
+            {
                 BeginStep(title);
+            }
         }
 
 
@@ -51,9 +55,9 @@ namespace Agebull.Common.Logging
                 //Texter.Append("标题");
                 //Texter.Append(' ', 24);
                 //Texter.Append("|状态|   时间   |   用 时(ms)   |");
-//#if !NETCOREAPP
-//                Texter.Append("|  CPU(ms) |内存分配Kb| 总分配Mb |内存驻留Kb| 总驻留Mb |");
-//#endif
+                //#if !NETCOREAPP
+                //                Texter.Append("|  CPU(ms) |内存分配Kb| 总分配Mb |内存驻留Kb| 总驻留Mb |");
+                //#endif
                 Write(title, ItemType.First);
             }
         }
@@ -127,7 +131,7 @@ namespace Agebull.Common.Logging
             var cnt = Stack.StackCount;
             switch (type)
             {
-                case ItemType.First :
+                case ItemType.First:
                 case ItemType.Begin:
                     if (cnt > 0)
                     {
@@ -145,24 +149,33 @@ namespace Agebull.Common.Logging
                 //break;
                 case ItemType.End:
                     if (cnt > 1)
+                    {
                         Texter.Append('│', cnt);
+                    }
+
                     Texter.Append('└');
                     break;
                 default:
-                //case ItemType.Item:
-                //    if (cnt > 0)
-                //        Texter.Append('│', cnt);
-                //    Texter.Append('└');
-                //    break;
+                    //case ItemType.Item:
+                    //    if (cnt > 0)
+                    //        Texter.Append('│', cnt);
+                    //    Texter.Append('└');
+                    //    break;
                     if (cnt > 0)
+                    {
                         Texter.Append('│', cnt);
+                    }
+
                     Texter.Append('├');
                     cnt++;
                     break;
             }
 
             if (string.IsNullOrWhiteSpace(title))
+            {
                 title = "*";
+            }
+
             Texter.Append(title);
             if (!showMonitorValue)
             {
@@ -170,7 +183,10 @@ namespace Agebull.Common.Logging
             }
             var l = cnt * 2 + title.GetLen();
             if (l < 50)
+            {
                 Texter.Append(' ', 50 - l);
+            }
+
             Texter.Append(Stack.Current.Message);
 
         }

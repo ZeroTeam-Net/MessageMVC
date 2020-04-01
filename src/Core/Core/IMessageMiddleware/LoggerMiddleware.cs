@@ -32,7 +32,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         async Task<MessageState> IMessageMiddleware.Handle(IService service, IMessageItem message, object tag, Func<Task<MessageState>> next)
         {
             if (!LogRecorder.LogMonitor)
+            {
                 return await next();
+            }
+
             using (MonitorScope.CreateScope($"{service.ServiceName}/{message.Title}"))
             {
                 LogRecorder.MonitorTrace(() => $"MessageId:{message.ID}");

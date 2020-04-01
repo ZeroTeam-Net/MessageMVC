@@ -18,6 +18,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         [JsonProperty("message")]
         string Message { get; set; }
-        
+
     }
 }

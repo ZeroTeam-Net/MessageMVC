@@ -1,8 +1,8 @@
+using Agebull.Common.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
-using Agebull.Common.Logging;
 using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
@@ -59,7 +59,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             try
             {
                 if (ZeroFlowControl.Config.EnableGlobalContext)
+                {
                     GlobalContext.Current.DependencyObjects.Annex(Message);
+                }
+
                 if (CommandPrepare(out var action))
                 {
                     if (ZeroFlowControl.Config.EnableGlobalContext)
@@ -91,7 +94,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 return MessageState.Exception;
             }
             if (next != null)
+            {
                 await next();
+            }
+
             return Message.State;
         }
 
@@ -126,7 +132,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
             //3 参数校验
             if (action.Access.HasFlag(ApiAccessOption.ArgumentIsDefault))
+            {
                 return true;
+            }
+
             try
             {
                 if (!action.RestoreArgument(Message.Content))

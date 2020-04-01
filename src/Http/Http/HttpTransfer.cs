@@ -1,7 +1,7 @@
 using System;
-using ZeroTeam.MessageMVC.ZeroApis;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
+using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Http
 {
@@ -10,14 +10,14 @@ namespace ZeroTeam.MessageMVC.Http
     /// </summary>
     public sealed class HttpTransfer : IRpcTransfer
     {
-        IService INetTransfer.Service { get ; set ; }
-        string INetTransfer.Name { get ; set ; }
+        IService INetTransfer.Service { get; set; }
+        string INetTransfer.Name { get; set; }
 
         void IDisposable.Dispose()
         {
         }
 
-        TaskCompletionSource<bool> task;
+        private TaskCompletionSource<bool> task;
         Task<bool> INetTransfer.Loop(CancellationToken token)
         {
             task = new TaskCompletionSource<bool>();

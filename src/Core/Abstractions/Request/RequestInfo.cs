@@ -1,7 +1,7 @@
-using System.ComponentModel;
-using System.Runtime.Serialization;
 using Agebull.EntityModel.Common;
 using Newtonsoft.Json;
+using System.ComponentModel;
+using System.Runtime.Serialization;
 
 namespace ZeroTeam.MessageMVC.Context
 {

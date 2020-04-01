@@ -263,5 +263,31 @@
             当启用NGINX代理时,NGINX可能会增加一级节点,而导致默认第1个路径作为服务名称失效
             </remarks>
         </member>
+        <member name="T:ZeroTeam.MessageMVC.Http.HttpProducer">
+            <summary>
+                Http生产者
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpProducer.State">
+            <summary>
+            运行状态
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Http.HttpProducer.ServiceMap">
+            <summary>
+            服务到HttpClientName的查找表.
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpProducer.ZeroTeam#MessageMVC#Messages#IMessageProducer#Initialize">
+            <summary>
+                初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpProducer.Producer(System.String,System.String,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpProducer.Producer``1(System.String,System.String,``0)">
+            <inheritdoc/>
+        </member>
     </members>
 </doc>

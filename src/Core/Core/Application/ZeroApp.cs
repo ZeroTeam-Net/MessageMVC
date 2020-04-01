@@ -1,7 +1,8 @@
-﻿using System.Reflection;
-using System.Threading.Tasks;
-using Agebull.Common.Ioc;
+﻿using Agebull.Common.Ioc;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
+using System.Threading.Tasks;
+using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
 
@@ -16,19 +17,43 @@ namespace ZeroTeam.MessageMVC
         /// 检查并注入配置
         /// </summary>
         /// <param name="services"></param>
-        static void CheckOption(IServiceCollection services)
+        private static void CheckOption(IServiceCollection services)
         {
-            services.AddTransient<IFlowMiddleware, MessageProducer>();//消息选择器
+
             services.AddTransient<IFlowMiddleware, ConfigMiddleware>();//配置\依赖对象初始化,系统配置获取
+
+            if (IocHelper.ServiceCollection != services)
+            {
+                IocHelper.SetServiceCollection(services);
+            }
+
             ZeroFlowControl.CheckOption();
+
+            services.AddTransient<IFlowMiddleware, MessageProducer>();//消息选择器
             if (ZeroFlowControl.Config.EnableAddIn)
+            {
                 services.AddTransient<IFlowMiddleware, AddInImporter>();//插件载入
+            }
+
             if (ZeroFlowControl.Config.EnableLogRecorder)
+            {
                 services.AddTransient<IMessageMiddleware, LoggerMiddleware>();//启用日志
+            }
+
             if (ZeroFlowControl.Config.EnableGlobalContext)
+            {
+                var testContext = IocHelper.Create<GlobalContext>();
+                if (testContext == null)
+                {
+                    IocHelper.AddScoped<GlobalContext, GlobalContext>();
+                }
+
                 services.AddTransient<IMessageMiddleware, GlobalContextMiddleware>();//启用全局上下文
+            }
             if (ZeroFlowControl.Config.EnableMarkPoint)
+            {
                 services.AddSingleton<IMessageMiddleware, MarkPointMiddleware>();
+            }
             //消息存储与异常消息重新消费
             if (ZeroFlowControl.Config.EnableMessageReConsumer)
             {
@@ -36,8 +61,6 @@ namespace ZeroTeam.MessageMVC
                 services.AddTransient<IFlowMiddleware, ReConsumerMiddleware>();
             }
             services.AddTransient<IMessageMiddleware, ApiExecuter>();//API路由与执行
-            if (IocHelper.ServiceCollection != services)
-                IocHelper.SetServiceCollection(services);
             IocHelper.Update();
         }
 
@@ -53,9 +76,13 @@ namespace ZeroTeam.MessageMVC
             ZeroFlowControl.Discove(assembly);
             ZeroFlowControl.Initialize();
             if (waitEnd)
+            {
                 return ZeroFlowControl.RunAwaiteAsync();
+            }
             else
+            {
                 return ZeroFlowControl.RunAsync();
+            }
         }
 
 
@@ -73,7 +100,10 @@ namespace ZeroTeam.MessageMVC
             services.AddTransient<IMessageMiddleware, ApiExecuter>();//API路由与执行
 
             if (IocHelper.ServiceCollection != services)
+            {
                 IocHelper.SetServiceCollection(services);
+            }
+
             IocHelper.Update();
             ZeroFlowControl.CheckOption();
             ZeroFlowControl.Discove(assembly);

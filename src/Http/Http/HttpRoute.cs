@@ -1,11 +1,11 @@
-using System;
-using System.Text;
-using System.Threading.Tasks;
 using Agebull.Common.Configuration;
 using Agebull.Common.Logging;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Text;
+using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Http
@@ -128,11 +128,17 @@ namespace ZeroTeam.MessageMVC.Http
                     {
                         var service = ZeroFlowControl.GetService(data.ApiHost);
                         if (service == null)
+                        {
                             data.Result = ApiResultIoc.NoFindJson;
-                        else if(Option.FastCall)
+                        }
+                        else if (Option.FastCall)
+                        {
                             await new ApiExecuter().Handle(service, data, null, null);
+                        }
                         else
+                        {
                             await MessageProcess.OnMessagePush(service, data, data);
+                        }
                     }
                     // 写入返回
                     await context.Response.WriteAsync(
@@ -151,7 +157,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// </summary>
         /// <param name="e"></param>
         /// <param name="context"></param>
-        static async Task OnError(Exception e, HttpContext context)
+        private static async Task OnError(Exception e, HttpContext context)
         {
             try
             {

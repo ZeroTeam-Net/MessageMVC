@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
-using Newtonsoft.Json;
 
 namespace ZeroTeam.MessageMVC.ApiDocuments
 {
@@ -14,37 +14,43 @@ namespace ZeroTeam.MessageMVC.ApiDocuments
         /// <summary>
         ///     类型
         /// </summary>
-        [DataMember] [JsonProperty("class", NullValueHandling = NullValueHandling.Ignore)]
+        [DataMember]
+        [JsonProperty("class", NullValueHandling = NullValueHandling.Ignore)]
         public string ClassName;
 
         /// <summary>
         ///     字段
         /// </summary>
-        [DataMember] [JsonProperty("fields", NullValueHandling = NullValueHandling.Ignore)]
+        [DataMember]
+        [JsonProperty("fields", NullValueHandling = NullValueHandling.Ignore)]
         public Dictionary<string, TypeDocument> fields;
 
         /// <summary>
         ///     枚举
         /// </summary>
-        [DataMember] [JsonProperty("enum", NullValueHandling = NullValueHandling.Ignore)]
+        [DataMember]
+        [JsonProperty("enum", NullValueHandling = NullValueHandling.Ignore)]
         public bool IsEnum;
 
         /// <summary>
         ///     类型
         /// </summary>
-        [DataMember] [JsonProperty("jsonName", NullValueHandling = NullValueHandling.Ignore)]
+        [DataMember]
+        [JsonProperty("jsonName", NullValueHandling = NullValueHandling.Ignore)]
         public string JsonName;
 
         /// <summary>
         ///     类型
         /// </summary>
-        [DataMember] [JsonProperty("object", NullValueHandling = NullValueHandling.Ignore)]
+        [DataMember]
+        [JsonProperty("object", NullValueHandling = NullValueHandling.Ignore)]
         public ObjectType ObjectType;
 
         /// <summary>
         ///     类型
         /// </summary>
-        [DataMember] [JsonProperty("type", NullValueHandling = NullValueHandling.Ignore)]
+        [DataMember]
+        [JsonProperty("type", NullValueHandling = NullValueHandling.Ignore)]
         public string TypeName;
 
         /// <summary>

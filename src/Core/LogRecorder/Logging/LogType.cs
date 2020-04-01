@@ -17,12 +17,12 @@
         /// <summary>
         ///   登录消息
         /// </summary>
-        Login ,
+        Login,
 
         /// <summary>
         ///   网络请求
         /// </summary>
-        Request ,
+        Request,
 
         /// <summary>
         ///   网络相关的消息
@@ -32,22 +32,22 @@
         /// <summary>
         ///   数据库
         /// </summary>
-        DataBase ,
+        DataBase,
 
         /// <summary>
         ///   信息
         /// </summary>
-        Message ,
+        Message,
 
         /// <summary>
         ///   调试信息
         /// </summary>
-        Trace ,
+        Trace,
 
         /// <summary>
         ///   警告
         /// </summary>
-        Warning ,
+        Warning,
 
         /// <summary>
         ///   计划

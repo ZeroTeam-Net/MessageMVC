@@ -1,6 +1,4 @@
-﻿using Agebull.Common.Logging;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.IO;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
@@ -38,19 +36,25 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return state;
         }
 
-        void Save(IMessageItem message)
+        private void Save(IMessageItem message)
         {
             var file = Path.Combine(ZeroFlowControl.Config.DataFolder, "message", $"{message.ID}.msg");
             if (!File.Exists(file))
+            {
                 File.WriteAllText(file, JsonHelper.SerializeObject(message));
+            }
+
             message.State = MessageState.Accept;
         }
 
-        void State(IMessageItem message)
+        private void State(IMessageItem message)
         {
             if (message.State != MessageState.Success)
+            {
                 return;
-            File.Delete(Path.Combine(ZeroFlowControl.Config.DataFolder,"message", $"{message.ID}.msg"));
+            }
+
+            File.Delete(Path.Combine(ZeroFlowControl.Config.DataFolder, "message", $"{message.ID}.msg"));
         }
     }
 }

@@ -1,0 +1,16 @@
+[Unit]
+Description=Apache Kafka server (broker)
+Documentation=http://kafka.apache.org/documentation.html
+Requires=network.target remote-fs.target
+After=network.target remote-fs.target kafka-zookeeper.service
+ 
+[Service]
+Type=simple
+User=nano
+Group=nano
+Environment=JAVA_HOME=/usr/java/jdk1.8.0_102
+ExecStart=/usr/kafka/bin/kafka-server-start.sh /usr/kafka/config/server.properties
+ExecStop=/usr/kafka/bin/kafka-server-stop.sh
+ 
+[Install]
+WantedBy=multi-user.target

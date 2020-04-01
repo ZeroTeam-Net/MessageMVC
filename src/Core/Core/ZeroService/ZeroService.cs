@@ -1,9 +1,9 @@
+using Agebull.Common.Logging;
+using Agebull.EntityModel.Common;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Agebull.Common.Logging;
-using Agebull.EntityModel.Common;
 using ZeroTeam.MessageMVC.ApiDocuments;
 using ZeroTeam.MessageMVC.ZeroApis.StateMachine;
 
@@ -32,7 +32,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// 网络传输对象
         /// </summary>
-        public INetTransfer Transport { get;  set; }
+        public INetTransfer Transport { get; set; }
 
 
         /// <summary>
@@ -74,7 +74,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             set
             {
                 if (_realState == value)
+                {
                     return;
+                }
+
                 Interlocked.Exchange(ref _realState, value);
                 ZeroTrace.SystemLog(ServiceName, nameof(RealState), StationState.Text(_realState));
             }
@@ -149,7 +152,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         internal void Initialize()
         {
             if (InstanceName == null)
+            {
                 InstanceName = ServiceName;
+            }
+
             RealState = StationState.Initialized;
             Transport = TransportBuilder(ServiceName);
             Transport.Service = this;
@@ -169,13 +175,18 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             try
             {
                 while (_waitToken.CurrentCount > 0)
+                {
                     _waitToken.Wait();
+                }
+
                 if (ConfigState == StationStateType.None || ConfigState >= StationStateType.Stop || !ZeroFlowControl.CanDo)
+                {
                     return false;
+                }
 
                 RealState = StationState.Start;
                 //名称初始化
-                RealName = $"{ZeroFlowControl.Config.StationName}-{RandomOperate.Generate(6)}";
+                RealName = $"{ZeroFlowControl.Config.ServiceName}-{RandomOperate.Generate(6)}";
                 ZeroTrace.SystemLog(ServiceName, InstanceName, RealName);
                 //扩展动作
                 if (!Transport.Prepare())
@@ -240,9 +251,13 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 if (ConfigState < StationStateType.Stop)
                 {
                     if (!ZeroFlowControl.CanDo)
+                    {
                         ConfigState = StationStateType.Stop;
+                    }
                     else if (success)
+                    {
                         ConfigState = StationStateType.Closed;
+                    }
                     else
                     {
                         ConfigState = StationStateType.Failed;
@@ -351,7 +366,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         void IFlowMiddleware.End()
         {
             if (_isDisposed)
+            {
                 return;
+            }
+
             _isDisposed = true;
             StateMachine.End();
         }
@@ -363,14 +381,23 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         bool IStateMachineControl.DoStart()
         {
             if (RealState == StationState.BeginRun || RealState == StationState.Run)
+            {
                 return true;//已启动,不应该再次
+            }
+
             mutex.WaitOne();
             try
             {
                 if (RealState == StationState.BeginRun || RealState == StationState.Run)
+                {
                     return true;//已启动,不应该再次
+                }
+
                 if (DoStart())
+                {
                     return true;
+                }
+
                 RealState = StationState.Failed;
 
                 ResetStateMachine();
@@ -428,9 +455,14 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         public void RegistAction(string name, ApiAction action, ApiActionInfo info = null)
         {
             if (info != null && info.HaseArgument && action.ArgumentType != null)
+            {
                 action.ArgumentType = info.ArgumentType;
+            }
+
             if (info != null && action.ResultType != null)
+            {
                 action.ResultType = info.ResultType;
+            }
 
             action.Initialize();
             if (!ApiActions.ContainsKey(name))

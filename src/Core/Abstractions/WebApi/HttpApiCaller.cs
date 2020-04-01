@@ -1,11 +1,11 @@
+using Agebull.Common.Configuration;
+using Agebull.Common.Logging;
 using System;
 using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using Agebull.Common.Configuration;
-using Agebull.Common.Logging;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace Agebull.Common.Http
@@ -69,7 +69,7 @@ namespace Agebull.Common.Http
         /// <summary>
         ///     Message
         /// </summary>
-        public string Message { get;private set; }
+        public string Message { get; private set; }
 
         /// <summary>
         ///     ErrorCode
@@ -94,21 +94,28 @@ namespace Agebull.Common.Http
                 foreach (var kvp in Query)
                 {
                     if (string.IsNullOrEmpty(kvp.Key) || kvp.Value == null)
+                    {
                         continue;
+                    }
+
                     if (first)
                     {
                         first = false;
                         url.Append('?');
                     }
                     else
+                    {
                         url.Append('&');
+                    }
+
                     url.Append($"{kvp.Key}={HttpUtility.UrlEncode(kvp.Value, Encoding.UTF8)}");
                 }
             }
             RemoteUrl = url.ToString();
             RemoteRequest = (HttpWebRequest)WebRequest.Create(RemoteUrl);
             RemoteRequest.Headers.Add(HttpRequestHeader.Authorization, Authorization);
-            RemoteRequest.Timeout = ConfigurationManager.AppSettings.GetInt("httpTimeout", 30);
+            RemoteRequest.Timeout = ConfigurationManager.AppSettings.GetInt("httpTimeout", 30000);
+            RemoteRequest.KeepAlive = true;
             RemoteRequest.Method = Method;
             RemoteRequest.KeepAlive = true;
 
@@ -120,11 +127,19 @@ namespace Agebull.Common.Http
                 foreach (var kvp in Form)
                 {
                     if (string.IsNullOrEmpty(kvp.Key) || kvp.Value == null)
+                    {
                         continue;
+                    }
+
                     if (first)
+                    {
                         first = false;
+                    }
                     else
+                    {
                         url.Append('&');
+                    }
+
                     builder.Append($"{kvp.Key}={HttpUtility.UrlEncode(kvp.Value, Encoding.UTF8)}");
                 }
 
@@ -191,7 +206,9 @@ namespace Agebull.Common.Http
             {
                 var codes = exception.Message.Split(new[] { '(', ')' }, StringSplitOptions.RemoveEmptyEntries);
                 if (codes.Length == 3)
+                {
                     if (int.TryParse(codes[1], out var s))
+                    {
                         switch (s)
                         {
                             case 404:
@@ -203,6 +220,8 @@ namespace Agebull.Common.Http
                                 //ZeroState = ZeroOperatorStateType.Unavailable;
                                 return ToErrorString(ErrorCode.NetworkError, "拒绝访问", "页面不存在");
                         }
+                    }
+                }
 
                 var msg = await ReadResponse(exception.Response);
                 LogRecorder.Error("Call {0}/{1} Error:{2}", Host, ApiName, msg);
@@ -321,7 +340,9 @@ namespace Agebull.Common.Http
                 }
                 var receivedStream = response.GetResponseStream();
                 if (receivedStream == null)
+                {
                     return null;
+                }
 
                 using (receivedStream)
                 {

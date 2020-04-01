@@ -162,12 +162,12 @@
             <param name="argInfo">参数类型</param>
             <returns>匿名委托</returns>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.TransportDiscory">
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.TransportDiscover">
             <summary>
             默认网络传输对象发现
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.TransportDiscory.ZeroTeam#MessageMVC#ZeroApis#ITransportDiscory#DiscoryNetTransport(System.Type,System.String@)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.TransportDiscover.ZeroTeam#MessageMVC#ZeroApis#ITransportDiscory#DiscoryNetTransport(System.Type,System.String@)">
             <summary>
             发现传输对象
             </summary>
@@ -175,7 +175,7 @@
             <param name="name">发现的服务名称</param>
             <returns>传输对象构造器</returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.TransportDiscory.DiscoryNetTransport(System.Type,System.String@)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.TransportDiscover.DiscoryNetTransport(System.Type,System.String@)">
             <summary>
             发现传输对象
             </summary>

@@ -13,7 +13,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Configuration;
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Threading;
 
 #endregion
@@ -95,14 +94,23 @@ namespace Agebull.Common.Logging
         {
             ReadConfig();
             if (NoRegist)
+            {
                 return;
+            }
+
             IocHelper.ServiceCollection.AddLogging(builder =>
             {
                 builder.AddConfiguration(ConfigurationManager.Root.GetSection("Logging"));
                 if (UseConsoleLogger)
+                {
                     builder.AddConsole();
+                }
+
                 if (!UseBaseLogger)
+                {
                     return;
+                }
+
                 builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, TextLoggerProvider>());
                 LoggerProviderOptions.RegisterProviderOptions<TextLoggerOption, TextLoggerProvider>(builder.Services);
 
@@ -117,14 +125,23 @@ namespace Agebull.Common.Logging
         public static void DoInitialize()
         {
             if (!NoRegist)
+            {
                 return;
+            }
+
             IocHelper.ServiceCollection.AddLogging(builder =>
             {
                 builder.AddConfiguration(ConfigurationManager.Root.GetSection("Logging"));
                 if (UseConsoleLogger)
+                {
                     builder.AddConsole();
+                }
+
                 if (!UseBaseLogger)
+                {
                     return;
+                }
+
                 builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, TextLoggerProvider>());
                 LoggerProviderOptions.RegisterProviderOptions<TextLoggerOption, TextLoggerProvider>(builder.Services);
 
@@ -218,7 +235,10 @@ namespace Agebull.Common.Logging
         public static void Record(LogType type, string name, string message, params object[] formatArgs)
         {
             if (message == null)
+            {
                 return;
+            }
+
             try
             {
                 var eventId = new EventId((int)Interlocked.Increment(ref lastId), name);
@@ -260,7 +280,10 @@ namespace Agebull.Common.Logging
             if (LogDataSql)
             {
                 if (message == null)
+                {
                     return;
+                }
+
                 var eventId = new EventId((int)Interlocked.Increment(ref lastId), "DataLog");
                 Logger.LogTrace(eventId, message);
             }
@@ -274,7 +297,10 @@ namespace Agebull.Common.Logging
         public static void RecordLoginLog(string message, params object[] formatArgs)
         {
             if (message == null)
+            {
                 return;
+            }
+
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Login");
             Logger.LogTrace(eventId, message);
         }
@@ -288,7 +314,10 @@ namespace Agebull.Common.Logging
         public static void RecordRequestLog(string message, params object[] formatArgs)
         {
             if (message == null)
+            {
                 return;
+            }
+
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Request");
             Logger.LogTrace(eventId, message);
         }
@@ -302,7 +331,10 @@ namespace Agebull.Common.Logging
         public static void RecordNetLog(string message, params object[] formatArgs)
         {
             if (message == null)
+            {
                 return;
+            }
+
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "NetWork");
             Logger.LogTrace(eventId, message);
         }
@@ -315,7 +347,10 @@ namespace Agebull.Common.Logging
         public static void Message(string message, params object[] formatArgs)
         {
             if (message == null)
+            {
                 return;
+            }
+
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Message");
             Logger.LogInformation(eventId, message, formatArgs);
         }
@@ -327,7 +362,10 @@ namespace Agebull.Common.Logging
         public static void SystemLog(string message)
         {
             if (message == null)
+            {
                 return;
+            }
+
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "System");
             Logger.LogInformation(eventId, message);
         }
@@ -340,7 +378,10 @@ namespace Agebull.Common.Logging
         public static void SystemLog(string message, params object[] formatArgs)
         {
             if (message == null)
+            {
                 return;
+            }
+
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "System");
             Logger.LogInformation(eventId, message, formatArgs);
         }
@@ -352,7 +393,10 @@ namespace Agebull.Common.Logging
         public static void PlanLog(string message)
         {
             if (message == null)
+            {
                 return;
+            }
+
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Plan");
             Logger.LogTrace(eventId, message);
         }
@@ -365,7 +409,10 @@ namespace Agebull.Common.Logging
         public static void RecordMessage(string message, params object[] formatArgs)
         {
             if (message == null)
+            {
                 return;
+            }
+
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Message");
             Logger.LogInformation(eventId, message, formatArgs);
         }
@@ -378,7 +425,10 @@ namespace Agebull.Common.Logging
         public static void Warning(string message, params object[] formatArgs)
         {
             if (message == null)
+            {
                 return;
+            }
+
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Warning");
             Logger.LogWarning(eventId, message, formatArgs);
         }
@@ -391,7 +441,10 @@ namespace Agebull.Common.Logging
         public static void Error(string message, params object[] formatArgs)
         {
             if (message == null)
+            {
                 return;
+            }
+
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Error");
             Logger.LogError(eventId, message, formatArgs);
         }
@@ -433,9 +486,15 @@ namespace Agebull.Common.Logging
         public static void RecordStackTrace(string message, params object[] formatArgs)
         {
             if (message == null)
+            {
                 return;
+            }
+
             if (MonitorTrace(() => StackTraceInfomation(message, formatArgs)))
+            {
                 return;
+            }
+
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Trace");
             Logger.LogTrace(eventId, StackTraceInfomation(message, formatArgs));
         }
@@ -446,7 +505,10 @@ namespace Agebull.Common.Logging
         public static void Trace(Func<string> message)
         {
             if (MonitorTrace(message))
+            {
                 return;
+            }
+
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Trace");
             Logger.LogTrace(eventId, message());
         }
@@ -460,9 +522,15 @@ namespace Agebull.Common.Logging
         public static void Trace(string message, params object[] formatArgs)
         {
             if (message == null)
+            {
                 return;
+            }
+
             if (MonitorTrace(message, formatArgs))
+            {
                 return;
+            }
+
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Trace");
             Logger.LogTrace(eventId, message, formatArgs);
         }
@@ -477,9 +545,15 @@ namespace Agebull.Common.Logging
         public static void Trace(string name, string message, params object[] formatArgs)
         {
             if (message == null)
+            {
                 return;
+            }
+
             if (MonitorTrace(message, formatArgs))
+            {
                 return;
+            }
+
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), name);
             Logger.LogTrace(eventId, message, formatArgs);
         }
@@ -497,7 +571,10 @@ namespace Agebull.Common.Logging
         public static void DebugByStackTrace(string message, params object[] formatArgs)
         {
             if (message == null)
+            {
                 return;
+            }
+
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Debug");
             Logger.LogDebug(eventId, StackTraceInfomation(message, formatArgs));
         }
@@ -511,7 +588,10 @@ namespace Agebull.Common.Logging
         public static void Debug(string message, params object[] formatArgs)
         {
             if (message == null)
+            {
                 return;
+            }
+
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Debug");
             Logger.LogDebug(eventId, message, formatArgs);
         }
@@ -523,7 +603,10 @@ namespace Agebull.Common.Logging
         public static void Debug(object obj)
         {
             if (obj == null)
+            {
                 return;
+            }
+
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Debug");
             Logger.LogDebug(eventId, obj?.ToString());
         }

@@ -11,7 +11,7 @@ namespace ZeroTeam.MessageMVC.Context
         ///     当前登录的用户ID
         /// </summary>
         long LoginUserId { get; }
-        
+
         /// <summary>
         ///     当前调用的客户信息
         /// </summary>

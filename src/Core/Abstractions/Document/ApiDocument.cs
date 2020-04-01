@@ -1,5 +1,5 @@
-﻿using System.Runtime.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using System.Runtime.Serialization;
 
 namespace ZeroTeam.MessageMVC.ApiDocuments
 {
@@ -13,31 +13,36 @@ namespace ZeroTeam.MessageMVC.ApiDocuments
         /// <summary>
         ///     访问设置
         /// </summary>
-        [DataMember] [JsonProperty("access", NullValueHandling = NullValueHandling.Ignore)]
+        [DataMember]
+        [JsonProperty("access", NullValueHandling = NullValueHandling.Ignore)]
         public ApiAccessOption AccessOption;
 
         /// <summary>
         ///     参数说明
         /// </summary>
-        [DataMember] [JsonProperty("argument", NullValueHandling = NullValueHandling.Ignore)]
+        [DataMember]
+        [JsonProperty("argument", NullValueHandling = NullValueHandling.Ignore)]
         public TypeDocument ArgumentInfo;
 
         /// <summary>
         ///     分类
         /// </summary>
-        [DataMember] [JsonProperty("category", NullValueHandling = NullValueHandling.Ignore)]
+        [DataMember]
+        [JsonProperty("category", NullValueHandling = NullValueHandling.Ignore)]
         public string Category;
 
         /// <summary>
         ///     返回值说明
         /// </summary>
-        [DataMember] [JsonProperty("result", NullValueHandling = NullValueHandling.Ignore)]
+        [DataMember]
+        [JsonProperty("result", NullValueHandling = NullValueHandling.Ignore)]
         public TypeDocument ResultInfo;
 
         /// <summary>
         ///     Api路由名称
         /// </summary>
-        [DataMember] [JsonProperty("route", NullValueHandling = NullValueHandling.Ignore)]
+        [DataMember]
+        [JsonProperty("route", NullValueHandling = NullValueHandling.Ignore)]
         public string RouteName;
 
         /// <summary>
@@ -45,7 +50,7 @@ namespace ZeroTeam.MessageMVC.ApiDocuments
         /// </summary>
         [DataMember]
         [JsonProperty("api", NullValueHandling = NullValueHandling.Ignore)]
-       
+
         public string ApiName;
 
         /// <summary>
@@ -53,7 +58,7 @@ namespace ZeroTeam.MessageMVC.ApiDocuments
         /// </summary>
         [DataMember]
         [JsonProperty("page", NullValueHandling = NullValueHandling.Ignore)]
-       
+
         public string PageUrl;
 
     }

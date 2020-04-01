@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using Newtonsoft.Json;
 
 namespace ZeroTeam.MessageMVC.ApiDocuments
 {
@@ -15,7 +15,8 @@ namespace ZeroTeam.MessageMVC.ApiDocuments
         /// <summary>
         ///     Api方法
         /// </summary>
-        [DataMember] [JsonProperty("aips", NullValueHandling = NullValueHandling.Ignore)]
+        [DataMember]
+        [JsonProperty("aips", NullValueHandling = NullValueHandling.Ignore)]
         private Dictionary<string, ApiDocument> aips;
 
         /// <summary>

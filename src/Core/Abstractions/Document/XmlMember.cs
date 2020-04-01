@@ -48,15 +48,24 @@ namespace ZeroTeam.MessageMVC.ApiDocuments
             get
             {
                 if (_arguments != null)
+                {
                     return _arguments;
+                }
+
                 _arguments = new Dictionary<string, string>();
                 if (XArguments == null)
+                {
                     return _arguments;
+                }
+
                 foreach (var el in XArguments)
                 {
                     var name = el.Attribute("name")?.Value;
                     if (name == null)
+                    {
                         continue;
+                    }
+
                     var value = el.Value;
                     _arguments.Add(name, value);
                 }
@@ -74,7 +83,10 @@ namespace ZeroTeam.MessageMVC.ApiDocuments
         {
             var re = HelpXml.FirstOrDefault(p => /*p.Type == "T" &&*/ p.Name == type.FullName);
             if (re != null || Assemblies.Contains(type.Assembly))
+            {
                 return re;
+            }
+
             Load(type.Assembly);
             return HelpXml.FirstOrDefault(p => /*p.Type == "T" &&*/ p.Name == type.FullName);
         }
@@ -89,9 +101,15 @@ namespace ZeroTeam.MessageMVC.ApiDocuments
         public static XmlMember Find(Type type, string sub, string subType = "P")
         {
             if (type == typeof(object) || type.Namespace.IndexOf("System", StringComparison.Ordinal) == 0)
+            {
                 return null;
+            }
+
             if (!Assemblies.Contains(type.Assembly))
+            {
                 Load(type.Assembly);
+            }
+
             var fn = type.FullName.Split('[')[0];
             var name = $"{fn}.{sub}";
             var re = HelpXml.FirstOrDefault(p => /*p.Type == subType &&*/ p.Name == name);
@@ -133,7 +151,10 @@ namespace ZeroTeam.MessageMVC.ApiDocuments
         public static void Load(Assembly assembly)
         {
             if (Assemblies.Contains(assembly))
+            {
                 return;
+            }
+
             Assemblies.Add(assembly);
             // ReSharper disable once AssignNullToNotNullAttribute
             Load(Path.Combine(Path.GetDirectoryName(assembly.Location),
@@ -147,12 +168,19 @@ namespace ZeroTeam.MessageMVC.ApiDocuments
         public static void Load(string path)
         {
             if (!File.Exists(path))
+            {
                 return;
+            }
+
             var xRoot = XElement.Load(path);
             var xElement = xRoot.Element("members");
-            if (xElement == null) return;
+            if (xElement == null)
+            {
+                return;
+            }
+
             var chars = new[] { ':', '(' };
-            var chars2 = new[] { '`', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+            var chars2 = new[] { '`', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
             var members = from p in xElement.Elements("member")
                           let name = p.Attribute("name")
                           where !string.IsNullOrEmpty(name?.Value)

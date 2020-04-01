@@ -1,6 +1,6 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
 
 namespace Agebull.Common.Logging
 {
@@ -12,10 +12,9 @@ namespace Agebull.Common.Logging
     public class TextLoggerProvider : ILoggerProvider, IDisposable, ISupportExternalScope
     {
         private readonly IDisposable _optionsReloadToken;
-        readonly IOptionsMonitor<TextLoggerOption> _options;
-        IExternalScopeProvider _scopeProvider;
-
-        static TextLogger _logger;
+        private readonly IOptionsMonitor<TextLoggerOption> _options;
+        private IExternalScopeProvider _scopeProvider;
+        private static TextLogger _logger;
         /// <summary>
         /// Creates an instance of <see cref="T:Microsoft.Extensions.Logging.Console.TextLoggerProvider" />.
         /// </summary>
@@ -31,7 +30,9 @@ namespace Agebull.Common.Logging
         {
             _scopeProvider = scopeProvider;
             if (_logger != null)
+            {
                 _logger.ScopeProvider = _scopeProvider;
+            }
         }
         /// <inheritdoc />
         public ILogger CreateLogger(string name)
@@ -42,7 +43,9 @@ namespace Agebull.Common.Logging
         {
             options.Initialize();
             if (_logger != null)
+            {
                 _logger.Option = options;
+            }
         }
         /// <inheritdoc />
         public void Dispose()

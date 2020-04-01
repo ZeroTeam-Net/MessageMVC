@@ -13,13 +13,21 @@ namespace ZeroTeam.MessageMVC.Messages
         StationStateType State { get; }
 
         /// <summary>
+        ///     初始化
+        /// </summary>
+        void Initialize()
+        {
+
+        }
+
+        /// <summary>
         /// 生产消息
         /// </summary>
         /// <param name="topic">消息分类</param>
         /// <param name="title">消息标题</param>
         /// <param name="content">消息内容</param>
         /// <returns></returns>
-        TRes Producer<TArg,TRes>(string topic, string title, TArg content);
+        TRes Producer<TArg, TRes>(string topic, string title, TArg content);
 
         /// <summary>
         /// 生产消息
@@ -80,7 +88,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <param name="title">消息标题</param>
         /// <param name="content">消息内容</param>
         /// <returns></returns>
-        Task<string> ProducerAsync(string topic, string title,string content);
+        Task<string> ProducerAsync(string topic, string title, string content);
 
     }
 }

@@ -55,6 +55,28 @@ namespace ZeroTeam.MessageMVC
             return default;
         }
 
+
+        /// <summary>
+        /// 反序列化
+        /// </summary>
+        public static T TryDeserializeObject<T>(string json)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(json))
+                    return default;
+                switch (json[0])
+                {
+                    case '{':
+                    case '[':
+                        return JsonConvert.DeserializeObject<T>(json);
+                }
+            }
+            catch
+            {
+            }
+            return default;
+        }
         /// <summary>
         /// 反序列化
         /// </summary>

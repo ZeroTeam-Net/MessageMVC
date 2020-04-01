@@ -1,17 +1,17 @@
-﻿using System;
+﻿using Agebull.Common.Ioc;
+using System;
 using System.Reflection;
-using Agebull.Common.Ioc;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
     /// <summary>
     /// 默认网络传输对象发现
     /// </summary>
-    public class TransportDiscory : ITransportDiscory
+    public class TransportDiscover : ITransportDiscory
     {
-        static private INetTransfer RpcTransportBuilder(string name) => IocHelper.Create<IRpcTransfer>();
-        static private INetTransfer ConsumerTransportBuilder(string name) => IocHelper.Create<IMessageConsumer>();
-        static private INetTransfer NetEventTransportBuilder(string name) => IocHelper.Create<INetEvent>();
+        private static INetTransfer RpcTransportBuilder(string name) => IocHelper.Create<IRpcTransfer>();
+        private static INetTransfer ConsumerTransportBuilder(string name) => IocHelper.Create<IMessageConsumer>();
+        private static INetTransfer NetEventTransportBuilder(string name) => IocHelper.Create<INetEvent>();
 
         /// <summary>
         /// 发现传输对象

@@ -1,11 +1,11 @@
+using Agebull.Common.Base;
+using Agebull.Common.Ioc;
+using Agebull.EntityModel.Common;
+using Newtonsoft.Json;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
-using Agebull.Common.Base;
-using Agebull.EntityModel.Common;
-using Agebull.Common.Ioc;
-using Newtonsoft.Json;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Context
@@ -124,10 +124,16 @@ namespace ZeroTeam.MessageMVC.Context
             get
             {
                 if (Local.Value != null && !Local.Value.IsDisposed)
+                {
                     return Local.Value;
+                }
+
                 Local.Value = IocHelper.Create<GlobalContext>();
                 if (Local.Value != null)
+                {
                     return Local.Value;
+                }
+
                 IocHelper.AddScoped<GlobalContext, GlobalContext>();
                 Local.Value = IocHelper.Create<GlobalContext>();
 
@@ -146,10 +152,16 @@ namespace ZeroTeam.MessageMVC.Context
         public static GlobalContext Reset()
         {
             if (Local.Value != null && !Local.Value.IsDisposed)
+            {
                 Local.Value.Dispose();
+            }
+
             Local.Value = IocHelper.Create<GlobalContext>();
             if (Local.Value != null)
+            {
                 return Local.Value;
+            }
+
             IocHelper.AddScoped<GlobalContext, GlobalContext>();
             Local.Value = IocHelper.Create<GlobalContext>();
             return Local.Value;
@@ -163,7 +175,8 @@ namespace ZeroTeam.MessageMVC.Context
             Local.Value?.Dispose();
             Local.Value = null;
         }
-        static IUser Anymouse { get; } = new UserInfo
+
+        private static IUser Anymouse { get; } = new UserInfo
         {
             UserId = -1,
             NickName = "Anymouse"
@@ -193,7 +206,9 @@ namespace ZeroTeam.MessageMVC.Context
                 Local.Value = null;
             }
             else if (Local.Value != context)
+            {
                 Local.Value = context;
+            }
         }
 
         /// <summary>
@@ -252,7 +267,10 @@ namespace ZeroTeam.MessageMVC.Context
         public static void TryCheckByAnymouse()
         {
             if (Current._requestInfo != null)
+            {
                 return;
+            }
+
             Current._requestInfo = new RequestInfo();
             Current._user = Anymouse;
         }
@@ -298,7 +316,10 @@ namespace ZeroTeam.MessageMVC.Context
         public void AppendMessage(string msg)
         {
             if (_messageBuilder == null)
+            {
                 _messageBuilder = new StringBuilder(_status.Message);
+            }
+
             _messageBuilder.AppendLine(msg);
             _messageChanged = true;
         }
@@ -342,7 +363,10 @@ namespace ZeroTeam.MessageMVC.Context
             get
             {
                 if (_messageChanged)
+                {
                     _status.InnerMessage = _messageBuilder.ToString();
+                }
+
                 return _status;
             }
         }
@@ -389,7 +413,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// <remarks>
         ///     但实际名称，会以服务器返回为准。
         /// </remarks>
-        public static string ServiceRealName { get; set; }
+        public static string AppName { get; set; }
 
         #endregion
     }

@@ -35,7 +35,7 @@ namespace Agebull.Common.Logging
         /// <summary>
         ///     总处理器时间
         /// </summary>
-        internal double TotalTime=> (DateTime.UtcNow - StartTime).TotalMilliseconds;
+        internal double TotalTime => (DateTime.UtcNow - StartTime).TotalMilliseconds;
 
 
 #if !NETCOREAPP

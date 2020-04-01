@@ -318,7 +318,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         public IApiResult LocalError => ErrorBuilder(ErrorCode.LocalError);
 
         /// <summary>本地访问异常</summary>
-        public IApiResult LocalException => ErrorBuilder(ErrorCode.LocalException );
+        public IApiResult LocalException => ErrorBuilder(ErrorCode.LocalException);
 
         /// <summary>系统未就绪</summary>
         public IApiResult NoReady => ErrorBuilder(ErrorCode.NoReady);

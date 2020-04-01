@@ -14,7 +14,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         public static IApiResultDefault Ioc =>
             _ioc ?? (_ioc = IocHelper.Create<IApiResultDefault>() ?? new ApiResultDefault());
-        
+
 
 
         /// <summary>成功的Json字符串</summary>
@@ -64,7 +64,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>执行超时</summary>
         /// <remarks>Api执行超时</remarks>
         public static string ExecTimeOut => JsonHelper.SerializeObject(Ioc.ExecTimeOut);
-        
+
         /// <summary>内部错误的Json字符串</summary>
         /// <remarks>执行方法时抛出未处理异常</remarks>
         public static string InnerErrorJson => JsonHelper.SerializeObject(Ioc.InnerError);

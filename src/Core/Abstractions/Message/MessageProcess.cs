@@ -1,9 +1,9 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Agebull.Common.Ioc;
-using ZeroTeam.MessageMVC.Messages;
+﻿using Agebull.Common.Ioc;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -54,13 +54,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// 状态
         /// </summary>
-        MessageState State;
+        private MessageState State;
+        private IMessageMiddleware[] middlewares;
+        private int index = 0;
 
-        IMessageMiddleware[] middlewares;
-
-        int index = 0;
-
-        async Task Process()
+        private async Task Process()
         {
             using (IocScope.CreateScope())
             {
@@ -76,10 +74,13 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// 链式处理中间件
         /// </summary>
         /// <returns></returns>
-        async Task<MessageState> Handle()
+        private async Task<MessageState> Handle()
         {
             if (index >= middlewares.Length)
+            {
                 return MessageState.None;
+            }
+
             var next = middlewares[index++];
             next.Process = this;
             return State = await next.Handle(Service, Message, Tag, Handle);
@@ -88,16 +89,17 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
         #region 处理结果返回
 
-        TaskCompletionSource<MessageState> taskCompletionSource;
-
-        int isPushed;
+        private TaskCompletionSource<MessageState> taskCompletionSource;
+        private int isPushed;
         /// <summary>
         /// 结果推到调用处
         /// </summary>
         public void PushResult()
         {
-            if (Interlocked.Increment(ref isPushed)==1)
+            if (Interlocked.Increment(ref isPushed) == 1)
+            {
                 taskCompletionSource.TrySetResult(Message.State = State);
+            }
         }
 
         /// <summary>
@@ -106,7 +108,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         public void PushResult(MessageState state)
         {
             if (Interlocked.Increment(ref isPushed) == 1)
+            {
                 taskCompletionSource.TrySetResult(Message.State = state);
+            }
         }
 
         #endregion

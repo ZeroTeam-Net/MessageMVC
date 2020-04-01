@@ -1,6 +1,5 @@
 ﻿using Agebull.Common.Base;
 using Agebull.Common.Ioc;
-using Microsoft.Extensions.Logging;
 using System;
 
 namespace Agebull.Common.Logging
@@ -33,14 +32,19 @@ namespace Agebull.Common.Logging
         public static MonitorScope CreateScope(string name)
         {
             if (!LogRecorder.LogMonitor)
+            {
                 return new MonitorScope();
+            }
+
             var scope = new MonitorScope
             {
                 _isScope = true,
                 _isStep = LogRecorder.MonitorItem.InMonitor
             };
             if (LogRecorder.MonitorItem.InMonitor)
+            {
                 LogRecorder.BeginStepMonitor(name);
+            }
             else
             {
                 IocScope.Logger = IocHelper.LoggerFactory.CreateLogger(name);
@@ -55,11 +59,18 @@ namespace Agebull.Common.Logging
         protected override void OnDispose()
         {
             if (!_isScope)
+            {
                 return;
+            }
+
             if (_isStep)
+            {
                 LogRecorder.EndStepMonitor();
+            }
             else
+            {
                 LogRecorder.EndMonitor();
+            }
         }
     }
 

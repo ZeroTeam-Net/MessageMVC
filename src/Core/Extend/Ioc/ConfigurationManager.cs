@@ -71,7 +71,7 @@ namespace Agebull.Common.Configuration
         /// <param name="key"> 键 </param>
         /// <param name="def"> 缺省值（不存在会回写） </param>
         /// <returns> 文本值 </returns>
-        public string GetStr(string key, string def)
+        public string GetStr(string key, string def = null)
         {
             if (key == null)
             {
@@ -357,7 +357,7 @@ namespace Agebull.Common.Configuration
         /// </summary>
         public static void UpdateAppsettings()
         {
-            var files =new string[] { "appsettings.json", "appSettings.json", "AppSettings.json", "Appsettings.json" };
+            var files = new string[] { "appsettings.json", "appSettings.json", "AppSettings.json", "Appsettings.json" };
             foreach (var fileName in files)
             {
                 var file = Path.Combine(Environment.CurrentDirectory, fileName);

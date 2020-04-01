@@ -1,3 +1,10 @@
+using Agebull.Common.Configuration;
+using Agebull.Common.Ioc;
+using Agebull.Common.Reflection;
+using Agebull.EntityModel.Common;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -5,15 +12,8 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.Serialization;
-using ZeroTeam.MessageMVC.ApiDocuments;
-using Agebull.Common.Reflection;
-using Agebull.EntityModel.Common;
-using Newtonsoft.Json;
-using Agebull.Common.Ioc;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Agebull.Common.Configuration;
+using ZeroTeam.MessageMVC.ApiDocuments;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -51,7 +51,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
             TransportDiscories = IocHelper.RootProvider.GetServices<ITransportDiscory>().ToArray();
             if (TransportDiscories.Length == 0)
-                TransportDiscories = new[] { new TransportDiscory() };
+            {
+                TransportDiscories = new[] { new TransportDiscover() };
+            }
 
             FindApi(type, false);
             RegistToZero();
@@ -71,7 +73,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             //    });
             TransportDiscories = IocHelper.RootProvider.GetServices<ITransportDiscory>().ToArray();
             if (TransportDiscories.Length == 0)
-                TransportDiscories = new[] { new TransportDiscory() };
+            {
+                TransportDiscories = new[] { new TransportDiscover() };
+            }
+
             var types = Assembly.GetTypes().Where(p => p.IsSupperInterface(typeof(IApiControler))).ToArray();
             foreach (var type in types)
             {
@@ -87,7 +92,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             foreach (var sta in ServiceInfos.Values)
             {
                 if (sta.Aips.Count == 0)
+                {
                     continue;
+                }
+
                 var station = (ZeroService)ZeroFlowControl.TryGetZeroObject(sta.Name);
                 if (station == null)
                 {
@@ -114,7 +122,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 }
             }
         }
-        ITransportDiscory[] TransportDiscories;
+
+        private ITransportDiscory[] TransportDiscories;
 
         /// <summary>
         /// 查找API
@@ -125,7 +134,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         {
             //泛型与纯虚类
             if (type.IsAbstract || type.IsGenericType)
+            {
                 return;
+            }
 
             var docx = XmlMember.Find(type) ?? new XmlMember
             {
@@ -137,7 +148,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 var builder = dis.DiscoryNetTransport(type, out var name);
                 if (builder == null)
+                {
                     continue;
+                }
 
                 if (!ServiceInfos.TryGetValue(name, out service))
                 {
@@ -151,13 +164,18 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 break;
             }
             if (service == null)
+            {
                 return;
+            }
             #endregion
 
             #region API发现
             string routeHead = type.GetCustomAttribute<RouteAttribute>()?.Name.SafeTrim(' ', '\t', '\r', '\n', '/');
             if (routeHead != null)
+            {
                 routeHead += "/";
+            }
+
             var defPage = type.GetCustomAttribute<ApiPageAttribute>()?.PageUrl?.SafeTrim();
             var defOption = type.GetCustomAttribute<ApiAccessOptionFilterAttribute>()?.Option;
             var defCategory = type.GetCustomAttribute<CategoryAttribute>()?.Category.SafeTrim();
@@ -178,7 +196,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 return;
             }
             if (method.Name.Length > 4 && (method.Name.IndexOf("get_", StringComparison.Ordinal) == 0 || method.Name.IndexOf("set_", StringComparison.Ordinal) == 0))
+            {
                 return;
+            }
             //if (method.GetParameters().Length > 1)
             //{
             //    ZeroTrace.WriteError("ApiDiscover", "argument size must 0 or 1", station.Name, type.Name, method.Name);
@@ -196,11 +216,17 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             var accessOption = method.GetCustomAttribute<ApiAccessOptionFilterAttribute>();
             ApiAccessOption option;
             if (accessOption != null)
+            {
                 option = accessOption.Option;
+            }
             else if (defOption != null)
+            {
                 option = defOption.Value;
+            }
             else
+            {
                 option = ApiAccessOption.Internal | ApiAccessOption.Customer | ApiAccessOption.Employe | ApiAccessOption.ArgumentCanNil;
+            }
 
             var category = method.GetCustomAttribute<CategoryAttribute>()?.Category.SafeTrim();
             var page = method.GetCustomAttribute<ApiPageAttribute>()?.PageUrl.SafeTrim();
@@ -233,7 +259,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 api.ArgumentInfo.Name = arg.Name;
                 api.ArgumentType = arg.ParameterType;
                 if (doc != null)
+                {
                     api.ArgumentInfo.Caption = doc.Arguments.Values.FirstOrDefault();
+                }
             }
             station.Aips.Add(api.RouteName, api);
         }
@@ -253,7 +281,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         {
             var method = callInfo.GetMethod(methodName);
             if (method == null)
+            {
                 throw new ArgumentException("类型" + callInfo.FullName + "没有名称为" + methodName + "的方法");
+            }
 
             var parameters = method.GetParameters();
             //if (parameters.Length > 1)
@@ -287,18 +317,28 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 {
                     var ca = parameter.GetCustomAttribute<FromConfigAttribute>();
                     if (ca != null)
+                    {
                         ConfigCreate(ilGenerator, ca.Name, parameter.ParameterType);
+                    }
                     else
                     {
                         var sa = parameter.GetCustomAttribute<FromServicesAttribute>();
                         if (sa != null)
+                        {
                             IocCreate(ilGenerator, parameter.ParameterType);
+                        }
                         else if (parameter.ParameterType == typeof(IServiceCollection))
+                        {
                             ServiceCollection(ilGenerator);
+                        }
                         else if (parameter.ParameterType.IsGenericType && parameter.ParameterType.GetGenericTypeDefinition() == typeof(ILogger<>))
+                        {
                             Logger(ilGenerator, parameter.ParameterType);
+                        }
                         else
+                        {
                             IocCreate(ilGenerator, parameter.ParameterType);
+                        }
                     }
                     var builder = ilGenerator.DeclareLocal(parameter.ParameterType.GetTypeInfo());
                     ilGenerator.Emit(OpCodes.Stloc, builder);
@@ -417,13 +457,13 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return dynamicMethod.CreateDelegate(typeof(Func<object, object>)) as Func<object, object>;
         }
 
-        static void ServiceCollection(ILGenerator ilGenerator)
+        private static void ServiceCollection(ILGenerator ilGenerator)
         {
             var method = typeof(IocHelper).GetProperty($"ServiceCollection").GetGetMethod();
             ilGenerator.Emit(OpCodes.Call, method);
         }
 
-        static void Logger(ILGenerator ilGenerator, Type type)
+        private static void Logger(ILGenerator ilGenerator, Type type)
         {
             var method = typeof(IocHelper).GetProperty($"LoggerFactory").GetGetMethod();
             ilGenerator.Emit(OpCodes.Call, method);
@@ -436,13 +476,14 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             ilGenerator.Emit(OpCodes.Call, method);
         }
 
-        static void ConfigCreate(ILGenerator ilGenerator, string name, Type type)
+        private static void ConfigCreate(ILGenerator ilGenerator, string name, Type type)
         {
             ilGenerator.Emit(OpCodes.Ldstr, name);
             var method = typeof(ConfigurationManager).GetMethod($"Option").MakeGenericMethod(type);
             ilGenerator.Emit(OpCodes.Call, method);
         }
-        static void IocCreate(ILGenerator ilGenerator, Type type)
+
+        private static void IocCreate(ILGenerator ilGenerator, Type type)
         {
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
             {
@@ -514,15 +555,22 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 type == typeof(object) || type == typeof(void) ||
                 type == typeof(ValueType) || type == typeof(Type) || type == typeof(Enum) ||
                 type.Namespace == "System" || type.Namespace?.Contains("System.") == true)
+            {
                 return;
+            }
+
             if (_typeDocs.TryGetValue(type, out var doc))
             {
                 foreach (var field in doc.Fields)
                 {
                     if (typeDocument.Fields.ContainsKey(field.Key))
+                    {
                         typeDocument.Fields[field.Key] = field.Value;
+                    }
                     else
+                    {
                         typeDocument.Fields.Add(field.Key, field.Value);
+                    }
                 }
                 return;
             }
@@ -601,7 +649,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         private TypeDocument CheckMember(TypeDocument document, Type parent, MemberInfo member, Type memType, bool json, bool dc, bool checkBase = true)
         {
             if (document.Fields.ContainsKey(member.Name))
+            {
                 return null;
+            }
+
             var jp = member.GetCustomAttribute<JsonPropertyAttribute>();
             var dm = member.GetCustomAttribute<DataMemberAttribute>();
             if (json)
@@ -612,13 +663,17 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     return null;
                 }
                 if (jp == null)
+                {
                     return null;
+                }
             }
             else if (dc)
             {
                 var id = member.GetCustomAttribute<IgnoreDataMemberAttribute>();
                 if (id != null)
+                {
                     return null;
+                }
             }
 
             var field = new TypeDocument();
@@ -658,7 +713,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 if (type.IsEnum)
                 {
                     if (checkBase)
+                    {
                         field = ReadEntity(type, member.Name);
+                    }
+
                     field.ObjectType = ObjectType.Base;
                     field.IsEnum = true;
                 }
@@ -669,7 +727,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 else if (!isDictionary)
                 {
                     if (checkBase)
+                    {
                         field = ReadEntity(type, member.Name);
+                    }
+
                     field.ObjectType = ObjectType.Object;
                 }
                 field.TypeName = ReflectionHelper.GetTypeName(type);
@@ -694,9 +755,15 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             field.ClassName = ReflectionHelper.GetTypeName(memType);
 
             if (!string.IsNullOrWhiteSpace(dm?.Name))
+            {
                 field.JsonName = dm.Name;
+            }
+
             if (!string.IsNullOrWhiteSpace(jp?.PropertyName))
+            {
                 field.JsonName = jp.PropertyName;
+            }
+
             var rule = member.GetCustomAttribute<DataRuleAttribute>();
             if (rule != null)
             {

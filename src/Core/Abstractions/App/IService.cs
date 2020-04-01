@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ZeroTeam.MessageMVC.ZeroApis;
+﻿using System.Collections.Generic;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -37,6 +35,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// 重置状态机,请谨慎使用
         /// </summary>
-         void ResetStateMachine();
+        void ResetStateMachine();
     }
 }

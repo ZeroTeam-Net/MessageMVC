@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using ZeroTeam.MessageMVC.Kafka;
+using ZeroTeam.MessageMVC.Messages;
+using ZeroTeam.MessageMVC.RedisMQ;
 
 namespace ZeroTeam.MessageMVC.Http
 {
@@ -16,10 +19,11 @@ namespace ZeroTeam.MessageMVC.Http
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
-            IocHelper.SetServiceCollection(services);
             //services.UseCsRedis();
-            //services.AddSingleton<IFlowMiddleware, KafkaProducer>();//Kafka环境
-            //services.AddSingleton<IMessageProducer, KafkaProducer>();//采用Kafka生产端
+            services.AddSingleton<IFlowMiddleware, KafkaProducer>();//Kafka环境
+            services.AddSingleton<IMessageProducer, KafkaProducer>();//采用Kafka生产端
+            services.AddSingleton<IFlowMiddleware, CsRedisProducer>();//采用Redis生产端
+            services.AddSingleton<IMessageProducer, CsRedisProducer>();//采用Redis生产端
             HttpRoute.Initialize(services);
         }
 

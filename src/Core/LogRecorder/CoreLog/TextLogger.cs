@@ -5,11 +5,11 @@
 
 #region
 
+using Agebull.Common.Base;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Agebull.Common.Base;
-using Microsoft.Extensions.Logging;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 #endregion
 
@@ -45,7 +45,9 @@ namespace Agebull.Common.Logging
         {
             Used--;
             if (Used == 0)
+            {
                 DisposeWriters();
+            }
         }
         #endregion
 
@@ -56,12 +58,20 @@ namespace Agebull.Common.Logging
         /// </summary>
         private void WriteFile(string type, string log)
         {
+            if (LogRecorder.LogPath == null && Option.LogPath == null)
+            {
+                return;
+            }
+
             FileInfo writer = null;
             try
             {
                 writer = GetWriter(type);
                 if (writer == null)
+                {
                     return;
+                }
+
                 writer.Size += log.Length;
                 writer.Stream.WriteLine(log);
             }
@@ -94,7 +104,10 @@ namespace Agebull.Common.Logging
         {
             var day = (DateTime.Today.Year << 16) + (DateTime.Today.Month << 8) + DateTime.Today.Day;
             if (day == _recordTimePoint)
+            {
                 return;
+            }
+
             pointTime = DateTime.Today;
             if (Option.DayFolder)
             {
@@ -118,9 +131,15 @@ namespace Agebull.Common.Logging
         private FileInfo GetWriter(string sub)
         {
             if (IsDisposed)
+            {
                 return null;
+            }
+
             if (Option.DayFolder)
+            {
                 CheckTimePoint();
+            }
+
             if (_writers.TryGetValue(sub, out var info) && info.Size < Option.SplitNumber)
             {
                 return info;
@@ -140,7 +159,7 @@ namespace Agebull.Common.Logging
             return info;
         }
 
-        static int Used = 0;
+        private static int Used = 0;
 
         /// <summary>
         ///     任务结束,环境销毁
@@ -150,7 +169,10 @@ namespace Agebull.Common.Logging
             foreach (var info in _writers)
             {
                 if (info.Value.Stream == null)
+                {
                     continue;
+                }
+
                 info.Value.Stream.Flush();
                 info.Value.Stream.Dispose();
             }
@@ -166,9 +188,14 @@ namespace Agebull.Common.Logging
                 if (info.Index > 0)
                 {
                     if (info.Index >= Option.maxFile)
+                    {
                         info.Index = 1;
+                    }
                     else
+                    {
                         info.Index++;
+                    }
+
                     fileName = Path.Combine(folder, $"{sub}.{info.Index:D3}.log");
                     if (File.Exists(fileName))
                     {
@@ -277,28 +304,38 @@ namespace Agebull.Common.Logging
         /// <summary>
         /// 通过计数减少取磁盘大小的频率
         /// </summary>
-        int cnt = 0;
+        private int cnt = 0;
 
         void ILogger.Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
             if (logLevel < Option.LogLevel)
+            {
                 return;
+            }
+
             if (Option.DayFolder && ++cnt >= 100)
             {
                 cnt = 0;
                 var size = IOHelper.FolderDiskInfo(Option.LogPath);
                 if (size.AvailableSize < Option.MinFreeSize)
+                {
                     Option.disable = true;
+                }
             }
             string Text() => $"{DateTime.Now:MM-dd HH:mm:ss.ffff} [{(eventId.Name ?? logLevel.ToString())}]\t{LogRecorder.GetMachineName()}({LogRecorder.GetUserName()}) [{eventId.Id:D4}({LogRecorder.GetRequestId()})]\t{formatter(state, exception)}";
             if (!Option.disable)
+            {
                 WriteFile("log", Text());
+            }
 
             switch (logLevel)
             {
                 case LogLevel.Warning:
                     if (!Option.disable)
+                    {
                         WriteFile("warning", Text());
+                    }
+
                     break;
                 case LogLevel.Error:
                     WriteFile("error", Text());

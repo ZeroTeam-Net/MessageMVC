@@ -1,6 +1,6 @@
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using ZeroTeam.MessageMVC.Context;
-using Newtonsoft.Json;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -26,7 +26,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         /// <param name="errCode">错误码</param>
         /// <returns></returns>
-        public new static ApiArrayResult<TData> Error(int errCode)
+        public static new ApiArrayResult<TData> Error(int errCode)
         {
             return new ApiArrayResult<TData>
             {
@@ -45,7 +45,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <param name="errCode">错误码</param>
         /// <param name="message">错误消息</param>
         /// <returns></returns>
-        public new static ApiArrayResult<TData> Error(int errCode, string message)
+        public static new ApiArrayResult<TData> Error(int errCode, string message)
         {
             return new ApiArrayResult<TData>
             {
@@ -65,7 +65,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <param name="message">错误消息</param>
         /// <param name="innerMessage">内部说明</param>
         /// <returns></returns>
-        public new static ApiArrayResult<TData> Error(int errCode, string message, string innerMessage)
+        public static new ApiArrayResult<TData> Error(int errCode, string message, string innerMessage)
         {
             return new ApiArrayResult<TData>
             {
@@ -87,7 +87,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <param name="guide">错误指导</param>
         /// <param name="describe">错误解释</param>
         /// <returns></returns>
-        public new static ApiArrayResult<TData> Error(int errCode, string message, string innerMessage, string guide, string describe)
+        public static new ApiArrayResult<TData> Error(int errCode, string message, string innerMessage, string guide, string describe)
         {
             return new ApiArrayResult<TData>
             {
@@ -113,7 +113,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <param name="guide">错误指导</param>
         /// <param name="describe">错误解释</param>
         /// <returns></returns>
-        public new static ApiArrayResult<TData> Error(int errCode, string message, string innerMessage, string point, string guide, string describe)
+        public static new ApiArrayResult<TData> Error(int errCode, string message, string innerMessage, string point, string guide, string describe)
         {
             return new ApiArrayResult<TData>
             {
@@ -157,7 +157,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ///     生成一个成功的标准返回
         /// </summary>
         /// <returns></returns>
-        public new static ApiArrayResult<TData> Error()
+        public static new ApiArrayResult<TData> Error()
         {
             return new ApiArrayResult<TData>
             {

@@ -2143,16 +2143,6 @@
                 本地站点配置
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.AppName">
-            <summary>
-                当前应用名称
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.AppVersion">
-            <summary>
-                当前应用版本号
-            </summary>
-        </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.MaxWorkThreads">
             <summary>
               线程池最大工作线程数
@@ -2168,19 +2158,9 @@
                 站点数据使用AppName为文件夹
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.ServiceName">
-            <summary>
-                服务名称
-            </summary>
-        </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.ShortName">
             <summary>
                 短名称
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.StationName">
-            <summary>
-                站点名称，注意唯一性
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.DataFolder">
@@ -2196,11 +2176,6 @@
         <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.ConfigFolder">
             <summary>
                 本地配置文件夹
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.RootPath">
-            <summary>
-                应用所在的顶级目录
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.AddInPath">
@@ -2255,6 +2230,31 @@
                 本地站点配置
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppOption.AppName">
+            <summary>
+                当前应用名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppOption.AppVersion">
+            <summary>
+                当前应用版本号
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppOption.ServiceName">
+            <summary>
+                服务名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppOption.RealName">
+            <summary>
+                当前服务器的运行时名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppOption.RootPath">
+            <summary>
+                应用所在的顶级目录
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroAppOption.BinPath">
             <summary>
                 程序所在地址
@@ -2270,240 +2270,9 @@
                 是否在Linux黑环境下
             </summary>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.plan_date_type">
+        <member name="T:ZeroTeam.MessageMVC.MessagePlan">
             <summary>
-            计划类型
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.plan_date_type.none">
-            <summary>
-            无计划，立即发送
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.plan_date_type.time">
-            <summary>
-            在指定的时间发送
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.plan_date_type.second">
-            <summary>
-            秒间隔后发送
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.plan_date_type.minute">
-            <summary>
-            分钟间隔后发送
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.plan_date_type.hour">
-            <summary>
-            小时间隔后发送
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.plan_date_type.day">
-            <summary>
-            日间隔后发送
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.plan_date_type.week">
-            <summary>
-            每周几
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.plan_date_type.month">
-            <summary>
-            每月几号
-            </summary>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.plan_message_state">
-            <summary>
-            计划状态
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.plan_message_state.none">
-            <summary>
-            无状态
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.plan_message_state.queue">
-            <summary>
-            排队
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.plan_message_state.execute">
-            <summary>
-            正常执行
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.plan_message_state.retry">
-            <summary>
-            重试执行
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.plan_message_state.skip">
-            <summary>
-            跳过
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.plan_message_state.pause">
-            <summary>
-            暂停
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.plan_message_state.error">
-            <summary>
-            错误关闭
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.plan_message_state.close">
-            <summary>
-            正常关闭
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.plan_message_state.remove">
-            <summary>
-            删除
-            </summary>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroPlanInfo">
-            <summary>
-            计划
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroPlanInfo.skip_set">
-            <summary>
-            跳过设置次数(1-n 跳过次数)
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroPlanInfo.plan_type">
-            <summary>
-            计划类型
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroPlanInfo.plan_value">
-            <summary>
-            类型值
-            </summary>
-            <remarks>
-            none time 无效
-            second minute hour day : 延时处理的 指定延时数量(单位为对应的plan_date_type)
-            week : 周日到周六(0-6),值无效系统自动放弃(无提示)
-            month: 正数为指定号数(如当月不存在,则使用当月最后一天) 零或负数为月未倒推(0为最后一天,负数为减去的数字,减的结果为0或负数的,则为当前第一天)
-            </remarks>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroPlanInfo.plan_repet">
-            <summary>
-            重复次数,0不重复 >0重复次数,-1永久重复
-            </summary>
-            <remarks>
-            none time 无效
-            second minute hour day : 延时处理的,如指定时间太小,
-            no_keep=true:
-                多次计算时间如果小于当前的,将密集执行
-            no_keep=false:
-                每次空跳(系统不执行操作)也算一次,如时间足够小,可能全是空跳而未能执行一次,除非指定不允许空跳()
-            </remarks>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroPlanInfo.description">
-            <summary>
-            计划说明
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroPlanInfo.no_skip">
-            <summary>
-            是否空跳
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroPlanInfo.plan_time">
-            <summary>
-            计划时间
-            </summary>
-            <remarks>
-            使用UNIX时间(1970年1月1日0时0分0秒起的总秒数)
-            plan_type :
-             none 无效,系统自动分配当前时间以便下一次立即执行,plan_repet无效
-             time 指定时间,如时间过期,系统自动放弃,plan_repet无效
-             second minute hour day : 延时处理的,如指定,则以此时间为基准,否则以系统接收时间为基准(可能产生误差)
-             week month:指定日期的,只使用此时间的天内部分(即此时间可以明确指定引发的时间),如不指定,则时间为0:0:0
-            </remarks>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroPlan">
-            <summary>
-            计划
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroPlan.name">
-            <summary>
-            名称
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroPlan.plan_id">
-            <summary>
-            消息标识
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroPlan.request_id">
-            <summary>
-            发起者提供的标识
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroPlan.station">
-            <summary>
-            站点
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroPlan.station_type">
-            <summary>
-            站点
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroPlan.caller">
-            <summary>
-            原始请求者
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroPlan.real_repet">
-            <summary>
-            执行次数
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroPlan.skip_num">
-            <summary>
-            跳过次数计数,
-            1 当no_skip=true时,空跳也会参与计数.
-            2 此计数在执行时发生,
-                2.1 skip_set &lt; 0 直接计算下一次执行时间,
-                2.2 在skip_set &gt; 0时,skip_set &lt; skip_num时直接计算下一次执行时间,否则正常执行
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroPlan.exec_state">
-            <summary>
-            最后一次执行状态
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroPlan.plan_state">
-            <summary>
-            计划状态
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroPlan.exec_time">
-            <summary>
-            执行时间
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroPlan.command">
-            <summary>
-            调用的API
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroPlan.context">
-            <summary>
-            上下文
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroPlan.argument">
-            <summary>
-            调用的参数
+            计划配置
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Context.GlobalContext">
@@ -2684,7 +2453,7 @@
                 但实际名称，会以服务器返回为准。
             </remarks>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Context.GlobalContext.ServiceRealName">
+        <member name="P:ZeroTeam.MessageMVC.Context.GlobalContext.AppName">
             <summary>
                 当前服务器的运行时名称
             </summary>
@@ -3434,6 +3203,57 @@
             <param name="content">消息内容</param>
             <returns></returns>
         </member>
+        <member name="F:ZeroTeam.MessageMVC.Messages.MessageProducer.PlanProducer">
+            <summary>
+            计划生产者
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessageProducer.PlanService">
+            <summary>
+            发现传输对象
+            </summary>
+            <returns>传输对象构造器</returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessageProducer.Plan``1(ZeroTeam.MessageMVC.PlanTasks.PlanOption,System.String,System.String,``0)">
+            <summary>
+            生产消息
+            </summary>
+            <param name="option">计划配置</param>
+            <param name="topic">消息分类</param>
+            <param name="title">消息标题</param>
+            <param name="content">消息内容</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessageProducer.Plan(ZeroTeam.MessageMVC.PlanTasks.PlanOption,System.String,System.String,System.String)">
+            <summary>
+            生产消息
+            </summary>
+            <param name="option">计划配置</param>
+            <param name="topic">消息分类</param>
+            <param name="title">消息标题</param>
+            <param name="content">消息内容</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessageProducer.PlanAsync``1(ZeroTeam.MessageMVC.PlanTasks.PlanOption,System.String,System.String,``0)">
+            <summary>
+            生产消息
+            </summary>
+            <param name="option">计划配置</param>
+            <param name="topic">消息分类</param>
+            <param name="title">消息标题</param>
+            <param name="content">消息内容</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessageProducer.PlanAsync(ZeroTeam.MessageMVC.PlanTasks.PlanOption,System.String,System.String,System.String)">
+            <summary>
+            生产消息
+            </summary>
+            <param name="option">计划配置</param>
+            <param name="topic">消息分类</param>
+            <param name="title">消息标题</param>
+            <param name="content">消息内容</param>
+            <returns></returns>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Messages.MessageState">
             <summary>
             表示消息状态
@@ -3487,6 +3307,11 @@
         <member name="P:ZeroTeam.MessageMVC.Messages.IMessageProducer.State">
             <summary>
             运行状态
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageProducer.Initialize">
+            <summary>
+                初始化
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.IMessageProducer.Producer``2(System.String,System.String,``0)">
@@ -3558,6 +3383,372 @@
             <param name="title">消息标题</param>
             <param name="content">消息内容</param>
             <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.PlanTasks.IPlanProducer">
+            <summary>
+            计划消息生产对象
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.PlanTasks.IPlanProducer.State">
+            <summary>
+            运行状态
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.PlanTasks.IPlanProducer.Plan``1(ZeroTeam.MessageMVC.PlanTasks.PlanOption,System.String,System.String,``0)">
+            <summary>
+            生产消息
+            </summary>
+            <param name="option">计划配置</param>
+            <param name="topic">消息分类</param>
+            <param name="title">消息标题</param>
+            <param name="content">消息内容</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.PlanTasks.IPlanProducer.Plan(ZeroTeam.MessageMVC.PlanTasks.PlanOption,System.String,System.String,System.String)">
+            <summary>
+            生产消息
+            </summary>
+            <param name="option">计划配置</param>
+            <param name="topic">消息分类</param>
+            <param name="title">消息标题</param>
+            <param name="content">消息内容</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.PlanTasks.IPlanProducer.PlanAsync``1(ZeroTeam.MessageMVC.PlanTasks.PlanOption,System.String,System.String,``0)">
+            <summary>
+            生产消息
+            </summary>
+            <param name="option">计划配置</param>
+            <param name="topic">消息分类</param>
+            <param name="title">消息标题</param>
+            <param name="content">消息内容</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.PlanTasks.IPlanProducer.PlanAsync(ZeroTeam.MessageMVC.PlanTasks.PlanOption,System.String,System.String,System.String)">
+            <summary>
+            生产消息
+            </summary>
+            <param name="option">计划配置</param>
+            <param name="topic">消息分类</param>
+            <param name="title">消息标题</param>
+            <param name="content">消息内容</param>
+            <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.PlanTasks.PlanCallInfo">
+            <summary>
+            计划调用信息
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.PlanTasks.PlanCallInfo.Option">
+            <summary>
+            计划配置
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.PlanTasks.PlanCallInfo.Message">
+            <summary>
+            计划对象
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.PlanTasks.PlanOption">
+            <summary>
+            计划配置
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.PlanOption.plan_id">
+            <summary>
+            消息标识
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.PlanOption.request_id">
+            <summary>
+            发起者提供的标识
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.PlanOption.service">
+            <summary>
+            站点
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.PlanOption.caller">
+            <summary>
+            原始请求者
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.PlanOption.skip_set">
+            <summary>
+            跳过设置次数(1-n 跳过次数)
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.PlanOption.plan_type">
+            <summary>
+            计划类型
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.PlanOption.plan_value">
+            <summary>
+            类型值
+            </summary>
+            <remarks>
+            none time 无效
+            second minute hour day : 延时处理的 指定延时数量(单位为对应的plan_date_type)
+            week : 周日到周六(0-6),值无效系统自动放弃(无提示)
+            month: 正数为指定号数(如当月不存在,则使用当月最后一天) 零或负数为月未倒推(0为最后一天,负数为减去的数字,减的结果为0或负数的,则为当前第一天)
+            </remarks>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.PlanOption.plan_repet">
+            <summary>
+            重复次数,0不重复 >0重复次数,-1永久重复
+            </summary>
+            <remarks>
+            none time 无效
+            second minute hour day : 延时处理的,如指定时间太小,
+            no_keep=true:
+                多次计算时间如果小于当前的,将密集执行
+            no_keep=false:
+                每次空跳(系统不执行操作)也算一次,如时间足够小,可能全是空跳而未能执行一次,除非指定不允许空跳()
+            </remarks>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.PlanOption.description">
+            <summary>
+            计划说明
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.PlanOption.no_skip">
+            <summary>
+            是否空跳
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.PlanOption.plan_time">
+            <summary>
+            计划时间
+            </summary>
+            <remarks>
+            使用UNIX时间(1970年1月1日0时0分0秒起的总毫秒数)
+            plan_type :
+             none 无效,系统自动分配当前时间以便下一次立即执行,plan_repet无效
+             time 指定时间,如时间过期,系统自动放弃,plan_repet无效
+             second minute hour day : 延时处理的,如指定,则以此时间为基准,否则以系统接收时间为基准(可能产生误差)
+             week month:指定日期的,只使用此时间的天内部分(即此时间可以明确指定引发的时间),如不指定,则时间为0:0:0
+            </remarks>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.PlanTasks.PlanProducerOption">
+            <summary>
+            计划任务配置
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.PlanTasks.PlanProducerOption.ServiceName">
+            <summary>
+            服务名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.PlanTasks.PlanProducerOption.PostApiName">
+            <summary>
+            投递接口名称
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.PlanTasks.PlanProducer">
+            <summary>
+            计划投递对象
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.PlanTasks.PlanProducer.#ctor">
+            <summary>
+            构造
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.PlanTasks.PlanProducer.State">
+            <summary>
+            运行状态
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.PlanTasks.PlanProducer.Plan``1(ZeroTeam.MessageMVC.PlanTasks.PlanOption,System.String,System.String,``0)">
+            <summary>
+            生产消息
+            </summary>
+            <param name="option">计划配置</param>
+            <param name="topic">消息分类</param>
+            <param name="title">消息标题</param>
+            <param name="content">消息内容</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.PlanTasks.PlanProducer.Plan(ZeroTeam.MessageMVC.PlanTasks.PlanOption,System.String,System.String,System.String)">
+            <summary>
+            生产消息
+            </summary>
+            <param name="option">计划配置</param>
+            <param name="topic">消息分类</param>
+            <param name="title">消息标题</param>
+            <param name="content">消息内容</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.PlanTasks.PlanProducer.PlanAsync``1(ZeroTeam.MessageMVC.PlanTasks.PlanOption,System.String,System.String,``0)">
+            <summary>
+            生产消息
+            </summary>
+            <param name="option">计划配置</param>
+            <param name="topic">消息分类</param>
+            <param name="title">消息标题</param>
+            <param name="content">消息内容</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.PlanTasks.PlanProducer.PlanAsync(ZeroTeam.MessageMVC.PlanTasks.PlanOption,System.String,System.String,System.String)">
+            <summary>
+            生产消息
+            </summary>
+            <param name="option">计划配置</param>
+            <param name="topic">消息分类</param>
+            <param name="title">消息标题</param>
+            <param name="content">消息内容</param>
+            <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.PlanTasks.PlanRealInfo">
+            <summary>
+            计划实时信息
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.PlanRealInfo.real_repet">
+            <summary>
+            执行次数
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.PlanRealInfo.skip_num">
+            <summary>
+            跳过次数计数,
+            1 当no_skip=true时,空跳也会参与计数.
+            2 此计数在执行时发生,
+                2.1 skip_set &lt; 0 直接计算下一次执行时间,
+                2.2 在skip_set &gt; 0时,skip_set &lt; skip_num时直接计算下一次执行时间,否则正常执行
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.PlanRealInfo.skip_set">
+            <summary>
+            跳过设置次数(1-n 跳过次数)
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.PlanRealInfo.exec_state">
+            <summary>
+            最后一次执行状态
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.PlanRealInfo.plan_state">
+            <summary>
+            计划状态
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.PlanRealInfo.add_time">
+            <summary>
+            加入时间
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.PlanRealInfo.plan_time">
+            <summary>
+            计划时间
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.PlanRealInfo.start_time">
+            <summary>
+            开始时间
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.PlanRealInfo.end_time">
+            <summary>
+            完成时间
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.PlanTasks.plan_date_type">
+            <summary>
+            计划类型
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.plan_date_type.none">
+            <summary>
+            无计划，立即发送
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.plan_date_type.time">
+            <summary>
+            在指定的时间发送
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.plan_date_type.second">
+            <summary>
+            秒间隔后发送
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.plan_date_type.minute">
+            <summary>
+            分钟间隔后发送
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.plan_date_type.hour">
+            <summary>
+            小时间隔后发送
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.plan_date_type.day">
+            <summary>
+            日间隔后发送
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.plan_date_type.week">
+            <summary>
+            每周几
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.plan_date_type.month">
+            <summary>
+            每月几号
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.PlanTasks.Plan_message_state">
+            <summary>
+            计划状态
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.Plan_message_state.none">
+            <summary>
+            无状态
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.Plan_message_state.queue">
+            <summary>
+            排队
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.Plan_message_state.execute">
+            <summary>
+            正常执行
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.Plan_message_state.retry">
+            <summary>
+            重试执行
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.Plan_message_state.skip">
+            <summary>
+            跳过
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.Plan_message_state.pause">
+            <summary>
+            暂停
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.Plan_message_state.error">
+            <summary>
+            错误关闭
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.Plan_message_state.close">
+            <summary>
+            正常关闭
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.PlanTasks.Plan_message_state.remove">
+            <summary>
+            删除
+            </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ArgumentType">
             <summary>

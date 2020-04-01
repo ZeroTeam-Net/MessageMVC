@@ -1,6 +1,6 @@
+using Agebull.Common.Logging;
 using System;
 using System.Linq;
-using Agebull.Common.Logging;
 
 namespace ZeroTeam.MessageMVC
 {
@@ -17,9 +17,13 @@ namespace ZeroTeam.MessageMVC
         public static void SystemLog(string title, params object[] messages)
         {
             if (messages.Length == 0)
+            {
                 LogRecorder.SystemLog(title);
+            }
             else
+            {
                 LogRecorder.SystemLog("{0} : {1}", title, messages.LinkToString(" $ "));
+            }
         }
 
         /// <summary>

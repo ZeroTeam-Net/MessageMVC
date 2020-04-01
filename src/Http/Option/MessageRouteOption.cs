@@ -39,7 +39,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// <remarks>
         /// 当启用NGINX代理时,NGINX可能会增加一级节点,而导致默认第1个路径作为服务名称失效
         /// </remarks>
-        public Dictionary<string,int> HostPaths { get; set; }
+        public Dictionary<string, int> HostPaths { get; set; }
     }
 
 }

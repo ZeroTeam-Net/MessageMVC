@@ -1,7 +1,5 @@
 using System;
-using System.Reflection;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
@@ -84,7 +82,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 return true;
             }
             if (Argument is IApiArgument arg)
+            {
                 return arg.Validate(out message);
+            }
+
             if (Argument != null || Access.HasFlag(ApiAccessOption.ArgumentCanNil))
             {
                 message = null;
@@ -95,8 +96,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return false;
         }
 
-        Func<object, Tuple<MessageState, string>> FuncSync;
-        Func<object, Task<Tuple<MessageState, string>>> FuncAsync;
+        private Func<object, Tuple<MessageState, string>> FuncSync;
+        private Func<object, Task<Tuple<MessageState, string>>> FuncAsync;
 
         /// <summary>
         ///     执行
@@ -105,7 +106,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         public Task<Tuple<MessageState, string>> Execute()
         {
             if (IsAsync)
+            {
                 return FuncAsync(Argument);
+            }
+
             var res = FuncSync(Argument);
             return Task.FromResult(res);
         }
@@ -130,7 +134,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 IsAsync = false;
                 if (ResultType == typeof(void))
+                {
                     ResultType = null;
+                }
             }
             BuildFunc();
         }
@@ -175,7 +181,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             }
         }
 
-        void BuildFunc()
+        private void BuildFunc()
         {
             if (!IsAsync)
             {

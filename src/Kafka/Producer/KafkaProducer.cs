@@ -168,7 +168,10 @@ namespace ZeroTeam.MessageMVC.Kafka
             try
             {
                 if (producer == null)
+                {
                     return (false, null);
+                }
+
                 var item = new MessageItem
                 {
                     Topic = topic,

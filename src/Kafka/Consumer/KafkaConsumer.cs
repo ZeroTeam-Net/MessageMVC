@@ -24,9 +24,9 @@ namespace ZeroTeam.MessageMVC.Kafka
         {
             config = ConfigurationManager.Get<ConsumerConfig>("Kafka");
         }
-        IConsumer<Ignore, string> consumer;
 
-        ConsumerConfig config;
+        private IConsumer<Ignore, string> consumer;
+        private ConsumerConfig config;
 
 
         public ZeroService Station { get; set; }
@@ -86,13 +86,18 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// 消息处理
         /// </summary>
         /// <param name="message"></param>
-        async Task OnMessagePush(IMessageItem message)
+        private async Task OnMessagePush(IMessageItem message)
         {
             var state = await MessageProcess.OnMessagePush(Station, message);
             if (state == MessageState.Success)
+            {
                 Interlocked.Increment(ref SuccessCount);
+            }
             else
+            {
                 Interlocked.Increment(ref ErrorCount);
+            }
+
             Interlocked.Decrement(ref WaitCount);
         }
 
@@ -103,7 +108,8 @@ namespace ZeroTeam.MessageMVC.Kafka
         {
             return true;
         }
-        ConsumerBuilder<Ignore, string> builder;
+
+        private ConsumerBuilder<Ignore, string> builder;
         /// <summary>
         /// 同步运行状态
         /// </summary>

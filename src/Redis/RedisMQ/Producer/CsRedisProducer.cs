@@ -4,7 +4,6 @@ using Agebull.Common.Logging;
 using CSRedis;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,7 +24,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
 
         #region 消息可靠性
 
-        class RedisQueueItem
+        private class RedisQueueItem
         {
             public string ID { get; set; }
             public string Channel { get; set; }
@@ -34,18 +33,17 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             public string FileName { get; set; }
         }
 
-        ConcurrentQueue<RedisQueueItem> redisQueues = new ConcurrentQueue<RedisQueueItem>();
+        private static readonly ConcurrentQueue<RedisQueueItem> redisQueues = new ConcurrentQueue<RedisQueueItem>();
+        private static readonly SemaphoreSlim semaphore = new SemaphoreSlim(0);
+        private CancellationTokenSource tokenSource;
 
-        SemaphoreSlim semaphore = new SemaphoreSlim(0);
-
-        CancellationTokenSource tokenSource;
-        async Task RedisQueue()
+        private async Task RedisQueue()
         {
             //还原发送异常文件
             bool isFailed = false;
-            var path =IOHelper.CheckPath(ZeroFlowControl.Config.DataFolder, "redis");
+            var path = IOHelper.CheckPath(ZeroFlowControl.Config.DataFolder, "redis");
             var files = IOHelper.GetAllFiles(path, "*.msg");
-            foreach(var file in files)
+            foreach (var file in files)
             {
                 try
                 {
@@ -84,7 +82,9 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                 try
                 {
                     if (!redisQueues.TryPeek(out item))
+                    {
                         continue;
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -108,7 +108,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                         await client.PublishAsync(item.Channel, item.ID);
                         item.Step = 3;
                     }
-                    if (item.FileName !=null)
+                    if (item.FileName != null)
                     {
                         File.Delete(item.FileName);
                     }
@@ -125,7 +125,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                 try
                 {
                     item.FileName = Path.Combine(path, $"{item.ID}.msg");
-                    File.WriteAllText(item.FileName,JsonHelper.SerializeObject(item));
+                    File.WriteAllText(item.FileName, JsonHelper.SerializeObject(item));
                 }
                 catch (Exception ex)
                 {
@@ -134,8 +134,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             }
         }
 
-
-        string DoProducer(string channel, string title, string content)
+        private string DoProducer(string channel, string title, string content)
         {
             var item = new RedisQueueItem
             {
@@ -188,7 +187,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
 
         Task<string> IMessageProducer.ProducerAsync(string channel, string title, string content)
         {
-            var id =DoProducer(channel, title, null);
+            var id = DoProducer(channel, title, null);
             return Task.FromResult(id);
         }
 
@@ -222,7 +221,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// </summary>
         int IFlowMiddleware.Level => short.MinValue;
 
-        CSRedisClient client;
+        private CSRedisClient client;
         /// <summary>
         ///     初始化
         /// </summary>

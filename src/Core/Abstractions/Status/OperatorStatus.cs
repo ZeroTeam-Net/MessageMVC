@@ -1,5 +1,5 @@
-using ZeroTeam.MessageMVC.Context;
 using Newtonsoft.Json;
+using ZeroTeam.MessageMVC.Context;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -14,7 +14,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         public OperatorStatus()
         {
-            Point = GlobalContext.ServiceRealName;
+            Point = GlobalContext.ServiceName;
         }
 
         /// <summary>

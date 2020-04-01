@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Agebull.Common;
+using Agebull.Common.Ioc;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
-using Agebull.Common;
-using Agebull.Common.Ioc;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -38,7 +38,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         public void CheckOption(ZeroAppOption config)
         {
             if (string.IsNullOrEmpty(ZeroFlowControl.Config.AddInPath))
+            {
                 return;
+            }
 
             var path = ZeroFlowControl.Config.AddInPath[0] == '/'
                 ? ZeroFlowControl.Config.AddInPath
@@ -60,9 +62,15 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         public void Initialize()
         {
             if (Registers == null)
+            {
                 return;
+            }
+
             foreach (var reg in Registers)
+            {
                 reg.AutoRegist();
+            }
+
             foreach (var reg in Registers)
             {
                 reg.Initialize();

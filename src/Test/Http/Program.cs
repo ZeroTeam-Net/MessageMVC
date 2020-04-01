@@ -12,8 +12,6 @@ namespace ZeroTeam.MessageMVC.Http
 
         public static void Main(string[] args)
         {
-            LogRecorder.LogPath = Path.Combine(Environment.CurrentDirectory, "logs", ConfigurationManager.Root["AppName"]);
-
             CreateHostBuilder(args).Build().Run();
         }
 

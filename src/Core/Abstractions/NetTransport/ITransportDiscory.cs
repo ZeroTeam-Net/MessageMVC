@@ -13,6 +13,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <param name="type">控制器类型</param>
         /// <param name="name">发现的服务名称</param>
         /// <returns>传输对象构造器</returns>
-        Func<string, INetTransfer> DiscoryNetTransport(Type type,out string name);
+        Func<string, INetTransfer> DiscoryNetTransport(Type type, out string name);
     }
 }

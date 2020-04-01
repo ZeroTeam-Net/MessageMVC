@@ -17,7 +17,7 @@ namespace Agebull.Common.Logging
     /// </summary>
     public static class LoggerExtend
     {
-        static EventId NewEventId(string name) => new EventId((int)Interlocked.Increment(ref LogRecorder.lastId), name);
+        private static EventId NewEventId(string name) => new EventId((int)Interlocked.Increment(ref LogRecorder.lastId), name);
         #region 记录
 
         /// <summary>

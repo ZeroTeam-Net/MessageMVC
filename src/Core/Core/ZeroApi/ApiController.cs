@@ -29,7 +29,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         public string UserAgent => GlobalContext.RequestInfo.UserAgent;
 
-        IMessageItem _message;
+        private IMessageItem _message;
 
         /// <summary>
         /// 原始调用帧消息

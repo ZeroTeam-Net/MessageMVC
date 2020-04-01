@@ -31,7 +31,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <example>
         /// $"{Address}:{Port},password={PassWord},defaultDatabase={db},poolsize=50,ssl=false,writeBuffer=10240";
         /// </example>
-        RedisOption Option;
+        private RedisOption Option;
 
         /// <summary>
         /// 本地代理
@@ -41,11 +41,10 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <summary>
         /// 订阅对象
         /// </summary>
-        SubscribeObject subscribeObject;
-
-        string jobList;
-        string errList;
-        string bakList;
+        private SubscribeObject subscribeObject;
+        private string jobList;
+        private string errList;
+        private string bakList;
         /// <summary>
         /// 初始化
         /// </summary>
@@ -54,9 +53,14 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             Name = "RedisMQ";
             Option = ConfigurationManager.Get<RedisOption>("Redis");
             if (Option.GuardCheckTime <= 0)
+            {
                 Option.GuardCheckTime = 3000;
+            }
+
             if (Option.MessageLockTime <= 0)
+            {
                 Option.MessageLockTime = 1000;
+            }
 
             jobList = $"msg:{Service.ServiceName}";
             bakList = $"bak:{Service.ServiceName}";
@@ -80,8 +84,9 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             client = new CSRedisClient(Option.ConnectionString);
             return true;
         }
-        TaskCompletionSource<bool> loopTask;
-        CancellationToken token;
+
+        private TaskCompletionSource<bool> loopTask;
+        private CancellationToken token;
         async Task<bool> INetTransfer.Loop(CancellationToken t)
         {
             token = t;
@@ -100,7 +105,10 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         {
             subscribeObject.Unsubscribe();
             while (isBusy > 0)//等处理线程退出
+            {
                 Thread.Sleep(10);
+            }
+
             loopTask?.SetResult(true);
         }
 
@@ -118,7 +126,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <summary>
         /// 异常守护
         /// </summary>
-        async Task Guard()
+        private async Task Guard()
         {
             using var client = new CSRedisClient(Option.ConnectionString);
             //处理错误重新入列
@@ -126,8 +134,11 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             {
                 var key = client.LPop(errList);
                 if (string.IsNullOrEmpty(key))
+                {
                     break;
-                LogRecorder.Trace("异常消息重新入列:{0}",key);
+                }
+
+                LogRecorder.Trace("异常消息重新入列:{0}", key);
                 client.LPush(jobList, key);
             }
             //非正常处理还原
@@ -137,7 +148,10 @@ namespace ZeroTeam.MessageMVC.RedisMQ
 
                 var key = await client.LPopAsync(bakList);
                 if (string.IsNullOrEmpty(key))
+                {
                     continue;
+                }
+
                 var guard = $"guard:{Service.ServiceName}:{key}";
                 if (await client.SetNxAsync(guard, "Guard"))
                 {
@@ -148,21 +162,25 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                 }
             }
         }
+
         /// <summary>
         /// 单处理守卫变量
         /// </summary>
-        int isBusy = 0;
+        private int isBusy = 0;
 
         /// <summary>
         /// 消息处理
         /// </summary>
-        void OnMessagePush()
+        private void OnMessagePush()
         {
             try
             {
                 //仅允许一个处理程序在运行
                 if (Interlocked.Increment(ref isBusy) != 1)
+                {
                     return;
+                }
+
                 _ = ReadList();
             }
             finally
@@ -175,7 +193,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// 取出队列,全部处理,为空后退出
         /// </summary>
         /// <returns></returns>
-        async Task ReadList()
+        private async Task ReadList()
         {
             while (!token.IsCancellationRequested)
             {
@@ -183,7 +201,10 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                 {
                     var id = client.RPopLPush(jobList, bakList);
                     if (string.IsNullOrEmpty(id))
+                    {
                         return;
+                    }
+
                     var key = $"msg:{Service.ServiceName}:{id}";
                     var guard = $"guard:{Service.ServiceName}:{id}";
                     if (await client.SetNxAsync(guard, "Guard"))
@@ -221,8 +242,8 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                                 switch (await MessageProcess.OnMessagePush(Service, item))
                                 {
                                     default:
-                                    //case MessageState.Cancel:
-                                    //case MessageState.Exception:
+                                        //case MessageState.Cancel:
+                                        //case MessageState.Exception:
                                         await client.LPushAsync(errList, id);
                                         break;
                                     case MessageState.FormalError:
@@ -231,11 +252,17 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                                         break;
                                     case MessageState.Failed:
                                         if (Option.FailedIsError)
+                                        {
                                             await client.LPushAsync(errList, id);
+                                        }
+
                                         break;
                                     case MessageState.NoSupper:
                                         if (Option.NoSupperIsError)
+                                        {
                                             await client.LPushAsync(errList, id);
+                                        }
+
                                         break;
                                 }
                             }

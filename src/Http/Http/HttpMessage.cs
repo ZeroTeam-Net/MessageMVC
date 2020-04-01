@@ -1,16 +1,13 @@
+using Agebull.Common.Logging;
+using Agebull.EntityModel.Common;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
-using Agebull.Common.Logging;
-
-using Agebull.EntityModel.Common;
-using Microsoft.ApplicationInsights.AspNetCore.Extensions;
-using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
-using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
@@ -20,7 +17,7 @@ namespace ZeroTeam.MessageMVC.Http
     /// <summary>
     ///     路由数据
     /// </summary>
-    [JsonObject(MemberSerialization.OptIn,ItemNullValueHandling = NullValueHandling.Ignore)]
+    [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     [DataContract]
     public class HttpMessage : IMessageItem
     {
@@ -185,14 +182,14 @@ namespace ZeroTeam.MessageMVC.Http
         ///     是否正常
         /// </summary>
         [DataMember]
-        [JsonProperty("succeed", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)] 
+        [JsonProperty("succeed", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public bool IsSucceed => State == MessageState.Success;
 
         /// <summary>
         ///     开始时间
         /// </summary>
         [DataMember]
-        [JsonProperty("start", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)] 
+        [JsonProperty("start", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public DateTime Start { get; set; } = DateTime.Now;
 
         /// <summary>
@@ -248,11 +245,15 @@ namespace ZeroTeam.MessageMVC.Http
             var request = context.Request;
             Uri = request.Path.Value;
             if (!CheckApiRoute())
+            {
                 return Task.FromResult(false);
+            }
 
             HttpMethod = request.Method.ToUpper();
             if (HttpRoute.Option.EnableHttpHeader)
+            {
                 CheckHeaders(context, request);
+            }
 
             if (ZeroFlowControl.Config.EnableGlobalContext)
             {
@@ -285,8 +286,10 @@ namespace ZeroTeam.MessageMVC.Http
                 }
             }
             if (HttpRoute.Option.EnableUserAgent)
+            {
                 UserAgent = request.Headers["USER-AGENT"].LinkToString("|");
-            
+            }
+
             {
                 foreach (var head in request.Headers)
                 {
@@ -340,23 +343,36 @@ namespace ZeroTeam.MessageMVC.Http
                 if (request.QueryString.HasValue)
                 {
                     foreach (var key in request.Query.Keys)
+                    {
                         Arguments.TryAdd(key, request.Query[key]);
+                    }
                 }
                 if (request.HasFormContentType)
                 {
                     foreach (var key in request.Form.Keys)
+                    {
                         Arguments.TryAdd(key, request.Form[key]);
+                    }
+
                     if (!await ReadFiles(request))
+                    {
                         return false;
+                    }
                 }
 
                 if (request.ContentLength == null)
+                {
                     return true;
+                }
+
                 using (var texter = new StreamReader(request.Body))
                 {
                     HttpContent = await texter.ReadToEndAsync();
                     if (string.IsNullOrEmpty(HttpContent))
+                    {
                         HttpContent = null;
+                    }
+
                     texter.Close();
                 }
                 return true;

@@ -1,5 +1,5 @@
-﻿using System.Runtime.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using System.Runtime.Serialization;
 
 namespace ZeroTeam.MessageMVC.ApiDocuments
 {
@@ -10,20 +10,24 @@ namespace ZeroTeam.MessageMVC.ApiDocuments
     [JsonObject(MemberSerialization.OptIn)]
     public class DocumentItem : AnnotationsConfig
     {
-        [DataMember] [JsonProperty("example", NullValueHandling = NullValueHandling.Ignore)]
+        [DataMember]
+        [JsonProperty("example", NullValueHandling = NullValueHandling.Ignore)]
         private string _example;
 
-        [DataMember] [JsonProperty("seealso", NullValueHandling = NullValueHandling.Ignore)]
+        [DataMember]
+        [JsonProperty("seealso", NullValueHandling = NullValueHandling.Ignore)]
         private string _seealso;
 
-        [DataMember] [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
+        [DataMember]
+        [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
         private string _value;
 
         /// <summary>
         ///     参见
         /// </summary>
         [IgnoreDataMember]
-        [JsonIgnore] public string Seealso
+        [JsonIgnore]
+        public string Seealso
         {
             get => _seealso;
             set => _seealso = value;
@@ -33,7 +37,8 @@ namespace ZeroTeam.MessageMVC.ApiDocuments
         ///     示例
         /// </summary>
         [IgnoreDataMember]
-        [JsonIgnore] public string Example
+        [JsonIgnore]
+        public string Example
         {
             get => _example;
             set => _example = value;
@@ -43,7 +48,8 @@ namespace ZeroTeam.MessageMVC.ApiDocuments
         ///     值描述
         /// </summary>
         [IgnoreDataMember]
-        [JsonIgnore] public string Value
+        [JsonIgnore]
+        public string Value
         {
             get => _value;
             set => _value = value;
@@ -56,12 +62,34 @@ namespace ZeroTeam.MessageMVC.ApiDocuments
         public void Copy(DocumentItem document)
         {
             if (document == null)
+            {
                 return;
-            if (!string.IsNullOrWhiteSpace(document.Caption)) Caption = document.Caption;
-            if (!string.IsNullOrWhiteSpace(document.Description)) Description = document.Description;
-            if (!string.IsNullOrWhiteSpace(document.Seealso)) Seealso = document.Seealso;
-            if (!string.IsNullOrWhiteSpace(document.Example)) Example = document.Example;
-            if (!string.IsNullOrWhiteSpace(document.Value)) Value = document.Value;
+            }
+
+            if (!string.IsNullOrWhiteSpace(document.Caption))
+            {
+                Caption = document.Caption;
+            }
+
+            if (!string.IsNullOrWhiteSpace(document.Description))
+            {
+                Description = document.Description;
+            }
+
+            if (!string.IsNullOrWhiteSpace(document.Seealso))
+            {
+                Seealso = document.Seealso;
+            }
+
+            if (!string.IsNullOrWhiteSpace(document.Example))
+            {
+                Example = document.Example;
+            }
+
+            if (!string.IsNullOrWhiteSpace(document.Value))
+            {
+                Value = document.Value;
+            }
         }
     }
 }

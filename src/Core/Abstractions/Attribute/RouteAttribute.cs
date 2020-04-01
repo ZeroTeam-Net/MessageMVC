@@ -18,7 +18,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// 配置
         /// </summary>
-        public string Name { get;}
+        public string Name { get; }
     }
-    
+
 }
