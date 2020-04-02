@@ -54,4 +54,17 @@ namespace Agebull.Common.Base
             GC.SuppressFinalize(this);
         }
     }
+
+    /// <summary>
+    /// 根据步骤范围
+    /// </summary>
+    public class EmptyScope : ScopeBase
+    {
+        /// <summary>
+        /// 清理资源
+        /// </summary>
+        protected override void OnDispose()
+        {
+        }
+    }
 }

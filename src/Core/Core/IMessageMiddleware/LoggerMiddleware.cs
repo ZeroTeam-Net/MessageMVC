@@ -38,12 +38,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
             using (MonitorScope.CreateScope($"{service.ServiceName}/{message.Title}"))
             {
-                LogRecorder.MonitorTrace(() => $"MessageId:{message.ID}");
                 LogRecorder.MonitorTrace(() => JsonConvert.SerializeObject(message, Formatting.Indented));
 
                 var state = await next();
 
-                LogRecorder.MonitorTrace(message.Result);
+                LogRecorder.MonitorTrace("{0} {1}", message.State, message.Result);
 
                 return state;
             }

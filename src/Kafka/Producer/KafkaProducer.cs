@@ -1,3 +1,4 @@
+using Agebull.Common;
 using Agebull.Common.Configuration;
 using Agebull.Common.Logging;
 using Confluent.Kafka;
@@ -26,12 +27,12 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <summary>
         /// 实例名称
         /// </summary>
-        string IFlowMiddleware.RealName => "KafkaProducer";
+        string IZeroMiddleware.Name => "KafkaProducer";
 
         /// <summary>
         /// 等级
         /// </summary>
-        int IFlowMiddleware.Level => 0;
+        int IZeroMiddleware.Level => 0;
 
         /// <summary>
         /// 初始化
@@ -68,8 +69,8 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <returns></returns>
         public TRes Producer<TArg, TRes>(string topic, string title, TArg content)
         {
-            var res = ProducerInner(topic, title, JsonHelper.SerializeObject(content)).Result;
-            return res.Item1 ? JsonHelper.DeserializeObject<TRes>(res.Item2) : default;
+            var (success, result) = ProducerInner(topic, title, JsonHelper.SerializeObject(content)).Result;
+            return success ? JsonHelper.DeserializeObject<TRes>(result) : default;
         }
 
         /// <summary>
@@ -92,8 +93,8 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <returns></returns>
         public TRes Producer<TRes>(string topic, string title)
         {
-            var res = ProducerInner(topic, title, null).Result;
-            return res.Item1 ? JsonHelper.DeserializeObject<TRes>(res.Item2) : default;
+            var (success, result) = ProducerInner(topic, title, null).Result;
+            return success ? JsonHelper.DeserializeObject<TRes>(result) : default;
         }
 
         /// <summary>
@@ -105,8 +106,8 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <returns></returns>
         public string Producer(string topic, string title, string content)
         {
-            var res = ProducerInner(topic, title, content).Result;
-            return res.Item2;
+            var (success, result) = ProducerInner(topic, title, content).Result;
+            return result;
         }
 
         /// <summary>
@@ -118,8 +119,8 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <returns></returns>
         public async Task<TRes> ProducerAsync<TArg, TRes>(string topic, string title, TArg content)
         {
-            var res = await ProducerInner(topic, title, JsonHelper.SerializeObject(content));
-            return res.Item1 ? JsonHelper.DeserializeObject<TRes>(res.Item2) : default;
+            var (success, result) = await ProducerInner(topic, title, JsonHelper.SerializeObject(content));
+            return success ? JsonHelper.DeserializeObject<TRes>(result) : default;
         }
 
         /// <summary>
@@ -142,8 +143,8 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <returns></returns>
         public async Task<TRes> ProducerAsync<TRes>(string topic, string title)
         {
-            var res = await ProducerInner(topic, title, null);
-            return res.Item1 ? JsonHelper.DeserializeObject<TRes>(res.Item2) : default;
+            var (success, result) = await ProducerInner(topic, title, null);
+            return success ? JsonHelper.DeserializeObject<TRes>(result) : default;
         }
 
         /// <summary>
@@ -155,15 +156,44 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <returns></returns>
         public async Task<string> ProducerAsync(string topic, string title, string content)
         {
-            var res = await ProducerInner(topic, title, null);
-            return res.Item2;
+            var (_, result) = await ProducerInner(topic, title, null);
+            return result;
+        }
+
+        /// <summary>
+        /// 生产消息
+        /// </summary>
+        /// <param name="message">消息</param>
+        /// <returns></returns>
+        async Task<string> IMessageProducer.ProducerAsync(IMessageItem message)
+        {
+            var (success, result) = await ProducerInner(message);
+            return success ? default : result;
         }
 
         /// <param name="topic"></param>
         /// <param name="title"></param>
         /// <param name="content"></param>
         /// <returns></returns>
-        private async Task<(bool, string)> ProducerInner(string topic, string title, string content)
+        private Task<(bool success, string result)> ProducerInner(string topic, string title, string content)
+        {
+            var item = new MessageItem
+            {
+                Topic = topic,
+                Title = title,
+                Content = content
+            };
+            if (ZeroFlowControl.Config.EnableGlobalContext && GlobalContext.CurrentNoLazy != null)
+            {
+                item.Context = JsonHelper.SerializeObject(GlobalContext.CurrentNoLazy);
+            }
+            return ProducerInner(item);
+        }
+
+
+        /// <param name="message"></param>
+        /// <returns></returns>
+        private async Task<(bool success, string result)> ProducerInner(IMessageItem message)
         {
             try
             {
@@ -171,22 +201,11 @@ namespace ZeroTeam.MessageMVC.Kafka
                 {
                     return (false, null);
                 }
-
-                var item = new MessageItem
-                {
-                    Topic = topic,
-                    Title = title,
-                    Content = content
-                };
-                if (GlobalContext.CurrentNoLazy != null)
-                {
-                    item.Context = JsonHelper.SerializeObject(GlobalContext.CurrentNoLazy);
-                }
                 var msg = new Message<Null, string>
                 {
-                    Value = JsonHelper.SerializeObject(item)
+                    Value = JsonHelper.SerializeObject(message)
                 };
-                var ret = await producer.ProduceAsync(topic, msg);
+                var ret = await producer.ProduceAsync(message.Topic, msg);
                 return ret.Status == PersistenceStatus.Persisted
                     ? (true, ret.Value)
                     : (false, null);
@@ -197,7 +216,6 @@ namespace ZeroTeam.MessageMVC.Kafka
                 return (false, null);
             }
         }
-
         #endregion
     }
 }

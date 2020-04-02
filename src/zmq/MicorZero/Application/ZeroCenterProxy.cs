@@ -1,3 +1,5 @@
+using Agebull.Common;
+using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Context;
 
 namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
@@ -40,7 +42,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         /// </summary>
         public bool HeartLeft()
         {
-            return HeartLeft("SystemManage", GlobalContext.ServiceRealName);
+            return HeartLeft("SystemManage", ZeroFlowControl.Config.RealName);
         }
 
         /// <summary>
@@ -48,7 +50,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         /// </summary>
         public bool HeartReady()
         {
-            return HeartReady("SystemManage", GlobalContext.ServiceRealName);
+            return HeartReady("SystemManage", ZeroFlowControl.Config.RealName);
         }
 
         /// <summary>
@@ -56,7 +58,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         /// </summary>
         public bool HeartJoin()
         {
-            return HeartJoin("SystemManage", GlobalContext.ServiceRealName);
+            return HeartJoin("SystemManage", ZeroFlowControl.Config.RealName);
         }
 
         /// <summary>
@@ -64,7 +66,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         /// </summary>
         public bool Heartbeat()
         {
-            return Heartbeat("SystemManage", GlobalContext.ServiceRealName);
+            return Heartbeat("SystemManage", ZeroFlowControl.Config.RealName);
         }
 
         /*// <summary>

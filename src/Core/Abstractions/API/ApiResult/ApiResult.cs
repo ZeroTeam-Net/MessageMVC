@@ -6,7 +6,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     /// <summary>
     ///     API返回基类
     /// </summary>
-    [JsonObject(MemberSerialization.OptIn)]
+    [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class ApiResult : IApiResult
     {
         /// <summary>
@@ -62,7 +62,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ///     API请求标识
         /// </summary>
         /// <example>AxV6389FC</example>
-        [JsonProperty("requestId")]
+        [JsonProperty("requestId",DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public string RequestId { get; set; }
 
 
@@ -70,7 +70,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ///     API操作标识
         /// </summary>
         /// <example>#ABCD456789</example>
-        [JsonProperty("operatorId")]
+        [JsonProperty("operatorId", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public string OperatorId { get; set; }
 
 
@@ -78,7 +78,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ///     执行状态
         /// </summary>
         /// <remarks>success为true时,可能是空值</remarks>
-        [JsonProperty("status")]
+        [JsonProperty("status", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public OperatorStatus Status { get; set; }
 
         /// <summary>
@@ -332,7 +332,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return new ApiResult
             {
                 Success = false,
-                Status = GlobalContext.Current.LastStatus
+                Status = GlobalContext.CurrentNoLazy?.LastStatus
             };
         }
 
@@ -345,7 +345,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return new ApiResult<TData>
             {
                 Success = false,
-                Status = GlobalContext.Current.LastStatus
+                Status = GlobalContext.CurrentNoLazy?.LastStatus
             };
         }
         /// <summary>
@@ -357,7 +357,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return new ApiResult
             {
                 Success = true,
-                Status = GlobalContext.Current.LastStatus
+                Status = GlobalContext.CurrentNoLazy?.LastStatus
             };
         }
 
@@ -370,7 +370,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return new ApiResult<TData>
             {
                 Success = true,
-                Status = GlobalContext.Current.LastStatus
+                Status = GlobalContext.CurrentNoLazy?.LastStatus
             };
         }
 
@@ -556,7 +556,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     /// <summary>
     ///     API返回数据泛型类
     /// </summary>
-    [JsonObject(MemberSerialization.OptIn)]
+    [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class ApiResult<TData> : ApiResult, IApiResult<TData>
     {
         /// <summary>

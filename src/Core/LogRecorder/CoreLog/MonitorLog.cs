@@ -17,7 +17,7 @@ namespace Agebull.Common.Logging
         /// <summary>
         /// 当前范围数据
         /// </summary>
-        internal static MonitorItem MonitorItem => _monitorItemLocal.Value ?? (_monitorItemLocal.Value = new MonitorItem());
+        internal static MonitorItem MonitorItem => _monitorItemLocal.Value;
 
         /// <summary>
         /// 开始检测资源
@@ -28,7 +28,7 @@ namespace Agebull.Common.Logging
             {
                 return;
             }
-
+            _monitorItemLocal.Value = new MonitorItem();
             MonitorItem.BeginMonitor(title);
         }
 
@@ -56,12 +56,32 @@ namespace Agebull.Common.Logging
             }
 
             var item = MonitorItem;
-            if (!item.InMonitor)
+            if (item == null || !item.InMonitor)
             {
                 return;
             }
 
-            item.EndStepMonitor();
+            item.EndStep();
+        }
+
+        /// <summary>
+        /// 显示监视跟踪
+        /// </summary>
+        public static bool MonitorTrace(object message)
+        {
+            if (!LogMonitor)
+            {
+                return false;
+            }
+
+            var item = MonitorItem;
+            if (item == null || !item.InMonitor)
+            {
+                return false;
+            }
+
+            item.Write(message.ToString(), MonitorItem.ItemType.Item, false);
+            return true;
         }
 
         /// <summary>
@@ -75,7 +95,7 @@ namespace Agebull.Common.Logging
             }
 
             var item = MonitorItem;
-            if (!item.InMonitor)
+            if (item == null || !item.InMonitor)
             {
                 return false;
             }
@@ -95,7 +115,7 @@ namespace Agebull.Common.Logging
             }
 
             var item = MonitorItem;
-            if (!item.InMonitor)
+            if (item == null || !item.InMonitor)
             {
                 return false;
             }
@@ -115,7 +135,7 @@ namespace Agebull.Common.Logging
             }
 
             var item = MonitorItem;
-            if (!item.InMonitor)
+            if (item == null || !item.InMonitor)
             {
                 return false;
             }
@@ -135,7 +155,7 @@ namespace Agebull.Common.Logging
             }
 
             var item = MonitorItem;
-            if (!item.InMonitor)
+            if (item == null || !item.InMonitor)
             {
                 return;
             }
@@ -153,11 +173,10 @@ namespace Agebull.Common.Logging
             }
 
             var item = MonitorItem;
-            if (!item.InMonitor)
+            if (item == null || !item.InMonitor)
             {
                 return;
             }
-
             item.Flush(string.Format(fmt, args));
         }
         /// <summary>
@@ -165,13 +184,15 @@ namespace Agebull.Common.Logging
         /// </summary>
         public static void EndMonitor()
         {
-            if (!LogMonitor)
+            var item = MonitorItem;
+            if (item == null || !item.InMonitor)
             {
                 return;
             }
 
-            var item = MonitorItem;
-            if (!item.InMonitor)
+            _monitorItemLocal.Value = null;
+
+            if (!LogMonitor)
             {
                 return;
             }
@@ -182,7 +203,6 @@ namespace Agebull.Common.Logging
                 var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Monitor");
                 Logger.LogInformation(eventId, log);
             }
-            _monitorItemLocal.Value = null;
         }
     }
 }

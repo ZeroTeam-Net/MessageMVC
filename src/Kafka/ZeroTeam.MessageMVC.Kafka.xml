@@ -24,7 +24,7 @@
             调用计数
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.Initialize">
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.ZeroTeam#MessageMVC#ZeroApis#INetTransfer#Initialize">
             <summary>
             初始化
             </summary>
@@ -35,44 +35,26 @@
             </summary>
             <param name="message"></param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.Prepare">
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.ZeroTeam#MessageMVC#ZeroApis#INetTransfer#Prepare">
             <summary>
             将要开始
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.LoopBegin">
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.ZeroTeam#MessageMVC#ZeroApis#INetTransfer#LoopBegin">
             <summary>
             同步运行状态
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.LoopComplete">
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.ZeroTeam#MessageMVC#ZeroApis#INetTransfer#LoopComplete">
             <summary>
             同步关闭状态
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.Close">
-            <summary>
-            关闭
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.Commit">
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.ZeroTeam#MessageMVC#ZeroApis#INetTransfer#Commit">
             <summary>
             表示已成功接收 
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.OnError(System.Exception,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
-            <summary>
-            错误 
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.OnResult(ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
-            <summary>
-            发送返回值 
             </summary>
             <returns></returns>
         </member>
@@ -97,12 +79,12 @@
             运行状态
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaProducer.ZeroTeam#MessageMVC#IFlowMiddleware#RealName">
+        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaProducer.ZeroTeam#MessageMVC#IZeroMiddleware#Name">
             <summary>
             实例名称
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaProducer.ZeroTeam#MessageMVC#IFlowMiddleware#Level">
+        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaProducer.ZeroTeam#MessageMVC#IZeroMiddleware#Level">
             <summary>
             等级
             </summary>
@@ -187,10 +169,21 @@
             <param name="content">消息内容</param>
             <returns></returns>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaProducer.ZeroTeam#MessageMVC#Messages#IMessageProducer#ProducerAsync(ZeroTeam.MessageMVC.Messages.IMessageItem)">
+            <summary>
+            生产消息
+            </summary>
+            <param name="message">消息</param>
+            <returns></returns>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaProducer.ProducerInner(System.String,System.String,System.String)">
             <param name="topic"></param>
             <param name="title"></param>
             <param name="content"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaProducer.ProducerInner(ZeroTeam.MessageMVC.Messages.IMessageItem)">
+            <param name="message"></param>
             <returns></returns>
         </member>
     </members>

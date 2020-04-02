@@ -1,9 +1,10 @@
+using Agebull.Common;
+using Agebull.Common.Logging;
 using System;
 using System.Collections.Concurrent;
-using Agebull.Common.Logging;
 using System.Threading.Tasks;
-using ZeroTeam.ZeroMQ.ZeroRPC;
 using ZeroTeam.ZeroMQ;
+using ZeroTeam.ZeroMQ.ZeroRPC;
 
 namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
 {
@@ -41,12 +42,12 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// <summary>
         /// 实例名称
         /// </summary>
-        string IFlowMiddleware.RealName => "ZMQProxy";
+        string IZeroMiddleware.Name => "ZMQProxy";
 
         /// <summary>
         /// 等级
         /// </summary>
-        int IFlowMiddleware.Level => short.MinValue;
+        int IZeroMiddleware.Level => short.MinValue;
 
         /*// <summary>
         /// 等待数量

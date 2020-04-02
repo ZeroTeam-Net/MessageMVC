@@ -1,3 +1,4 @@
+using Agebull.Common;
 using Agebull.Common.Logging;
 using System;
 using System.Threading;
@@ -63,7 +64,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     GlobalContext.Current.DependencyObjects.Annex(Message);
                 }
 
-                if (CommandPrepare(out var action))
+                if (CommandPrepare(out IApiAction action))
                 {
                     if (ZeroFlowControl.Config.EnableGlobalContext)
                     {
@@ -71,26 +72,37 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                         GlobalContext.Current.DependencyObjects.Annex(this);
                         GlobalContext.Current.DependencyObjects.Annex(action);
                     }
-                    var res = await action.Execute();
-                    Message.State = res.Item1;
-                    Message.Result = res.Item2;
+                    var (state, result) = await action.Execute();
+                    Message.State = state;
+                    Message.Result = result;
                 }
-                Service.Transport.OnResult(Message, Tag);
+                await Service.Transport.OnMessageResult(Message, Tag);
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException ex)
             {
-                ZeroTrace.SystemLog("Cancel", Message.Title, Message.Content, Message.Content, Message.Context);
+                LogRecorder.MonitorTrace("Cancel");
+                Message.State = MessageState.Cancel;
+                await Service.Transport.OnMessageError(ex, Message, Tag);
                 return MessageState.Cancel;
             }
-            catch (ThreadInterruptedException)
+            catch (ThreadInterruptedException ex)
             {
-                ZeroTrace.SystemLog("Timeout", Message.Title, Message.Content, Message.Content, Message.Context);
+                LogRecorder.MonitorTrace("Time out");
+                Message.State = MessageState.Cancel;
+                await Service.Transport.OnMessageError(ex, Message, Tag);
+                return MessageState.Cancel;
+            }
+            catch (NetTransferException ex)
+            {
+                message.State = MessageState.NetError;
+                await service.Transport.OnMessageError(ex, message, tag);
                 return MessageState.Cancel;
             }
             catch (Exception ex)
             {
-                Service.Transport.OnError(ex, Message, Tag);
-                ZeroTrace.SystemLog("Exception", Message.Title, Message.Content, Message.Content, Message.Context);
+                LogRecorder.Exception(ex, message);
+                Message.State = MessageState.Exception;
+                await Service.Transport.OnMessageError(ex, Message, Tag);
                 return MessageState.Exception;
             }
             if (next != null)
@@ -157,7 +169,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
             try
             {
-                if (action.Validate(out var message))
+                if (action.Validate(out string message))
                 {
                     return true;
                 }

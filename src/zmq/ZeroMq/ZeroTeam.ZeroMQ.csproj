@@ -15,17 +15,14 @@
     <Authors>Agebull</Authors>
     <Company>ZeroTeam</Company>
     <PackageReleaseNotes>ClrZmq的ZeroTeam专用版本</PackageReleaseNotes>
-    <Product>1.0.0.6-bate</Product>
+    <Product>ClrZmq</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.0.0.9-bate</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net472|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <NoWarn>1701;1702;1705;1591</NoWarn>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.1|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <NoWarn>1701;1702;1705;1591</NoWarn>
@@ -39,19 +36,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="packages\**" />
-    <Compile Remove="ZeroMQTest\**" />
-    <EmbeddedResource Remove="packages\**" />
-    <EmbeddedResource Remove="ZeroMQTest\**" />
-    <None Remove="packages\**" />
-    <None Remove="ZeroMQTest\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="AssemblyInfo.cs" />
-    <Compile Remove="Extend\StationConfig.cs" />
-    <Compile Remove="Extend\ZeroStationOption.cs" />
-    <Compile Remove="Extend\ZeroStationType.cs" />
     <Compile Remove="zmq\DispoIntPtr.Ansi.cs" />
     <Compile Remove="zmq\DispoIntPtr.cs" />
     <Compile Remove="zmq\Platform.MacOSX.cs" />
@@ -59,25 +43,6 @@
     <Compile Remove="zmq\Platform.Win32.cs" />
     <Compile Remove="zmq\Platform.__Internal.cs" />
     <Compile Remove="zmq\UnmanagedLibrary.cs" />
-    <Compile Remove="MemoryCheck.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="appveyor.yml" />
-    <None Remove="build.sh" />
-    <None Remove="clrzmq4.mono.userprefs" />
-    <None Remove="install_deps.sh" />
-    <None Remove="LICENSE.txt" />
-    <None Remove="README.md" />
-    <None Remove="test.ps1" />
-    <None Remove="upload_coverage.ps1" />
-    <None Remove="ZeroMQ.7z.Release.cmd" />
-    <None Remove="ZeroMQ.gif" />
-    <None Remove="ZeroMQ.ico" />
-    <None Remove="ZeroMQ.nuspec" />
-    <None Remove="ZeroMQ.snk" />
-    <None Remove="ZeroMQ.targets" />
-    <None Remove="ZeroMQ.zip.Release.sh" />
   </ItemGroup>
 
   <ItemGroup>

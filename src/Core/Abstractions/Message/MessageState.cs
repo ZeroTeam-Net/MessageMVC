@@ -23,26 +23,31 @@
         /// <summary>
         /// 无处理方法
         /// </summary>
-        NoSupper = 3,
+        NoSupper = 0x10,
 
         /// <summary>
         /// 取消处理
         /// </summary>
-        Cancel = 4,
+        Cancel = 0x20,
+
+        /// <summary>
+        /// 网络传输错误
+        /// </summary>
+        NetError = 0x30,
 
         /// <summary>
         /// 处理异常
         /// </summary>
-        Exception = 5,
+        Exception = 0x40,
 
         /// <summary>
         /// 处理失败
         /// </summary>
-        Failed = 6,
+        Failed = 0x50,
 
         /// <summary>
         /// 处理成功
         /// </summary>
-        Success = 7
+        Success = 0x100
     }
 }

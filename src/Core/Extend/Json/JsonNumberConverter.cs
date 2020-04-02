@@ -2,7 +2,7 @@ using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace ZeroTeam.MessageMVC
+namespace Newtonsoft.Json
 {
 
     /// <summary>

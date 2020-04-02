@@ -24,7 +24,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         /// 构造
         /// </summary>
-        public RequestInfo() : this($"{GlobalContext.ServiceName}-{RandomOperate.Generate(6)}")
+        public RequestInfo() : this($"{GlobalContext.ServiceName}-{RandomCode.Generate(6)}")
         {
         }
 

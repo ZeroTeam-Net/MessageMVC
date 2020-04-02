@@ -1,4 +1,5 @@
-﻿using Agebull.Common.Configuration;
+﻿using Agebull.Common;
+using Agebull.Common.Configuration;
 using Agebull.Common.Logging;
 using Confluent.Kafka;
 using System;
@@ -20,7 +21,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <summary>
         /// 初始化
         /// </summary>
-        public void Initialize()
+        void INetTransfer.Initialize()
         {
             config = ConfigurationManager.Get<ConsumerConfig>("Kafka");
         }
@@ -34,11 +35,6 @@ namespace ZeroTeam.MessageMVC.Kafka
         public string Name { get; set; }
 
         IService INetTransfer.Service { get => Station; set => Station = value as ZeroService; }
-
-
-        void IDisposable.Dispose()
-        {
-        }
 
         async Task<bool> INetTransfer.Loop(CancellationToken token)
         {
@@ -62,7 +58,7 @@ namespace ZeroTeam.MessageMVC.Kafka
                     }
                     catch (Exception e)
                     {
-                        OnError(e, new MessageItem
+                        await ((IMessageConsumer)this).OnMessageError(e, new MessageItem
                         {
                             State = MessageState.FormalError,
                         }, cr.Value);
@@ -104,64 +100,44 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <summary>
         /// 将要开始
         /// </summary>
-        public bool Prepare()
+        Task<bool> INetTransfer.Prepare()
         {
-            return true;
+            return Task.FromResult(true);
         }
 
         private ConsumerBuilder<Ignore, string> builder;
+
         /// <summary>
         /// 同步运行状态
         /// </summary>
         /// <returns></returns>
-        public void LoopBegin()
+        Task<bool> INetTransfer.LoopBegin()
         {
             builder = new ConsumerBuilder<Ignore, string>(config);
             consumer = builder.Build();
             consumer.Subscribe(Station.ServiceName);
+            return Task.FromResult(true);
         }
 
         /// <summary>
         /// 同步关闭状态
         /// </summary>
         /// <returns></returns>
-        public void LoopComplete()
+        Task INetTransfer.LoopComplete()
         {
             consumer.Close();
             consumer.Dispose();
-        }
-
-        /// <summary>
-        /// 关闭
-        /// </summary>
-        /// <returns></returns>
-        public void Close()
-        {
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// 表示已成功接收 
         /// </summary>
         /// <returns></returns>
-        public void Commit()
+        Task INetTransfer.Commit()
         {
             consumer.Commit();
-        }
-
-        /// <summary>
-        /// 错误 
-        /// </summary>
-        /// <returns></returns>
-        public void OnError(Exception exception, IMessageItem message, object tag)
-        {
-        }
-
-        /// <summary>
-        /// 发送返回值 
-        /// </summary>
-        /// <returns></returns>
-        public void OnResult(IMessageItem message, object tag)
-        {
+            return Task.CompletedTask;
         }
 
     }

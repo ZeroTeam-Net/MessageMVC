@@ -21,12 +21,12 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 实例名称
         /// </summary>
-        string IFlowMiddleware.RealName => "ZeroGlobal";
+        string IZeroMiddleware.Name => "ZeroGlobal";
 
         /// <summary>
         /// 等级
         /// </summary>
-        int IFlowMiddleware.Level => int.MinValue;
+        int IZeroMiddleware.Level => int.MinValue;
 
         /// <summary>
         ///     关闭
@@ -56,7 +56,7 @@ namespace ZeroTeam.MessageMVC
                 if (config.EnableGlobalContext)
                 {
                     LogRecorder.GetUserNameFunc = () => GlobalContext.CurrentNoLazy?.User?.UserId.ToString() ?? "*";
-                    LogRecorder.GetRequestIdFunc = () => GlobalContext.CurrentNoLazy?.Request?.RequestId ?? RandomOperate.Generate(10);
+                    LogRecorder.GetRequestIdFunc = () => GlobalContext.CurrentNoLazy?.Request?.RequestId ?? RandomCode.Generate(10);
                 }
             }
             //线程数

@@ -185,7 +185,7 @@ namespace Agebull.Common.Logging
         /// </summary>
         public static string GetRequestId()
         {
-            return GetRequestIdFunc?.Invoke() ?? RandomOperate.Generate(8);
+            return GetRequestIdFunc?.Invoke() ?? RandomCode.Generate(8);
         }
 
         /// <summary>
@@ -447,6 +447,18 @@ namespace Agebull.Common.Logging
 
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Error");
             Logger.LogError(eventId, message, formatArgs);
+        }
+
+        /// <summary>
+        ///   记录异常日志
+        /// </summary>
+        /// <param name="exception"> 异常 </param>
+        /// <param name="tag"> 当时对象 </param>
+        public static string Exception(Exception exception, object tag)
+        {
+            var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Exception");
+            Logger.LogError(eventId, exception, JsonHelper.SerializeObject(tag));
+            return exception.Message;
         }
 
         /// <summary>

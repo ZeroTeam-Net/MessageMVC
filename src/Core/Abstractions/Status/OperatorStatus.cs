@@ -6,7 +6,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     /// <summary>
     ///     API状态返回接口实现
     /// </summary>
-    [JsonObject(MemberSerialization.OptIn)]
+    [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class OperatorStatus : IOperatorStatus
     {
         /// <summary>

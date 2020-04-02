@@ -50,6 +50,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ///     执行
         /// </summary>
         /// <returns></returns>
-        Task<Tuple<MessageState, string>> Execute();
+        Task<(MessageState state, string result)> Execute();
     }
 }

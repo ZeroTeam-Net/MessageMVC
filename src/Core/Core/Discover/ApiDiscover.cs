@@ -101,7 +101,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 {
                     ZeroFlowControl.RegistService(station = new ZeroService
                     {
-                        InstanceName = sta.Name,
+                        IsDiscover = true,
                         ServiceName = sta.Name,
                         TransportBuilder = sta.NetBuilder
                     });

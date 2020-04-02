@@ -18,12 +18,12 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 实例名称
         /// </summary>
-        string IFlowMiddleware.RealName => "ReConsumerMiddleware";
+        string IZeroMiddleware.Name => "ReConsumerMiddleware";
 
         /// <summary>
         /// 等级
         /// </summary>
-        int IFlowMiddleware.Level => 0;
+        int IZeroMiddleware.Level => 0;
 
         /// <summary>
         ///     关闭

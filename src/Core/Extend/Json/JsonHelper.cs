@@ -2,14 +2,17 @@
 using System.Text;
 using Newtonsoft.Json;
 
-namespace ZeroTeam.MessageMVC
+namespace Agebull.Common
 {
     /// <summary>
     /// Json序列化装饰器
     /// </summary>
     public static class JsonHelper
     {
-        private static readonly byte[] _emptyBytes = { 0 };
+        /// <summary>
+        /// 空字节
+        /// </summary>
+        public static readonly byte[] EmptyBytes =new byte[0];
 
         /// <summary>
         /// 转为UTF8字节
@@ -18,8 +21,9 @@ namespace ZeroTeam.MessageMVC
         /// <returns>字节</returns>
         public static byte[] ToZeroBytes(this string str)
         {
-            return str == null ? _emptyBytes : Encoding.UTF8.GetBytes(str);
+            return str == null ? EmptyBytes : Encoding.UTF8.GetBytes(str);
         }
+
         /// <summary>
         /// 转为UTF8字节
         /// </summary>
@@ -27,7 +31,7 @@ namespace ZeroTeam.MessageMVC
         /// <returns>字节</returns>
         public static byte[] ToZeroBytes<T>(this T v) where T : class
         {
-            return v == null ? _emptyBytes : Encoding.UTF8.GetBytes(SerializeObject(v));
+            return v == null ? EmptyBytes : Encoding.UTF8.GetBytes(SerializeObject(v));
         }
 
         /// <summary>
@@ -36,7 +40,38 @@ namespace ZeroTeam.MessageMVC
         /// <typeparam name="T"></typeparam>
         /// <param name="t"></param>
         /// <returns></returns>
-        public static string SerializeObject<T>(T t) => JsonConvert.SerializeObject(t, new JsonNumberConverter());
+        public static string ToJson<T>(this T t)
+        {
+            return Equals(t, default)
+                ? null
+                : JsonConvert.SerializeObject(t, new JsonNumberConverter());
+        }
+
+
+        /// <summary>
+        /// 序列化
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public static string ToJson(this object t)
+        {
+            return Equals(t, default)
+                ? null
+                : JsonConvert.SerializeObject(t, new JsonNumberConverter());
+        }
+
+        /// <summary>
+        /// 序列化
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public static string SerializeObject<T>(T t)
+        {
+            return Equals(t, default)
+                ? null
+                : JsonConvert.SerializeObject(t, new JsonNumberConverter());
+        }
 
 
         /// <summary>
@@ -80,7 +115,7 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 反序列化
         /// </summary>
-        public static object DeserializeObject(string json,Type type)
+        public static object DeserializeObject(string json, Type type)
         {
             if (string.IsNullOrEmpty(json))
                 return default;

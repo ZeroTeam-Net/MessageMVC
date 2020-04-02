@@ -1,3 +1,4 @@
+using Agebull.Common;
 using Agebull.Common.Logging;
 using Agebull.EntityModel.Common;
 using Microsoft.AspNetCore.Http;
@@ -36,29 +37,36 @@ namespace ZeroTeam.MessageMVC.Http
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public int Timestamp { get; set; } = DateTime.Now.ToTimestamp();
 
-        string IMessageItem.Topic { get => ApiHost; set => ApiHost = value; }
-        string IMessageItem.Title { get => ApiName; set => ApiName = value; }
-        string IMessageItem.Content { get => HttpContent; set => HttpContent = value; }
+        /// <summary>
+        /// 其他带外内容
+        /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public string Extend
+        {
+            get => HttpContent == null ? null : JsonHelper.SerializeObject(Arguments);
+            set => HttpContent = value;
+        }
 
         /// <summary>
         /// 其他带外内容
         /// </summary>
-        string IMessageItem.Tag { get; set; }
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public string Content => HttpContent != null ? HttpContent : JsonHelper.SerializeObject(Arguments);
 
         /// <summary>
         /// 上下文内容
         /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         string IMessageItem.Context
         {
-            get => GlobalContextJson ?? JsonHelper.SerializeObject(GlobalContext.CurrentNoLazy);
+            get => GlobalContextJson;
             set => GlobalContextJson = value;
         }
 
-        /// <summary>
-        ///     上下文的JSON内容(透传)
-        /// </summary>
-        public string GlobalContextJson;
+        string IMessageItem.Topic { get => ApiHost; set => ApiHost = value; }
+
+        string IMessageItem.Title { get => ApiName; set => ApiName = value; }
+
+        string IMessageItem.Content { get => HttpContent; set => HttpContent = value; }
 
         #endregion
 
@@ -69,11 +77,6 @@ namespace ZeroTeam.MessageMVC.Http
         /// </summary>
         public HttpContext HttpContext { get; set; }
 
-        /// <summary>
-        ///     请求地址
-        /// </summary>
-        [JsonProperty("uri", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public string Uri { get; private set; }
         /// <summary>
         ///     当前请求调用的主机名称
         /// </summary>
@@ -87,10 +90,25 @@ namespace ZeroTeam.MessageMVC.Http
         public string ApiName { get; internal set; }
 
         /// <summary>
-        ///     Http Header中的Authorization信息
+        ///     请求的内容
         /// </summary>
-        [JsonProperty("token", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public string Token { get; set; }
+        public string HttpContent { get; set; }
+
+        string globalContextJson;
+        /// <summary>
+        ///     上下文的JSON内容(透传)
+        /// </summary>
+        [JsonProperty("Context", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public string GlobalContextJson
+        {
+            get => globalContextJson ?? JsonHelper.SerializeObject(GlobalContext.CurrentNoLazy);
+            set => globalContextJson = value;
+        }
+        /// <summary>
+        ///     请求地址
+        /// </summary>
+        [JsonProperty("uri", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+        public string Uri { get; private set; }
 
         /// <summary>
         ///     HTTP method
@@ -99,16 +117,10 @@ namespace ZeroTeam.MessageMVC.Http
         public string HttpMethod { get; private set; }
 
         /// <summary>
-        ///     请求的内容
-        /// </summary>
-        [JsonProperty("Content", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public string HttpContent { get; private set; }
-
-        /// <summary>
         ///     请求的表单
         /// </summary>
         [JsonProperty("headers", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public Dictionary<string, List<string>> Headers = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+        public Dictionary<string, List<string>> Headers { get; set; }
 
         /// <summary>
         /// HTTP的UserAgent
@@ -117,18 +129,22 @@ namespace ZeroTeam.MessageMVC.Http
         public string UserAgent { get; set; }
 
         /// <summary>
+        ///     Http Header中的Authorization信息
+        /// </summary>
+        [JsonProperty("token", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+        public string Token { get; set; }
+
+        /// <summary>
         ///     请求的表单
         /// </summary>
-        [DataMember]
-        [JsonProperty("arguments", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public Dictionary<string, string> Arguments = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        public Dictionary<string, string> Arguments { get; set; }
 
         /// <summary>
         /// 取参数
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public string this[string key] => Arguments.TryGetValue(key, out var vl) ? vl : null;
+        public string this[string key] => Arguments == null ? null : Arguments.TryGetValue(key, out var vl) ? vl : null;
 
         #endregion
 
@@ -239,27 +255,24 @@ namespace ZeroTeam.MessageMVC.Http
         ///     调用检查
         /// </summary>
         /// <param name="context"></param>
-        public Task<bool> CheckRequest(HttpContext context)
+        public async Task<bool> CheckRequest(HttpContext context)
         {
             HttpContext = context;
             var request = context.Request;
             Uri = request.Path.Value;
             if (!CheckApiRoute())
             {
-                return Task.FromResult(false);
+                return false;
             }
 
             HttpMethod = request.Method.ToUpper();
-            if (HttpRoute.Option.EnableHttpHeader)
-            {
-                CheckHeaders(context, request);
-            }
+            CheckHeaders(context, request);
 
             if (ZeroFlowControl.Config.EnableGlobalContext)
             {
                 GlobalContext.SetRequestContext(new RequestInfo
                 {
-                    RequestId = $"{Token ?? "*"}-{RandomOperate.Generate(6)}",
+                    RequestId = $"{Token ?? "*"}-{RandomCode.Generate(6)}",
                     UserAgent = UserAgent,
                     Token = Token,
                     RequestType = RequestType.Http,
@@ -268,7 +281,9 @@ namespace ZeroTeam.MessageMVC.Http
                     Port = request.Headers["X-Real-Port"].FirstOrDefault() ?? context.Connection.RemotePort.ToString(),
                 });
             }
-            return ReadArgument(context);
+            if (!await ReadArgument(context))
+                return false;
+            return true;
         }
 
         private void CheckHeaders(HttpContext context, HttpRequest request)
@@ -289,8 +304,9 @@ namespace ZeroTeam.MessageMVC.Http
             {
                 UserAgent = request.Headers["USER-AGENT"].LinkToString("|");
             }
-
+            if (HttpRoute.Option.EnableHttpHeader)
             {
+                Headers = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
                 foreach (var head in request.Headers)
                 {
                     var key = head.Key.ToUpper();
@@ -337,6 +353,7 @@ namespace ZeroTeam.MessageMVC.Http
 
         private async Task<bool> ReadArgument(HttpContext context)
         {
+            var arguments = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             var request = context.Request;
             try
             {
@@ -344,14 +361,14 @@ namespace ZeroTeam.MessageMVC.Http
                 {
                     foreach (var key in request.Query.Keys)
                     {
-                        Arguments.TryAdd(key, request.Query[key]);
+                        arguments.TryAdd(key, request.Query[key]);
                     }
                 }
                 if (request.HasFormContentType)
                 {
                     foreach (var key in request.Form.Keys)
                     {
-                        Arguments.TryAdd(key, request.Form[key]);
+                        arguments.TryAdd(key, request.Form[key]);
                     }
 
                     if (!await ReadFiles(request))
@@ -360,21 +377,20 @@ namespace ZeroTeam.MessageMVC.Http
                     }
                 }
 
-                if (request.ContentLength == null)
+                if (request.ContentLength != null && request.ContentLength > 0)
                 {
-                    return true;
-                }
-
-                using (var texter = new StreamReader(request.Body))
-                {
-                    HttpContent = await texter.ReadToEndAsync();
-                    if (string.IsNullOrEmpty(HttpContent))
+                    using (var texter = new StreamReader(request.Body))
                     {
-                        HttpContent = null;
+                        HttpContent = await texter.ReadToEndAsync();
+                        if (string.IsNullOrEmpty(HttpContent))
+                        {
+                            HttpContent = null;
+                        }
+                        texter.Close();
                     }
-
-                    texter.Close();
                 }
+                if (arguments.Count > 0)
+                    Arguments = arguments;
                 return true;
             }
             catch (Exception e)

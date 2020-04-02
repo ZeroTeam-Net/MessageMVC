@@ -1,4 +1,5 @@
-﻿using Agebull.Common.Configuration;
+﻿using Agebull.Common;
+using Agebull.Common.Configuration;
 using Agebull.Common.Logging;
 using CSRedis;
 using System;
@@ -70,19 +71,14 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             Task.Factory.StartNew(Guard, TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach);
         }
 
-
-        void IDisposable.Dispose()
-        {
-        }
-
         /// <summary>
         /// 同步运行状态
         /// </summary>
         /// <returns></returns>
-        bool INetTransfer.LoopBegin()
+        Task<bool> INetTransfer.LoopBegin()
         {
             client = new CSRedisClient(Option.ConnectionString);
-            return true;
+            return Task.FromResult(true);
         }
 
         private TaskCompletionSource<bool> loopTask;
@@ -101,25 +97,27 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// 关闭
         /// </summary>
         /// <returns></returns>
-        void INetTransfer.Close()
+        async Task INetTransfer.Close()
         {
             subscribeObject.Unsubscribe();
             while (isBusy > 0)//等处理线程退出
             {
-                Thread.Sleep(10);
+                await Task.Delay(10);
             }
 
             loopTask?.SetResult(true);
+
         }
 
         /// <summary>
         /// 同步关闭状态
         /// </summary>
         /// <returns></returns>
-        void INetTransfer.LoopComplete()
+        Task INetTransfer.LoopComplete()
         {
             subscribeObject.Dispose();
             client.Dispose();
+            return Task.CompletedTask;
         }
         #region 消息处理
 

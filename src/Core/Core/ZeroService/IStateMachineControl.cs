@@ -1,4 +1,6 @@
-﻿namespace ZeroTeam.MessageMVC
+﻿using System.Threading.Tasks;
+
+namespace ZeroTeam.MessageMVC
 {
     /// <summary>
     /// 受状态机控制的对象
@@ -8,16 +10,16 @@
         /// <summary>
         /// 系统启动时调用
         /// </summary>
-        bool DoStart();
+        Task<bool> DoStart();
 
         /// <summary>
         /// 系统关闭时调用
         /// </summary>
-        bool DoClose();
+        Task<bool> DoClose();
 
         /// <summary>
         /// 注销时调用
         /// </summary>
-        void DoEnd();
+        Task<bool> DoEnd();
     }
 }

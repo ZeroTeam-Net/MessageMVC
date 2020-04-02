@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Http;
 using System;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Http
@@ -13,10 +16,6 @@ namespace ZeroTeam.MessageMVC.Http
         IService INetTransfer.Service { get; set; }
         string INetTransfer.Name { get; set; }
 
-        void IDisposable.Dispose()
-        {
-        }
-
         private TaskCompletionSource<bool> task;
         Task<bool> INetTransfer.Loop(CancellationToken token)
         {
@@ -28,10 +27,23 @@ namespace ZeroTeam.MessageMVC.Http
         /// 关闭
         /// </summary>
         /// <returns></returns>
-        void INetTransfer.Close()
+        Task INetTransfer.Close()
         {
             task.SetResult(true);
+            return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// 标明调用结束
+        /// </summary>
+        /// <returns></returns>
+        Task INetTransfer.OnCallEnd(IMessageItem message, object tag)
+        {
+            var context = (HttpContext)tag;
+            // 写入返回
+            return context.Response.WriteAsync(
+                message.Result ?? (message.Result = ApiResultIoc.RemoteEmptyErrorJson),
+                Encoding.UTF8);
+        }
     }
 }

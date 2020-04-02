@@ -1,7 +1,7 @@
-using System.Collections.Generic;
+using Agebull.Common;
+using Agebull.Common.Logging;
 using System.Threading;
 using System.Threading.Tasks;
-using Agebull.Common.Logging;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.ZeroApis;
 using ZeroTeam.ZeroMQ.ZeroRPC;
@@ -15,12 +15,13 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
     {
         #region Properties
 
-        static private long id;
+        private static long id;
+
         /// <summary>
         /// 取得Id
         /// </summary>
         /// <returns></returns>
-        static long GetId()
+        private static long GetId()
         {
             return Interlocked.Increment(ref id);
         }
@@ -115,7 +116,10 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         internal void CheckStateResult()
         {
             if (Result != null)
+            {
                 return;
+            }
+
             IApiResult apiResult;
             switch (State)
             {
@@ -226,7 +230,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
                  ExtendArgument.ToZeroBytes(),
                  GlobalContext.RequestInfo.RequestId.ToZeroBytes(),
                  Name.ToString().ToZeroBytes(),
-                 "".ToZeroBytes(),// GlobalContext.Current.Organizational.RouteName.ToZeroBytes(),
+                 JsonHelper.EmptyBytes,// GlobalContext.Current.Organizational.RouteName.ToZeroBytes(),
                  GlobalContext.RequestInfo.LocalGlobalId.ToZeroBytes(),
                  ContextJson.ToZeroBytes() ?? GlobalContext.CurrentNoLazy.ToZeroBytes());
 

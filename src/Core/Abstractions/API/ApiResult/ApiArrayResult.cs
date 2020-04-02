@@ -7,7 +7,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     /// <summary>
     ///     API返回数组泛型类
     /// </summary>
-    [JsonObject(MemberSerialization.OptIn)]
+    [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class ApiArrayResult<TData> : ApiResult, IApiResult<List<TData>>
     {
         /// <summary>
@@ -162,7 +162,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return new ApiArrayResult<TData>
             {
                 Success = false,
-                Status = GlobalContext.Current.LastStatus
+                Status =GlobalContext.CurrentNoLazy?.LastStatus
             };
         }
 

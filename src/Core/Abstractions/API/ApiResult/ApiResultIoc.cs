@@ -1,3 +1,4 @@
+using Agebull.Common;
 using Agebull.Common.Ioc;
 namespace ZeroTeam.MessageMVC.ZeroApis
 {

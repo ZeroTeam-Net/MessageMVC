@@ -1,5 +1,7 @@
 ﻿using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
+using ZeroTeam.MessageMVC.PlanTasks;
+using System.Threading.Tasks;
 
 namespace ZeroTeam.MessageMVC.Sample.Controllers
 {
@@ -8,14 +10,14 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
     public class TestControler : IApiControler
     {
         [Route("v1/plan")]
-        public ApiResult Paln()
+        public async Task<ApiResult> Paln()
         {
-            MessageProducer.Plan(new PlanTasks.PlanOption
+            await PlanPoster.PostAsync(new PlanTasks.PlanOption
             {
                 plan_type = PlanTasks.plan_date_type.second,
                 plan_repet = -1,
                 plan_value = 10,
-            }, "api", "v1/end", null);
+            }, "api", "v1/do", null);
 
             return ApiResult.Succees("Paln");
         }

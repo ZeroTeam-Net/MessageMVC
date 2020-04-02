@@ -1,21 +1,8 @@
 ﻿using Agebull.Common.Base;
-using Agebull.Common.Ioc;
 using System;
 
 namespace Agebull.Common.Logging
 {
-    /// <summary>
-    /// 根据步骤范围
-    /// </summary>
-    public class EmptyScope : ScopeBase
-    {
-        /// <summary>
-        /// 清理资源
-        /// </summary>
-        protected override void OnDispose()
-        {
-        }
-    }
 
     /// <summary>
     /// 根据步骤范围
@@ -23,31 +10,29 @@ namespace Agebull.Common.Logging
     public class MonitorScope : ScopeBase
     {
         private bool _isStep;
-        private bool _isScope;
         /// <summary>
         /// 生成范围
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static MonitorScope CreateScope(string name)
+        public static IDisposable CreateScope(string name)
         {
             if (!LogRecorder.LogMonitor)
             {
-                return new MonitorScope();
+                return new EmptyScope();
             }
 
             var scope = new MonitorScope
             {
-                _isScope = true,
-                _isStep = LogRecorder.MonitorItem.InMonitor
+                _isStep = LogRecorder.MonitorItem?.InMonitor == true
             };
-            if (LogRecorder.MonitorItem.InMonitor)
+            if (scope._isStep)
             {
                 LogRecorder.BeginStepMonitor(name);
             }
             else
             {
-                IocScope.Logger = IocHelper.LoggerFactory.CreateLogger(name);
+                //IocScope.Logger = IocHelper.LoggerFactory.CreateLogger(name);
                 LogRecorder.BeginMonitor(name);
             }
             return scope;
@@ -58,11 +43,6 @@ namespace Agebull.Common.Logging
         /// </summary>
         protected override void OnDispose()
         {
-            if (!_isScope)
-            {
-                return;
-            }
-
             if (_isStep)
             {
                 LogRecorder.EndStepMonitor();
@@ -77,9 +57,34 @@ namespace Agebull.Common.Logging
     /// <summary>
     /// 根据步骤范围
     /// </summary>
-    [Obsolete]
-    public class MonitorStepScope : MonitorScope
+    public class MonitorStepScope : ScopeBase
     {
+        /// <summary>
+        /// 生成范围
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static IDisposable CreateScope(string name, params object[] args)
+        {
+            if (!LogRecorder.LogMonitor || LogRecorder.MonitorItem?.InMonitor != true)
+            {
+                return new EmptyScope();
+            }
+            var title = args == null || args.Length == 0
+                ? name
+                : string.Format(name, args);
+            var scope = new MonitorStepScope();
+            LogRecorder.BeginStepMonitor(title);
+            return scope;
+        }
 
+        /// <summary>
+        /// 清理资源
+        /// </summary>
+        protected override void OnDispose()
+        {
+            LogRecorder.EndStepMonitor();
+        }
     }
 }

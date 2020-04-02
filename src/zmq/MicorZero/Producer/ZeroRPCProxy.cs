@@ -9,6 +9,7 @@ using Agebull.EntityModel.Common;
 using ZeroTeam.MessageMVC.ZeroApis;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Context;
+using Agebull.Common;
 
 namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
@@ -22,12 +23,12 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         /// 实例名称
         /// </summary>
-        string IFlowMiddleware.RealName => "ZeroRPCProxy";
+        string IZeroMiddleware.Name => "ZeroRPCProxy";
 
         /// <summary>
         /// 等级
         /// </summary>
-        int IFlowMiddleware.Level => 0;
+        int IZeroMiddleware.Level => 0;
 
         /// <summary>
         /// 初始化
@@ -69,7 +70,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <returns></returns>
         public static ZSocketEx GetSocket(string station)
         {
-            return GetSocket(station, RandomOperate.Generate(8));
+            return GetSocket(station, RandomCode.Generate(8));
         }
 
         /// <summary>
@@ -152,7 +153,8 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     {
                         item.Socket = ZSocketEx.CreatePoolSocket(item.Config.RequestAddress,
                             item.Config.ServiceKey,
-                            ZSocketType.DEALER, ZSocketHelper.CreateIdentity(false, item.Config.Name));
+                            ZSocketType.DEALER, 
+                            ZSocketHelper.CreateIdentity(false, item.Config.Name));
                         item.Open = DateTime.Now;
                     }
                     list.Add(item.Socket);
@@ -286,7 +288,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         protected bool CanLoopEx => WaitCount > 0 || ZeroFlowControl.CanDo;
         void Prepare()
         {
-            var identity = GlobalContext.ServiceRealName.ToZeroBytes();
+            var identity = ZeroFlowControl.Config.RealName.ToZeroBytes();
             foreach (var config in ZeroRpcFlow.Config.GetConfigs())
             {
                 StationProxy.Add(config.StationName, new StationProxyItem
@@ -417,11 +419,9 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     Interlocked.Decrement(ref WaitCount);
                 if (!long.TryParse(result.Requester, out id))
                 {
-                    using (var message2 = message.Duplicate())
-                    {
-                        message2.Prepend(new ZFrame(result.Requester ?? result.RequestId));
-                        SendResult(message2);
-                    }
+                    using var message2 = message.Duplicate();
+                    message2.Prepend(new ZFrame(result.Requester ?? result.RequestId));
+                    SendResult(message2);
                     return;
                 }
             }

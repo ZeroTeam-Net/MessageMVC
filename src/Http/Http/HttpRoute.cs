@@ -1,4 +1,5 @@
 using Agebull.Common.Configuration;
+using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Http;
@@ -118,61 +119,46 @@ namespace ZeroTeam.MessageMVC.Http
             }
             HttpProtocol.FormatResponse(context.Request, context.Response);
             //命令
-            using (MonitorScope.CreateScope(uri.AbsolutePath))
+            var data = new HttpMessage();
+            try
             {
-                var data = new HttpMessage();
+                //开始调用
+                if (await data.CheckRequest(context))
+                {
+                    var service = ZeroFlowControl.GetService(data.ApiHost);
+                    if (service == null)
+                    {
+                        data.Result = ApiResultIoc.NoFindJson;
+                    }
+                    else if (Option.FastCall)
+                    {
+                        await new ApiExecuter().Handle(service, data, null, null);
+                    }
+                    else
+                    {
+                        await MessageProcess.OnMessagePush(service, data, context);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                LogRecorder.Exception(e);
                 try
                 {
-                    //开始调用
-                    if (await data.CheckRequest(context))
-                    {
-                        var service = ZeroFlowControl.GetService(data.ApiHost);
-                        if (service == null)
-                        {
-                            data.Result = ApiResultIoc.NoFindJson;
-                        }
-                        else if (Option.FastCall)
-                        {
-                            await new ApiExecuter().Handle(service, data, null, null);
-                        }
-                        else
-                        {
-                            await MessageProcess.OnMessagePush(service, data, data);
-                        }
-                    }
-                    // 写入返回
-                    await context.Response.WriteAsync(
-                        data.Result ?? (data.Result = ApiResultIoc.RemoteEmptyErrorJson),
-                        Encoding.UTF8);
+                    LogRecorder.MonitorTrace(e.Message);
+                    //Data.UserState = UserOperatorStateType.LocalException;
+                    //Data.ZeroState = ZeroOperatorStateType.LocalException;
+                    ZeroTrace.WriteException("Route", e);
+                    ////IocHelper.Create<IRuntimeWaring>()?.Waring("Route", Data.Uri.LocalPath, e.Message);
+                    await context.Response.WriteAsync(ApiResultIoc.LocalErrorJson, Encoding.UTF8);
                 }
-                catch (Exception e)
+                catch (Exception exception)
                 {
-                    await OnError(e, context);
+                    LogRecorder.Exception(exception);
                 }
             }
         }
 
-        /// <summary>
-        /// 异常处理
-        /// </summary>
-        /// <param name="e"></param>
-        /// <param name="context"></param>
-        private static async Task OnError(Exception e, HttpContext context)
-        {
-            try
-            {
-                LogRecorder.MonitorTrace(e.Message);
-                //Data.UserState = UserOperatorStateType.LocalException;
-                //Data.ZeroState = ZeroOperatorStateType.LocalException;
-                ZeroTrace.WriteException("Route", e);
-                ////IocHelper.Create<IRuntimeWaring>()?.Waring("Route", Data.Uri.LocalPath, e.Message);
-                await context.Response.WriteAsync(ApiResultIoc.LocalErrorJson, Encoding.UTF8);
-            }
-            catch (Exception exception)
-            {
-                LogRecorder.Exception(exception);
-            }
-        }
         #endregion
 
     }

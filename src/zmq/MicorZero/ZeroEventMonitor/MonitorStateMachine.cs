@@ -5,7 +5,8 @@ using Newtonsoft.Json;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.ApiDocuments;
 #pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
-
+#pragma warning disable IDE1006 // 命名样式
+#pragma warning disable CS1998 // 异步方法缺少 "await" 运算符，将以同步方式运行
 namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
 {
     /// <summary>
@@ -63,13 +64,15 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
 
         static int ZeroMachineState;
 
-        internal static Task center_start(string identity, string content)
+        internal static Task center_start(string identity)
         {
             if (ZeroMachineState == 1)
                 return Task.CompletedTask;
             ZeroMachineState = 1;
-            ZeroTrace.SystemLog("ZeroCenter", "center_start", $"{identity}:{ZeroRpcFlow.ZeroCenterState}:{ZeroMachineState}");
-            if (ZeroRpcFlow.ZeroCenterState >= ZeroCenterState.Failed || ZeroRpcFlow.ZeroCenterState < ZeroCenterState.Start)
+            ZeroTrace.SystemLog("ZeroCenter", "center_start",
+                $"{identity}:{ZeroRpcFlow.ZeroCenterState}:{ZeroMachineState}");
+            if (ZeroRpcFlow.ZeroCenterState >= ZeroCenterState.Failed ||
+                ZeroRpcFlow.ZeroCenterState < ZeroCenterState.Start)
             {
                 ZeroRpcFlow.JoinCenter();
             }
@@ -81,7 +84,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
             return Task.CompletedTask;
         }
 
-        internal static async Task center_closing(string identity, string content)
+        internal static async Task center_closing(string identity)
         {
             if (ZeroMachineState >= 2)
                 return;
@@ -93,7 +96,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
             }
         }
 
-        internal static async Task center_stop(string identity, string content)
+        internal static async Task center_stop(string identity)
         {
             if (ZeroMachineState == 3)
                 return;
@@ -280,4 +283,6 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         #endregion
     }
 }
+#pragma warning restore CS1998 // 异步方法缺少 "await" 运算符，将以同步方式运行
+#pragma warning restore IDE1006 // 命名样式
 #pragma warning restore CS1591 // 缺少对公共可见类型或成员的 XML 注释

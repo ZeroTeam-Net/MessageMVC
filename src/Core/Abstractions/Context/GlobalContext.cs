@@ -15,7 +15,7 @@ namespace ZeroTeam.MessageMVC.Context
     /// </summary>
     [DataContract]
     [Category("上下文")]
-    [JsonObject(MemberSerialization.OptIn)]
+        [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class GlobalContext : ScopeBase, IGlobalContext
     {
         #region 依赖对象字典
@@ -386,7 +386,7 @@ namespace ZeroTeam.MessageMVC.Context
 #if !NETCOREAPP
             ServiceKey = System.Configuration.ConfigurationManager.AppSettings["ServiceKey"];
             ServiceName = System.Configuration.ConfigurationManager.AppSettings["ServiceName"];
-            ServiceRealName = $"{ServiceName}-{RandomOperate.Generate(8)}";
+            ServiceRealName = $"{ServiceName}-{RandomCode.Generate(8)}";
 #endif
         }
 

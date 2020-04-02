@@ -102,12 +102,19 @@
         <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer.Producer``1(System.String,System.String,``0)">
             <inheritdoc/>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer.ZeroTeam#MessageMVC#IFlowMiddleware#RealName">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer.ZeroTeam#MessageMVC#Messages#IMessageProducer#ProducerAsync(ZeroTeam.MessageMVC.Messages.IMessageItem)">
+            <summary>
+            生产消息
+            </summary>
+            <param name="message">消息</param>
+            <returns></returns>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer.ZeroTeam#MessageMVC#IZeroMiddleware#Name">
             <summary>
             实例名称
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer.ZeroTeam#MessageMVC#IFlowMiddleware#Level">
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer.ZeroTeam#MessageMVC#IZeroMiddleware#Level">
             <summary>
             等级
             </summary>
@@ -125,6 +132,16 @@
         <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer.End">
             <summary>
             注销时调用
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.RedisMQ.RedisMQHelper">
+            <summary>
+            RedisMQ
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisMQHelper.UseCsRedis(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            使用RedisMQ
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.RedisMQ.RedisOption">
@@ -158,16 +175,6 @@
         <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisOption.NoSupperIsError">
             <summary>
             无处理方法按发生异常处理
-            </summary>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.RedisMQ.RedisHelper">
-            <summary>
-            通过ZMQ实现的进程内通讯
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisHelper.UseCsRedis(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
-            <summary>
-            使用KafkaMVC
             </summary>
         </member>
     </members>

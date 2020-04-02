@@ -19,12 +19,12 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// 实例名称
         /// </summary>
-        string IFlowMiddleware.RealName => "AddInImporter";
+        string IZeroMiddleware.Name => "AddInImporter";
 
         /// <summary>
         /// 等级
         /// </summary>
-        int IFlowMiddleware.Level => short.MinValue;
+        int IZeroMiddleware.Level => short.MinValue;
 
         /// <summary>
         /// 插件对象

@@ -90,7 +90,7 @@ namespace ZeroTeam.MessageMVC.Web
             }
             catch
             {
-                Dispose();
+                //Dispose();
             }
         }
 

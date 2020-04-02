@@ -5,9 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ZeroTeam.MessageMVC.Context;
-using ZeroTeam.MessageMVC.PlanTasks;
-using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Messages
 {
@@ -23,11 +20,12 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         public static IMessageProducer Default { get; set; }
 
-        string IFlowMiddleware.RealName => "MessageProducer";
+        string IZeroMiddleware.Name => "MessageProducer";
 
-        int IFlowMiddleware.Level => int.MaxValue;
+        int IZeroMiddleware.Level => int.MaxValue;
 
         #endregion
+
         #region 消息生产者
 
         private static readonly Dictionary<string, IMessageProducer> Producers = new Dictionary<string, IMessageProducer>(StringComparer.OrdinalIgnoreCase);
@@ -174,104 +172,6 @@ namespace ZeroTeam.MessageMVC.Messages
         {
             return GetService(topic).ProducerAsync(topic, title, content);
         }
-        #endregion
-
-
-        #region 计划投送
-
-        /// <summary>
-        /// 计划生产者
-        /// </summary>
-        private static IPlanProducer PlanProducer;
-        private static ZeroAppOption appOption;
-
-        private static ZeroAppOption AppOption => appOption ??= IocHelper.Create<ZeroAppOption>();
-
-        /// <summary>
-        /// 发现传输对象
-        /// </summary>
-        /// <returns>传输对象构造器</returns>
-        private static IPlanProducer PlanService()
-        {
-            return PlanProducer ??= IocHelper.Create<IPlanProducer>() ?? new PlanProducer();
-        }
-
-        /// <summary>
-        /// 生产消息
-        /// </summary>
-        /// <param name="option">计划配置</param>
-        /// <param name="topic">消息分类</param>
-        /// <param name="title">消息标题</param>
-        /// <param name="content">消息内容</param>
-        /// <returns></returns>
-        public static ApiResult Plan<TArg>(PlanOption option, string topic, string title, TArg content)
-        {
-            if (AppOption.EnableGlobalContext)
-            {
-                option.request_id = GlobalContext.Current.Request.RequestId;
-                option.caller = AppOption.AppName;
-                option.service = AppOption.ServiceName;
-            }
-            return PlanService().Plan(option, topic, title, content);
-        }
-
-        /// <summary>
-        /// 生产消息
-        /// </summary>
-        /// <param name="option">计划配置</param>
-        /// <param name="topic">消息分类</param>
-        /// <param name="title">消息标题</param>
-        /// <param name="content">消息内容</param>
-        /// <returns></returns>
-        public static ApiResult Plan(PlanOption option, string topic, string title, string content)
-        {
-            if (AppOption.EnableGlobalContext)
-            {
-                option.request_id = GlobalContext.Current.Request.RequestId;
-                option.caller = AppOption.AppName;
-                option.service = AppOption.ServiceName;
-            }
-            return PlanService().Plan(option, topic, title, content);
-        }
-
-        /// <summary>
-        /// 生产消息
-        /// </summary>
-        /// <param name="option">计划配置</param>
-        /// <param name="topic">消息分类</param>
-        /// <param name="title">消息标题</param>
-        /// <param name="content">消息内容</param>
-        /// <returns></returns>
-        public static Task<ApiResult> PlanAsync<TArg>(PlanOption option, string topic, string title, TArg content)
-        {
-            if (AppOption.EnableGlobalContext)
-            {
-                option.request_id = GlobalContext.Current.Request.RequestId;
-                option.caller = AppOption.AppName;
-                option.service = AppOption.ServiceName;
-            }
-            return PlanService().PlanAsync(option, topic, title, content);
-        }
-
-        /// <summary>
-        /// 生产消息
-        /// </summary>
-        /// <param name="option">计划配置</param>
-        /// <param name="topic">消息分类</param>
-        /// <param name="title">消息标题</param>
-        /// <param name="content">消息内容</param>
-        /// <returns></returns>
-        public static Task<ApiResult> PlanAsync(PlanOption option, string topic, string title, string content)
-        {
-            if (AppOption.EnableGlobalContext)
-            {
-                option.request_id = GlobalContext.Current.Request.RequestId;
-                option.caller = AppOption.AppName;
-                option.service = AppOption.ServiceName;
-            }
-            return PlanService().PlanAsync(option, topic, title, content);
-        }
-
         #endregion
     }
 }

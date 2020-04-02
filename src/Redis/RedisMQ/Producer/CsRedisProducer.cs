@@ -207,6 +207,24 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             DoProducer(channel, title, null);
             return Task.FromResult(default(TRes));
         }
+        /// <summary>
+        /// 生产消息
+        /// </summary>
+        /// <param name="message">消息</param>
+        /// <returns></returns>
+        Task<string> IMessageProducer.ProducerAsync(IMessageItem message)
+        {
+            var item = new RedisQueueItem
+            {
+                ID = message.ID,
+                Channel = message.Topic,
+                Message = JsonHelper.SerializeObject(message)
+            };
+            redisQueues.Enqueue(item);
+            semaphore.Release();
+            return Task.FromResult(item.ID);
+        }
+
         #endregion
 
         #region IFlowMiddleware
@@ -214,12 +232,12 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <summary>
         /// 实例名称
         /// </summary>
-        string IFlowMiddleware.RealName => "RedisProducer";
+        string IZeroMiddleware.Name => "RedisProducer";
 
         /// <summary>
         /// 等级
         /// </summary>
-        int IFlowMiddleware.Level => short.MinValue;
+        int IZeroMiddleware.Level => short.MinValue;
 
         private CSRedisClient client;
         /// <summary>

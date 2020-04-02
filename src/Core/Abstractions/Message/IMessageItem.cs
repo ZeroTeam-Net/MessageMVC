@@ -55,7 +55,7 @@
         /// <summary>
         /// 其他带外内容
         /// </summary>
-        string Tag { get; set; }
+        string Extend { get; set; }
 
         /// <summary>
         /// 上下文信息
@@ -67,7 +67,8 @@
         /// </summary>
         void Flush()
         {
-
+            State = MessageState.None;
+            Result = null;
         }
 
         /*// <summary>

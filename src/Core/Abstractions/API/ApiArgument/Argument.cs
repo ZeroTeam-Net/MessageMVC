@@ -5,7 +5,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     /// <summary>
     ///     请求参数
     /// </summary>
-    [JsonObject(MemberSerialization.OptIn)]
+        [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class Argument : IApiArgument
     {
         /// <summary>
@@ -29,7 +29,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     /// <summary>
     ///     请求参数
     /// </summary>
-    [JsonObject(MemberSerialization.OptIn)]
+        [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class Argument<T> : IApiArgument
     {
         /// <summary>

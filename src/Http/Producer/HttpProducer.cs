@@ -1,11 +1,14 @@
+using Agebull.Common;
 using Agebull.Common.Configuration;
 using Agebull.Common.Ioc;
+using Agebull.Common.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
+using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Http
 {
@@ -62,51 +65,77 @@ namespace ZeroTeam.MessageMVC.Http
 
         }
 
-        private async Task<(bool, string)> PostAsync(string service, string title, string content)
+        private async Task<(bool success, string result)> PostAsync(string service, string title, string content)
         {
             if (!ServiceMap.TryGetValue(service, out var name))
             {
                 name = defName;
             }
 
-            var client = httpClientFactory.CreateClient(name);
-            var response = await client.PostAsync($"/{service}/{title}", new StringContent(content ?? ""));
-
-            if (!response.IsSuccessStatusCode)
+            using (MonitorStepScope.CreateScope("[HttpProducer] {0}/{1}/{2}", defName, service, title))
             {
-                return (false, null);
+                try
+                {
+                    var client = httpClientFactory.CreateClient(name);
+                    var response = await client.PostAsync($"/{service}/{title}", new StringContent(content ?? ""));
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        LogRecorder.MonitorTrace("Error:{0}", response.StatusCode);
+                        return (false, null);
+                    }
+                    var result = await response.Content.ReadAsStringAsync();
+                    LogRecorder.MonitorTrace(result);
+                    return (true, result);
+                }
+                catch (HttpRequestException ex)
+                {
+                    LogRecorder.MonitorTrace("Error : {0}", ex.Message);
+                    throw new NetTransferException(ex.Message, ex);
+                } 
             }
-            var json = await response.Content.ReadAsStringAsync();
-            return (true, json);
         }
 
-        private (bool, string) Post(string service, string title, string content)
+        private (bool success, string result) Post(string service, string title, string content)
         {
             if (!ServiceMap.TryGetValue(service, out var name))
             {
                 name = defName;
             }
-
-            var client = httpClientFactory.CreateClient(name);
-            var response = client.PostAsync($"{name}/{service}/{title}", new StringContent(content ?? "")).Result;
-
-            if (!response.IsSuccessStatusCode)
+            var url = $"{name}/{service}/{title}";
+            using (MonitorStepScope.CreateScope("[HttpProducer] {0}", url))
             {
-                return (false, null);
+                try
+                {
+                    var client = httpClientFactory.CreateClient(name);
+                    var response = client.PostAsync(url, new StringContent(content ?? "")).Result;
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        LogRecorder.MonitorTrace("Error:{0}", response.StatusCode);
+                        return (false, null);
+                    }
+                    var result = response.Content.ReadAsStringAsync().Result;
+                    LogRecorder.MonitorTrace(result);
+                    return (true, result);
+                }
+                catch (HttpRequestException ex)
+                {
+                    LogRecorder.MonitorTrace("Error : {0}", ex.Message);
+                    throw new NetTransferException(ex.Message,ex);
+                }
             }
-            var json = response.Content.ReadAsStringAsync().Result;
-            return (true, json);
         }
         /// <inheritdoc/>
         public string Producer(string service, string title, string content)
         {
-            return Post(service, title, content).Item2;
+            return Post(service, title, content).result;
         }
 
         TRes IMessageProducer.Producer<TArg, TRes>(string service, string title, TArg content)
         {
-            var res = Post(service, title, JsonHelper.SerializeObject(content));
-            return res.Item1 ? default : JsonHelper.DeserializeObject<TRes>(res.Item2);
+            var (success, result) = Post(service, title, JsonHelper.SerializeObject(content));
+            return !success ? default : JsonHelper.DeserializeObject<TRes>(result);
         }
 
         /// <inheritdoc/>
@@ -116,21 +145,21 @@ namespace ZeroTeam.MessageMVC.Http
         }
         TRes IMessageProducer.Producer<TRes>(string service, string title)
         {
-            var res = Post(service, title, null);
-            return res.Item1 ? default : JsonHelper.DeserializeObject<TRes>(res.Item2);
+            var (success, result) = Post(service, title, null);
+            return !success ? default : JsonHelper.DeserializeObject<TRes>(result);
         }
 
 
         async Task<string> IMessageProducer.ProducerAsync(string service, string title, string content)
         {
-            var res = await PostAsync(service, title, content);
-            return res.Item2;
+            var (_, result) = await PostAsync(service, title, content);
+            return result;
         }
 
         async Task<TRes> IMessageProducer.ProducerAsync<TArg, TRes>(string service, string title, TArg content)
         {
-            var res = await PostAsync(service, title, JsonHelper.SerializeObject(content));
-            return res.Item1 ? default : JsonHelper.DeserializeObject<TRes>(res.Item2);
+            var (success, result) = await PostAsync(service, title, JsonHelper.SerializeObject(content));
+            return !success ? default : JsonHelper.DeserializeObject<TRes>(result);
         }
         Task IMessageProducer.ProducerAsync<TArg>(string service, string title, TArg content)
         {
@@ -139,9 +168,21 @@ namespace ZeroTeam.MessageMVC.Http
 
         async Task<TRes> IMessageProducer.ProducerAsync<TRes>(string service, string title)
         {
-            var res = await PostAsync(service, title, string.Empty);
-            return res.Item1 ? default : JsonHelper.DeserializeObject<TRes>(res.Item2);
+            var (success, result) = await PostAsync(service, title, string.Empty);
+            return !success ? default : JsonHelper.DeserializeObject<TRes>(result);
         }
+
+        /// <summary>
+        /// 生产消息
+        /// </summary>
+        /// <param name="message">消息</param>
+        /// <returns></returns>
+        async Task<string> IMessageProducer.ProducerAsync(IMessageItem message)
+        {
+            var (success, result) = await PostAsync(message.Topic, message.Title, message.Content);
+            return !success ? default  : result;
+        }
+
         #endregion
     }
 }

@@ -68,13 +68,13 @@ namespace ZeroTeam.MessageMVC
         ///     启用全局上下文
         /// </summary>
         [DataMember]
-        public bool EnableGlobalContext { get; set; } = true;
+        public bool EnableGlobalContext { get; set; }
 
         /// <summary>
         ///     启用日志记录器LogRecorder
         /// </summary>
         [DataMember]
-        public bool EnableLogRecorder { get; set; } = true;
+        public bool EnableLogRecorder { get; set; }
 
         /// <summary>
         ///     启用埋点

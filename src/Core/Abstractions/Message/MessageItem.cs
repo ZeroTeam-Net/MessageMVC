@@ -65,7 +65,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 其他带外内容
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public string Tag { get; set; }
+        public string Extend { get; set; }
 
         /// <summary>
         /// 上下文信息

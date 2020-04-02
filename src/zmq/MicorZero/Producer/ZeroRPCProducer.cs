@@ -1,3 +1,4 @@
+using Agebull.Common;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Messages;
@@ -258,6 +259,17 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 ? default
                 : JsonHelper.DeserializeObject<TRes>(client.Result);
         }
+        async Task<string> IMessageProducer.ProducerAsync(IMessageItem message)
+        {
+            var client = new ZeroRPCProducer
+            {
+                Station = message.Topic,
+                Commmand = message.Title
+            };
+            await client.CallCommandAsync();
+            return client.Result;
+        }
+
         #endregion
     }
 }

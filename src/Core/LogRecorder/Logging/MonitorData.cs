@@ -77,7 +77,7 @@ namespace Agebull.Common.Logging
 #endif
 
             PreTime = StartTime = DateTime.UtcNow;
-
+            var aa = (DateTime.UtcNow - StartTime).TotalMilliseconds;
             Flush();
         }
 

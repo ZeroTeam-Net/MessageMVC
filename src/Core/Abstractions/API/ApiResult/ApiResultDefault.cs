@@ -1,3 +1,4 @@
+using Agebull.Common;
 using ZeroTeam.MessageMVC.Context;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
@@ -252,7 +253,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return new ApiResult
             {
                 Success = false,
-                Status = GlobalContext.Current.LastStatus
+                Status =GlobalContext.CurrentNoLazy?.LastStatus
             };
         }
 
@@ -263,7 +264,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return new ApiResult<TData>
             {
                 Success = false,
-                Status = GlobalContext.Current.LastStatus
+                Status =GlobalContext.CurrentNoLazy?.LastStatus
             };
         }
 
@@ -274,7 +275,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return new ApiResult
             {
                 Success = true,
-                Status = GlobalContext.Current.LastStatus
+                Status =GlobalContext.CurrentNoLazy?.LastStatus
             };
         }
 
@@ -285,7 +286,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return new ApiResult<TData>
             {
                 Success = true,
-                Status = GlobalContext.Current.LastStatus
+                Status =GlobalContext.CurrentNoLazy?.LastStatus
             };
         }
 

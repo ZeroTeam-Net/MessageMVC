@@ -1,4 +1,6 @@
-﻿namespace ZeroTeam.MessageMVC.ZeroApis.StateMachine
+﻿using System.Threading.Tasks;
+
+namespace ZeroTeam.MessageMVC.ZeroApis.StateMachine
 {
     /// <summary>
     /// 监控状态机
@@ -8,7 +10,7 @@
         /// <summary>
         ///     开始的处理
         /// </summary>
-        bool IStationStateMachine.Start()
+        Task<bool> IStationStateMachine.Start()
         {
             return Control.DoStart();
         }
@@ -16,24 +18,22 @@
         /// <summary>
         ///     关闭的处理
         /// </summary>
-        bool IStationStateMachine.Close()
+        Task<bool> IStationStateMachine.Close()
         {
-            return false;
+            return Task.FromResult(false);
         }
 
         /// <summary>
         ///     结束的处理
         /// </summary>
-        bool IStationStateMachine.End()
+        Task<bool> IStationStateMachine.End()
         {
             if (IsDisposed)
             {
-                return false;
+                return Task.FromResult(false);
             }
-
             IsDisposed = true;
-            Control.DoEnd();
-            return true;
+           return Control.DoEnd();
         }
     }
 }

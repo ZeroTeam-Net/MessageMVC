@@ -1,5 +1,4 @@
 using Agebull.Common.Logging;
-using Agebull.EntityModel.Common;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -18,28 +17,12 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     {
         #region 基础信息
 
-        /// <summary>
-        /// 构造
-        /// </summary>
-        public ZeroService()
-        {
-            InstanceName = GetType().Name;
-            ConfigState = StationStateType.None;
-        }
-
-        int IFlowMiddleware.Level => short.MaxValue;
+        string IZeroMiddleware.Name => ServiceName;
 
         /// <summary>
-        /// 网络传输对象
+        /// 等级,用于确定中间件优先级
         /// </summary>
-        public INetTransfer Transport { get; set; }
-
-
-        /// <summary>
-        /// 网络传输对象构造器
-        /// </summary>
-        public Func<string, INetTransfer> TransportBuilder { get; set; }
-
+        public int Level { get; set; }
 
         /// <summary>
         /// 站点名称
@@ -47,14 +30,19 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         public string ServiceName { get; set; }
 
         /// <summary>
-        /// 节点名称
+        /// 网络传输对象
         /// </summary>
-        public string InstanceName { get; protected internal set; }
+        public INetTransfer Transport { get; set; }
 
         /// <summary>
-        /// 实例名称
+        /// 是否自动发现对象
         /// </summary>
-        public string RealName { get; protected set; }
+        public bool IsDiscover { get; internal set; }
+
+        /// <summary>
+        /// 网络传输对象构造器
+        /// </summary>
+        public Func<string, INetTransfer> TransportBuilder { get; set; }
 
         #endregion
 
@@ -151,11 +139,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         internal void Initialize()
         {
-            if (InstanceName == null)
-            {
-                InstanceName = ServiceName;
-            }
-
             RealState = StationState.Initialized;
             Transport = TransportBuilder(ServiceName);
             Transport.Service = this;
@@ -170,26 +153,22 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// 开始
         /// </summary>
         /// <returns></returns>
-        private bool DoStart()
+        private async Task<bool> DoStart()
         {
             try
             {
                 while (_waitToken.CurrentCount > 0)
                 {
-                    _waitToken.Wait();
+                    await _waitToken.WaitAsync();
                 }
 
                 if (ConfigState == StationStateType.None || ConfigState >= StationStateType.Stop || !ZeroFlowControl.CanDo)
                 {
                     return false;
                 }
-
                 RealState = StationState.Start;
-                //名称初始化
-                RealName = $"{ZeroFlowControl.Config.ServiceName}-{RandomOperate.Generate(6)}";
-                ZeroTrace.SystemLog(ServiceName, InstanceName, RealName);
                 //扩展动作
-                if (!Transport.Prepare())
+                if (!await Transport.Prepare())
                 {
                     RealState = StationState.Failed;
                     ConfigState = StationStateType.Failed;
@@ -201,7 +180,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 //Hearter.HeartJoin(Config.StationName, RealName);
                 //执行主任务
                 CancelToken = new CancellationTokenSource();
-                Task.Factory.StartNew(Run, TaskCreationOptions.DenyChildAttach | TaskCreationOptions.LongRunning);
+                _ = Task.Factory.StartNew(Run, TaskCreationOptions.DenyChildAttach | TaskCreationOptions.LongRunning);
                 //保证Run真正执行后再完成本方法调用.
                 _waitToken.Wait();
                 return true;
@@ -221,7 +200,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         {
             bool success;
             RealState = StationState.BeginRun;
-            if (!LoopBegin())
+            if (!await LoopBegin())
             {
                 ResetStateMachine();
                 _waitToken.Release();
@@ -237,6 +216,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 {
                     success = await Transport.Loop(CancelToken.Token);
                 }
+                catch (TaskCanceledException)
+                {
+                    success = true;
+                }
                 catch (Exception e)
                 {
                     ZeroTrace.WriteException(ServiceName, e, "Run");
@@ -245,7 +228,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 }
                 finally
                 {
-                    LoopComplete();
+                    await LoopComplete();
                 }
 
                 if (ConfigState < StationStateType.Stop)
@@ -282,14 +265,14 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// 同步运行状态
         /// </summary>
         /// <returns></returns>
-        private bool LoopBegin()
+        private async Task<bool> LoopBegin()
         {
             if (ConfigState != StationStateType.Run)
             {
                 ZeroFlowControl.OnObjectFailed(this);
                 return false;
             }
-            if (!Transport.LoopBegin())
+            if (!await Transport.LoopBegin())
             {
                 RealState = StationState.Failed;
                 ConfigState = StationStateType.Failed;
@@ -304,9 +287,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// 同步关闭状态
         /// </summary>
         /// <returns></returns>
-        private void LoopComplete()
+        private async Task LoopComplete()
         {
-            Transport.LoopComplete();
+            await Transport.LoopComplete();
             CancelToken.Dispose();
             CancelToken = null;
             if (ConfigState == StationStateType.Failed)
@@ -324,17 +307,17 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// 空转
         /// </summary>
         /// <returns></returns>
-        protected internal virtual void OnLoopIdle()
+        public void OnLoopIdle()
         {
-            Thread.Sleep(200);
+
         }
 
         /// <summary>
         /// 析构
         /// </summary>
-        protected virtual void DoEnd()
+        void DoEnd()
         {
-            Transport.Dispose();
+            Transport.End();
             mutex.Dispose();
         }
         #endregion
@@ -378,14 +361,14 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
         #region 状态机接口
 
-        bool IStateMachineControl.DoStart()
+        async Task<bool> IStateMachineControl.DoStart()
         {
             if (RealState == StationState.BeginRun || RealState == StationState.Run)
             {
                 return true;//已启动,不应该再次
             }
 
-            mutex.WaitOne();
+            mutex.WaitOne();//BUG
             try
             {
                 if (RealState == StationState.BeginRun || RealState == StationState.Run)
@@ -393,7 +376,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     return true;//已启动,不应该再次
                 }
 
-                if (DoStart())
+                if (await DoStart())
                 {
                     return true;
                 }
@@ -410,7 +393,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             }
         }
 
-        bool IStateMachineControl.DoClose()
+        async Task<bool> IStateMachineControl.DoClose()
         {
             if (RealState >= StationState.Closing || CancelToken == null || CancelToken.IsCancellationRequested)
             {
@@ -419,7 +402,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             }
             RealState = StationState.Closing;
             CancelToken.Cancel();
-            Transport.Close();
+            await Transport.Close();
             ZeroTrace.SystemLog(ServiceName, "Close", "Run is cancel,waiting... ");
             return true;
         }
@@ -427,9 +410,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// 析构
         /// </summary>
-        void IStateMachineControl.DoEnd()
+        Task<bool> IStateMachineControl.DoEnd()
         {
             DoEnd();
+            return Task.FromResult(true);
         }
 
         #endregion

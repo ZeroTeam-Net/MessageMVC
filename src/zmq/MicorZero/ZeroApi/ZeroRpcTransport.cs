@@ -8,6 +8,7 @@ using Agebull.EntityModel.Common;
 using ZeroTeam.MessageMVC.ZeroApis;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Messages;
+using Agebull.Common;
 
 namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
@@ -29,12 +30,13 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         /// 将要开始
         /// </summary>
-        bool INetTransfer.Prepare()
+        Task<bool> INetTransfer.Prepare()
         {
             if (!ZeroRpcFlow.ZerCenterIsRun)
-                return false;
-            return CheckConfig();
+                return Task.FromResult(false);
+            return Task.FromResult(CheckConfig());
         }
+
         /// <summary>
         /// 轮询
         /// </summary>
@@ -48,13 +50,6 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
             return Task.FromResult(true);
         }
-        /// <summary>
-        /// 析构
-        /// </summary>
-        void IDisposable.Dispose()
-        {
-        }
-
 
         #endregion
 
@@ -93,7 +88,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         /// 能不能循环处理
         /// </summary>
-        private bool CanLoop => ZeroRpcFlow.CanDo && 
+        private bool CanLoop => ZeroRpcFlow.CanDo &&
             RunTaskCancel != null && !RunTaskCancel.IsCancellationRequested &&
             (RealState == StationRealState.BeginRun || RealState == StationRealState.Run);
 
@@ -188,7 +183,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     RealState = StationRealState.Remove;
                     return false;
             }
-            InprocAddress = $"inproc://{Name}_{RandomOperate.Generate(4)}.req";
+            InprocAddress = $"inproc://{Name}_{RandomCode.Generate(4)}.req";
 
 
             _option = ZeroRpcFlow.GetApiOption(Name);
@@ -330,12 +325,12 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     if (Service.ConfigState >= StationStateType.Stop)
                     {
                         Service.ConfigState = StationStateType.Initialized;
-                        Service.ResetStateMachine();
+                        ((ZeroService)Service).ResetStateMachine();
                     }
                     break;
                 case ZeroNetEventType.CenterStationJoin:
                     Service.ConfigState = StationStateType.Initialized;
-                    Service.ResetStateMachine();
+                    ((ZeroService)Service).ResetStateMachine();
                     Service.Start();
                     break;
                 case ZeroNetEventType.CenterStationResume:
@@ -361,7 +356,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// 同步运行状态
         /// </summary>
         /// <returns></returns>
-        bool INetTransfer.LoopBegin()
+        Task<bool> INetTransfer.LoopBegin()
         {
             try
             {
@@ -371,7 +366,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 if (pSocket == null)
                 {
                     RealState = StationRealState.Failed;
-                    return false;
+                    return Task.FromResult(false);
                 }
                 pool = ZmqPool.CreateZmqPool();
                 pool.Prepare(ZPollEvent.In,
@@ -382,16 +377,16 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 if (!Hearter.HeartReady(Name, RealName))
                 {
                     RealState = StationRealState.Failed;
-                    return false;
+                    return Task.FromResult(false);
                 }
                 RealState = StationRealState.Run;
-                return true;
+                return Task.FromResult(true);
             }
             catch (Exception ex)
             {
                 LogRecorder.Exception(ex);
                 RealState = StationRealState.Failed;
-                return false;
+                return Task.FromResult(false);
             }
         }
 
@@ -437,7 +432,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// 同步关闭状态
         /// </summary>
         /// <returns></returns>
-        void INetTransfer.LoopComplete()
+        Task INetTransfer.LoopComplete()
         {
             pool.Sockets[0].Disconnect(Config.WorkerCallAddress, out _);
             Hearter.HeartLeft(Name, RealName);
@@ -456,6 +451,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
             pool.Dispose();
             ZeroTrace.SystemLog(Name, "Task", "end", RealName);
+            return Task.CompletedTask;
         }
 
 
@@ -485,7 +481,8 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
             catch (Exception e)
             {
-                OnError(e, arg, item);
+                LogRecorder.Exception(e);
+                OnExecuestEnd(ApiResultIoc.LocalExceptionJson,item,ZeroOperatorStateType.LocalException);
             }
         }
 
@@ -497,23 +494,26 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// 发送返回值 
         /// </summary>
         /// <returns></returns>
-        public void OnResult(IMessageItem message, object tag)
+        Task INetTransfer.OnResult(IMessageItem message, object tag)
         {
             OnExecuestEnd(message.Result,
                 (ApiCallItem)tag,
-                message.State == MessageState.Success ? ZeroOperatorStateType.Ok : ZeroOperatorStateType.Failed);
+                message.State == MessageState.Success
+                    ? ZeroOperatorStateType.Ok
+                    : ZeroOperatorStateType.Failed);
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// 错误 
         /// </summary>
         /// <returns></returns>
-        public void OnError(Exception exception, IMessageItem message, object tag)
+        Task INetTransfer.OnError(Exception exception, IMessageItem message, object tag)
         {
-            LogRecorder.Exception(exception);
             OnExecuestEnd(ApiResultIoc.LocalExceptionJson,
                 (ApiCallItem)tag,
                 ZeroOperatorStateType.LocalException);
+            return Task.CompletedTask;
         }
 
         /// <summary>

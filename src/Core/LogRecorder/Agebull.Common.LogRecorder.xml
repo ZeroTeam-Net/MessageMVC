@@ -322,6 +322,13 @@
             <param name="message"> 日志详细信息 </param>
             <param name="formatArgs"> 格式化的参数 </param>
         </member>
+        <member name="M:Agebull.Common.Logging.LogRecorder.Exception(System.Exception,System.Object)">
+            <summary>
+              记录异常日志
+            </summary>
+            <param name="exception"> 异常 </param>
+            <param name="tag"> 当时对象 </param>
+        </member>
         <member name="M:Agebull.Common.Logging.LogRecorder.Exception(System.Exception,System.String)">
             <summary>
               记录异常日志
@@ -407,6 +414,11 @@
         <member name="M:Agebull.Common.Logging.LogRecorder.EndStepMonitor">
             <summary>
             刷新资源检测
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.LogRecorder.MonitorTrace(System.Object)">
+            <summary>
+            显示监视跟踪
             </summary>
         </member>
         <member name="M:Agebull.Common.Logging.LogRecorder.MonitorTrace(System.String)">
@@ -750,6 +762,11 @@
                 刷新资源检测
             </summary>
         </member>
+        <member name="M:Agebull.Common.Logging.MonitorItem.EndStep">
+            <summary>
+                刷新资源检测
+            </summary>
+        </member>
         <member name="M:Agebull.Common.Logging.MonitorItem.Flush(System.String,System.Boolean)">
             <summary>
                 刷新资源检测
@@ -758,21 +775,6 @@
         <member name="M:Agebull.Common.Logging.MonitorItem.End">
             <summary>
                 刷新资源检测
-            </summary>
-        </member>
-        <member name="M:Agebull.Common.Logging.MonitorItem.EndStepMonitor">
-            <summary>
-                刷新资源检测
-            </summary>
-        </member>
-        <member name="T:Agebull.Common.Logging.EmptyScope">
-            <summary>
-            根据步骤范围
-            </summary>
-        </member>
-        <member name="M:Agebull.Common.Logging.EmptyScope.OnDispose">
-            <summary>
-            清理资源
             </summary>
         </member>
         <member name="T:Agebull.Common.Logging.MonitorScope">
@@ -795,6 +797,19 @@
         <member name="T:Agebull.Common.Logging.MonitorStepScope">
             <summary>
             根据步骤范围
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.MonitorStepScope.CreateScope(System.String,System.Object[])">
+            <summary>
+            生成范围
+            </summary>
+            <param name="name"></param>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Agebull.Common.Logging.MonitorStepScope.OnDispose">
+            <summary>
+            清理资源
             </summary>
         </member>
         <member name="T:System.Linq.LogStack`1">

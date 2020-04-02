@@ -196,7 +196,7 @@
             通过ZMQ实现的进程内通讯
             </summary>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCApp.UseZeroMQInporc(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCApp.UseZeroRPC(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             使用KafkaMVC
             </summary>
@@ -240,9 +240,9 @@
                 MicroZero流程控制器
             </summary>
         </member>
-        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.AppName">
+        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroTeam#MessageMVC#IZeroMiddleware#Level">
             <summary>
-                当前应用名称
+            等级,用于确定中间件优先级
             </summary>
         </member>
         <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.Config">
@@ -255,7 +255,7 @@
             工作模式
             </summary>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.CheckOption(ZeroTeam.MessageMVC.ZeroAppConfigRuntime)">
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroTeam#MessageMVC#IFlowMiddleware#CheckOption(ZeroTeam.MessageMVC.ZeroAppOption)">
             <summary>
                 配置校验,作为第一步
             </summary>
@@ -273,16 +273,6 @@
         <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.GetStationOption(System.String)">
             <summary>
                 配置校验
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroTeam#MessageMVC#IFlowMiddleware#RealName">
-            <summary>
-            实例名称
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroTeam#MessageMVC#IFlowMiddleware#Level">
-            <summary>
-            等级
             </summary>
         </member>
         <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow._state">
@@ -320,22 +310,22 @@
             中心事件监控对象
             </summary>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.Initialize">
-            <summary>
-                初始化
-            </summary>
-        </member>
         <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.JoinCenter">
             <summary>
                 进入系统侦听
             </summary>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.Start">
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroTeam#MessageMVC#IFlowMiddleware#Initialize">
+            <summary>
+                初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroTeam#MessageMVC#IFlowMiddleware#Start">
             <summary>
                 启动
             </summary>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.Dispose">
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroTeam#MessageMVC#IFlowMiddleware#End">
             <summary>
                 关闭
             </summary>
@@ -820,29 +810,6 @@
             客户模式，仅可调用
             </summary>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZSocketHelper.CreateRealName(System.Boolean,System.String[])">
-            <summary>
-            格式化身份名称
-            </summary>
-            <param name="isService"></param>
-            <param name="ranges"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZSocketHelper.CreateIdentity(System.Boolean)">
-            <summary>
-            格式化身份名称
-            </summary>
-            <param name="isService"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZSocketHelper.CreateIdentity(System.Boolean,System.String[])">
-            <summary>
-            格式化身份名称
-            </summary>
-            <param name="isService"></param>
-            <param name="ranges"></param>
-            <returns></returns>
-        </member>
         <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.StationProxyItem">
             <summary>
             站点代理节点
@@ -1087,12 +1054,12 @@
                 API客户端代理
             </summary>
         </member>
-        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCProxy.ZeroTeam#MessageMVC#IFlowMiddleware#RealName">
+        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCProxy.ZeroTeam#MessageMVC#IZeroMiddleware#Name">
             <summary>
             实例名称
             </summary>
         </member>
-        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCProxy.ZeroTeam#MessageMVC#IFlowMiddleware#Level">
+        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCProxy.ZeroTeam#MessageMVC#IZeroMiddleware#Level">
             <summary>
             等级
             </summary>
@@ -1260,11 +1227,6 @@
             </summary>
             <returns>返回False表明需要重启</returns>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcTransport.System#IDisposable#Dispose">
-            <summary>
-            析构
-            </summary>
-        </member>
         <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcTransport.CallCount">
             <summary>
             调用计数
@@ -1369,13 +1331,13 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcTransport.OnResult(ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcTransport.ZeroTeam#MessageMVC#ZeroApis#INetTransfer#OnResult(ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
             <summary>
             发送返回值 
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcTransport.OnError(System.Exception,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcTransport.ZeroTeam#MessageMVC#ZeroApis#INetTransfer#OnError(System.Exception,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
             <summary>
             错误 
             </summary>

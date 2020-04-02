@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace ZeroTeam.MessageMVC.ZeroApis.StateMachine
 {
@@ -20,17 +21,17 @@ namespace ZeroTeam.MessageMVC.ZeroApis.StateMachine
         /// <summary>
         ///     开始的处理
         /// </summary>
-        bool Start();
+        Task<bool> Start();
 
         /// <summary>
         ///     关闭的处理
         /// </summary>
-        bool Close();
+        Task<bool> Close();
 
         /// <summary>
         ///     结束的处理
         /// </summary>
-        bool End();
+        Task<bool> End();
 
     }
 }

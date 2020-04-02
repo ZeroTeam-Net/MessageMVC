@@ -5,13 +5,12 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     /// <summary>
     ///     API返回数据泛型类
     /// </summary>
-    [JsonObject(MemberSerialization.OptIn)]
+    [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class ApiFileResult : ApiResult
     {
         /// <summary>
         ///     文件内容二进制数据
         /// </summary>
-        [JsonIgnore]
         public byte[] Bytes { get; set; }
 
         /// <summary>
@@ -27,19 +26,19 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         ///     文件名
         /// </summary>
-        [JsonProperty("file")]
+        [JsonProperty("file", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public string FileName { get; set; }
 
         /// <summary>
         ///     文件MIME类型
         /// </summary>
-        [JsonProperty("mime")]
+        [JsonProperty("mime", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public string Mime { get; set; }
 
         /// <summary>
         ///     文件类型
         /// </summary>
-        [JsonProperty("type")]
+        [JsonProperty("type", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public string FileType { get; set; }
 
         /// <summary>

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant;
 using ZeroTeam.MessageMVC;
 using Agebull.Common.Configuration;
+using Agebull.Common;
 
 namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
@@ -14,10 +15,12 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
     {
         #region 配置
 
+        string IZeroMiddleware.Name => nameof(ZeroRpcFlow);
+
         /// <summary>
-        ///     当前应用名称
+        /// 等级,用于确定中间件优先级
         /// </summary>
-        public static string AppName => ZeroFlowControl.AppName;
+        int IZeroMiddleware.Level => short.MinValue;
 
         /// <summary>
         ///     站点配置
@@ -32,9 +35,10 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         ///     配置校验,作为第一步
         /// </summary>
-        public void CheckOption(ZeroAppConfigRuntime config)
+        void IFlowMiddleware.CheckOption(ZeroAppOption config)
         {
             ZContext.Initialize();
+
             #region 配置组合
 
             var sec = ConfigurationManager.Get("Zero");
@@ -49,7 +53,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             var glc = sec.Child<ZeroRpcConfig>("Global");
             if (glc != null)
                 Config.CopyByEmpty(glc);
-            var cfg = sec.Child<ZeroRpcConfig>(AppName);
+            var cfg = sec.Child<ZeroRpcConfig>(ZeroFlowControl.AppName);
             if (cfg != null)
                 Config.CopyByEmpty(cfg);
 
@@ -59,7 +63,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             #region ServiceName
 
             if (string.IsNullOrWhiteSpace(Config.StationName))
-                Config.StationName = AppName;
+                Config.StationName = ZeroFlowControl.AppName;
 
             Config.ShortName = string.IsNullOrWhiteSpace(Config.ShortName)
                 ? Config.StationName
@@ -74,7 +78,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
 
             #region ZeroCenter
 
-            ZeroCommandExtend.AppNameBytes = AppName.ToZeroBytes();
+            ZeroCommandExtend.AppNameBytes = ZeroFlowControl.AppName.ToZeroBytes();
 
             Config.Master = Config.ZeroGroup[0];
             if (Config.ApiTimeout <= 1)
@@ -131,16 +135,6 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         #region State
 
         /// <summary>
-        /// 实例名称
-        /// </summary>
-        string IFlowMiddleware.RealName => "MicroZeroFlow";
-
-        /// <summary>
-        /// 等级
-        /// </summary>
-        int IFlowMiddleware.Level => short.MinValue;
-
-        /// <summary>
         ///     运行状态
         /// </summary>
         private static ZeroCenterState _state;
@@ -193,18 +187,6 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// </summary>
         static readonly ZeroEventMonitor SystemMonitor = new ZeroEventMonitor();
 
-        #endregion
-
-        /// <summary>
-        ///     初始化
-        /// </summary>
-        public void Initialize()
-        {
-            ZeroCenterProxy.Master = new ZeroCenterProxy(Config.Master);
-            JoinCenter();
-        }
-
-
         /// <summary>
         ///     进入系统侦听
         /// </summary>
@@ -248,12 +230,24 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             return true;
         }
 
-        #region Run
+        #endregion
+
+        #region Flow
+
+        /// <summary>
+        ///     初始化
+        /// </summary>
+        void IFlowMiddleware.Initialize()
+        {
+            ZeroCenterProxy.Master = new ZeroCenterProxy(Config.Master);
+            JoinCenter();
+        }
+
 
         /// <summary>
         ///     启动
         /// </summary>
-        public void Start()
+        void IFlowMiddleware.Start()
         {
             SystemMonitor.Start();
             if (ZeroFlowControl.ApplicationState == (int)StationRealState.Run && WorkModel == ZeroWorkModel.Service)
@@ -262,14 +256,11 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 m.UploadDocument();
             }
         }
-        #endregion
-
-        #region Destroy
 
         /// <summary>
         ///     关闭
         /// </summary>
-        public void Dispose()
+        void IFlowMiddleware.End()
         {
             ZContext.Destroy();
         }
@@ -281,12 +272,12 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         /// 站点事件发生
         /// </summary>
-        public static List<Func<ZeroRpcOption, ZeroNetEventArgument, Task>> ZeroNetEvents = new List<Func<ZeroRpcOption, ZeroNetEventArgument, Task>>();
+        internal static List<Func<ZeroRpcOption, ZeroNetEventArgument, Task>> ZeroNetEvents = new List<Func<ZeroRpcOption, ZeroNetEventArgument, Task>>();
 
         /// <summary>
         /// 发出事件
         /// </summary>
-        public static void InvokeEvent(ZeroNetEventType centerEvent, string name, string context, StationConfig config, bool sync = false)
+        internal static void InvokeEvent(ZeroNetEventType centerEvent, string name, string context, StationConfig config, bool sync = false)
         {
             if (Config.CanRaiseEvent != true)
                 return;

@@ -2346,6 +2346,16 @@
               析构
             </summary>
         </member>
+        <member name="T:Agebull.Common.Base.EmptyScope">
+            <summary>
+            根据步骤范围
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Base.EmptyScope.OnDispose">
+            <summary>
+            清理资源
+            </summary>
+        </member>
         <member name="T:Agebull.Common.UrlHelper">
             <summary>
             对URL的扩展
@@ -3425,6 +3435,68 @@
             <param name="nodes"> </param>
             <returns> </returns>
         </member>
+        <member name="T:Agebull.Common.JsonHelper">
+            <summary>
+            Json序列化装饰器
+            </summary>
+        </member>
+        <member name="F:Agebull.Common.JsonHelper.EmptyBytes">
+            <summary>
+            空字节
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.JsonHelper.ToZeroBytes(System.String)">
+            <summary>
+            转为UTF8字节
+            </summary>
+            <param name="str"></param>
+            <returns>字节</returns>
+        </member>
+        <member name="M:Agebull.Common.JsonHelper.ToZeroBytes``1(``0)">
+            <summary>
+            转为UTF8字节
+            </summary>
+            <param name="v"></param>
+            <returns>字节</returns>
+        </member>
+        <member name="M:Agebull.Common.JsonHelper.ToJson``1(``0)">
+            <summary>
+            序列化
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="t"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Agebull.Common.JsonHelper.ToJson(System.Object)">
+            <summary>
+            序列化
+            </summary>
+            <param name="t"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Agebull.Common.JsonHelper.SerializeObject``1(``0)">
+            <summary>
+            序列化
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="t"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Agebull.Common.JsonHelper.DeserializeObject``1(System.String)">
+            <summary>
+            反序列化
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.JsonHelper.TryDeserializeObject``1(System.String)">
+            <summary>
+            反序列化
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.JsonHelper.DeserializeObject(System.String,System.Type)">
+            <summary>
+            反序列化
+            </summary>
+        </member>
         <member name="T:Agebull.Common.Reflection.EnumHelper">
             <summary>
               枚举的帮助类
@@ -4427,27 +4499,32 @@
             随机字符串生成器
             </summary>
         </member>
-        <member name="F:Agebull.EntityModel.Common.RandomOperate._baseTicks">
+        <member name="T:Agebull.EntityModel.Common.RandomCode">
+            <summary>
+            随机字符串生成器
+            </summary>
+        </member>
+        <member name="F:Agebull.EntityModel.Common.RandomCode._baseTicks">
             <summary>
             基准数字
             </summary>
         </member>
-        <member name="M:Agebull.EntityModel.Common.RandomOperate.#cctor">
+        <member name="M:Agebull.EntityModel.Common.RandomCode.#cctor">
             <summary>
             内部构造
             </summary>
         </member>
-        <member name="M:Agebull.EntityModel.Common.RandomOperate.#ctor">
+        <member name="M:Agebull.EntityModel.Common.RandomCode.#ctor">
             <summary>
-            内部构架
+            内部构造
             </summary>
         </member>
-        <member name="F:Agebull.EntityModel.Common.RandomOperate._keys">
+        <member name="F:Agebull.EntityModel.Common.RandomCode._keys">
             <summary>
             字符
             </summary>
         </member>
-        <member name="M:Agebull.EntityModel.Common.RandomOperate.Generate(System.Int32)">
+        <member name="M:Agebull.EntityModel.Common.RandomCode.Generate(System.Int32)">
             <summary>
             随机生成字符串（数字和字母混和）
             </summary>
@@ -4488,63 +4565,21 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.JsonHelper">
-            <summary>
-            Json序列化装饰器
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.JsonHelper.ToZeroBytes(System.String)">
-            <summary>
-            转为UTF8字节
-            </summary>
-            <param name="str"></param>
-            <returns>字节</returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.JsonHelper.ToZeroBytes``1(``0)">
-            <summary>
-            转为UTF8字节
-            </summary>
-            <param name="v"></param>
-            <returns>字节</returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.JsonHelper.SerializeObject``1(``0)">
-            <summary>
-            序列化
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="t"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.JsonHelper.DeserializeObject``1(System.String)">
-            <summary>
-            反序列化
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.JsonHelper.TryDeserializeObject``1(System.String)">
-            <summary>
-            反序列化
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.JsonHelper.DeserializeObject(System.String,System.Type)">
-            <summary>
-            反序列化
-            </summary>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.JsonNumberConverter">
+        <member name="T:Newtonsoft.Json.JsonNumberConverter">
             <summary>
                 大数字序列化器
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.JsonNumberConverter.CanRead">
+        <member name="P:Newtonsoft.Json.JsonNumberConverter.CanRead">
             <inheritdoc />
         </member>
-        <member name="M:ZeroTeam.MessageMVC.JsonNumberConverter.WriteJson(Newtonsoft.Json.JsonWriter,System.Object,Newtonsoft.Json.JsonSerializer)">
+        <member name="M:Newtonsoft.Json.JsonNumberConverter.WriteJson(Newtonsoft.Json.JsonWriter,System.Object,Newtonsoft.Json.JsonSerializer)">
             <inheritdoc />
         </member>
-        <member name="M:ZeroTeam.MessageMVC.JsonNumberConverter.ReadJson(Newtonsoft.Json.JsonReader,System.Type,System.Object,Newtonsoft.Json.JsonSerializer)">
+        <member name="M:Newtonsoft.Json.JsonNumberConverter.ReadJson(Newtonsoft.Json.JsonReader,System.Type,System.Object,Newtonsoft.Json.JsonSerializer)">
             <inheritdoc />
         </member>
-        <member name="M:ZeroTeam.MessageMVC.JsonNumberConverter.CanConvert(System.Type)">
+        <member name="M:Newtonsoft.Json.JsonNumberConverter.CanConvert(System.Type)">
             <inheritdoc />
         </member>
     </members>

@@ -18,7 +18,14 @@ namespace Agebull.EntityModel.Common
     /// <summary>
     /// 随机字符串生成器
     /// </summary>
-    public class RandomOperate
+    [Obsolete]
+    public class RandomOperate : RandomCode
+    {
+    }
+    /// <summary>
+    /// 随机字符串生成器
+    /// </summary>
+    public class RandomCode
     {
         /// <summary>
         /// 基准数字
@@ -28,14 +35,15 @@ namespace Agebull.EntityModel.Common
         /// <summary>
         /// 内部构造
         /// </summary>
-        static RandomOperate()
+        static RandomCode()
         {
             _baseTicks = new DateTime(2015, 1, 1).Ticks;
         }
+
         /// <summary>
-        /// 内部构架
+        /// 内部构造
         /// </summary>
-        private RandomOperate()
+        protected RandomCode()
         {
         }
 
@@ -50,7 +58,7 @@ namespace Agebull.EntityModel.Common
         /// <returns></returns>
         public static string Generate(int codeCount)
         {
-            return new RandomOperate().GenerateCode(codeCount);
+            return new RandomCode().GenerateCode(codeCount);
         }
 
         //随机生成字符串（数字和字母混和）

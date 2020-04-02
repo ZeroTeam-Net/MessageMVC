@@ -22,7 +22,7 @@ namespace Agebull.EntityModel.Common
     /// <remarks>
     ///     依赖对象都为IgnoreDataMember属性,即不可网络序列化
     /// </remarks>
-    [JsonObject(MemberSerialization.OptIn)]
+        [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public sealed class DependencyObjects
     {
         [JsonIgnore]

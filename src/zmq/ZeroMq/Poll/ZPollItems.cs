@@ -21,8 +21,10 @@ namespace ZeroTeam.ZeroMQ
 
 		// unsafe native delegate
 		internal delegate bool PollSingleDelegate(ZSocket socket, ZPollItem item, ZPollEvent pollFirst, out ZError error, TimeSpan? timeout);
-		
+
+#pragma warning disable CS0649
 		internal static readonly PollSingleDelegate PollSingle;
+#pragma warning restore CS0649
 
 		static ZPollItems()
 		{

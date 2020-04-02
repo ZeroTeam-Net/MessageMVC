@@ -1,3 +1,4 @@
+using Agebull.Common;
 using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
@@ -96,14 +97,14 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return false;
         }
 
-        private Func<object, Tuple<MessageState, string>> FuncSync;
-        private Func<object, Task<Tuple<MessageState, string>>> FuncAsync;
+        private Func<object, (MessageState state, string result)> FuncSync;
+        private Func<object, Task<(MessageState state, string result)>> FuncAsync;
 
         /// <summary>
         ///     执行
         /// </summary>
         /// <returns></returns>
-        public Task<Tuple<MessageState, string>> Execute()
+        public Task<(MessageState state, string result)> Execute()
         {
             if (IsAsync)
             {
@@ -190,7 +191,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     FuncSync = arg =>
                     {
                         Function(arg);
-                        return new Tuple<MessageState, string>(MessageState.Success, null);
+                        return (MessageState.Success, null);
                     };
                 }
                 else if (ResultType == typeof(string))
@@ -198,7 +199,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     FuncSync = arg =>
                     {
                         var res = Function(arg);
-                        return new Tuple<MessageState, string>(MessageState.Success, (string)res);
+                        return (MessageState.Success, (string)res);
                     };
                 }
                 else if (ResultType.IsSupperInterface(typeof(IApiResult)))
@@ -207,8 +208,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     {
                         var res = Function(arg) as IApiResult;
                         return res == null
-                            ? new Tuple<MessageState, string>(MessageState.Failed, null)
-                            : new Tuple<MessageState, string>(res.Success ? MessageState.Success : MessageState.Failed,
+                            ? (MessageState.Failed, null)
+                            : (res.Success ? MessageState.Success : MessageState.Failed,
                             JsonHelper.SerializeObject(res));
                     };
                 }
@@ -217,7 +218,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     FuncSync = arg =>
                     {
                         var res = Function(arg);
-                        return new Tuple<MessageState, string>(MessageState.Success, res.ToString());
+                        return (MessageState.Success, res.ToString());
                     };
                 }
                 else
@@ -225,7 +226,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     FuncSync = arg =>
                     {
                         var res = Function(arg);
-                        return new Tuple<MessageState, string>(MessageState.Success, JsonHelper.SerializeObject(res));
+                        return (MessageState.Success, JsonHelper.SerializeObject(res));
                     };
                 }
                 return;
@@ -236,7 +237,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 {
                     var task = (Task)Function(arg);
                     await task;
-                    return new Tuple<MessageState, string>(MessageState.Success, null);
+                    return (MessageState.Success, null);
                 };
             }
             else if (ResultType == typeof(string))
@@ -245,7 +246,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 {
                     var task = (Task<string>)Function(arg);
                     await task;
-                    return new Tuple<MessageState, string>(MessageState.Success, task.Result);
+                    return (MessageState.Success, task.Result);
                 };
             }
             else if (ResultType.IsSupperInterface(typeof(IApiResult)))
@@ -257,8 +258,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     dynamic dy = task;
                     var res = dy.Result as IApiResult;
                     return res == null
-                        ? new Tuple<MessageState, string>(MessageState.Failed, null)
-                        : new Tuple<MessageState, string>(res.Success ? MessageState.Success : MessageState.Failed,
+                        ? (MessageState.Failed, null)
+                        : (res.Success ? MessageState.Success : MessageState.Failed,
                         JsonHelper.SerializeObject(res));
                 };
             }
@@ -270,7 +271,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     await task;
                     dynamic dy = task;
                     var res = dy.Result.ToString();
-                    return new Tuple<MessageState, string>(MessageState.Success, res);
+                    return (MessageState.Success, res);
                 };
             }
             else
@@ -281,7 +282,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     await task;
                     dynamic dy = task;
                     var res = dy.Result;
-                    return new Tuple<MessageState, string>(MessageState.Success, JsonHelper.SerializeObject(res));
+                    return (MessageState.Success, JsonHelper.SerializeObject(res));
                 };
             }
         }

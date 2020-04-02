@@ -15,9 +15,15 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
     public class InporcConsumer : IMessageConsumer
     {
 
+        /// <summary>
+        /// 名称
+        /// </summary>
         public string Name { get; set; }
 
 
+        /// <summary>
+        /// 服务
+        /// </summary>
         public IService Service { get; set; }
 
         /// <summary>
@@ -33,28 +39,27 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// <summary>
         /// 初始化
         /// </summary>
-        public void Initialize()
+        void INetTransfer.Initialize()
         {
             Name = "InporcConsumer";
-        }
-
-        void IDisposable.Dispose()
-        {
         }
 
         /// <summary>
         /// 同步运行状态
         /// </summary>
         /// <returns></returns>
-        public bool LoopBegin()
+        Task<bool> INetTransfer.LoopBegin()
         {
             socket = ZSocketEx.CreateServiceSocket(ZmqProxy.InprocAddress, null, ZSocketType.ROUTER);
             if (socket == null)
-                return false;
+            {
+                return Task.FromResult(false);
+            }
+
             zmqPool = ZmqPool.CreateZmqPool();
             zmqPool.Sockets = new[] { socket };
             zmqPool.RePrepare(ZPollEvent.In);
-            return true;
+            return Task.FromResult(true);
         }
 
         Task<bool> INetTransfer.Loop(CancellationToken token)
@@ -81,29 +86,32 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// 同步关闭状态
         /// </summary>
         /// <returns></returns>
-        public void LoopComplete()
+        Task INetTransfer.LoopComplete()
         {
             zmqPool.Dispose();
             socket.Dispose();
+            return Task.CompletedTask;
         }
         /// <summary>
         /// 错误 
         /// </summary>
         /// <returns></returns>
-        public void OnError(Exception exception, IMessageItem message, object tag)
+        Task INetTransfer.OnError(Exception exception, IMessageItem message, object tag)
         {
-            LogRecorder.Exception(exception);
             OnResult(ApiResultIoc.LocalExceptionJson, (ApiCallItem)tag, (byte)ZeroOperatorStateType.LocalException);
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// 发送返回值 
         /// </summary>
         /// <returns></returns>
-        public void OnResult(IMessageItem message, object tag)
+        Task INetTransfer.OnResult(IMessageItem message, object tag)
         {
             OnResult(message.Result, (ApiCallItem)tag,
-                (byte)(message.State == MessageState.Success ? ZeroOperatorStateType.Ok : ZeroOperatorStateType.Bug));
+                (byte)(message.State == MessageState.Success
+                        ? ZeroOperatorStateType.Ok : ZeroOperatorStateType.Bug));
+            return Task.CompletedTask;
         }
 
         #region ZMQ
@@ -134,7 +142,8 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
             }
             catch (Exception e)
             {
-                OnError(e, arg, item);
+                LogRecorder.Exception(e);
+                OnResult(ApiResultIoc.LocalExceptionJson, item, (byte)ZeroOperatorStateType.LocalException);
             }
         }
 
@@ -148,7 +157,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        void SendLayoutErrorResult(ApiCallItem item)
+        private void SendLayoutErrorResult(ApiCallItem item)
         {
             try
             {
@@ -174,7 +183,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// 发送返回值 
         /// </summary>
         /// <returns></returns>
-        void OnResult(string result, ApiCallItem item, byte state)
+        private void OnResult(string result, ApiCallItem item, byte state)
         {
             try
             {

@@ -9,6 +9,16 @@
             表示进程内通讯
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.Name">
+            <summary>
+            名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.Service">
+            <summary>
+            服务
+            </summary>
+        </member>
         <member name="F:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.socket">
             <summary>
             本地代理
@@ -19,30 +29,30 @@
             Pool对象
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.Initialize">
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.ZeroTeam#MessageMVC#ZeroApis#INetTransfer#Initialize">
             <summary>
             初始化
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.LoopBegin">
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.ZeroTeam#MessageMVC#ZeroApis#INetTransfer#LoopBegin">
             <summary>
             同步运行状态
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.LoopComplete">
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.ZeroTeam#MessageMVC#ZeroApis#INetTransfer#LoopComplete">
             <summary>
             同步关闭状态
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.OnError(System.Exception,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.ZeroTeam#MessageMVC#ZeroApis#INetTransfer#OnError(System.Exception,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
             <summary>
             错误 
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.OnResult(ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.ZeroTeam#MessageMVC#ZeroApis#INetTransfer#OnResult(ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
             <summary>
             发送返回值 
             </summary>
@@ -350,12 +360,12 @@
             <param name="name"></param>
             <returns></returns>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqProxy.ZeroTeam#MessageMVC#IFlowMiddleware#RealName">
+        <member name="P:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqProxy.ZeroTeam#MessageMVC#IZeroMiddleware#Name">
             <summary>
             实例名称
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqProxy.ZeroTeam#MessageMVC#IFlowMiddleware#Level">
+        <member name="P:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqProxy.ZeroTeam#MessageMVC#IZeroMiddleware#Level">
             <summary>
             等级
             </summary>

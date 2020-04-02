@@ -14,12 +14,12 @@
             运行状态
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.AddInImporter.ZeroTeam#MessageMVC#IFlowMiddleware#RealName">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.AddInImporter.ZeroTeam#MessageMVC#IZeroMiddleware#Name">
             <summary>
             实例名称
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.AddInImporter.ZeroTeam#MessageMVC#IFlowMiddleware#Level">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.AddInImporter.ZeroTeam#MessageMVC#IZeroMiddleware#Level">
             <summary>
             等级
             </summary>
@@ -258,6 +258,31 @@
             <param name="next">下一个处理方法</param>
             <returns></returns>
         </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ReverseProxyMiddleware">
+            <summary>
+            反向代理中间件
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ReverseProxyMiddleware.Process">
+            <summary>
+            当前处理器
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ReverseProxyMiddleware.ZeroTeam#MessageMVC#ZeroApis#IMessageMiddleware#Level">
+            <summary>
+            层级
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ReverseProxyMiddleware.ZeroTeam#MessageMVC#ZeroApis#IMessageMiddleware#Handle(ZeroTeam.MessageMVC.ZeroApis.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object,System.Func{System.Threading.Tasks.Task{ZeroTeam.MessageMVC.Messages.MessageState}})">
+            <summary>
+            准备
+            </summary>
+            <param name="service">当前服务</param>
+            <param name="message">当前消息</param>
+            <param name="tag">扩展信息</param>
+            <param name="next">下一个处理方法</param>
+            <returns></returns>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.StorageMiddleware">
             <summary>
             消息存储中间件
@@ -291,11 +316,6 @@
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiController.UserInfo">
             <summary>
             当前登录用户
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiController.Caller">
-            <summary>
-            调用者（机器名）
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiController.RequestId">
@@ -515,19 +535,9 @@
             一个服务
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ZeroService.#ctor">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ZeroService.Level">
             <summary>
-            构造
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ZeroService.Transport">
-            <summary>
-            网络传输对象
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ZeroService.TransportBuilder">
-            <summary>
-            网络传输对象构造器
+            等级,用于确定中间件优先级
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.ZeroService.ServiceName">
@@ -535,14 +545,19 @@
             站点名称
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ZeroService.InstanceName">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ZeroService.Transport">
             <summary>
-            节点名称
+            网络传输对象
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ZeroService.RealName">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ZeroService.IsDiscover">
             <summary>
-            实例名称
+            是否自动发现对象
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ZeroService.TransportBuilder">
+            <summary>
+            网络传输对象构造器
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.ZeroApis.ZeroService._realState">
@@ -662,12 +677,12 @@
             配置的全局对象
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ConfigMiddleware.ZeroTeam#MessageMVC#IFlowMiddleware#RealName">
+        <member name="P:ZeroTeam.MessageMVC.ConfigMiddleware.ZeroTeam#MessageMVC#IZeroMiddleware#Name">
             <summary>
             实例名称
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ConfigMiddleware.ZeroTeam#MessageMVC#IFlowMiddleware#Level">
+        <member name="P:ZeroTeam.MessageMVC.ConfigMiddleware.ZeroTeam#MessageMVC#IZeroMiddleware#Level">
             <summary>
             等级
             </summary>
@@ -910,12 +925,12 @@
             重新消费未正确处理消息的中间件
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ReConsumerMiddleware.ZeroTeam#MessageMVC#IFlowMiddleware#RealName">
+        <member name="P:ZeroTeam.MessageMVC.ReConsumerMiddleware.ZeroTeam#MessageMVC#IZeroMiddleware#Name">
             <summary>
             实例名称
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ReConsumerMiddleware.ZeroTeam#MessageMVC#IFlowMiddleware#Level">
+        <member name="P:ZeroTeam.MessageMVC.ReConsumerMiddleware.ZeroTeam#MessageMVC#IZeroMiddleware#Level">
             <summary>
             等级
             </summary>

@@ -20,7 +20,7 @@ namespace Agebull.EntityModel.Common
     /// </summary>
     /// <typeparam name="TName"></typeparam>
     /// <typeparam name="TValue"></typeparam>
-    [JsonObject(MemberSerialization.OptIn)]
+        [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class NameValue<TName, TValue>
     {
         /// <summary>
@@ -40,7 +40,7 @@ namespace Agebull.EntityModel.Common
     /// <summary>
     ///     名称内容对象
     /// </summary>
-    [JsonObject(MemberSerialization.OptIn)]
+        [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class NameValue<TValue> : NameValue<string, TValue>
     {
     }
@@ -48,7 +48,7 @@ namespace Agebull.EntityModel.Common
     /// <summary>
     ///     名称内容对象
     /// </summary>
-    [JsonObject(MemberSerialization.OptIn)]
+        [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class NameValue : NameValue<string, string>
     {
         /// <summary>
@@ -73,7 +73,7 @@ namespace Agebull.EntityModel.Common
     /// <summary>
     ///     名称内容对象
     /// </summary>
-    [JsonObject(MemberSerialization.OptIn)]
+        [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class NameValue2 : NameValue<string, object>
     {
         /// <summary>

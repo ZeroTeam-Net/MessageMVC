@@ -60,7 +60,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
         private async Task Process()
         {
-            using (IocScope.CreateScope())
+            using (IocScope.CreateScope($"MessageProcess : {Message.Topic}/{Message.Title}"))
             {
                 index = 0;
                 State = MessageState.None;

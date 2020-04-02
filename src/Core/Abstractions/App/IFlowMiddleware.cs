@@ -1,20 +1,10 @@
 ﻿namespace ZeroTeam.MessageMVC
 {
     /// <summary>
-    /// 表示一个应用中间件
+    /// 表示一个流程中间件
     /// </summary>
-    public interface IFlowMiddleware
+    public interface IFlowMiddleware : IZeroMiddleware
     {
-        /// <summary>
-        /// 实例名称
-        /// </summary>
-        string RealName { get; }
-
-        /// <summary>
-        /// 等级
-        /// </summary>
-        int Level { get; }
-
         /// <summary>
         ///     配置校验,作为第一步
         /// </summary>

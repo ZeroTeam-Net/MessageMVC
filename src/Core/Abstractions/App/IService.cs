@@ -8,11 +8,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     public interface IService : IFlowMiddleware
     {
         /// <summary>
-        /// 注册的方法
-        /// </summary>
-        Dictionary<string, IApiAction> Actions { get; }
-
-        /// <summary>
         /// 服务名称
         /// </summary>
         string ServiceName { get; }
@@ -33,8 +28,14 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         StationStateType ConfigState { get; set; }
 
         /// <summary>
-        /// 重置状态机,请谨慎使用
+        /// 是否自动发现对象
         /// </summary>
-        void ResetStateMachine();
+        bool IsDiscover { get; }
+
+        /// <summary>
+        /// 注册的方法
+        /// </summary>
+        Dictionary<string, IApiAction> Actions { get; }
+
     }
 }

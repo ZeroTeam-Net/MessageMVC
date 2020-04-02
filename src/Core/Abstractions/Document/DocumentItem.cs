@@ -7,7 +7,7 @@ namespace ZeroTeam.MessageMVC.ApiDocuments
     ///     文档节点
     /// </summary>
     [DataContract]
-    [JsonObject(MemberSerialization.OptIn)]
+        [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class DocumentItem : AnnotationsConfig
     {
         [DataMember]

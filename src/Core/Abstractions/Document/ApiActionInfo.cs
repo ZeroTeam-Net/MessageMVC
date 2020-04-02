@@ -8,7 +8,7 @@ namespace ZeroTeam.MessageMVC.ApiDocuments
     ///     Api方法的信息
     /// </summary>
     [DataContract]
-    [JsonObject(MemberSerialization.OptIn)]
+        [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class ApiActionInfo : ApiDocument
     {
         /// <summary>

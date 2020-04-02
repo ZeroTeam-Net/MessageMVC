@@ -1,3 +1,4 @@
+using Agebull.Common;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
@@ -400,6 +401,17 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
             return string.IsNullOrEmpty(client.Result)
                 ? default
                 : JsonHelper.DeserializeObject<TRes>(client.Result);
+        }
+
+        async Task<string> IMessageProducer.ProducerAsync(IMessageItem message)
+        {
+            var client = new InporcProducer
+            {
+                Station = message.Topic,
+                Commmand = message.Title
+            };
+            await client.CallCommandAsync();
+            return client.Result;
         }
         #endregion
     }

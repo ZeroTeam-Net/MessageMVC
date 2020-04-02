@@ -9,7 +9,7 @@ namespace ZeroTeam.MessageMVC.ApiDocuments
     /// 站点信息
     /// </summary>
     [DataContract]
-    [JsonObject(MemberSerialization.OptIn)]
+        [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class ServiceInfo : ServiceDocument
     {
         /// <summary>

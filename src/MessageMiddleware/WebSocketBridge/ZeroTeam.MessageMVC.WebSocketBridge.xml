@@ -14,6 +14,11 @@
             消息转发到WebSocket中间件
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Web.WebSocketNotify.Process">
+            <summary>
+            当前处理器
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.Web.WebSocketNotify.ZeroTeam#MessageMVC#ZeroApis#IMessageMiddleware#Level">
             <summary>
             层级

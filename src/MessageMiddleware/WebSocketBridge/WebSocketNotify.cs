@@ -19,6 +19,12 @@ namespace ZeroTeam.MessageMVC.Web
     public class WebSocketNotify : IMessageMiddleware
     {
         #region IMessageMiddleware
+
+        /// <summary>
+        /// 当前处理器
+        /// </summary>
+        public MessageProcess Process { get; set; }
+
         /// <summary>
         /// 层级
         /// </summary>
@@ -80,7 +86,8 @@ namespace ZeroTeam.MessageMVC.Web
         /// <param name="app"></param>  
         public static void Binding(IApplicationBuilder app)
         {
-            if (Config.Folders == null) return;
+            if (Config.Folders == null)
+                return;
             foreach (var folder in Config.Folders)
             {
                 ZeroFlowControl.RegistService(new ZeroService
@@ -92,6 +99,7 @@ namespace ZeroTeam.MessageMVC.Web
                 app.Map($"/{folder}", Map);
             }
         }
+
         /// <summary>
         /// 关闭
         /// </summary>
