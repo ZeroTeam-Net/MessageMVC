@@ -1,22 +1,21 @@
+using Agebull.Common;
+using Agebull.Common.Logging;
+using Agebull.EntityModel.Common;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using Agebull.Common.Logging;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Agebull.EntityModel.Common;
-using ZeroTeam.MessageMVC.ZeroApis;
 using ZeroTeam.MessageMVC;
-using ZeroTeam.MessageMVC.Context;
-using Agebull.Common;
+using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
     /// <summary>
     ///     API客户端代理
     /// </summary>
-    public class ZeroRPCProxy : IFlowMiddleware
+    public class ZeroPostProxy : IFlowMiddleware
     {
         #region IFlowMiddleware 
 
@@ -46,7 +45,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         /// 实例
         /// </summary>
-        public static ZeroRPCProxy Instance { get; private set; }
+        public static ZeroPostProxy Instance { get; private set; }
 
 
         #endregion
@@ -82,7 +81,10 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         public static ZSocketEx GetSocket(string station, string name)
         {
             if (!StationProxy.TryGetValue(station, out var item))// || item.Config.State != ZeroCenterState.Run
+            {
                 return null;
+            }
+
             return ZSocketEx.CreateOnceSocket(InprocAddress, item.Config.ServiceKey, name.ToZeroBytes(), ZSocketType.PAIR);
         }
 
@@ -109,7 +111,10 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                         {
                             Config = e.EventConfig
                         }))
+                    {
                         _isChanged = true;
+                    }
+
                     break;
                 case ZeroNetEventType.CenterStationResume:
                 case ZeroNetEventType.CenterStationLeft:
@@ -153,7 +158,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     {
                         item.Socket = ZSocketEx.CreatePoolSocket(item.Config.RequestAddress,
                             item.Config.ServiceKey,
-                            ZSocketType.DEALER, 
+                            ZSocketType.DEALER,
                             ZSocketHelper.CreateIdentity(false, item.Config.Name));
                         item.Open = DateTime.Now;
                     }
@@ -170,7 +175,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             return _zmqPool;
         }
 
-        private ZSocketEx CreateProxySocket(ZeroRPCCaller caller)
+        private ZSocketEx CreateProxySocket(ZeroCaller caller)
         {
             if (!ZeroRpcFlow.Config.TryGetConfig(caller.Station, out caller.Config))
             {
@@ -256,7 +261,9 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     using (message)
                     {
                         if (_proxyServiceSocket.Send(message, out error))
+                        {
                             return;
+                        }
                     }
                 }
 
@@ -286,7 +293,8 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// 能不能循环处理
         /// </summary>
         protected bool CanLoopEx => WaitCount > 0 || ZeroFlowControl.CanDo;
-        void Prepare()
+
+        private void Prepare()
         {
             var identity = ZeroFlowControl.Config.RealName.ToZeroBytes();
             foreach (var config in ZeroRpcFlow.Config.GetConfigs())
@@ -310,7 +318,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         {
             Prepare();
 
-            ZeroRPCProducer.Instance.State = StationStateType.Run;
+            ZeroRPCPoster.Instance.State = StationStateType.Run;
             while (CanLoopEx)
             {
                 try
@@ -332,7 +340,9 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     for (int idx = 1; idx < _zmqPool.Size; idx++)
                     {
                         if (_zmqPool.CheckIn(idx, out message))
+                        {
                             OnRemoteResult(message);
+                        }
                     }
                 }
                 catch (Exception e)
@@ -340,7 +350,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     LogRecorder.Exception(e);
                 }
             }
-            ZeroRPCProducer.Instance.State = StationStateType.Closed;
+            ZeroRPCPoster.Instance.State = StationStateType.Closed;
             return true;
         }
 
@@ -388,7 +398,10 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 }
 
                 if (success)
+                {
                     return;
+                }
+
                 ZeroTrace.WriteError("ApiProxy . OnLocalCall", error.Text);
                 var caller = message[0].ReadAll();
                 SendNetErrorResult(caller);
@@ -416,7 +429,10 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     return false;
                 });
                 if (result.State != ZeroOperatorStateType.Runing)
+                {
                     Interlocked.Decrement(ref WaitCount);
+                }
+
                 if (!long.TryParse(result.Requester, out id))
                 {
                     using var message2 = message.Duplicate();
@@ -427,7 +443,10 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
 
             if (!Tasks.TryGetValue(id, out var src))
+            {
                 return;
+            }
+
             src.Caller.State = result.State;
             if (result.State == ZeroOperatorStateType.Runing)
             {
@@ -454,7 +473,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <param name="description"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        internal Task<ZeroResult> CallZero(ZeroRPCCaller caller, byte[] description, params byte[][] args)
+        internal Task<ZeroResult> CallZero(ZeroCaller caller, byte[] description, params byte[][] args)
         {
             return CallZero(caller, description, (IEnumerable<byte[]>)args);
         }
@@ -466,7 +485,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <param name="description"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        internal Task<ZeroResult> CallZero(ZeroRPCCaller caller, byte[] description, IEnumerable<byte[]> args)
+        internal Task<ZeroResult> CallZero(ZeroCaller caller, byte[] description, IEnumerable<byte[]> args)
         {
             var socket = CreateProxySocket(caller);
             if (socket == null)
@@ -543,7 +562,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             /// <summary>
             /// 调用对象
             /// </summary>
-            public ZeroRPCCaller Caller;
+            public ZeroCaller Caller;
         }
 
         #endregion

@@ -57,17 +57,16 @@ namespace WebNotifyTest
         }
 
 
-        static void Test()
+        static async void Test()
         {
-            var producer = IocHelper.Create<IMessageProducer>();
             int left = 0;
             int join = short.MaxValue;
             while (true)
             {
-                Thread.Sleep(1000);
+                await Task.Delay(1000);
                 try
                 {
-                    producer.ProducerAsync("real", "real", new
+                    await MessagePoster.PublishAsync("real", "real", new
                     {
                         left = left++,
                         join = join--

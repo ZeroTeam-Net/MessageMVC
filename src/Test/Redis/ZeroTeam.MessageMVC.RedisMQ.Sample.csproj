@@ -6,8 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="AliyunSms\**" />
     <Compile Remove="Controler\**" />
+    <EmbeddedResource Remove="AliyunSms\**" />
     <EmbeddedResource Remove="Controler\**" />
+    <None Remove="AliyunSms\**" />
     <None Remove="Controler\**" />
   </ItemGroup>
 

@@ -68,29 +68,37 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         protected ZeroResult CallCommand(byte[] description, params string[] args)
         {
             if (ManageAddress == null)
+            {
                 return new ZeroResult
                 {
                     InteractiveSuccess = false,
                     ErrorMessage = "地址无效"
                 };
+            }
 
             var socket = ZSocketEx.CreateOnceSocket(ManageAddress, ServiceKey, ZSocketHelper.CreateIdentity(false, "Dispatcher"));
             if (socket == null)
+            {
                 return new ZeroResult
                 {
                     InteractiveSuccess = false,
                     State = ZeroOperatorStateType.NetError
                 };
+            }
+
             try
             {
                 using (socket)
                 {
                     if (!socket.SendByServiceKey(description, args))
+                    {
                         return new ZeroResult
                         {
                             State = ZeroOperatorStateType.LocalRecvError,
                             ZmqError = socket.LastError
                         };
+                    }
+
                     return socket.Receive<ZeroResult>();
                 }
             }

@@ -44,7 +44,10 @@ namespace ZeroTeam.MessageMVC.Web
                             break;
                         }
                         if (incoming.Count == 0)
+                        {
                             continue;
+                        }
+
                         mem.Write(seg.Array, 0, incoming.Count);
                         mem.Flush();
                         mem.Position = 0;
@@ -52,20 +55,28 @@ namespace ZeroTeam.MessageMVC.Web
                         value = reader.ReadToEnd();
                     }
                     if (string.IsNullOrEmpty(value) || value.Length <= 1)
+                    {
                         continue;
+                    }
 
                     string title = value.Length == 0 ? "" : value.Substring(1);
                     if (value[0] == '+')
                     {
                         if (!string.IsNullOrWhiteSpace(title) && !Subscriber.Contains(title))
+                        {
                             Subscriber.Add(title);
+                        }
                     }
                     else if (value[0] == '-')
                     {
                         if (string.IsNullOrWhiteSpace(title))
+                        {
                             Subscriber.Clear();
+                        }
                         else
+                        {
                             Subscriber.Remove(title);
+                        }
                     }
                 }
                 catch (WebSocketException)
@@ -82,7 +93,10 @@ namespace ZeroTeam.MessageMVC.Web
         internal async Task Send(ArraySegment<byte> title, ArraySegment<byte> array)
         {
             if (_isDisposed)
+            {
                 return;
+            }
+
             try
             {
                 //await this.socket.SendAsync(title, WebSocketMessageType.Text, true, CancellationToken.None);
@@ -98,7 +112,10 @@ namespace ZeroTeam.MessageMVC.Web
         public void Dispose()
         {
             if (_isDisposed)
+            {
                 return;
+            }
+
             _isDisposed = true;
             _clients.Remove(this);
             try

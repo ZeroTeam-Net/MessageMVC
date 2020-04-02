@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Agebull.Common;
+using Newtonsoft.Json;
 using System;
 
 namespace ZeroTeam.MessageMVC.Messages
@@ -9,6 +10,43 @@ namespace ZeroTeam.MessageMVC.Messages
     [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class MessageItem : IMessageItem
     {
+        /// <summary>
+        /// 构造
+        /// </summary>
+        public MessageItem()
+        {
+
+        }
+
+        /// <summary>
+        /// 构造
+        /// </summary>
+        /// <param name="topic">消息分类</param>
+        /// <param name="title">消息标题</param>
+        /// <param name="content">消息内容</param>
+        /// <returns></returns>
+        public static IMessageItem NewMessage<T>(string topic, string title, T content)
+        {
+            return NewMessage(topic, title, JsonHelper.SerializeObject(content));
+        }
+
+        /// <summary>
+        /// 构造
+        /// </summary>
+        /// <param name="topic">消息分类</param>
+        /// <param name="title">消息标题</param>
+        /// <param name="content">消息内容</param>
+        /// <returns></returns>
+        public static IMessageItem NewMessage(string topic, string title, string content = null)
+        {
+            return new MessageItem
+            {
+                Topic = topic,
+                Title = title,
+                Content = content
+            };
+        }
+
         /// <summary>
         /// 唯一标识，UUID
         /// </summary>

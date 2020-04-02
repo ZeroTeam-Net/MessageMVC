@@ -12,9 +12,9 @@ using ZeroTeam.MessageMVC.Messages;
 namespace ZeroTeam.MessageMVC.RedisMQ
 {
     /// <summary>
-    ///     ZMQ生产者
+    ///     Redis生产者
     /// </summary>
-    public class CsRedisProducer : IMessageProducer, IFlowMiddleware
+    public class CsRedisProducer : IMessagePoster, IFlowMiddleware
     {
         /// <summary>
         /// 单例
@@ -134,85 +134,21 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             }
         }
 
-        private string DoProducer(string channel, string title, string content)
-        {
-            var item = new RedisQueueItem
-            {
-                ID = Guid.NewGuid().ToString("N"),
-                Channel = channel,
-                Message = JsonHelper.SerializeObject(new MessageItem
-                {
-                    Title = title,
-                    Content = content
-                })
-            };
-            redisQueues.Enqueue(item);
-            semaphore.Release();
-            return item.ID;
-        }
-
         #endregion
 
-        #region IMessageProducer
+        #region IMessagePoster
 
         /// <summary>
         /// 运行状态
         /// </summary>
         public StationStateType State { get; set; }
 
-
-        /// <inheritdoc/>
-        public string Producer(string channel, string title, string content)
-        {
-            return DoProducer(channel, title, content);
-        }
-
-        TRes IMessageProducer.Producer<TArg, TRes>(string channel, string title, TArg content)
-        {
-            DoProducer(channel, title, JsonHelper.SerializeObject(content));
-            return default;
-        }
-
-        /// <inheritdoc/>
-        public void Producer<TArg>(string channel, string title, TArg content)
-        {
-            DoProducer(channel, title, JsonHelper.SerializeObject(content));
-        }
-        TRes IMessageProducer.Producer<TRes>(string channel, string title)
-        {
-            DoProducer(channel, title, null);
-            return default;
-        }
-
-
-        Task<string> IMessageProducer.ProducerAsync(string channel, string title, string content)
-        {
-            var id = DoProducer(channel, title, null);
-            return Task.FromResult(id);
-        }
-
-        Task<TRes> IMessageProducer.ProducerAsync<TArg, TRes>(string channel, string title, TArg content)
-        {
-            DoProducer(channel, title, JsonHelper.SerializeObject(content));
-            return Task.FromResult(default(TRes));
-        }
-        Task IMessageProducer.ProducerAsync<TArg>(string channel, string title, TArg content)
-        {
-            DoProducer(channel, title, null);
-            return Task.CompletedTask;
-        }
-
-        Task<TRes> IMessageProducer.ProducerAsync<TRes>(string channel, string title)
-        {
-            DoProducer(channel, title, null);
-            return Task.FromResult(default(TRes));
-        }
         /// <summary>
         /// 生产消息
         /// </summary>
         /// <param name="message">消息</param>
         /// <returns></returns>
-        Task<string> IMessageProducer.ProducerAsync(IMessageItem message)
+        public Task<(MessageState state, string result)> Post(IMessageItem message)
         {
             var item = new RedisQueueItem
             {
@@ -222,7 +158,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             };
             redisQueues.Enqueue(item);
             semaphore.Release();
-            return Task.FromResult(item.ID);
+            return Task.FromResult((MessageState.Accept, item.ID));
         }
 
         #endregion
@@ -282,3 +218,71 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         #endregion
     }
 }
+/*
+        
+        private string DoProducer(string channel, string title, string content)
+        {
+            var item = new RedisQueueItem
+            {
+                ID = Guid.NewGuid().ToString("N"),
+                Channel = channel,
+                Message = JsonHelper.SerializeObject(new MessageItem
+                {
+                    Title = title,
+                    Content = content
+                })
+            };
+            redisQueues.Enqueue(item);
+            semaphore.Release();
+            return item.ID;
+        }
+
+
+        /// <inheritdoc/>
+        public string Producer(string channel, string title, string content)
+        {
+            return DoProducer(channel, title, content);
+        }
+
+        TRes IMessagePoster.Producer<TArg, TRes>(string channel, string title, TArg content)
+        {
+            DoProducer(channel, title, JsonHelper.SerializeObject(content));
+            return default;
+        }
+
+        /// <inheritdoc/>
+        public void Producer<TArg>(string channel, string title, TArg content)
+        {
+            DoProducer(channel, title, JsonHelper.SerializeObject(content));
+        }
+        TRes IMessagePoster.Producer<TRes>(string channel, string title)
+        {
+            DoProducer(channel, title, null);
+            return default;
+        }
+
+
+        Task<string> IMessagePoster.ProducerAsync(string channel, string title, string content)
+        {
+            var id = DoProducer(channel, title, null);
+            return Task.FromResult(id);
+        }
+
+        Task<TRes> IMessagePoster.ProducerAsync<TArg, TRes>(string channel, string title, TArg content)
+        {
+            DoProducer(channel, title, JsonHelper.SerializeObject(content));
+            return Task.FromResult(default(TRes));
+        }
+        Task IMessagePoster.ProducerAsync<TArg>(string channel, string title, TArg content)
+        {
+            DoProducer(channel, title, null);
+            return Task.CompletedTask;
+        }
+
+        Task<TRes> IMessagePoster.ProducerAsync<TRes>(string channel, string title)
+        {
+            DoProducer(channel, title, null);
+            return Task.FromResult(default(TRes));
+        }
+
+    */

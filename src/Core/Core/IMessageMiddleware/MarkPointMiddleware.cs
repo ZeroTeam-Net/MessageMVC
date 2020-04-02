@@ -4,14 +4,14 @@ using ZeroTeam.MessageMVC.Messages;
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
     /// <summary>
-    /// 埋点处理中间件
+    /// 埋点发出中间件
     /// </summary>
     public class MarkPointMiddleware : IMessageMiddleware
     {
         /// <summary>
         /// 当前处理器
         /// </summary>
-        public MessageProcess Process { get; set; }
+        public MessageProcessor Process { get; set; }
 
         /// <summary>
         /// 层级
@@ -31,7 +31,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             var state = await next();
             message.Flush();
             Process.PushResult();
-            MessageProducer.Producer(ZeroFlowControl.Config.MarkPointName, message.Topic, message);
+            MessagePoster.Publish(ZeroFlowControl.Config.MarkPointName, message.Topic, message);
             return state;
         }
     }

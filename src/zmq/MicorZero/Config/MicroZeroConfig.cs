@@ -53,23 +53,36 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         {
             base.CopyByHase(option);
             if (option.StationIsolate != null)
+            {
                 StationIsolate = option.StationIsolate;
+            }
 
             //if (option.TaskCpuMultiple > 0)
             //    TaskCpuMultiple = option.TaskCpuMultiple;
             if (option.MaxWait > 0)
+            {
                 MaxWait = option.MaxWait;
+            }
+
             if (option.CanRaiseEvent != null)
+            {
                 CanRaiseEvent = option.CanRaiseEvent;
+            }
 
             if (option.ZeroGroup != null && option.ZeroGroup.Count > 0)
             {
                 if (ZeroGroup == null)
+                {
                     ZeroGroup = new List<ZeroItem>();
+                }
+
                 foreach (var item in option.ZeroGroup)
                 {
                     if (ZeroGroup.Any(p => p.Address == item.Address))
+                    {
                         continue;
+                    }
+
                     ZeroGroup.Add(item);
                 }
             }
@@ -99,19 +112,28 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         {
             base.CopyByEmpty(option);
             if (StationIsolate == null)
+            {
                 StationIsolate = option.StationIsolate;
+            }
 
             if (CanRaiseEvent == null)
+            {
                 CanRaiseEvent = option.CanRaiseEvent;
+            }
 
             if (ZeroGroup == null)
+            {
                 ZeroGroup = option.ZeroGroup;
+            }
             else if (option.ZeroGroup != null && option.ZeroGroup.Count > 0)
             {
                 foreach (var item in option.ZeroGroup)
                 {
                     if (ZeroGroup.Any(p => p.Address == item.Address))
+                    {
                         continue;
+                    }
+
                     ZeroGroup.Add(item);
                 }
             }
@@ -146,14 +168,28 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         public bool Check(StationConfig old, StationConfig config)
         {
             if (!CheckName(old, config.Name))
+            {
                 return false;
+            }
+
             if (!CheckName(old, config.ShortName))
+            {
                 return false;
+            }
+
             if (config.StationAlias == null || config.StationAlias.Count == 0)
+            {
                 return true;
+            }
+
             foreach (var al in config.StationAlias)
+            {
                 if (!CheckName(old, al))
+                {
                     return false;
+                }
+            }
+
             return true;
         }
 
@@ -163,12 +199,20 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             lock (_configs)
             {
                 if (_configs.Values.Where(p => p != config).Any(p => p.StationName == name))
+                {
                     return false;
+                }
+
                 if (_configs.Values.Where(p => p != config).Any(p => p.ShortName == name))
+                {
                     return false;
+                }
+
                 if (_configs.Values.Where(p => p != config && p.StationAlias != null)
                     .Any(p => p.StationAlias.Any(a => string.Equals(a, name))))
+                {
                     return false;
+                }
             }
 
             return true;
@@ -183,7 +227,9 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             get
             {
                 if (station == null)
+                {
                     return null;
+                }
                 //Console.WriteLine("lock (_configs)");
                 lock (_configs)
                 {
@@ -202,8 +248,12 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 _configMap.Remove(station.Name);
                 _configMap.Remove(station.ShortName);
                 if (station.StationAlias != null)
+                {
                     foreach (var ali in station.StationAlias)
+                    {
                         _configMap.Remove(ali);
+                    }
+                }
             }
             ZeroRpcFlow.InvokeEvent(ZeroNetEventType.CenterStationRemove, station.Group, null, station, true);
         }
@@ -214,20 +264,33 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             lock (_configs)
             {
                 if (_configs.TryGetValue(station.Name, out var config))
+                {
                     config.Copy(station);
+                }
                 else
+                {
                     _configs.Add(station.Name, config = station);
+                }
 
                 if (!_configMap.ContainsKey(station.Name))
+                {
                     _configMap.Add(station.Name, config);
+                }
                 else
+                {
                     _configMap[station.Name] = config;
+                }
+
                 if (!string.IsNullOrWhiteSpace(station.ShortName) && station.ShortName != station.Name)
                 {
                     if (!_configMap.ContainsKey(station.ShortName))
+                    {
                         _configMap.Add(station.ShortName, config);
+                    }
                     else
+                    {
                         _configMap[station.ShortName] = config;
+                    }
                 }
                 //if (station.StationAlias == null)
                 //    return;
@@ -238,7 +301,9 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 //        _configMap[ali] = config;
             }
             if (raiseEvent)
+            {
                 ZeroRpcFlow.InvokeEvent(ZeroNetEventType.CenterStationUpdate, station.Group, null, station, true);
+            }
         }
 
         /// <summary>
@@ -290,7 +355,9 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             lock (_configs)
             {
                 foreach (var config in _configs.Values.ToArray())
+                {
                     action(config);
+                }
             }
         }
 
@@ -372,19 +439,26 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 lock (_configs)
                 {
                     if (item == null)
+                    {
                         return false;
+                    }
+
                     var configs = JsonConvert.DeserializeObject<List<StationConfig>>(json);
                     foreach (var config in configs)
                     {
                         if (item != Master && (config.IsBaseStation || config.IsSystem))
+                        {
                             continue;
+                        }
 
                         //Console.WriteLine("lock (_configs)");
 
                         if (_configs.TryGetValue(config.Name, out var old))
                         {
                             if (old.Name != item.Name)
+                            {
                                 continue;
+                            }
                         }
 
                         config.Group = item.Name;

@@ -7,7 +7,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         /// <summary>
         /// 监控状态机
         /// </summary>
-        class RuningStateMachine : IMonitorStateMachine
+        private class RuningStateMachine : IMonitorStateMachine
         {
             /// <summary>
             ///     收到信息的处理

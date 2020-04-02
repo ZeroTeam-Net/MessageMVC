@@ -1,7 +1,7 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using Newtonsoft.Json;
 using ZeroTeam.MessageMVC.ApiDocuments;
 
 namespace ZeroTeam.ZeroMQ.ZeroRPC
@@ -189,9 +189,15 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         public bool ChangedState(ZeroCenterState value)
         {
             if (State == value)
+            {
                 return false;
+            }
+
             if (State >= ZeroCenterState.Failed && value >= ZeroCenterState.Failed && State > value)
+            {
                 return false;
+            }
+
             State = value;
             return true;
         }
@@ -224,11 +230,11 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             switch (type)
             {
                 case ZeroStationType.Api:
-                    return  "api";
+                    return "api";
                 case ZeroStationType.Vote:
-                    return  "vote";
+                    return "vote";
                 case ZeroStationType.RouteApi:
-                    return  "route_api";
+                    return "route_api";
                 case ZeroStationType.Queue:
                     return "queue";
                 case ZeroStationType.Notify:

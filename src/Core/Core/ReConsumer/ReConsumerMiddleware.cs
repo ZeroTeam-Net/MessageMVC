@@ -74,7 +74,7 @@ namespace ZeroTeam.MessageMVC
                     var json = File.ReadAllText(file);
                     var item = JsonHelper.DeserializeObject<MessageItem>(json);
                     service.ServiceName = item.ServiceName;
-                    await MessageProcess.OnMessagePush(service, item);
+                    await MessageProcessor.OnMessagePush(service, item);
                 }
                 catch (Exception e)
                 {

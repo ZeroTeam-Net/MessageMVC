@@ -19,21 +19,21 @@ namespace MicroZero.Kafka.QueueStation
             Console.ReadKey();
             Console.WriteLine("Bye bye.");
         }
-        static void Test()
+        static async void Test()
         {
-            var producer = IocHelper.Create<IMessageProducer>();
             for (int i = 0; ZeroFlowControl.CanDo && i < 10; i++)
             {
                 Thread.Sleep(100);
-                producer.Producer("test1", "test/res", "agebull");
-                producer.Producer("test1", "test/arg", "{'Value':'test'}");
-                producer.Producer("test1", "test/full", "1");
-                producer.Producer("test1", "test/void", "agebull");
 
-                producer.Producer("test1", "async/res", "{'Value':'test'}");
-                producer.Producer("test1", "async/arg", "{'Value':'test'}");
-                producer.Producer("test1", "async/full", "{'Value':'test'}");
-                producer.Producer("test1", "async/void", "{'Value':'test'}");
+                await MessagePoster.PublishAsync("test1", "test/res", "agebull");
+                await MessagePoster.PublishAsync("test1", "test/arg", "{'Value':'test'}");
+                await MessagePoster.PublishAsync("test1", "test/full", "1");
+                await MessagePoster.PublishAsync("test1", "test/void", "agebull");
+
+                await MessagePoster.PublishAsync("test1", "async/res", "{'Value':'test'}");
+                await MessagePoster.PublishAsync("test1", "async/arg", "{'Value':'test'}");
+                await MessagePoster.PublishAsync("test1", "async/full", "{'Value':'test'}");
+                await MessagePoster.PublishAsync("test1", "async/void", "{'Value':'test'}");
             }
         }
     }

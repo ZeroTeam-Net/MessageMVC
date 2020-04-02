@@ -9,9 +9,9 @@ using ZeroTeam.ZeroMQ.ZeroRPC;
 namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
 {
     /// <summary>
-    ///     API客户端代理
+    ///     ZMQ环境流程处理
     /// </summary>
-    public class ZmqProxy : IFlowMiddleware
+    public class ZmqFlowMiddleware : IFlowMiddleware
     {
         #region Socket
 
@@ -57,7 +57,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// <summary>
         /// 实例
         /// </summary>
-        public static ZmqProxy Instance { get; private set; }
+        public static ZmqFlowMiddleware Instance { get; private set; }
 
         /// <summary>
         ///     初始化

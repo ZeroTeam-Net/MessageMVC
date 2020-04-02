@@ -56,7 +56,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <param name="title">消息标题</param>
         /// <param name="content">消息内容</param>
         /// <returns></returns>
-        public static ApiResult Post( PlanOption option, string topic, string title, string content)
+        public static ApiResult Post(PlanOption option, string topic, string title, string content)
         {
             if (AppOption.EnableGlobalContext)
             {
@@ -75,7 +75,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <param name="title">消息标题</param>
         /// <param name="content">消息内容</param>
         /// <returns></returns>
-        public static Task<ApiResult> PostAsync<TArg>( PlanOption option, string topic, string title, TArg content)
+        public static Task<ApiResult> PostAsync<TArg>(PlanOption option, string topic, string title, TArg content)
         {
             if (AppOption.EnableGlobalContext)
             {
@@ -94,7 +94,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <param name="title">消息标题</param>
         /// <param name="content">消息内容</param>
         /// <returns></returns>
-        public static Task<ApiResult> PostAsync( PlanOption option, string topic, string title, string content)
+        public static Task<ApiResult> PostAsync(PlanOption option, string topic, string title, string content)
         {
             if (AppOption.EnableGlobalContext)
             {

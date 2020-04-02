@@ -8,7 +8,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
     /// <summary>
     ///     ZMQ生产者
     /// </summary>
-    public class ZeroRPCProducer : IMessageProducer
+    public class ZeroRPCPoster : IMessagePoster
     {
         #region Properties
 
@@ -20,12 +20,12 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         /// 实例
         /// </summary>
-        public static ZeroRPCProducer Instance = new ZeroRPCProducer();
+        public static ZeroRPCPoster Instance = new ZeroRPCPoster();
 
         /// <summary>
         /// 构造
         /// </summary>
-        public ZeroRPCProducer()
+        public ZeroRPCPoster()
         {
             Instance = this;
         }
@@ -33,7 +33,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         ///     调用器
         /// </summary>
-        private readonly ZeroRPCCaller _core = new ZeroRPCCaller();
+        private readonly ZeroCaller _core = new ZeroCaller();
 
         /// <summary>
         ///     返回值
@@ -105,24 +105,21 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
 
         #region 流程
 
-
         /// <summary>
         ///     远程调用
         /// </summary>
         /// <returns></returns>
-        public void CallCommand()
-        {
-            _core.Call();
-        }
-
+        public void CallCommand() => _core.Call();
 
         /// <summary>
         ///     检查在非成功状态下的返回值
         /// </summary>
-        public void CheckStateResult()
-        {
-            _core.CheckStateResult();
-        }
+        public void CheckStateResult() => _core.CheckStateResult();
+
+        /// <summary>
+        ///     检查在非成功状态下的返回值
+        /// </summary>
+        public MessageState MessageState => _core.MessageState;
 
         #endregion
 
@@ -147,7 +144,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <returns></returns>
         public static async Task<string> CallAsync(string station, string commmand, string argument)
         {
-            var client = new ZeroRPCProducer
+            var client = new ZeroRPCPoster
             {
                 Station = station,
                 Commmand = commmand,
@@ -161,9 +158,32 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
 
         #endregion
 
-        #region IMessageProducer
+        #region IMessagePoster
 
-        string IMessageProducer.Producer(string topic, string title, string content)
+        /// <summary>
+        /// 生产消息
+        /// </summary>
+        /// <param name="message">消息</param>
+        /// <returns></returns>
+        public async Task<(MessageState state, string result)> Post(IMessageItem message)
+        {
+            var client = new ZeroRPCPoster
+            {
+                Station = message.Topic,
+                Commmand = message.Title
+            };
+            await client.CallCommandAsync();
+            client.CheckStateResult();
+            return (client.MessageState, client.Result);
+        }
+
+        #endregion
+    }
+}
+
+/*
+
+        string IMessagePoster.Producer(string topic, string title, string content)
         {
             var client = new ZeroRPCProducer
             {
@@ -175,7 +195,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             return client.Result;
         }
 
-        TRes IMessageProducer.Producer<TArg, TRes>(string topic, string title, TArg content)
+        TRes IMessagePoster.Producer<TArg, TRes>(string topic, string title, TArg content)
         {
             var client = new ZeroRPCProducer
             {
@@ -188,7 +208,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 ? default
                 : JsonHelper.DeserializeObject<TRes>(client.Result);
         }
-        void IMessageProducer.Producer<TArg>(string topic, string title, TArg content)
+        void IMessagePoster.Producer<TArg>(string topic, string title, TArg content)
         {
             var client = new ZeroRPCProducer
             {
@@ -198,7 +218,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             };
             client.CallCommand();
         }
-        TRes IMessageProducer.Producer<TRes>(string topic, string title)
+        TRes IMessagePoster.Producer<TRes>(string topic, string title)
         {
             var client = new ZeroRPCProducer
             {
@@ -212,7 +232,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         }
 
 
-        async Task<string> IMessageProducer.ProducerAsync(string topic, string title, string content)
+        async Task<string> IMessagePoster.ProducerAsync(string topic, string title, string content)
         {
             var client = new ZeroRPCProducer
             {
@@ -224,7 +244,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             return client.Result;
         }
 
-        async Task<TRes> IMessageProducer.ProducerAsync<TArg, TRes>(string topic, string title, TArg content)
+        async Task<TRes> IMessagePoster.ProducerAsync<TArg, TRes>(string topic, string title, TArg content)
         {
             var client = new ZeroRPCProducer
             {
@@ -237,7 +257,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 ? default
                 : JsonHelper.DeserializeObject<TRes>(client.Result);
         }
-        Task IMessageProducer.ProducerAsync<TArg>(string topic, string title, TArg content)
+        Task IMessagePoster.ProducerAsync<TArg>(string topic, string title, TArg content)
         {
             var client = new ZeroRPCProducer
             {
@@ -247,7 +267,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             };
             return client.CallCommandAsync();
         }
-        async Task<TRes> IMessageProducer.ProducerAsync<TRes>(string topic, string title)
+        async Task<TRes> IMessagePoster.ProducerAsync<TRes>(string topic, string title)
         {
             var client = new ZeroRPCProducer
             {
@@ -259,17 +279,4 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 ? default
                 : JsonHelper.DeserializeObject<TRes>(client.Result);
         }
-        async Task<string> IMessageProducer.ProducerAsync(IMessageItem message)
-        {
-            var client = new ZeroRPCProducer
-            {
-                Station = message.Topic,
-                Commmand = message.Title
-            };
-            await client.CallCommandAsync();
-            return client.Result;
-        }
-
-        #endregion
-    }
-}
+*/

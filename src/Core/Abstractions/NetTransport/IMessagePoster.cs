@@ -3,9 +3,9 @@
 namespace ZeroTeam.MessageMVC.Messages
 {
     /// <summary>
-    /// 消息生产对象
+    /// 消息投递对象
     /// </summary>
-    public interface IMessageProducer
+    public interface IMessagePoster
     {
         /// <summary>
         /// 运行状态
@@ -20,6 +20,18 @@ namespace ZeroTeam.MessageMVC.Messages
 
         }
 
+        /// <summary>
+        /// 投递消息
+        /// </summary>
+        /// <param name="message">消息</param>
+        /// <returns></returns>
+        Task<(MessageState state, string result)> Post(IMessageItem message);
+
+    }
+}
+
+/*
+ 
         /// <summary>
         /// 生产消息
         /// </summary>
@@ -90,12 +102,4 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <returns></returns>
         Task<string> ProducerAsync(string topic, string title, string content);
 
-        /// <summary>
-        /// 生产消息
-        /// </summary>
-        /// <param name="message">消息</param>
-        /// <returns></returns>
-        Task<string> ProducerAsync(IMessageItem message);
-
-    }
-}
+     */

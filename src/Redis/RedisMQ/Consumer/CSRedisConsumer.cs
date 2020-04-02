@@ -12,7 +12,7 @@ using static CSRedis.CSRedisClient;
 namespace ZeroTeam.MessageMVC.RedisMQ
 {
     /// <summary>
-    /// 表示进程内通讯
+    /// RedisMQ消费者
     /// </summary>
     public class CSRedisConsumer : IMessageConsumer, INetEvent
     {
@@ -237,7 +237,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                             {
                                 item.ID = id;
                                 item.Topic = Service.ServiceName;
-                                switch (await MessageProcess.OnMessagePush(Service, item))
+                                switch (await MessageProcessor.OnMessagePush(Service, item))
                                 {
                                     default:
                                         //case MessageState.Cancel:

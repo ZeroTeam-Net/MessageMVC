@@ -14,7 +14,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// 当前处理器
         /// </summary>
-        public MessageProcess Process { get; set; }
+        public MessageProcessor Process { get; set; }
 
         /// <summary>
         /// 层级
@@ -35,7 +35,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 return await next();
             }
-            var producer = MessageProducer.GetService(message.Topic);
+            var producer = MessagePoster.GetService(message.Topic);
             if (producer == null)
             {
                 return await next();
@@ -43,9 +43,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             try
             {
                 LogRecorder.MonitorTrace("ReverseProxy To..");
-                message.Result = await producer.ProducerAsync(message);
-
-              await  service.Transport.OnMessageResult(message, tag);
+                var (state, result) = await producer.Post(message);
+                message.Result = result;
+                message.State = state;
+                await service.Transport.OnMessageResult(message, tag);
             }
             catch (OperationCanceledException ex)
             {

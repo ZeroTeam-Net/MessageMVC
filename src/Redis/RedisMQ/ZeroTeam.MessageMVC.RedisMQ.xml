@@ -96,13 +96,7 @@
             运行状态
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer.Producer(System.String,System.String,System.String)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer.Producer``1(System.String,System.String,``0)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer.ZeroTeam#MessageMVC#Messages#IMessageProducer#ProducerAsync(ZeroTeam.MessageMVC.Messages.IMessageItem)">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer.Post(ZeroTeam.MessageMVC.Messages.IMessageItem)">
             <summary>
             生产消息
             </summary>

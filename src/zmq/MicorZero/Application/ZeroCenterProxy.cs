@@ -1,6 +1,5 @@
 using Agebull.Common;
 using ZeroTeam.MessageMVC;
-using ZeroTeam.MessageMVC.Context;
 
 namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
 {
@@ -23,7 +22,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         /// <summary>
         /// 单例
         /// </summary>
-        public static ZeroCenterProxy Master { get;internal set; }
+        public static ZeroCenterProxy Master { get; internal set; }
 
         #endregion
 

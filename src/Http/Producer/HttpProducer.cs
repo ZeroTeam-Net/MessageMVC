@@ -15,9 +15,9 @@ namespace ZeroTeam.MessageMVC.Http
     /// <summary>
     ///     Http生产者
     /// </summary>
-    public class HttpProducer : IMessageProducer
+    public class HttpProducer : IMessagePoster
     {
-        #region IMessageProducer
+        #region IMessagePoster
 
         /// <summary>
         /// 运行状态
@@ -42,7 +42,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// <summary>
         ///     初始化
         /// </summary>
-        void IMessageProducer.Initialize()
+        void IMessagePoster.Initialize()
         {
             var dirStr = ConfigurationManager.Get<HttpClientOption[]>("HttpClient");
             foreach (var kv in dirStr)
@@ -65,38 +65,48 @@ namespace ZeroTeam.MessageMVC.Http
 
         }
 
-        private async Task<(bool success, string result)> PostAsync(string service, string title, string content)
+        /// <summary>
+        /// 生产消息
+        /// </summary>
+        /// <param name="item">消息</param>
+        /// <returns></returns>
+        async Task<(MessageState state, string result)> IMessagePoster.Post(IMessageItem item)
         {
-            if (!ServiceMap.TryGetValue(service, out var name))
+            if (!ServiceMap.TryGetValue(item.Topic, out var name))
             {
                 name = defName;
             }
 
-            using (MonitorStepScope.CreateScope("[HttpProducer] {0}/{1}/{2}", defName, service, title))
+            using (MonitorStepScope.CreateScope("[HttpProducer] {0}/{1}/{2}", defName, item.Topic, item.Title))
             {
                 try
                 {
                     var client = httpClientFactory.CreateClient(name);
-                    var response = await client.PostAsync($"/{service}/{title}", new StringContent(content ?? ""));
+                    var response = await client.PostAsync($"/{item.Topic}/{item.Title}", new StringContent(item.Content ?? ""));
 
                     if (!response.IsSuccessStatusCode)
                     {
                         LogRecorder.MonitorTrace("Error:{0}", response.StatusCode);
-                        return (false, null);
+                        return (MessageState.NetError, null);
                     }
                     var result = await response.Content.ReadAsStringAsync();
                     LogRecorder.MonitorTrace(result);
-                    return (true, result);
+                    return (MessageState.Success, result);
                 }
                 catch (HttpRequestException ex)
                 {
                     LogRecorder.MonitorTrace("Error : {0}", ex.Message);
                     throw new NetTransferException(ex.Message, ex);
-                } 
+                }
             }
         }
 
-        private (bool success, string result) Post(string service, string title, string content)
+        #endregion
+    }
+}
+/*
+ 
+        private (MessageState success, string result) Post(string service, string title, string content)
         {
             if (!ServiceMap.TryGetValue(service, out var name))
             {
@@ -113,11 +123,11 @@ namespace ZeroTeam.MessageMVC.Http
                     if (!response.IsSuccessStatusCode)
                     {
                         LogRecorder.MonitorTrace("Error:{0}", response.StatusCode);
-                        return (false, null);
+                        return (MessageState.NetError, null);
                     }
                     var result = response.Content.ReadAsStringAsync().Result;
                     LogRecorder.MonitorTrace(result);
-                    return (true, result);
+                    return (MessageState.Success, result);
                 }
                 catch (HttpRequestException ex)
                 {
@@ -132,7 +142,7 @@ namespace ZeroTeam.MessageMVC.Http
             return Post(service, title, content).result;
         }
 
-        TRes IMessageProducer.Producer<TArg, TRes>(string service, string title, TArg content)
+        TRes IMessagePoster.Producer<TArg, TRes>(string service, string title, TArg content)
         {
             var (success, result) = Post(service, title, JsonHelper.SerializeObject(content));
             return !success ? default : JsonHelper.DeserializeObject<TRes>(result);
@@ -143,46 +153,32 @@ namespace ZeroTeam.MessageMVC.Http
         {
             Post(service, title, JsonHelper.SerializeObject(content));
         }
-        TRes IMessageProducer.Producer<TRes>(string service, string title)
+        TRes IMessagePoster.Producer<TRes>(string service, string title)
         {
             var (success, result) = Post(service, title, null);
             return !success ? default : JsonHelper.DeserializeObject<TRes>(result);
         }
 
 
-        async Task<string> IMessageProducer.ProducerAsync(string service, string title, string content)
+        async Task<string> IMessagePoster.ProducerAsync(string service, string title, string content)
         {
             var (_, result) = await PostAsync(service, title, content);
             return result;
         }
 
-        async Task<TRes> IMessageProducer.ProducerAsync<TArg, TRes>(string service, string title, TArg content)
+        async Task<TRes> IMessagePoster.ProducerAsync<TArg, TRes>(string service, string title, TArg content)
         {
             var (success, result) = await PostAsync(service, title, JsonHelper.SerializeObject(content));
             return !success ? default : JsonHelper.DeserializeObject<TRes>(result);
         }
-        Task IMessageProducer.ProducerAsync<TArg>(string service, string title, TArg content)
+        Task IMessagePoster.ProducerAsync<TArg>(string service, string title, TArg content)
         {
             return PostAsync(service, title, string.Empty);
         }
 
-        async Task<TRes> IMessageProducer.ProducerAsync<TRes>(string service, string title)
+        async Task<TRes> IMessagePoster.ProducerAsync<TRes>(string service, string title)
         {
             var (success, result) = await PostAsync(service, title, string.Empty);
             return !success ? default : JsonHelper.DeserializeObject<TRes>(result);
         }
-
-        /// <summary>
-        /// 生产消息
-        /// </summary>
-        /// <param name="message">消息</param>
-        /// <returns></returns>
-        async Task<string> IMessageProducer.ProducerAsync(IMessageItem message)
-        {
-            var (success, result) = await PostAsync(message.Topic, message.Title, message.Content);
-            return !success ? default  : result;
-        }
-
-        #endregion
-    }
-}
+*/

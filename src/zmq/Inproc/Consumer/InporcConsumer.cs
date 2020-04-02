@@ -50,7 +50,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// <returns></returns>
         Task<bool> INetTransfer.LoopBegin()
         {
-            socket = ZSocketEx.CreateServiceSocket(ZmqProxy.InprocAddress, null, ZSocketType.ROUTER);
+            socket = ZSocketEx.CreateServiceSocket(ZmqFlowMiddleware.InprocAddress, null, ZSocketType.ROUTER);
             if (socket == null)
             {
                 return Task.FromResult(false);
@@ -138,7 +138,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
             };
             try
             {
-                _ = MessageProcess.OnMessagePush(Service, arg, item);
+                _ = MessageProcessor.OnMessagePush(Service, arg, item);
             }
             catch (Exception e)
             {
@@ -162,11 +162,11 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
             try
             {
                 var id = long.Parse(item.Caller.FromUtf8Bytes().Trim('"'));
-                if (item == null || !ZmqProxy.Instance.Tasks.TryGetValue(id, out var task))
+                if (item == null || !ZmqFlowMiddleware.Instance.Tasks.TryGetValue(id, out var task))
                 {
                     return;
                 }
-                ZmqProxy.Instance.Tasks.TryRemove(id, out _);
+                ZmqFlowMiddleware.Instance.Tasks.TryRemove(id, out _);
                 task.TaskSource.TrySetResult(new ZeroResult
                 {
                     State = ZeroOperatorStateType.FrameInvalid,
@@ -188,11 +188,11 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
             try
             {
                 var id = long.Parse(item.Caller.FromUtf8Bytes().Trim('"'));
-                if (item == null || !ZmqProxy.Instance.Tasks.TryGetValue(id, out var task))
+                if (item == null || !ZmqFlowMiddleware.Instance.Tasks.TryGetValue(id, out var task))
                 {
                     return;
                 }
-                ZmqProxy.Instance.Tasks.TryRemove(id, out _);
+                ZmqFlowMiddleware.Instance.Tasks.TryRemove(id, out _);
                 task.TaskSource.TrySetResult(new ZeroResult
                 {
                     State = (ZeroOperatorStateType)state,

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using ZeroTeam.MessageMVC;
 
 namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
@@ -75,21 +74,44 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         public void CopyByEmpty(ZeroStationOption option)
         {
             if (string.IsNullOrWhiteSpace(StationName))
+            {
                 StationName = option.StationName;
+            }
+
             if (string.IsNullOrWhiteSpace(ShortName))
+            {
                 ShortName = option.ShortName;
+            }
+
             if (string.IsNullOrWhiteSpace(ServiceName))
+            {
                 ServiceName = option.ServiceName;
+            }
+
             if (SpeedLimitModel == SpeedLimitType.None)
+            {
                 SpeedLimitModel = option.SpeedLimitModel;
+            }
+
             if (TaskCpuMultiple <= 0)
+            {
                 TaskCpuMultiple = option.TaskCpuMultiple;
+            }
+
             if (MaxWait <= 0)
+            {
                 MaxWait = option.MaxWait;
+            }
+
             if (ApiTimeout <= 0)
+            {
                 ApiTimeout = option.ApiTimeout;
+            }
+
             if (!ApiTimeoutKill)
+            {
                 ApiTimeoutKill = option.ApiTimeoutKill;
+            }
         }
 
         /// <summary>
@@ -99,23 +121,49 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         public void CopyByHase(ZeroStationOption option)
         {
             if (!string.IsNullOrWhiteSpace(option.StationName))
+            {
                 StationName = option.StationName;
+            }
+
             if (!string.IsNullOrWhiteSpace(option.ShortName))
+            {
                 ShortName = option.ShortName;
+            }
+
             if (!string.IsNullOrWhiteSpace(option.ServiceName))
+            {
                 ServiceName = option.ServiceName;
+            }
+
             if (option.SpeedLimitModel > SpeedLimitType.None)
+            {
                 SpeedLimitModel = option.SpeedLimitModel;
+            }
+
             if (option.TaskCpuMultiple > 0)
+            {
                 TaskCpuMultiple = option.TaskCpuMultiple;
+            }
+
             if (option.MaxWait > 0)
+            {
                 MaxWait = option.MaxWait;
+            }
+
             if (option.ApiTimeout > 0)
+            {
                 ApiTimeout = option.ApiTimeout;
+            }
+
             if (option.ApiTimeoutKill)
+            {
                 ApiTimeoutKill = option.ApiTimeoutKill;
+            }
+
             if (option.ApiTimeoutKill)
+            {
                 ApiTimeoutKill = true;
+            }
         }
 
     }

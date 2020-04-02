@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.RedisMQ;
-using ZeroTeam.MessageMVC.RedisMQ.Sample.Controler;
 using ZeroTeam.MessageMVC.Sample;
 
 namespace MicroZero.Kafka.QueueStation
@@ -20,14 +19,7 @@ namespace MicroZero.Kafka.QueueStation
 
             for (int i = 1; i <= 100; i++)
             {
-                MessageProducer.Producer("AppEvent", "v1/error", new AppErrorInfo
-                {
-                    AppName = ZeroFlowControl.AppName,
-                    Module = nameof(Program),
-                    Level = "Error",
-                    Message = "Test"
-                });
-                MessageProducer.Producer("OrderEvent", "offline/v1/new", new UnionOrder
+                MessagePoster.Publish("OrderEvent", "offline/v1/new", new UnionOrder
                 {
                     Items = new List<UnionOrderItem>
                     {

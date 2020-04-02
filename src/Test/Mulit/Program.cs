@@ -21,8 +21,8 @@ namespace MicroZero.Kafka.QueueStation
             IocHelper.ServiceCollection.UseZeroMQInporc();
             await IocHelper.ServiceCollection.UseFlow(typeof(Program).Assembly, false);
 
-            MessageProducer.Producer("test1", "test", "");
-            MessageProducer.Producer("Inproc", "test", "");
+            MessagePoster.Publish("test1", "test", "");
+            MessagePoster.Publish("Inproc", "test", "");
 
             Console.ReadKey();
             Console.WriteLine("Bye bye.");

@@ -1,7 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
-using Agebull.Common.Logging;
+﻿using Agebull.Common.Logging;
 using Newtonsoft.Json;
+using System;
+using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.ApiDocuments;
 #pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
@@ -27,7 +27,9 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
             internal set
             {
                 if (_stateMachine.GetType() == value.GetType())
+                {
                     return;
+                }
                 //_stateMachine?.Dispose();
                 _stateMachine = value;
             }
@@ -45,8 +47,8 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
                 case ZeroCenterState.Closing: // 将要关闭
                 case ZeroCenterState.Closed: // 已关闭
                 case ZeroCenterState.Destroy: // 已销毁，析构已调用
-                    //StateMachine = new EmptyStateMachine();
-                    //return;
+                                              //StateMachine = new EmptyStateMachine();
+                                              //return;
                 case ZeroCenterState.Failed: // 错误状态
                     ZeroMachineState = 3;
                     StateMachine = new FailedStateMachine();
@@ -62,12 +64,15 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
 
         #region CenterEvent
 
-        static int ZeroMachineState;
+        private static int ZeroMachineState;
 
         internal static Task center_start(string identity)
         {
             if (ZeroMachineState == 1)
+            {
                 return Task.CompletedTask;
+            }
+
             ZeroMachineState = 1;
             ZeroTrace.SystemLog("ZeroCenter", "center_start",
                 $"{identity}:{ZeroRpcFlow.ZeroCenterState}:{ZeroMachineState}");
@@ -87,7 +92,10 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         internal static async Task center_closing(string identity)
         {
             if (ZeroMachineState >= 2)
+            {
                 return;
+            }
+
             ZeroMachineState = 2;
             ZeroTrace.SystemLog("ZeroCenter", "center_closing", $"{identity}:{ZeroRpcFlow.ZeroCenterState}:{ZeroMachineState}");
             if (ZeroRpcFlow.ZeroCenterState < ZeroCenterState.Closing)
@@ -99,7 +107,10 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         internal static async Task center_stop(string identity)
         {
             if (ZeroMachineState == 3)
+            {
                 return;
+            }
+
             ZeroMachineState = 3;
             ZeroTrace.SystemLog("ZeroCenter", "center_stop", $"{identity}:{ZeroRpcFlow.ZeroCenterState}:{ZeroMachineState}");
             if (ZeroRpcFlow.ZeroCenterState < ZeroCenterState.Closing)
@@ -128,7 +139,10 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         internal static void worker_sound_off()
         {
             if (ZeroFlowControl.ApplicationState != StationRealState.Run || ZeroRpcFlow.ZeroCenterState != ZeroCenterState.Run)
+            {
                 return;
+            }
+
             ZeroCenterProxy.Master.Heartbeat();
         }
 
@@ -177,9 +191,15 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         internal static void ChangeStationState(string name, ZeroCenterState state, ZeroNetEventType eventType)
         {
             if (ZeroFlowControl.ApplicationState != StationRealState.Run || ZeroRpcFlow.ZeroCenterState != ZeroCenterState.Run)
+            {
                 return;
+            }
+
             if (!ZeroRpcFlow.Config.TryGetConfig(name, out var config) || !config.ChangedState(state))
+            {
                 return;
+            }
+
             ZeroRpcFlow.InvokeEvent(eventType, name, null, config);
         }
 
@@ -227,13 +247,18 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         internal static void station_document(string name, string content)
         {
             if (!ZeroRpcFlow.Config.TryGetConfig(name, out var config))
+            {
                 return;
+            }
+
             ZeroTrace.SystemLog(name, "station_document");
             var doc = JsonConvert.DeserializeObject<ServiceDocument>(content);
             if (ZeroRpcFlow.Config.Documents.ContainsKey(name))
             {
                 if (!ZeroRpcFlow.Config.Documents[name].IsLocal)
+                {
                     ZeroRpcFlow.Config.Documents[name] = doc;
+                }
             }
             else
             {
@@ -253,7 +278,10 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         internal static void client_join(string name, string content)
         {
             if (!ZeroRpcFlow.Config.TryGetConfig(name, out var config))
+            {
                 return;
+            }
+
             ZeroTrace.SystemLog(name, "client_join", content);
             ZeroRpcFlow.InvokeEvent(ZeroNetEventType.CenterClientJoin, name, content, config);
         }
@@ -261,7 +289,10 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         internal static void client_left(string name, string content)
         {
             if (!ZeroRpcFlow.Config.TryGetConfig(name, out var config))
+            {
                 return;
+            }
+
             ZeroTrace.SystemLog(name, "client_left", content);
             ZeroRpcFlow.InvokeEvent(ZeroNetEventType.CenterClientLeft, name, content, config);
         }

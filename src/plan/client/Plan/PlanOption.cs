@@ -91,6 +91,6 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         ///  week month:指定日期的,只使用此时间的天内部分(即此时间可以明确指定引发的时间),如不指定,则时间为0:0:0
         /// </remarks>
         public long plan_time;
-        
+
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Agebull.Common;
 using Agebull.Common.Configuration;
-using Agebull.Common.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -79,7 +78,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                             Interlocked.Increment(ref wait);
                             //await ExecMessage(item);
                             item.Message.Flush();
-                            await MessageProcess.OnMessagePush(Service, item.Message, item);
+                            await MessageProcessor.OnMessagePush(Service, item.Message, item);
                         }
                     }
                     catch

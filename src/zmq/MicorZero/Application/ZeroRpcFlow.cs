@@ -1,15 +1,15 @@
+using Agebull.Common;
+using Agebull.Common.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant;
 using ZeroTeam.MessageMVC;
-using Agebull.Common.Configuration;
-using Agebull.Common;
+using ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant;
 
 namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
     /// <summary>
-    ///     MicroZero流程控制器
+    ///     ZeroRPC流程控制器
     /// </summary>
     public partial class ZeroRpcFlow : IFlowMiddleware
     {
@@ -43,19 +43,29 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
 
             var sec = ConfigurationManager.Get("Zero");
             if (sec == null)
+            {
                 throw new Exception("无法找到主配置节点,路径为Zero,在zero.json或appsettings.json中设置");
+            }
 
             var opt = sec.Child<SocketOption>("socketOption");
             if (opt != null)
+            {
                 ZSocket.Option = opt;
+            }
+
             ZSocket.Option.CheckOption();
             Config = new ZeroRpcOption();
             var glc = sec.Child<ZeroRpcConfig>("Global");
             if (glc != null)
+            {
                 Config.CopyByEmpty(glc);
+            }
+
             var cfg = sec.Child<ZeroRpcConfig>(ZeroFlowControl.AppName);
             if (cfg != null)
+            {
                 Config.CopyByEmpty(cfg);
+            }
 
 
             #endregion
@@ -63,7 +73,9 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             #region ServiceName
 
             if (string.IsNullOrWhiteSpace(Config.StationName))
+            {
                 Config.StationName = ZeroFlowControl.AppName;
+            }
 
             Config.ShortName = string.IsNullOrWhiteSpace(Config.ShortName)
                 ? Config.StationName
@@ -82,7 +94,9 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
 
             Config.Master = Config.ZeroGroup[0];
             if (Config.ApiTimeout <= 1)
+            {
                 Config.ApiTimeout = 60;
+            }
             #endregion
         }
 
@@ -113,10 +127,14 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             var option = sec.Child<ZeroStationOption>(station) ?? new ZeroStationOption();
             option.CopyByEmpty(Config);
             if (option.ApiTimeout <= 1)
+            {
                 option.ApiTimeout = 60;
+            }
 
             if (option.SpeedLimitModel != SpeedLimitType.WaitCount)
+            {
                 option.SpeedLimitModel = SpeedLimitType.Single;
+            }
 
             //if (option.TaskCpuMultiple <= 0)
             //    option.TaskCpuMultiple = 1;
@@ -124,9 +142,13 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             //    option.TaskCpuMultiple = 128;
 
             if (option.MaxWait < 0xFF)
+            {
                 option.MaxWait = 0xFF;
+            }
             else if (option.MaxWait > 0xFFFFF)
+            {
                 option.MaxWait = 0xFFFFF;
+            }
 
             return option;
         }
@@ -185,7 +207,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         /// 中心事件监控对象
         /// </summary>
-        static readonly ZeroEventMonitor SystemMonitor = new ZeroEventMonitor();
+        private static readonly ZeroEventMonitor SystemMonitor = new ZeroEventMonitor();
 
         /// <summary>
         ///     进入系统侦听
@@ -193,7 +215,10 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         internal static bool JoinCenter()
         {
             if (ZeroCenterState == ZeroCenterState.Start || ZeroCenterState == ZeroCenterState.Run)
+            {
                 return false;
+            }
+
             ZeroCenterState = ZeroCenterState.Start;
             ZeroTrace.SystemLog("ZeroCenter", "JoinCenter", $"try connect zero center ({Config.Master.ManageAddress})...");
             if (!ZeroCenterProxy.Master.PingCenter())
@@ -219,7 +244,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
             ZeroTrace.SystemLog("ZeroCenter", "JoinCenter", "be connected successfully,start local stations.");
 
-            if (ZeroFlowControl.ApplicationState == (int)StationRealState.Run)
+            if (ZeroFlowControl.ApplicationState == StationRealState.Run)
             {
                 if (WorkModel == ZeroWorkModel.Service)
                 {
@@ -250,7 +275,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         void IFlowMiddleware.Start()
         {
             SystemMonitor.Start();
-            if (ZeroFlowControl.ApplicationState == (int)StationRealState.Run && WorkModel == ZeroWorkModel.Service)
+            if (ZeroFlowControl.ApplicationState == StationRealState.Run && WorkModel == ZeroWorkModel.Service)
             {
                 var m = new ConfigManager(Config.Master);
                 m.UploadDocument();
@@ -280,7 +305,10 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         internal static void InvokeEvent(ZeroNetEventType centerEvent, string name, string context, StationConfig config, bool sync = false)
         {
             if (Config.CanRaiseEvent != true)
+            {
                 return;
+            }
+
             var args = new ZeroNetEventArgument(centerEvent, name, context, config);
             InvokeEvent(args, !sync);
         }
@@ -293,7 +321,10 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         internal static void RaiseEvent(ZeroNetEventType @event, bool sync = false)
         {
             if (Config.CanRaiseEvent != true)
+            {
                 return;
+            }
+
             var args = new ZeroNetEventArgument(@event, null, null, null);
             InvokeEvent(args, !sync);
         }
@@ -320,7 +351,10 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
 
             if (!waitEnd || tasks.Count == 0)
+            {
                 return;
+            }
+
             Task.WaitAll(tasks.ToArray());
         }
 

@@ -928,6 +928,11 @@
                 检查在非成功状态下的返回值
             </summary>
         </member>
+        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCCaller.MessageState">
+            <summary>
+                消息状态
+            </summary>
+        </member>
         <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCCaller.CallDescription">
             <summary>
                 请求格式说明
@@ -1034,6 +1039,11 @@
                 检查在非成功状态下的返回值
             </summary>
         </member>
+        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCProducer.MessageState">
+            <summary>
+                检查在非成功状态下的返回值
+            </summary>
+        </member>
         <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCProducer.CallCommandAsync">
             <summary>
                 远程调用
@@ -1047,6 +1057,13 @@
             <param name="station"></param>
             <param name="commmand"></param>
             <param name="argument"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCProducer.Post(ZeroTeam.MessageMVC.Messages.IMessageItem)">
+            <summary>
+            生产消息
+            </summary>
+            <param name="message">消息</param>
             <returns></returns>
         </member>
         <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCProxy">

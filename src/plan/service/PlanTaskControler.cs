@@ -16,7 +16,10 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
                 Message = info.Message
             };
             if (!await item.FirstSave())
+            {
                 return ApiResult.ArgumentError;
+            }
+
             await item.CheckNextTime();
             return ApiResult.Succees();
         }

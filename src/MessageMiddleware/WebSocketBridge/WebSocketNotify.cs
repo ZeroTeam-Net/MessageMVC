@@ -1,15 +1,15 @@
-using System;
-using System.Collections.Generic;
+using Agebull.Common.Configuration;
+using Agebull.Common.Ioc;
+using Agebull.Common.Logging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using System.Threading.Tasks;
-using Agebull.Common.Configuration;
-using Agebull.Common.Logging;
 using Microsoft.Extensions.Configuration;
+using System;
+using System.Collections.Generic;
 using System.Text;
-using ZeroTeam.MessageMVC.ZeroApis;
+using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
-using Agebull.Common.Ioc;
+using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Web
 {
@@ -23,7 +23,7 @@ namespace ZeroTeam.MessageMVC.Web
         /// <summary>
         /// 当前处理器
         /// </summary>
-        public MessageProcess Process { get; set; }
+        public MessageProcessor Process { get; set; }
 
         /// <summary>
         /// 层级
@@ -47,6 +47,7 @@ namespace ZeroTeam.MessageMVC.Web
             }
             return await next();
         }
+
         #endregion
 
         #region 系统操作
@@ -67,7 +68,10 @@ namespace ZeroTeam.MessageMVC.Web
             get
             {
                 if (_config != null)
+                {
                     return _config;
+                }
+
                 try
                 {
                     var sec = ConfigurationManager.Root.GetSection("WebSocket");
@@ -87,7 +91,10 @@ namespace ZeroTeam.MessageMVC.Web
         public static void Binding(IApplicationBuilder app)
         {
             if (Config.Folders == null)
+            {
                 return;
+            }
+
             foreach (var folder in Config.Folders)
             {
                 ZeroFlowControl.RegistService(new ZeroService
@@ -108,7 +115,9 @@ namespace ZeroTeam.MessageMVC.Web
             foreach (var handler in Handlers.Values)
             {
                 foreach (var client in handler)
+                {
                     client.Dispose();
+                }
             }
         }
 
@@ -131,7 +140,9 @@ namespace ZeroTeam.MessageMVC.Web
         private static async Task Acceptor(HttpContext hc, Func<Task> n)
         {
             if (!hc.WebSockets.IsWebSocketRequest || !hc.Request.PathBase.HasValue)
+            {
                 return;
+            }
 
             var classify = hc.Request.PathBase.Value.Trim('\\', '/', ' ');
             if (!Handlers.TryGetValue(classify, out var list))
@@ -159,9 +170,15 @@ namespace ZeroTeam.MessageMVC.Web
         public static async Task Publish(string classify, string title, string value)
         {
             if (string.IsNullOrEmpty(value))
+            {
                 return;
+            }
+
             if (!Handlers.TryGetValue(classify, out var list))
+            {
                 return;
+            }
+
             var empty = string.IsNullOrWhiteSpace(title);
             var tbuffer = Encoding.UTF8.GetBytes(title);
             var title_a = new ArraySegment<byte>(tbuffer, 0, tbuffer.Length);
@@ -178,7 +195,10 @@ namespace ZeroTeam.MessageMVC.Web
                 foreach (var sub in handler.Subscriber)
                 {
                     if (title.IndexOf(sub, StringComparison.Ordinal) != 0)
+                    {
                         continue;
+                    }
+
                     await handler.Send(title_a, value_a);
                     break;
                 }

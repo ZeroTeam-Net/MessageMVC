@@ -1,28 +1,27 @@
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Agebull.Common;
 using Agebull.Common.Logging;
-using ZeroTeam.MessageMVC;
+using System.Threading;
+using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
+using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
-using ZeroTeam.ZeroMQ.ZeroRPC;
 
 namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
     /// <summary>
     ///     Api站点
     /// </summary>
-    internal class ZeroRPCCaller
+    internal class ZeroCaller
     {
         #region Properties
 
-        static private long id;
+        private static long id;
+
         /// <summary>
         /// 取得Id
         /// </summary>
         /// <returns></returns>
-        static long GetId()
+        private static long GetId()
         {
             return Interlocked.Increment(ref id);
         }
@@ -122,7 +121,10 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         internal void CheckStateResult()
         {
             if (Result != null)
+            {
                 return;
+            }
+
             IApiResult apiResult;
             switch (State)
             {
@@ -200,6 +202,60 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             Result = JsonHelper.SerializeObject(apiResult);
         }
 
+        /// <summary>
+        ///     消息状态
+        /// </summary>
+        internal MessageState MessageState
+        {
+            get
+            {
+                if (Result != null)
+                {
+                    return MessageState.Success;
+                }
+                switch (State)
+                {
+                    case ZeroOperatorStateType.Ok:
+                        return MessageState.Success;
+                    case ZeroOperatorStateType.Plan:
+                    case ZeroOperatorStateType.Runing:
+                    case ZeroOperatorStateType.VoteBye:
+                    case ZeroOperatorStateType.Wecome:
+                    case ZeroOperatorStateType.VoteSend:
+                    case ZeroOperatorStateType.VoteWaiting:
+                    case ZeroOperatorStateType.VoteStart:
+                    case ZeroOperatorStateType.VoteEnd:
+                        return MessageState.Accept;
+                    case ZeroOperatorStateType.NetTimeOut:
+                    case ZeroOperatorStateType.ExecTimeOut:
+                        return MessageState.Cancel;
+                    case ZeroOperatorStateType.NotFind:
+                    case ZeroOperatorStateType.NoWorker:
+                    case ZeroOperatorStateType.NotSupport:
+                        return MessageState.NoSupper;
+                    case ZeroOperatorStateType.FrameInvalid:
+                    case ZeroOperatorStateType.ArgumentInvalid:
+                        return MessageState.FormalError;
+                    case ZeroOperatorStateType.Bug:
+                    case ZeroOperatorStateType.Error:
+                    case ZeroOperatorStateType.Failed:
+                        return MessageState.Failed;
+                    //case ZeroOperatorStateType.Pause:
+                    //case ZeroOperatorStateType.DenyAccess:
+                    //case ZeroOperatorStateType.LocalNoReady:
+                    //case ZeroOperatorStateType.LocalZmqError:
+                    //case ZeroOperatorStateType.LocalException:
+                    //case ZeroOperatorStateType.LocalSendError:
+                    //case ZeroOperatorStateType.LocalRecvError:
+                    //    return MessageState.SendError;
+                    //case ZeroOperatorStateType.NetError:
+                    //case ZeroOperatorStateType.Unavailable:
+                    //    return MessageState.NetError;
+                    default:
+                        return MessageState.NetError;
+                }
+            }
+        }
         #endregion
 
         #region Socket
@@ -226,7 +282,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
 
         private async Task<bool> CallApi()
         {
-            LastResult = await ZeroRPCProxy.Instance.CallZero(this,
+            LastResult = await ZeroPostProxy.Instance.CallZero(this,
                  CallDescription,
                  Commmand.ToZeroBytes(),
                  Argument.ToZeroBytes(),

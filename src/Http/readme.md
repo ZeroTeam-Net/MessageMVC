@@ -1,20 +1,20 @@
 ﻿# 基本设计
 
-在设计规则中，我们需要的是向上保证一致性，消息传输对象,应保证MessageProcess正确进行消息处理，
+在设计规则中，我们需要的是向上保证一致性，消息传输对象,应保证MessageProcessor正确进行消息处理，
 所以我们设计了HttpRoute类,通过标准的IApplicationBuilder.Run注册Http的处理入口方法HttpRoute.Call,
-HttpRoute.Call方法代替HttpTransfer调用MessageProcess,从而保证了向上一致性。
+HttpRoute.Call方法代替HttpTransfer调用MessageProcessor,从而保证了向上一致性。
 
 
 ## HttpTransfer
 
 由于我们使用了AspnetCore的基础框架,所以并无法象其它消息传输对象一样,在Loop中通过轮询实现。
 HttpTransfer的存在，仅是为了满足设计规范，保证ApiDiscory时可生成正确的服务对象,
-ZeroFlowControl可以正确运行，MessageProcess处理时可获得正确的IService对象进行回调。
+ZeroFlowControl可以正确运行，MessageProcessor处理时可获得正确的IService对象进行回调。
 
 作为为规则存在而存在的对象，如果消耗算力，那就罪大恶极了，所以我们在Loop方法中，使用了TaskCompletionSource,
 在运行时,会在Task的调度器中休眠,只有关闭指令发出时,Close方法SetResult释放,基本无消耗。
  
-OnResult 与 OnError 也无用,HttpRoute.Call方法是通过MessageProcess的调用返回结束调用的.
+OnResult 与 OnError 也无用,HttpRoute.Call方法是通过MessageProcessor的调用返回结束调用的.
 
 ## HttpMessage
 
@@ -28,7 +28,7 @@ OnResult 与 OnError 也无用,HttpRoute.Call方法是通过MessageProcess的调
 
 1. 解析参数
 2. 取得Service,
-3. 满足条件后调用MessageProcess
+3. 满足条件后调用MessageProcessor
 4. 回写Response数据
 
 同时,为简化操作,Initialize方法提供简单启动ZeroFlowControl的能力.

@@ -3,7 +3,7 @@
     /// <summary>
     /// 站点类型
     /// </summary>
-    public enum ZeroStationType 
+    public enum ZeroStationType
     {
         /// <summary>
         /// 调度器

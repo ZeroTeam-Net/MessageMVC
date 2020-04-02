@@ -22,19 +22,19 @@ namespace MicroZero.Kafka.QueueStation
         }
         static async Task Test()
         {
-            //var MessageProducer = IocHelper.Create<IMessageProducer>();
+            //var MessagePoster = IocHelper.Create<IMessagePoster>();
             for (int i = 0; ZeroFlowControl.CanDo && i < 10; i++)
             {
                 Thread.Sleep(100);
-                MessageProducer.Producer("Inproc", "test/res", "agebull");
-                MessageProducer.Producer("Inproc", "test/arg", "{\"Value\":\"test\"}");
-                MessageProducer.Producer("Inproc", "test/full", "1");
-                MessageProducer.Producer("Inproc", "test/void", "agebull");
+                MessagePoster.Publish("Inproc", "test/res", "agebull");
+                MessagePoster.Publish("Inproc", "test/arg", "{\"Value\":\"test\"}");
+                MessagePoster.Publish("Inproc", "test/full", "1");
+                MessagePoster.Publish("Inproc", "test/void", "agebull");
 
-                await MessageProducer.ProducerAsync("Inproc", "async/res", "{\"Value\":\"test\"}");
-                await MessageProducer.ProducerAsync("Inproc", "async/arg", "{\"Value\":\"test\"}");
-                await MessageProducer.ProducerAsync("Inproc", "async/full", "{\"Value\":\"test\"}");
-                await MessageProducer.ProducerAsync("Inproc", "async/void", "{\"Value\":\"test\"}");
+                await MessagePoster.PublishAsync("Inproc", "async/res", "{\"Value\":\"test\"}");
+                await MessagePoster.PublishAsync("Inproc", "async/arg", "{\"Value\":\"test\"}");
+                await MessagePoster.PublishAsync("Inproc", "async/full", "{\"Value\":\"test\"}");
+                await MessagePoster.PublishAsync("Inproc", "async/void", "{\"Value\":\"test\"}");
             }
         }
     }

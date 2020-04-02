@@ -10,6 +10,9 @@ using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Kafka
 {
+    /// <summary>
+    /// Kafka消息队列消费者
+    /// </summary>
     internal class KafkaConsumer : IMessageConsumer
     {
         /// <summary>
@@ -84,7 +87,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <param name="message"></param>
         private async Task OnMessagePush(IMessageItem message)
         {
-            var state = await MessageProcess.OnMessagePush(Station, message);
+            var state = await MessageProcessor.OnMessagePush(Station, message);
             if (state == MessageState.Success)
             {
                 Interlocked.Increment(ref SuccessCount);

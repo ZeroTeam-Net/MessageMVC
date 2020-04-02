@@ -1,13 +1,11 @@
 ﻿using System;
-using ZeroTeam.ZeroMQ;
-using ZeroTeam.ZeroMQ.ZeroRPC;
 
 namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
     /// <summary>
     /// 站点代理节点
     /// </summary>
-    public class StationProxyItem
+    internal class StationProxyItem
     {
         /// <summary>
         /// 配置

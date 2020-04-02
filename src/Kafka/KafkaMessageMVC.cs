@@ -16,7 +16,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         public static void UseKafka(this IServiceCollection services)
         {
             services.AddTransient<IFlowMiddleware, KafkaProducer>();//Kafka环境
-            services.AddTransient<IMessageProducer, KafkaProducer>();//采用Kafka生产端
+            services.AddTransient<IMessagePoster, KafkaProducer>();//采用Kafka生产端
             services.AddTransient<IMessageConsumer, KafkaConsumer>();//采用Kafka消费客户端
         }
     }

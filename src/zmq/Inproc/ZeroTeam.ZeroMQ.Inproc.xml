@@ -172,6 +172,11 @@
                 检查在非成功状态下的返回值
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcProducer.MessageState">
+            <summary>
+                检查在非成功状态下的返回值
+            </summary>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcProducer.CallCommandAsync">
             <summary>
                 远程调用
@@ -243,6 +248,13 @@
             <typeparam name="TResult">参数类型</typeparam>
             <param name="station">站点</param>
             <param name="api">api名称</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcProducer.Post(ZeroTeam.MessageMVC.Messages.IMessageItem)">
+            <summary>
+            生产消息
+            </summary>
+            <param name="message">消息</param>
             <returns></returns>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqCaller">
@@ -331,6 +343,11 @@
         <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqCaller.CheckStateResult">
             <summary>
                 检查在非成功状态下的返回值
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqCaller.MessageState">
+            <summary>
+                消息状态
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqCaller.CallDescription">

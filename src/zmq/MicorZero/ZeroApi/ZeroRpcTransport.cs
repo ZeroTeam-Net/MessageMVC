@@ -1,14 +1,14 @@
+using Agebull.Common;
+using Agebull.Common.Logging;
+using Agebull.EntityModel.Common;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Agebull.Common.Logging;
-using ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant;
-using Agebull.EntityModel.Common;
-using ZeroTeam.MessageMVC.ZeroApis;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Messages;
-using Agebull.Common;
+using ZeroTeam.MessageMVC.ZeroApis;
+using ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant;
 
 namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
@@ -33,7 +33,10 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         Task<bool> INetTransfer.Prepare()
         {
             if (!ZeroRpcFlow.ZerCenterIsRun)
+            {
                 return Task.FromResult(false);
+            }
+
             return Task.FromResult(CheckConfig());
         }
 
@@ -73,7 +76,10 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             set
             {
                 if (_realState == value)
+                {
                     return;
+                }
+
                 Interlocked.Exchange(ref _realState, value);
                 ZeroTrace.SystemLog(Name, nameof(RealState), StationRealState.Text(_realState));
             }
@@ -138,13 +144,13 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         /// 站点选项
         /// </summary>
-        ZeroStationOption _option;
+        private ZeroStationOption _option;
 
         /// <summary>
         /// 配置检查
         /// </summary>
         /// <returns></returns>
-        bool CheckConfig()
+        private bool CheckConfig()
         {
             //取配置
             Config = ZeroRpcFlow.Config[Name];
@@ -188,7 +194,9 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
 
             _option = ZeroRpcFlow.GetApiOption(Name);
             if (_option.SpeedLimitModel == SpeedLimitType.None)
+            {
                 _option.SpeedLimitModel = SpeedLimitType.ThreadCount;
+            }
 
             //timeout = MicroZeroApplication.Config.ApiTimeout * 1000;
             //switch (_option.SpeedLimitModel)
@@ -304,7 +312,10 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
 
             }
             if (e.EventConfig?.StationName != Service.ServiceName)
+            {
                 return Task.CompletedTask;
+            }
+
             switch (e.Event)
             {
                 case ZeroNetEventType.ConfigUpdate:
@@ -349,8 +360,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// 代理地址
         /// </summary>
         private string InprocAddress = "inproc://ApiProxy.req";
-
-        IZmqPool pool;
+        private IZmqPool pool;
 
         /// <summary>
         /// 同步运行状态
@@ -401,7 +411,9 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 }
                 //对Result端口的返回的丢弃处理
                 if (pool.CheckIn(0, out var message))
+                {
                     message?.Dispose();
+                }
 
                 if (pool.CheckIn(1, out message))
                 {
@@ -477,12 +489,12 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             };
             try
             {
-                _ = MessageProcess.OnMessagePush(Service, arg, item);
+                _ = MessageProcessor.OnMessagePush(Service, arg, item);
             }
             catch (Exception e)
             {
                 LogRecorder.Exception(e);
-                OnExecuestEnd(ApiResultIoc.LocalExceptionJson,item,ZeroOperatorStateType.LocalException);
+                OnExecuestEnd(ApiResultIoc.LocalExceptionJson, item, ZeroOperatorStateType.LocalException);
             }
         }
 
@@ -536,7 +548,9 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 success = socket.SendMessage(message2, ZSocketFlags.DontWait, out error);
             }
             if (!success)
+            {
                 ZeroTrace.WriteError(Name, error.Text, error.Name);
+            }
         }
 
         /// <summary>

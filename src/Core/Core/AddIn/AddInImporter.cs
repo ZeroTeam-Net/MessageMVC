@@ -45,7 +45,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             var path = ZeroFlowControl.Config.AddInPath[0] == '/'
                 ? ZeroFlowControl.Config.AddInPath
                 : IOHelper.CheckPath(ZeroFlowControl.Config.RootPath, ZeroFlowControl.Config.AddInPath);
+
             ZeroTrace.SystemLog("AddIn(Service)", path);
+
             // 通过容器对象将宿主和部件组装到一起。 
             DirectoryCatalog directoryCatalog = new DirectoryCatalog(path);
             var container = new CompositionContainer(directoryCatalog);
@@ -68,7 +70,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
             foreach (var reg in Registers)
             {
-                reg.AutoRegist();
+                reg.AutoRegist(IocHelper.ServiceCollection);
             }
 
             foreach (var reg in Registers)

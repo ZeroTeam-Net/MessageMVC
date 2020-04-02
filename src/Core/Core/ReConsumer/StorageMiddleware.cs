@@ -14,7 +14,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// 当前处理器
         /// </summary>
-        public MessageProcess Process { get; set; }
+        public MessageProcessor Process { get; set; }
 
         /// <summary>
         /// 层级
@@ -39,13 +39,19 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
         private void Save(IMessageItem message)
         {
-            var file = Path.Combine(ZeroFlowControl.Config.DataFolder, "message", $"{message.ID}.msg");
-            if (!File.Exists(file))
+            try
             {
-                File.WriteAllText(file, JsonHelper.SerializeObject(message));
-            }
+                var file = Path.Combine(ZeroFlowControl.Config.DataFolder, "message", $"{message.ID}.msg");
+                if (!File.Exists(file))
+                {
+                    File.WriteAllText(file, JsonHelper.SerializeObject(message));
+                }
 
-            message.State = MessageState.Accept;
+                message.State = MessageState.Accept;
+            }
+            catch
+            {
+            }
         }
 
         private void State(IMessageItem message)
@@ -54,8 +60,13 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 return;
             }
-
-            File.Delete(Path.Combine(ZeroFlowControl.Config.DataFolder, "message", $"{message.ID}.msg"));
+            try
+            {
+                File.Delete(Path.Combine(ZeroFlowControl.Config.DataFolder, "message", $"{message.ID}.msg"));
+            }
+            catch
+            {
+            }
         }
     }
 }

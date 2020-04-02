@@ -136,7 +136,7 @@ namespace ZeroTeam.MessageMVC.Http
                     }
                     else
                     {
-                        await MessageProcess.OnMessagePush(service, data, context);
+                        await MessageProcessor.OnMessagePush(service, data, context);
                     }
                 }
             }

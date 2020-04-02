@@ -1,4 +1,3 @@
-using Agebull.EntityModel.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -93,7 +92,10 @@ namespace ZeroTeam.MessageMVC.PlanTasks
 #endif
             Option.add_time = now;
             if (Option.plan_time <= 0)
+            {
                 Option.plan_time = now;
+            }
+
             RealInfo = new PlanRealInfo
             {
                 plan_time = Option.plan_time
@@ -108,12 +110,18 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                 case plan_date_type.time:
                     //无效设置,自动放弃
                     if (Option.plan_value <= 0)
+                    {
                         return false;
+                    }
+
                     break;
                 case plan_date_type.week:
                     //无效设置,自动放弃
                     if (Option.plan_value < 0 || Option.plan_value > 6)
+                    {
                         return false;
+                    }
+
                     Option.plan_time = (long)FromTime(tm).TimeOfDay.TotalMilliseconds;
                     RealInfo.plan_time = ToTime(tm > day2ms ? FromTime(Option.plan_time).Date : DateTime.Today);
                     break;
@@ -440,7 +448,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
             var now = NowTime();
             if (Option.queue_pass_by)
             {
-              await  JoinQueue(RealInfo.plan_time + delay);
+                await JoinQueue(RealInfo.plan_time + delay);
                 return true;
             }
             //空跳
@@ -500,7 +508,9 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                             .AddMilliseconds(Option.plan_time);
             }
             if (!Option.queue_pass_by && next < DateTime.Now)
+            {
                 return await CheckMonth(next.AddMonths(1));
+            }
 
             await JoinQueue((long)(next - baseTime).TotalMilliseconds);
             return true;

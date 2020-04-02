@@ -15,7 +15,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         public static void UseCsRedis(this IServiceCollection services)
         {
             services.AddSingleton<IFlowMiddleware>(CsRedisProducer.Instance);//Redis环境准备
-            services.AddSingleton<IMessageProducer>(CsRedisProducer.Instance);//Redis发布
+            services.AddSingleton<IMessagePoster>(CsRedisProducer.Instance);//Redis发布
             services.AddTransient<INetEvent, CSRedisConsumer>();//Redis订阅
             services.AddTransient<IMessageConsumer, CSRedisConsumer>();//Redis订阅
         }

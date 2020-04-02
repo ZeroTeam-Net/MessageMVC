@@ -9,22 +9,6 @@ namespace ZeroTeam.MessageMVC.PlanTasks
 {
 
     /// <summary>
-    /// 计划任务配置
-    /// </summary>
-    public class PlanProducerOption
-    {
-        /// <summary>
-        /// 服务名称
-        /// </summary>
-        public string ServiceName { get; set; }
-
-        /// <summary>
-        /// 投递接口名称
-        /// </summary>
-        public string PostApiName { get; set; }
-    }
-
-    /// <summary>
     /// 计划投递对象
     /// </summary>
     public class PlanProducer : IPlanProducer
@@ -65,7 +49,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <returns></returns>
         public ApiResult Post<TArg>(PlanOption option, string topic, string title, TArg content)
         {
-            return MessageProducer.Producer<PlanCallInfo, ApiResult>(Option.ServiceName, Option.PostApiName, new PlanCallInfo
+            return MessagePoster.Call<PlanCallInfo, ApiResult>(Option.ServiceName, Option.PostApiName, new PlanCallInfo
             {
                 Option = option,
                 Message = new MessageItem
@@ -88,7 +72,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <returns></returns>
         public ApiResult Post(PlanOption option, string topic, string title, string content)
         {
-            return MessageProducer.Producer<PlanCallInfo, ApiResult>(Option.ServiceName, Option.PostApiName,
+            return MessagePoster.Call<PlanCallInfo, ApiResult>(Option.ServiceName, Option.PostApiName,
                 new PlanCallInfo
                 {
                     Option = option,
@@ -112,7 +96,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <returns></returns>
         public Task<ApiResult> PostAsync<TArg>(PlanOption option, string topic, string title, TArg content)
         {
-            return MessageProducer.ProducerAsync<PlanCallInfo, ApiResult>(Option.ServiceName, Option.PostApiName,
+            return MessagePoster.CallAsync<PlanCallInfo, ApiResult>(Option.ServiceName, Option.PostApiName,
                 new PlanCallInfo
                 {
                     Option = option,
@@ -136,7 +120,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <returns></returns>
         public Task<ApiResult> PostAsync(PlanOption option, string topic, string title, string content)
         {
-            return MessageProducer.ProducerAsync<PlanCallInfo, ApiResult>(Option.ServiceName, Option.PostApiName,
+            return MessagePoster.CallAsync<PlanCallInfo, ApiResult>(Option.ServiceName, Option.PostApiName,
                 new PlanCallInfo
                 {
                     Option = option,

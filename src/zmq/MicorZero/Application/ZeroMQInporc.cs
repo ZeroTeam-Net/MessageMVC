@@ -16,9 +16,9 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         public static void UseZeroRPC(this IServiceCollection services)
         {
             services.AddSingleton<IFlowMiddleware, ZeroRpcFlow>();
-            services.AddSingleton<IFlowMiddleware, ZeroRPCProxy>();
+            services.AddSingleton<IFlowMiddleware, ZeroPostProxy>();
             services.AddSingleton<IRpcTransfer, ZeroRpcTransport>();
-            services.AddSingleton<IMessageProducer, ZeroRPCProducer>();
+            services.AddSingleton<IMessagePoster, ZeroRPCPoster>();
         }
     }
 }

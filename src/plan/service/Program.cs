@@ -23,8 +23,8 @@ namespace ZeroTeam.MessageMVC.Http
             });
             var services = IocHelper.ServiceCollection;
             services.UseCsRedis();
-            services.AddSingleton<IMessageMiddleware,ReverseProxyMiddleware>();//通过反向代理组件处理计划任务消息发送
-            services.AddSingleton<IMessageProducer, HttpProducer>();
+            services.AddSingleton<IMessageMiddleware, ReverseProxyMiddleware>();//通过反向代理组件处理计划任务消息发送
+            services.AddSingleton<IMessagePoster, HttpProducer>();
             services.UseFlowByAutoDiscory();
             Console.ReadKey();
         }

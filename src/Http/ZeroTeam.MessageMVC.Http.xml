@@ -282,22 +282,16 @@
             服务到HttpClientName的查找表.
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpProducer.ZeroTeam#MessageMVC#Messages#IMessageProducer#Initialize">
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpProducer.ZeroTeam#MessageMVC#Messages#IMessagePoster#Initialize">
             <summary>
                 初始化
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpProducer.Producer(System.String,System.String,System.String)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpProducer.Producer``1(System.String,System.String,``0)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpProducer.ZeroTeam#MessageMVC#Messages#IMessageProducer#ProducerAsync(ZeroTeam.MessageMVC.Messages.IMessageItem)">
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpProducer.ZeroTeam#MessageMVC#Messages#IMessagePoster#Post(ZeroTeam.MessageMVC.Messages.IMessageItem)">
             <summary>
             生产消息
             </summary>
-            <param name="message">消息</param>
+            <param name="item">消息</param>
             <returns></returns>
         </member>
     </members>

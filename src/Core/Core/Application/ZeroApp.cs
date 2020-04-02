@@ -29,7 +29,7 @@ namespace ZeroTeam.MessageMVC
 
             ZeroFlowControl.CheckOption();
 
-            services.AddTransient<IFlowMiddleware, MessageProducer>();//消息选择器
+            services.AddTransient<IFlowMiddleware, MessagePoster>();//消息选择器
             if (ZeroFlowControl.Config.EnableAddIn)
             {
                 services.AddTransient<IFlowMiddleware, AddInImporter>();//插件载入
@@ -93,7 +93,7 @@ namespace ZeroTeam.MessageMVC
         /// <param name="assembly">需要发现服务的程序集</param>
         public static bool UseTest(this IServiceCollection services, Assembly assembly)
         {
-            services.AddTransient<IFlowMiddleware, MessageProducer>();//消息选择器
+            services.AddTransient<IFlowMiddleware, MessagePoster>();//消息选择器
             services.AddTransient<IFlowMiddleware, ConfigMiddleware>();//配置\依赖对象初始化,系统配置获取
             services.AddTransient<IMessageMiddleware, LoggerMiddleware>();//启用日志
             //services.AddTransient<IMessageMiddleware, GlobalContextMiddleware>();//启用全局上下文

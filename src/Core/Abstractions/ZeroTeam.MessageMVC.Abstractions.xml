@@ -1500,33 +1500,12 @@
             </summary>
             <param name="name"></param>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.IMessageConsumer">
-            <summary>
-            表示一个消息队列消费对象
-            </summary>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ConsumerAttribute">
-            <summary>
-            表示一个消息队列消费者
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ConsumerAttribute.#ctor(System.String)">
-            <summary>
-            构造
-            </summary>
-            <param name="topic"></param>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ConsumerAttribute.Topic">
-            <summary>
-            消息节点
-            </summary>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.MessageProcess">
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.MessageProcessor">
             <summary>
                消息处理器
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.MessageProcess.OnMessagePush(ZeroTeam.MessageMVC.ZeroApis.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.MessageProcessor.OnMessagePush(ZeroTeam.MessageMVC.ZeroApis.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
             <summary>
             消息处理
             </summary>
@@ -1534,38 +1513,38 @@
             <param name="message"></param>
             <param name="tag"></param>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.MessageProcess.Service">
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.MessageProcessor.Service">
             <summary>
             当前站点
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.MessageProcess.Message">
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.MessageProcessor.Message">
             <summary>
             调用的内容
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.MessageProcess.Tag">
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.MessageProcessor.Tag">
             <summary>
             调用的内容
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.MessageProcess.State">
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.MessageProcessor.State">
             <summary>
             状态
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.MessageProcess.Handle">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.MessageProcessor.Handle">
             <summary>
             链式处理中间件
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.MessageProcess.PushResult">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.MessageProcessor.PushResult">
             <summary>
             结果推到调用处
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.MessageProcess.PushResult(ZeroTeam.MessageMVC.Messages.MessageState)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.MessageProcessor.PushResult(ZeroTeam.MessageMVC.Messages.MessageState)">
             <summary>
             结果推到调用处
             </summary>
@@ -1594,6 +1573,27 @@
             <param name="tag">扩展信息</param>
             <param name="next">下一个处理方法</param>
             <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.IMessageConsumer">
+            <summary>
+            表示一个消息队列消费对象
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ConsumerAttribute">
+            <summary>
+            表示一个消息队列消费者
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ConsumerAttribute.#ctor(System.String)">
+            <summary>
+            构造
+            </summary>
+            <param name="topic"></param>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ConsumerAttribute.Topic">
+            <summary>
+            消息节点
+            </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.INetEvent">
             <summary>
@@ -3077,102 +3077,33 @@
             刷新操作
             </summary>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.Messages.IMessageProducer">
-            <summary>
-            消息生产对象
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.IMessageProducer.State">
-            <summary>
-            运行状态
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageProducer.Initialize">
-            <summary>
-                初始化
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageProducer.Producer``2(System.String,System.String,``0)">
-            <summary>
-            生产消息
-            </summary>
-            <param name="topic">消息分类</param>
-            <param name="title">消息标题</param>
-            <param name="content">消息内容</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageProducer.Producer``1(System.String,System.String,``0)">
-            <summary>
-            生产消息
-            </summary>
-            <param name="topic">消息分类</param>
-            <param name="title">消息标题</param>
-            <param name="content">消息内容</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageProducer.Producer``1(System.String,System.String)">
-            <summary>
-            生产消息
-            </summary>
-            <param name="topic">消息分类</param>
-            <param name="title">消息标题</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageProducer.Producer(System.String,System.String,System.String)">
-            <summary>
-            生产消息
-            </summary>
-            <param name="topic">消息分类</param>
-            <param name="title">消息标题</param>
-            <param name="content">消息内容</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageProducer.ProducerAsync``2(System.String,System.String,``0)">
-            <summary>
-            生产消息
-            </summary>
-            <param name="topic">消息分类</param>
-            <param name="title">消息标题</param>
-            <param name="content">消息内容</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageProducer.ProducerAsync``1(System.String,System.String,``0)">
-            <summary>
-            生产消息
-            </summary>
-            <param name="topic">消息分类</param>
-            <param name="title">消息标题</param>
-            <param name="content">消息内容</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageProducer.ProducerAsync``1(System.String,System.String)">
-            <summary>
-            生产消息
-            </summary>
-            <param name="topic">消息分类</param>
-            <param name="title">消息标题</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageProducer.ProducerAsync(System.String,System.String,System.String)">
-            <summary>
-            生产消息
-            </summary>
-            <param name="topic">消息分类</param>
-            <param name="title">消息标题</param>
-            <param name="content">消息内容</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageProducer.ProducerAsync(ZeroTeam.MessageMVC.Messages.IMessageItem)">
-            <summary>
-            生产消息
-            </summary>
-            <param name="message">消息</param>
-            <returns></returns>
-        </member>
         <member name="T:ZeroTeam.MessageMVC.Messages.MessageItem">
             <summary>
             消息交互格式
             </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessageItem.#ctor">
+            <summary>
+            构造
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessageItem.NewMessage``1(System.String,System.String,``0)">
+            <summary>
+            构造
+            </summary>
+            <param name="topic">消息分类</param>
+            <param name="title">消息标题</param>
+            <param name="content">消息内容</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessageItem.NewMessage(System.String,System.String,System.String)">
+            <summary>
+            构造
+            </summary>
+            <param name="topic">消息分类</param>
+            <param name="title">消息标题</param>
+            <param name="content">消息内容</param>
+            <returns></returns>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.MessageItem.ID">
             <summary>
@@ -3243,34 +3174,41 @@
             接口参数,即Content
             </summary>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.Messages.MessageProducer">
+        <member name="T:ZeroTeam.MessageMVC.Messages.MessagePoster">
             <summary>
-            消息生产对象
+            消息投递
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.MessageProducer.Default">
+        <member name="P:ZeroTeam.MessageMVC.Messages.MessagePoster.Default">
             <summary>
             默认的生产者
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.MessageProducer.ZeroTeam#MessageMVC#IFlowMiddleware#Initialize">
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessagePoster.ZeroTeam#MessageMVC#IFlowMiddleware#Initialize">
             <summary>
                 初始化
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.MessageProducer.Register(System.String,ZeroTeam.MessageMVC.Messages.IMessageProducer)">
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessagePoster.Register(System.String,ZeroTeam.MessageMVC.Messages.IMessagePoster)">
             <summary>
                 手动注册
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.MessageProducer.GetService(System.String)">
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessagePoster.GetService(System.String)">
             <summary>
             发现传输对象
             </summary>
             <param name="name">服务名称</param>
             <returns>传输对象构造器</returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.MessageProducer.Producer``2(System.String,System.String,``0)">
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessagePoster.Post(ZeroTeam.MessageMVC.Messages.IMessageItem)">
+            <summary>
+            投递消息
+            </summary>
+            <param name="item">消息</param>
+            <returns>返回值</returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessagePoster.Publish``1(System.String,System.String,``0)">
             <summary>
             生产消息
             </summary>
@@ -3279,7 +3217,7 @@
             <param name="content">消息内容</param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.MessageProducer.Producer``1(System.String,System.String,``0)">
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessagePoster.Publish(System.String,System.String,System.String)">
             <summary>
             生产消息
             </summary>
@@ -3288,15 +3226,7 @@
             <param name="content">消息内容</param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.MessageProducer.Producer``1(System.String,System.String)">
-            <summary>
-            生产消息
-            </summary>
-            <param name="topic">消息分类</param>
-            <param name="title">消息标题</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.MessageProducer.Producer(System.String,System.String,System.String)">
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessagePoster.PublishAsync``1(System.String,System.String,``0)">
             <summary>
             生产消息
             </summary>
@@ -3305,7 +3235,7 @@
             <param name="content">消息内容</param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.MessageProducer.ProducerAsync``2(System.String,System.String,``0)">
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessagePoster.PublishAsync(System.String,System.String,System.String)">
             <summary>
             生产消息
             </summary>
@@ -3314,30 +3244,74 @@
             <param name="content">消息内容</param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.MessageProducer.ProducerAsync``1(System.String,System.String,``0)">
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessagePoster.Call``2(System.String,System.String,``0)">
             <summary>
-            生产消息
+            远程调用
             </summary>
-            <param name="topic">消息分类</param>
-            <param name="title">消息标题</param>
-            <param name="content">消息内容</param>
+            <param name="service">服务名称</param>
+            <param name="api">接口名称</param>
+            <param name="args">接口参数</param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.MessageProducer.ProducerAsync``1(System.String,System.String)">
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessagePoster.Call``1(System.String,System.String,``0)">
             <summary>
-            生产消息
+            远程调用
             </summary>
-            <param name="topic">消息分类</param>
-            <param name="title">消息标题</param>
+            <param name="service">服务名称</param>
+            <param name="api">接口名称</param>
+            <param name="args">接口参数</param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.MessageProducer.ProducerAsync(System.String,System.String,System.String)">
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessagePoster.Call``1(System.String,System.String)">
             <summary>
-            生产消息
+            远程调用
             </summary>
-            <param name="topic">消息分类</param>
-            <param name="title">消息标题</param>
-            <param name="content">消息内容</param>
+            <param name="service">服务名称</param>
+            <param name="api">接口名称</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessagePoster.Call(System.String,System.String,System.String)">
+            <summary>
+            远程调用
+            </summary>
+            <param name="service">服务名称</param>
+            <param name="api">接口名称</param>
+            <param name="args">接口参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessagePoster.CallAsync``2(System.String,System.String,``0)">
+            <summary>
+            远程调用
+            </summary>
+            <param name="service">服务名称</param>
+            <param name="api">接口名称</param>
+            <param name="args">接口参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessagePoster.CallAsync``1(System.String,System.String,``0)">
+            <summary>
+            远程调用
+            </summary>
+            <param name="service">服务名称</param>
+            <param name="api">接口名称</param>
+            <param name="args">接口参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessagePoster.CallAsync``1(System.String,System.String)">
+            <summary>
+            远程调用
+            </summary>
+            <param name="service">服务名称</param>
+            <param name="api">接口名称</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessagePoster.CallAsync(System.String,System.String,System.String)">
+            <summary>
+            远程调用
+            </summary>
+            <param name="service">服务名称</param>
+            <param name="api">接口名称</param>
+            <param name="args">接口参数</param>
             <returns></returns>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Messages.MessageState">
@@ -3350,9 +3324,9 @@
             未消费
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.Accept">
+        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.Cancel">
             <summary>
-            已接受
+            取消处理
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.FormalError">
@@ -3360,24 +3334,24 @@
             格式错误
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.NoSupper">
-            <summary>
-            无处理方法
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.Cancel">
-            <summary>
-            取消处理
-            </summary>
-        </member>
         <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.NetError">
             <summary>
             网络传输错误
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.Exception">
+        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.Accept">
             <summary>
-            处理异常
+            已接受
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.Success">
+            <summary>
+            处理成功
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.NoSupper">
+            <summary>
+            无处理方法
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.Failed">
@@ -3385,10 +3359,32 @@
             处理失败
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.Success">
+        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.Exception">
             <summary>
-            处理成功
+            处理异常
             </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Messages.IMessagePoster">
+            <summary>
+            消息投递对象
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.IMessagePoster.State">
+            <summary>
+            运行状态
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.IMessagePoster.Initialize">
+            <summary>
+                初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.IMessagePoster.Post(ZeroTeam.MessageMVC.Messages.IMessageItem)">
+            <summary>
+            投递消息
+            </summary>
+            <param name="message">消息</param>
+            <returns></returns>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ArgumentType">
             <summary>

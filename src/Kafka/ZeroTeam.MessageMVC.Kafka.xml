@@ -99,91 +99,11 @@
                 关闭
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaProducer.Producer``2(System.String,System.String,``0)">
-            <summary>
-            生产消息
-            </summary>
-            <param name="topic">消息分类</param>
-            <param name="title">消息标题</param>
-            <param name="content">消息内容</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaProducer.Producer``1(System.String,System.String,``0)">
-            <summary>
-            生产消息
-            </summary>
-            <param name="topic">消息分类</param>
-            <param name="title">消息标题</param>
-            <param name="content">消息内容</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaProducer.Producer``1(System.String,System.String)">
-            <summary>
-            生产消息
-            </summary>
-            <param name="topic">消息分类</param>
-            <param name="title">消息标题</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaProducer.Producer(System.String,System.String,System.String)">
-            <summary>
-            生产消息
-            </summary>
-            <param name="topic">消息分类</param>
-            <param name="title">消息标题</param>
-            <param name="content">消息内容</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaProducer.ProducerAsync``2(System.String,System.String,``0)">
-            <summary>
-            生产消息
-            </summary>
-            <param name="topic">消息分类</param>
-            <param name="title">消息标题</param>
-            <param name="content">消息内容</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaProducer.ProducerAsync``1(System.String,System.String,``0)">
-            <summary>
-            生产消息
-            </summary>
-            <param name="topic">消息分类</param>
-            <param name="title">消息标题</param>
-            <param name="content">消息内容</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaProducer.ProducerAsync``1(System.String,System.String)">
-            <summary>
-            生产消息
-            </summary>
-            <param name="topic">消息分类</param>
-            <param name="title">消息标题</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaProducer.ProducerAsync(System.String,System.String,System.String)">
-            <summary>
-            生产消息
-            </summary>
-            <param name="topic">消息分类</param>
-            <param name="title">消息标题</param>
-            <param name="content">消息内容</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaProducer.ZeroTeam#MessageMVC#Messages#IMessageProducer#ProducerAsync(ZeroTeam.MessageMVC.Messages.IMessageItem)">
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaProducer.Post(ZeroTeam.MessageMVC.Messages.IMessageItem)">
             <summary>
             生产消息
             </summary>
             <param name="message">消息</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaProducer.ProducerInner(System.String,System.String,System.String)">
-            <param name="topic"></param>
-            <param name="title"></param>
-            <param name="content"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaProducer.ProducerInner(ZeroTeam.MessageMVC.Messages.IMessageItem)">
-            <param name="message"></param>
             <returns></returns>
         </member>
     </members>

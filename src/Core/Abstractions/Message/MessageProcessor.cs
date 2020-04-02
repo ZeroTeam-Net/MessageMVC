@@ -10,7 +10,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     /// <summary>
     ///    消息处理器
     /// </summary>
-    public class MessageProcess
+    public class MessageProcessor
     {
         #region 处理入口
 
@@ -22,7 +22,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <param name="tag"></param>
         public static Task<MessageState> OnMessagePush(IService service, IMessageItem message, object tag = null)
         {
-            var process = new MessageProcess
+            var process = new MessageProcessor
             {
                 Service = service,
                 Message = message,
@@ -60,7 +60,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
         private async Task Process()
         {
-            using (IocScope.CreateScope($"MessageProcess : {Message.Topic}/{Message.Title}"))
+            using (IocScope.CreateScope($"MessageProcessor : {Message.Topic}/{Message.Title}"))
             {
                 index = 0;
                 State = MessageState.None;

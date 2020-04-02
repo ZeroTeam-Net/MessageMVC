@@ -7,7 +7,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         /// <summary>
         /// 监控状态机
         /// </summary>
-        class FailedStateMachine : IMonitorStateMachine
+        private class FailedStateMachine : IMonitorStateMachine
         {
             /// <summary>
             ///     收到信息的处理
@@ -17,9 +17,9 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
                 switch (zeroNetEvent)
                 {
                     case ZeroNetEventType.CenterSystemStart:
-                        //StateMachine = new RuningStateMachine();
-                        //await center_start(station, content);
-                        //return;
+                    //StateMachine = new RuningStateMachine();
+                    //await center_start(station, content);
+                    //return;
                     case ZeroNetEventType.CenterWorkerSoundOff:
                         //StateMachine = new RuningStateMachine();
                         //ZeroTrace.SystemLog("Restart");

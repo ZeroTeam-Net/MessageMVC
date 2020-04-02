@@ -44,7 +44,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             var sa = type.GetCustomAttribute<InprocAttribute>();
             if (sa != null)
             {
-                MessageProducer.Register(sa.Name, InporcProducer.Instance);
+                MessagePoster.Register(sa.Name, InporcProducer.Instance);
                 name = sa.Name;
                 return InprocTransportBuilder;
             }

@@ -13,15 +13,15 @@ namespace MicroZero.Kafka.QueueStation
         static async Task Main()
         {
             IocHelper.AddSingleton<IFlowMiddleware, ZeroRpcFlow>();
-            IocHelper.AddSingleton<IFlowMiddleware, ZeroRPCProxy>();
+            IocHelper.AddSingleton<IFlowMiddleware, ZeroPostProxy>();
             IocHelper.AddSingleton<IRpcTransfer, ZeroRpcTransport>();
-            IocHelper.AddSingleton<IMessageProducer, ZeroRPCProducer>();
+            IocHelper.AddSingleton<IMessagePoster, ZeroRPCPoster>();
 
 
             await IocHelper.ServiceCollection.UseFlow(typeof(Program).Assembly, false);
 
-            //MessageProducer.Producer("test1", "test", "");
-            //MessageProducer.Producer("Inproc", "test", "");
+            //MessagePoster.Producer("test1", "test", "");
+            //MessagePoster.Producer("Inproc", "test", "");
 
             Console.ReadKey();
             Console.WriteLine("Bye bye.");

@@ -12,7 +12,7 @@ namespace ZeroTeam.MessageMVC.Kafka
     /// <summary>
     ///     Kafka消息发布
     /// </summary>
-    public class KafkaProducer : IMessageProducer, IFlowMiddleware
+    public class KafkaProducer : IMessagePoster, IFlowMiddleware
     {
 
         #region IFlowMiddleware 
@@ -60,6 +60,40 @@ namespace ZeroTeam.MessageMVC.Kafka
 
         #region 消息生产
 
+        /// <summary>
+        /// 生产消息
+        /// </summary>
+        /// <param name="message">消息</param>
+        /// <returns></returns>
+        public async Task<(MessageState state, string result)> Post(IMessageItem message)
+        {
+            try
+            {
+                if (producer == null)
+                {
+                    return (MessageState.NoSupper, null);
+                }
+                var msg = new Message<Null, string>
+                {
+                    Value = JsonHelper.SerializeObject(message)
+                };
+                var ret = await producer.ProduceAsync(message.Topic, msg);
+                return ret.Status == PersistenceStatus.Persisted
+                    ? (MessageState.Success, ret.Value)
+                    : (MessageState.NetError, null);
+            }
+            catch (Exception e)
+            {
+                LogRecorder.Exception(e, "Kafka Production<Error>");
+                return (MessageState.NetError, null);
+            }
+        }
+        #endregion
+    }
+}
+
+/*
+ 
         /// <summary>
         /// 生产消息
         /// </summary>
@@ -165,7 +199,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// </summary>
         /// <param name="message">消息</param>
         /// <returns></returns>
-        async Task<string> IMessageProducer.ProducerAsync(IMessageItem message)
+        async Task<string> IMessagePoster.ProducerAsync(IMessageItem message)
         {
             var (success, result) = await ProducerInner(message);
             return success ? default : result;
@@ -190,32 +224,4 @@ namespace ZeroTeam.MessageMVC.Kafka
             return ProducerInner(item);
         }
 
-
-        /// <param name="message"></param>
-        /// <returns></returns>
-        private async Task<(bool success, string result)> ProducerInner(IMessageItem message)
-        {
-            try
-            {
-                if (producer == null)
-                {
-                    return (false, null);
-                }
-                var msg = new Message<Null, string>
-                {
-                    Value = JsonHelper.SerializeObject(message)
-                };
-                var ret = await producer.ProduceAsync(message.Topic, msg);
-                return ret.Status == PersistenceStatus.Persisted
-                    ? (true, ret.Value)
-                    : (false, null);
-            }
-            catch (Exception e)
-            {
-                LogRecorder.Exception(e, "Kafka Production<Error>");
-                return (false, null);
-            }
-        }
-        #endregion
-    }
-}
+*/

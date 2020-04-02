@@ -42,7 +42,10 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         public bool TryInstall(string station, string type)
         {
             if (ZeroRpcFlow.Config.TryGetConfig(station, out _))
+            {
                 return true;
+            }
+
             ZeroTrace.SystemLog(station, "No find,try install ...");
             var r = CallCommand("install", type, station, station, station);
             if (!r.InteractiveSuccess)
@@ -75,7 +78,10 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         public bool TryStart(string station)
         {
             if (!ZeroRpcFlow.Config.TryGetConfig(station, out _))
+            {
                 return false;
+            }
+
             ZeroTrace.SystemLog(station, "Try start it ...");
             var r = CallCommand("start", station);
             if (!r.InteractiveSuccess && r.State != ZeroOperatorStateType.Ok && r.State != ZeroOperatorStateType.Runing)
@@ -97,10 +103,16 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
             foreach (var doc in ZeroRpcFlow.Config.Documents.Values)
             {
                 if (!doc.IsLocal)
+                {
                     continue;
+                }
+
                 var result = CallCommand("doc", doc.Name, JsonHelper.SerializeObject(doc));
                 if (result.InteractiveSuccess && result.State == ZeroOperatorStateType.Ok)
+                {
                     continue;
+                }
+
                 ZeroTrace.WriteError("UploadDocument", result);
                 success = false;
             }

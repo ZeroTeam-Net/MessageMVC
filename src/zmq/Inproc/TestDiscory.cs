@@ -24,7 +24,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 var ia = type.GetCustomAttribute<InprocAttribute>();
                 if (ia != null)
                 {
-                    MessageProducer.Register(ia.Name, InporcProducer.Instance);
+                    MessagePoster.Register(ia.Name, InporcProducer.Instance);
                     name = ia.Name;
                     return InprocTransportBuilder;
                 }
@@ -34,7 +34,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 var sa = type.GetCustomAttribute<ServiceAttribute>();
                 if (sa != null)
                 {
-                    MessageProducer.Register(sa.Name, InporcProducer.Instance);
+                    MessagePoster.Register(sa.Name, InporcProducer.Instance);
                     name = sa.Name;
                     return InprocTransportBuilder;
                 }
@@ -46,7 +46,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 var ca = type.GetCustomAttribute<ConsumerAttribute>();
                 if (ca != null)
                 {
-                    MessageProducer.Register(ca.Topic, InporcProducer.Instance);
+                    MessagePoster.Register(ca.Topic, InporcProducer.Instance);
                     name = ca.Topic;
                     return InprocTransportBuilder;
                 }
@@ -58,7 +58,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 var na = type.GetCustomAttribute<NetEventAttribute>();
                 if (na != null)
                 {
-                    MessageProducer.Register(na.Name, InporcProducer.Instance);
+                    MessagePoster.Register(na.Name, InporcProducer.Instance);
                     name = na.Name;
                     return InprocTransportBuilder;
                 }
