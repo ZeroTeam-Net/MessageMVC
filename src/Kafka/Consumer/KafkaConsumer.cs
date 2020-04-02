@@ -13,7 +13,7 @@ namespace ZeroTeam.MessageMVC.Kafka
     /// <summary>
     /// Kafka消息队列消费者
     /// </summary>
-    internal class KafkaConsumer : IMessageConsumer
+    internal class KafkaConsumer : NetTransferBase, IMessageConsumer
     {
         /// <summary>
         /// 调用计数
@@ -24,20 +24,15 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <summary>
         /// 初始化
         /// </summary>
-        void INetTransfer.Initialize()
+        bool INetTransfer.Prepare()
         {
             config = ConfigurationManager.Get<ConsumerConfig>("Kafka");
+            return config != null;
         }
 
-        private IConsumer<Ignore, string> consumer;
         private ConsumerConfig config;
+        private IConsumer<Ignore, string> consumer;
 
-
-        public ZeroService Station { get; set; }
-
-        public string Name { get; set; }
-
-        IService INetTransfer.Service { get => Station; set => Station = value as ZeroService; }
 
         async Task<bool> INetTransfer.Loop(CancellationToken token)
         {
@@ -87,7 +82,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <param name="message"></param>
         private async Task OnMessagePush(IMessageItem message)
         {
-            var state = await MessageProcessor.OnMessagePush(Station, message);
+            var state = await MessageProcessor.OnMessagePush(Service, message);
             if (state == MessageState.Success)
             {
                 Interlocked.Increment(ref SuccessCount);
@@ -100,14 +95,6 @@ namespace ZeroTeam.MessageMVC.Kafka
             Interlocked.Decrement(ref WaitCount);
         }
 
-        /// <summary>
-        /// 将要开始
-        /// </summary>
-        Task<bool> INetTransfer.Prepare()
-        {
-            return Task.FromResult(true);
-        }
-
         private ConsumerBuilder<Ignore, string> builder;
 
         /// <summary>
@@ -118,7 +105,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         {
             builder = new ConsumerBuilder<Ignore, string>(config);
             consumer = builder.Build();
-            consumer.Subscribe(Station.ServiceName);
+            consumer.Subscribe(Service.ServiceName);
             return Task.FromResult(true);
         }
 
@@ -142,6 +129,5 @@ namespace ZeroTeam.MessageMVC.Kafka
             consumer.Commit();
             return Task.CompletedTask;
         }
-
     }
 }

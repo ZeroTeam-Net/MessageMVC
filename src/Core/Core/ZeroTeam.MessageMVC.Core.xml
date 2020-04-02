@@ -235,7 +235,7 @@
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.MarkPointMiddleware">
             <summary>
-            埋点处理中间件
+            埋点发出中间件
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.MarkPointMiddleware.Process">
@@ -596,11 +596,6 @@
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.ZeroApis.ZeroService._waitToken">
-            <summary>
-            应用程序等待结果的信号量对象
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ZeroService.mutex">
             <summary>
             应用程序等待结果的信号量对象
             </summary>

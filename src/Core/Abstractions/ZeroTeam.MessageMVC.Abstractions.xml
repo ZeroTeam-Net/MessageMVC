@@ -9,14 +9,14 @@
             生自注册对象
             </summary>
         </member>
+        <member name="M:Agebull.Common.Ioc.IAutoRegister.AutoRegist(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            执行自动注册
+            </summary>
+        </member>
         <member name="M:Agebull.Common.Ioc.IAutoRegister.Initialize">
             <summary>
             初始化
-            </summary>
-        </member>
-        <member name="M:Agebull.Common.Ioc.IAutoRegister.AutoRegist">
-            <summary>
-            执行自动注册
             </summary>
         </member>
         <member name="T:Agebull.Common.Http.HttpCaller">
@@ -1406,41 +1406,6 @@
                 返回值
             </summary>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.IService">
-            <summary>
-            站点连接池
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IService.ServiceName">
-            <summary>
-            服务名称
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IService.RealState">
-            <summary>
-                运行状态
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IService.Transport">
-            <summary>
-            网络传输对象
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IService.ConfigState">
-            <summary>
-                配置状态
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IService.IsDiscover">
-            <summary>
-            是否自动发现对象
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IService.Actions">
-            <summary>
-            注册的方法
-            </summary>
-        </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOptionFilterAttribute">
             <summary>
             API配置过滤器
@@ -1499,6 +1464,41 @@
             构造
             </summary>
             <param name="name"></param>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.IService">
+            <summary>
+            站点连接池
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IService.ServiceName">
+            <summary>
+            服务名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IService.RealState">
+            <summary>
+                运行状态
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IService.Transport">
+            <summary>
+            网络传输对象
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IService.ConfigState">
+            <summary>
+                配置状态
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IService.IsDiscover">
+            <summary>
+            是否自动发现对象
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IService.Actions">
+            <summary>
+            注册的方法
+            </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.MessageProcessor">
             <summary>
@@ -1626,16 +1626,6 @@
             服务
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.INetTransfer.Name">
-            <summary>
-            名称
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.INetTransfer.Initialize">
-            <summary>
-            初始化
-            </summary>
-        </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApis.INetTransfer.End">
             <summary>
             关闭
@@ -1643,7 +1633,7 @@
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApis.INetTransfer.Prepare">
             <summary>
-            将要开始
+            准备
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApis.INetTransfer.Close">
@@ -1744,6 +1734,36 @@
             <param name="type">控制器类型</param>
             <param name="name">发现的服务名称</param>
             <returns>传输对象构造器</returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.NetTransferBase">
+            <summary>
+            网络传输对象基类
+            </summary>
+            <remarks>
+            实现了IMessagePoster自注册,可以做到本进程调用不会提升到网络层面
+            </remarks>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.NetTransferBase.Service">
+            <summary>
+            服务
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.NetTransferBase.State">
+            <summary>
+            运行状态
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.NetTransferBase.ZeroTeam#MessageMVC#Messages#IMessagePoster#Initialize">
+            <summary>
+            初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.NetTransferBase.ZeroTeam#MessageMVC#Messages#IMessagePoster#Post(ZeroTeam.MessageMVC.Messages.IMessageItem)">
+            <summary>
+            生产消息
+            </summary>
+            <param name="message">消息</param>
+            <returns></returns>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.NetTransferException">
             <summary>
@@ -1948,51 +1968,6 @@
             系统在哪一个节点发生错误的标识
             </remarks>
             <example>http-gateway</example>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.IFlowMiddleware">
-            <summary>
-            表示一个流程中间件
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.IFlowMiddleware.CheckOption(ZeroTeam.MessageMVC.ZeroAppOption)">
-            <summary>
-                配置校验,作为第一步
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.IFlowMiddleware.Initialize">
-            <summary>
-                初始化
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.IFlowMiddleware.Start">
-            <summary>
-            开启
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.IFlowMiddleware.Close">
-            <summary>
-            关闭
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.IFlowMiddleware.End">
-            <summary>
-            注销时调用
-            </summary>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.IZeroMiddleware">
-            <summary>
-            表示一个应用中间件
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.IZeroMiddleware.Name">
-            <summary>
-            名称
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.IZeroMiddleware.Level">
-            <summary>
-            等级,用于确定中间件优先级
-            </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ApiAccessOption">
             <summary>
@@ -3013,6 +2988,51 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="T:ZeroTeam.MessageMVC.IFlowMiddleware">
+            <summary>
+            表示一个流程中间件
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.IFlowMiddleware.CheckOption(ZeroTeam.MessageMVC.ZeroAppOption)">
+            <summary>
+                配置校验,作为第一步
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.IFlowMiddleware.Initialize">
+            <summary>
+                初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.IFlowMiddleware.Start">
+            <summary>
+            开启
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.IFlowMiddleware.Close">
+            <summary>
+            关闭
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.IFlowMiddleware.End">
+            <summary>
+            注销时调用
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.IZeroMiddleware">
+            <summary>
+            表示一个应用中间件
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.IZeroMiddleware.Name">
+            <summary>
+            名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.IZeroMiddleware.Level">
+            <summary>
+            等级,用于确定中间件优先级
+            </summary>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Messages.IMessageItem">
             <summary>
             消息交互格式
@@ -3179,7 +3199,7 @@
             消息投递
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.MessagePoster.Default">
+        <member name="F:ZeroTeam.MessageMVC.Messages.MessagePoster.Default">
             <summary>
             默认的生产者
             </summary>
@@ -3189,7 +3209,12 @@
                 初始化
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.MessagePoster.Register(System.String,ZeroTeam.MessageMVC.Messages.IMessagePoster)">
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessagePoster.RegistPoster``1(System.String[])">
+            <summary>
+                手动注册
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessagePoster.RegistPoster(ZeroTeam.MessageMVC.Messages.IMessagePoster,System.String[])">
             <summary>
                 手动注册
             </summary>

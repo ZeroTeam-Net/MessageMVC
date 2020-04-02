@@ -129,24 +129,31 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         private readonly SemaphoreSlim _waitToken = new SemaphoreSlim(0, int.MaxValue);
 
-        /// <summary>
+        /*// <summary>
         /// 应用程序等待结果的信号量对象
         /// </summary>
-        private Mutex mutex;
+        private Mutex mutex;*/
 
         /// <summary>
         /// 初始化
         /// </summary>
         internal void Initialize()
         {
-            RealState = StationState.Initialized;
-            Transport = TransportBuilder(ServiceName);
-            Transport.Service = this;
-            Transport.Name = ServiceName;
-            Transport.Initialize();
-            ConfigState = ServiceName == null ? StationStateType.Stop : StationStateType.Initialized;
+            if(ServiceName == null)
+            {
+                ConfigState = StationStateType.ConfigError;
+            }
+            else
+            {
+                RealState = StationState.Initialized;
+                Transport = TransportBuilder(ServiceName);
+                Transport.Service = this;
+                Transport.Initialize();
+                if (!Transport.Prepare())
+                    ConfigState = StationStateType.ConfigError;
+            }
             ResetStateMachine();
-            mutex = new Mutex();
+            //mutex = new Mutex();
         }
 
         /// <summary>
@@ -167,14 +174,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     return false;
                 }
                 RealState = StationState.Start;
-                //扩展动作
-                if (!await Transport.Prepare())
-                {
-                    RealState = StationState.Failed;
-                    ConfigState = StationStateType.Failed;
-                    return false;
-                }
-
                 ConfigState = StationStateType.Run;
                 //可执行
                 //Hearter.HeartJoin(Config.StationName, RealName);
@@ -210,7 +209,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
             ResetStateMachine();
             _waitToken.Release();
-            mutex.WaitOne();
+            //mutex.WaitOne();
             {
                 try
                 {
@@ -252,7 +251,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 }
                 ResetStateMachine();
             }
-            mutex.ReleaseMutex();
+            //mutex.ReleaseMutex();
             GC.Collect();
         }
 
@@ -318,7 +317,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         void DoEnd()
         {
             Transport.End();
-            mutex.Dispose();
+            //mutex.Dispose();
         }
         #endregion
 
@@ -368,7 +367,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 return true;//已启动,不应该再次
             }
 
-            mutex.WaitOne();//BUG
+            //mutex.WaitOne();//BUG
             try
             {
                 if (RealState == StationState.BeginRun || RealState == StationState.Run)
@@ -389,7 +388,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             }
             finally
             {
-                mutex.ReleaseMutex();
+                //mutex.ReleaseMutex();
             }
         }
 

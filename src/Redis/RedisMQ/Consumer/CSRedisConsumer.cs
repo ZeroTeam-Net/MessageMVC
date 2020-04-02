@@ -14,18 +14,8 @@ namespace ZeroTeam.MessageMVC.RedisMQ
     /// <summary>
     /// RedisMQ消费者
     /// </summary>
-    public class CSRedisConsumer : IMessageConsumer, INetEvent
+    public class CSRedisConsumer : NetTransferBase, IMessageConsumer, INetEvent
     {
-        /// <summary>
-        /// 名称
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// 服务
-        /// </summary>
-        public IService Service { get; set; }
-
         /// <summary>
         /// 连接字符串
         /// </summary>
@@ -51,7 +41,6 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// </summary>
         public void Initialize()
         {
-            Name = "RedisMQ";
             Option = ConfigurationManager.Get<RedisOption>("Redis");
             if (Option.GuardCheckTime <= 0)
             {

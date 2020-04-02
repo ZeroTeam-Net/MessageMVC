@@ -10,7 +10,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 运行状态
         /// </summary>
-        StationStateType State { get; }
+        StationStateType State { get; set; }
 
         /// <summary>
         ///     初始化

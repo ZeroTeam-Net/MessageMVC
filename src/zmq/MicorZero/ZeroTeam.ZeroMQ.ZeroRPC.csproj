@@ -63,9 +63,9 @@
     <Compile Remove="Rpc\**" />
     <Compile Remove="Services\**" />
     <Compile Remove="Tson\**" />
-    <Compile Remove="ZeroApi\Api\**" />
-    <Compile Remove="ZeroApi\Attribute\**" />
-    <Compile Remove="ZeroApi\Delegate\**" />
+    <Compile Remove="Transport\Api\**" />
+    <Compile Remove="Transport\Attribute\**" />
+    <Compile Remove="Transport\Delegate\**" />
     <Compile Remove="ZeroStation\**" />
     <EmbeddedResource Remove="AddIn\**" />
     <EmbeddedResource Remove="ApiContract\**" />
@@ -80,9 +80,9 @@
     <EmbeddedResource Remove="Rpc\**" />
     <EmbeddedResource Remove="Services\**" />
     <EmbeddedResource Remove="Tson\**" />
-    <EmbeddedResource Remove="ZeroApi\Api\**" />
-    <EmbeddedResource Remove="ZeroApi\Attribute\**" />
-    <EmbeddedResource Remove="ZeroApi\Delegate\**" />
+    <EmbeddedResource Remove="Transport\Api\**" />
+    <EmbeddedResource Remove="Transport\Attribute\**" />
+    <EmbeddedResource Remove="Transport\Delegate\**" />
     <EmbeddedResource Remove="ZeroStation\**" />
     <None Remove="AddIn\**" />
     <None Remove="ApiContract\**" />
@@ -97,32 +97,32 @@
     <None Remove="Rpc\**" />
     <None Remove="Services\**" />
     <None Remove="Tson\**" />
-    <None Remove="ZeroApi\Api\**" />
-    <None Remove="ZeroApi\Attribute\**" />
-    <None Remove="ZeroApi\Delegate\**" />
+    <None Remove="Transport\Api\**" />
+    <None Remove="Transport\Attribute\**" />
+    <None Remove="Transport\Delegate\**" />
     <None Remove="ZeroStation\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Application\ApiChecker.cs" />
-    <Compile Remove="Application\IZeroObject.cs" />
-    <Compile Remove="Application\SpeedLimitType.cs" />
-    <Compile Remove="Application\SystemManager.cs" />
-    <Compile Remove="Application\SystemMonitor.cs" />
-    <Compile Remove="Application\ZeroAppConfig.cs" />
-    <Compile Remove="Application\ZeroStationOption.cs" />
+    <Compile Remove="Zero\ApiChecker.cs" />
+    <Compile Remove="Zero\IZeroObject.cs" />
+    <Compile Remove="Zero\SpeedLimitType.cs" />
+    <Compile Remove="Zero\SystemManager.cs" />
+    <Compile Remove="Zero\SystemMonitor.cs" />
+    <Compile Remove="Zero\ZeroAppConfig.cs" />
+    <Compile Remove="Zero\ZeroStationOption.cs" />
     <Compile Remove="Base\SyncBatchQueue.cs" />
     <Compile Remove="Base\ZeroManageCommand.cs" />
     <Compile Remove="Producer\ZmqProxy.cs" />
     <Compile Remove="Properties\AssemblyInfo.cs" />
-    <Compile Remove="ZeroApi\ApiAction.cs" />
-    <Compile Remove="ZeroApi\ApiCallItem.cs" />
-    <Compile Remove="ZeroApi\ApiClient.cs" />
-    <Compile Remove="ZeroApi\ApiStation.cs" />
-    <Compile Remove="ZeroApi\ApiStationItem.cs" />
-    <Compile Remove="Application\ZeroHelper.cs" />
-    <Compile Remove="ZeroApi\Attribute.cs" />
-    <Compile Remove="ZeroApi\ZeroApiController.cs" />
+    <Compile Remove="Transport\ApiAction.cs" />
+    <Compile Remove="Transport\ApiCallItem.cs" />
+    <Compile Remove="Transport\ApiClient.cs" />
+    <Compile Remove="Transport\ApiStation.cs" />
+    <Compile Remove="Transport\ApiStationItem.cs" />
+    <Compile Remove="Zero\ZeroHelper.cs" />
+    <Compile Remove="Transport\Attribute.cs" />
+    <Compile Remove="Transport\ZeroApiController.cs" />
   </ItemGroup>
 
   <ItemGroup>

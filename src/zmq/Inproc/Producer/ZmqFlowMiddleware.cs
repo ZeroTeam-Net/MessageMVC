@@ -66,7 +66,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         {
             Instance = this;
             ZContext.Initialize();
-            InporcProducer.Instance.State = StationStateType.Run;
+            InprocPoster.Instance.State = StationStateType.Run;
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// </summary>
         public void Close()
         {
-            InporcProducer.Instance.State = StationStateType.Closed;
+            InprocPoster.Instance.State = StationStateType.Closed;
         }
 
         /// <summary>

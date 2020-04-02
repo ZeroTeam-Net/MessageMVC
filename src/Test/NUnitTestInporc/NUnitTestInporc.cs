@@ -15,7 +15,7 @@ namespace NUnitTestInporc
         public void Setup()
         {
             IocHelper.AddTransient<IFlowMiddleware, ZmqFlowMiddleware>();//ZMQ环境,与ZeroRpcFlow冲突,只用其一
-            IocHelper.AddTransient<IMessagePoster, InporcProducer>();//采用ZMQ进程内通讯生产端
+            IocHelper.AddTransient<IMessagePoster, InprocPoster>();//采用ZMQ进程内通讯生产端
             IocHelper.AddTransient<IMessageConsumer, InporcConsumer>();//采用ZMQ进程内通讯生产端
             IocHelper.AddTransient<ITransportDiscory, TestDiscory>();//网络协议发现
             IocHelper.ServiceCollection.UseTest(typeof(RpcControler).Assembly);

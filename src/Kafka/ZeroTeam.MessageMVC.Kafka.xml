@@ -4,6 +4,11 @@
         <name>ZeroTeam.MessageMVC.Kafka</name>
     </assembly>
     <members>
+        <member name="T:ZeroTeam.MessageMVC.Kafka.KafkaConsumer">
+            <summary>
+            Kafka消息队列消费者
+            </summary>
+        </member>
         <member name="F:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.CallCount">
             <summary>
             调用计数
@@ -24,7 +29,7 @@
             调用计数
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.ZeroTeam#MessageMVC#ZeroApis#INetTransfer#Initialize">
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.ZeroTeam#MessageMVC#ZeroApis#INetTransfer#Prepare">
             <summary>
             初始化
             </summary>
@@ -34,11 +39,6 @@
             消息处理
             </summary>
             <param name="message"></param>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.ZeroTeam#MessageMVC#ZeroApis#INetTransfer#Prepare">
-            <summary>
-            将要开始
-            </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.ZeroTeam#MessageMVC#ZeroApis#INetTransfer#LoopBegin">
             <summary>

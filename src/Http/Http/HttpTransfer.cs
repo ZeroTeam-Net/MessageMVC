@@ -11,11 +11,8 @@ namespace ZeroTeam.MessageMVC.Http
     /// <summary>
     ///     Http进站出站的处理类
     /// </summary>
-    public sealed class HttpTransfer : IRpcTransfer
+    public sealed class HttpTransfer : NetTransferBase, IRpcTransfer
     {
-        IService INetTransfer.Service { get; set; }
-        string INetTransfer.Name { get; set; }
-
         private TaskCompletionSource<bool> task;
         Task<bool> INetTransfer.Loop(CancellationToken token)
         {

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.ApiDocuments;
+using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
@@ -260,7 +261,6 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
 
         private void AddStation(StationConfig station, bool raiseEvent = true)
         {
-            //Console.WriteLine("lock (_configs)");
             lock (_configs)
             {
                 if (_configs.TryGetValue(station.Name, out var config))
@@ -292,14 +292,9 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                         _configMap[station.ShortName] = config;
                     }
                 }
-                //if (station.StationAlias == null)
-                //    return;
-                //foreach (var ali in station.StationAlias)
-                //    if (!_configMap.ContainsKey(ali))
-                //        _configMap.Add(ali, config);
-                //    else
-                //        _configMap[ali] = config;
             }
+            //自动注册RPC服务
+            MessagePoster.RegistPoster<ZeroRPCPoster>(station.Name, station.ShortName);
             if (raiseEvent)
             {
                 ZeroRpcFlow.InvokeEvent(ZeroNetEventType.CenterStationUpdate, station.Group, null, station, true);

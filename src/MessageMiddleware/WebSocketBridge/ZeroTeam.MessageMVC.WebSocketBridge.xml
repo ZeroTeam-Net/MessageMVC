@@ -9,6 +9,16 @@
             表示一个WebSocket连接
             </summary>
         </member>
+        <member name="T:ZeroTeam.MessageMVC.Web.WebSocketConfig">
+            <summary>
+            WebSocket配置文件
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Web.WebSocketConfig.Folders">
+            <summary>
+            使用WebSocket的文件夹
+            </summary>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Web.WebSocketNotify">
             <summary>
             消息转发到WebSocket中间件

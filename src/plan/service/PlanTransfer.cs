@@ -11,26 +11,17 @@ namespace ZeroTeam.MessageMVC.PlanTasks
     /// <summary>
     /// 计划管理器
     /// </summary>
-    internal class PlanTransfer : INetTransfer
+    internal class PlanTransfer : NetTransferBase, INetTransfer
     {
-
-        #region IFlowMiddleware
-
-        public IService Service { get; set; }
-        public string Name { get; set; }
+        #region INetTransfer
 
         /// <summary>
-        ///     初始化
+        /// 初始化
         /// </summary>
-        void INetTransfer.Initialize()
+        bool INetTransfer.Prepare()
         {
-            ConfigurationManager.RegistOnChange(
-                () =>
-                {
-                    PlanSystemOption.Option = ConfigurationManager.Get<PlanSystemOption>("PlanTask")
-                                            ?? new PlanSystemOption();
-                },
-                true);
+            PlanSystemOption.Option = ConfigurationManager.Get<PlanSystemOption>("PlanTask");
+            return PlanSystemOption.Option != null;
         }
 
         /// <summary>

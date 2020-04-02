@@ -9,7 +9,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
     /// <summary>
     ///     ZMQ生产者
     /// </summary>
-    public class InporcProducer : IMessagePoster
+    public class InprocPoster : IMessagePoster
     {
         #region Properties
 
@@ -21,12 +21,12 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// <summary>
         /// 实例
         /// </summary>
-        public static InporcProducer Instance = new InporcProducer();
+        public static InprocPoster Instance = new InprocPoster();
 
         /// <summary>
         /// 构造
         /// </summary>
-        public InporcProducer()
+        public InprocPoster()
         {
             Instance = this;
         }
@@ -145,7 +145,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// <returns></returns>
         public static async Task<string> CallAsync(string station, string commmand, string argument)
         {
-            var client = new InporcProducer
+            var client = new InprocPoster
             {
                 Station = station,
                 Commmand = commmand,
@@ -172,7 +172,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// <returns></returns>
         public static IApiResult<TResult> CallApi<TArgument, TResult>(string station, string api, TArgument arg)
         {
-            var client = new InporcProducer
+            var client = new InprocPoster
             {
                 Station = station,
                 Commmand = api,
@@ -195,7 +195,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// <returns></returns>
         public static IApiResult CallApi<TArgument>(string station, string api, TArgument arg)
         {
-            var client = new InporcProducer
+            var client = new InprocPoster
             {
                 Station = station,
                 Commmand = api,
@@ -218,7 +218,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// <returns></returns>
         public static IApiResult<TResult> CallApi<TResult>(string station, string api)
         {
-            var client = new InporcProducer
+            var client = new InprocPoster
             {
                 Station = station,
                 Commmand = api
@@ -239,7 +239,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// <returns></returns>
         public static IApiResult CallApi(string station, string api)
         {
-            var client = new InporcProducer
+            var client = new InprocPoster
             {
                 Station = station,
                 Commmand = api
@@ -263,7 +263,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// <returns></returns>
         public static TResult Call<TArgument, TResult>(string station, string api, TArgument arg)
         {
-            var client = new InporcProducer
+            var client = new InprocPoster
             {
                 Station = station,
                 Commmand = api,
@@ -286,7 +286,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// <returns></returns>
         public static TResult Call<TResult>(string station, string api)
         {
-            var client = new InporcProducer
+            var client = new InprocPoster
             {
                 Station = station,
                 Commmand = api
@@ -310,7 +310,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// <returns></returns>
         public async Task<(MessageState state, string result)> Post(IMessageItem message)
         {
-            var client = new InporcProducer
+            var client = new InprocPoster
             {
                 Station = message.Topic,
                 Commmand = message.Title

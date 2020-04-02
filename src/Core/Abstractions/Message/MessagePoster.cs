@@ -16,11 +16,6 @@ namespace ZeroTeam.MessageMVC.Messages
     {
         #region IFlowMiddleware
 
-        /// <summary>
-        /// 默认的生产者
-        /// </summary>
-        public static IMessagePoster Default { get; set; }
-
         string IZeroMiddleware.Name => "MessagePoster";
 
         int IZeroMiddleware.Level => int.MaxValue;
@@ -29,37 +24,58 @@ namespace ZeroTeam.MessageMVC.Messages
 
         #region 消息生产者
 
-        private static readonly Dictionary<string, IMessagePoster> Producers = new Dictionary<string, IMessagePoster>(StringComparer.OrdinalIgnoreCase);
+        /// <summary>
+        /// 默认的生产者
+        /// </summary>
+        static IMessagePoster Default;
+
+        private static readonly Dictionary<string, IMessagePoster> ServiceMap = new Dictionary<string, IMessagePoster>(StringComparer.OrdinalIgnoreCase);
+
+        private static Dictionary<string, IMessagePoster> posters = new Dictionary<string, IMessagePoster>();
 
         /// <summary>
         ///     初始化
         /// </summary>
         void IFlowMiddleware.Initialize()
         {
-            var pros = IocHelper.RootProvider.GetServices<IMessagePoster>().ToArray();
-            if (pros.Length == 1)
-            {
-                Default = pros[0];
-                return;
-            }
+            posters = IocHelper.RootProvider.GetServices<IMessagePoster>().ToDictionary(p => p.GetTypeName());
             var sec = ConfigurationManager.Get("MessagePoster");
-            foreach (var pro in pros)
+            posters.TryGetValue(sec.GetStr("default", ""), out Default);
+            foreach (var pro in posters)
             {
-                var strs = sec.GetStr(pro.GetTypeName(), "")?.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                pro.Value.Initialize();
+
+                var strs = sec.GetStr(pro.Key, "")?.Split(',', StringSplitOptions.RemoveEmptyEntries);
                 foreach (var str in strs)
                 {
-                    Producers.TryAdd(str, pro);
+                    ServiceMap.TryAdd(str, pro.Value);
                 }
-                pro.Initialize();
             }
         }
 
         /// <summary>
         ///     手动注册
         /// </summary>
-        public static void Register(string name, IMessagePoster pro)
+        public static void RegistPoster<TMessagePoster>(params string[] services)
+            where TMessagePoster : IMessagePoster, new()
         {
-            Producers.TryAdd(name, pro);
+            var name = typeof(TMessagePoster).GetTypeName();
+            if (!posters.TryGetValue(name, out var poster))
+            {
+                posters.Add(name, poster = new TMessagePoster());
+                poster.Initialize();
+            }
+            foreach (var service in services)
+                ServiceMap.TryAdd(service, poster);
+        }
+
+        /// <summary>
+        ///     手动注册
+        /// </summary>
+        public static void RegistPoster( IMessagePoster poster, params string[] services)
+        {
+            foreach (var service in services)
+                ServiceMap.TryAdd(service, poster);
         }
 
         /// <summary>
@@ -69,11 +85,9 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <returns>传输对象构造器</returns>
         public static IMessagePoster GetService(string name)
         {
-            if (Producers.TryGetValue(name, out var producer))
-            {
-                return producer;
-            }
-            return Default ??= IocHelper.Create<IMessagePoster>();
+            return ServiceMap.TryGetValue(name, out var producer) 
+                ? producer 
+                : Default;
         }
 
         /// <summary>

@@ -12,20 +12,8 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
     /// <summary>
     /// 表示进程内通讯
     /// </summary>
-    public class InporcConsumer : IMessageConsumer
+    public class InporcConsumer : NetTransferBase, IMessageConsumer
     {
-
-        /// <summary>
-        /// 名称
-        /// </summary>
-        public string Name { get; set; }
-
-
-        /// <summary>
-        /// 服务
-        /// </summary>
-        public IService Service { get; set; }
-
         /// <summary>
         /// 本地代理
         /// </summary>
@@ -35,14 +23,6 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// Pool对象
         /// </summary>
         private IZmqPool zmqPool;
-
-        /// <summary>
-        /// 初始化
-        /// </summary>
-        void INetTransfer.Initialize()
-        {
-            Name = "InporcConsumer";
-        }
 
         /// <summary>
         /// 同步运行状态
@@ -59,6 +39,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
             zmqPool = ZmqPool.CreateZmqPool();
             zmqPool.Sockets = new[] { socket };
             zmqPool.RePrepare(ZPollEvent.In);
+            State = StationStateType.Run;
             return Task.FromResult(true);
         }
 
@@ -98,7 +79,8 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// <returns></returns>
         Task INetTransfer.OnError(Exception exception, IMessageItem message, object tag)
         {
-            OnResult(ApiResultIoc.LocalExceptionJson, (ApiCallItem)tag, (byte)ZeroOperatorStateType.LocalException);
+            if (tag is ApiCallItem item)
+                OnResult(ApiResultIoc.LocalExceptionJson, item, (byte)ZeroOperatorStateType.LocalException);
             return Task.CompletedTask;
         }
 
@@ -108,9 +90,10 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// <returns></returns>
         Task INetTransfer.OnResult(IMessageItem message, object tag)
         {
-            OnResult(message.Result, (ApiCallItem)tag,
-                (byte)(message.State == MessageState.Success
-                        ? ZeroOperatorStateType.Ok : ZeroOperatorStateType.Bug));
+            if (tag is ApiCallItem item)
+                OnResult(message.Result, item,
+                    (byte)(message.State == MessageState.Success
+                            ? ZeroOperatorStateType.Ok : ZeroOperatorStateType.Bug));
             return Task.CompletedTask;
         }
 
@@ -207,103 +190,5 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
 
         #endregion
 
-        #region Remote
-#if Remote
-        private static readonly byte[] LayoutErrorFrame = new byte[]
-        {
-            2,
-            (byte) ZeroOperatorStateType.FrameInvalid,
-            ZeroFrameType.Requester,
-            //ZeroFrameType.SerivceKey,
-            ZeroFrameType.ResultEnd
-        };
-        /// <summary>
-        /// 发送返回值 
-        /// </summary>
-        /// <param name="item"></param>
-        /// <returns></returns>
-        void SendLayoutErrorResult(ApiCallItem item)
-        {
-            if (item == null)
-            {
-                return;
-            }
-            SendResult(new ZMessage
-            {
-                new ZFrame(item.Caller),
-                new ZFrame(LayoutErrorFrame),
-                new ZFrame(item.Requester),
-                //new ZFrame(ServiceKey)
-            });
-        }
-
-        /// <summary>
-        /// 发送返回值 
-        /// </summary>
-        /// <returns></returns>
-        void OnResult(string result, ApiCallItem item, byte state)
-        {
-            int i = 0;
-            var des = new byte[9 + item.Originals.Count];
-            des[i++] = (byte)(item.Originals.Count + (item.EndTag == ZeroFrameType.ResultFileEnd ? 6 : 5));
-            des[i++] = state;
-            des[i++] = ZeroFrameType.Requester;
-            des[i++] = ZeroFrameType.RequestId;
-            des[i++] = ZeroFrameType.CallId;
-            des[i++] = ZeroFrameType.GlobalId;
-            des[i++] = ZeroFrameType.ResultText;
-            var msg = new List<byte[]>
-            {
-                item.Caller,
-                des,
-                item.Requester.ToZeroBytes(),
-                item.RequestId.ToZeroBytes(),
-                item.CallId.ToZeroBytes(),
-                item.GlobalId.ToZeroBytes(),
-                result?.ToZeroBytes()
-            };
-            if (item.EndTag == ZeroFrameType.ResultFileEnd)
-            {
-                des[i++] = ZeroFrameType.BinaryContent;
-                msg.Add(item.Binary);
-            }
-            foreach (var org in item.Originals)
-            {
-                des[i++] = org.Key;
-                msg.Add((org.Value));
-            }
-            //des[i++] = ZeroFrameType.SerivceKey;
-            //msg.Add(ZMQProxy.ServiceKey);
-            des[i] = item.EndTag > 0 ? item.EndTag : ZeroFrameType.ResultEnd;
-            SendResult(new ZMessage(msg));
-        }
-        /// <summary>
-        /// 发送返回值 
-        /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        bool SendResult(ZMessage message)
-        {
-            using (message)
-            {
-                try
-                {
-                    if (socket.Send(message, out ZError error))
-                    {
-                        return true;
-                    }
-                    ZeroTrace.WriteError(Name, error.Text, error.Name);
-                    LogRecorder.MonitorTrace(() => $"{Name}({socket.Endpoint}) : {error.Text}");
-                }
-                catch (Exception e)
-                {
-                    LogRecorder.Exception(e, "ApiStation.SendResult");
-                    LogRecorder.MonitorTrace(() => $"Exception : {Name} : {e.Message}");
-                }
-            }
-            return false;
-        }
-#endif
-        #endregion
     }
 }

@@ -6,17 +6,7 @@
     <members>
         <member name="T:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer">
             <summary>
-            表示进程内通讯
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.Name">
-            <summary>
-            名称
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.Service">
-            <summary>
-            服务
+            RedisMQ消费者
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.Option">
@@ -83,7 +73,7 @@
         </member>
         <member name="T:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer">
             <summary>
-                ZMQ生产者
+                Redis生产者
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer.Instance">

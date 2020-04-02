@@ -92,7 +92,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{E1BA22EE-D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlanUnitTest", "src\UnitTest\PlanUnitTest\PlanUnitTest.csproj", "{53C0044E-A6F3-45A6-B03B-2CF65E1B4A73}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.MulitNetTransfer", "src\Test\Mulit\ZeroTeam.MessageMVC.MulitNetTransfer.csproj", "{C401BFD3-8CE7-460D-B12C-8C46020BE6EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.MulitNetTransfer.Sample", "src\Test\Mulit\ZeroTeam.MessageMVC.MulitNetTransfer.Sample.csproj", "{C401BFD3-8CE7-460D-B12C-8C46020BE6EF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

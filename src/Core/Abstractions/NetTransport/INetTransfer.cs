@@ -9,25 +9,12 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     /// <summary>
     /// 表示一个网络传输对象
     /// </summary>
-    public interface INetTransfer
+    public interface INetTransfer : IMessagePoster
     {
         /// <summary>
         /// 服务
         /// </summary>
         IService Service { get; set; }
-
-
-        /// <summary>
-        /// 名称
-        /// </summary>
-        string Name { get; set; }
-
-        /// <summary>
-        /// 初始化
-        /// </summary>
-        void Initialize()
-        {
-        }
 
         /// <summary>
         /// 关闭
@@ -35,22 +22,31 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         void End()
         {
         }
+
         /// <summary>
-        /// 将要开始
+        /// 准备
         /// </summary>
-        Task<bool> Prepare() => Task.FromResult(true);
+        bool Prepare() => true;
 
         /// <summary>
         /// 关闭
         /// </summary>
         /// <returns></returns>
-        Task Close() => Task.CompletedTask;
+        Task Close()
+        {
+            State = StationStateType.Closed;
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// 开始轮询前的工作
         /// </summary>
         /// <returns></returns>
-        Task<bool> LoopBegin() => Task.FromResult(true);
+        Task<bool> LoopBegin()
+        {
+            State = StationStateType.Run;
+            return Task.FromResult(true);
+        }
 
         /// <summary>
         /// 轮询
@@ -79,6 +75,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </remarks>
         async Task OnMessageResult(IMessageItem message, object tag)
         {
+            if (tag == null)//内部自调用,无需处理
+                return;
             try
             {
                 await OnResult(message, tag);
@@ -110,6 +108,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     message.State = MessageState.Exception;
                 message.Result = exception.Message;
             }
+            if (tag == null)//内部自调用,无需处理
+                return;
             try
             {
                 await OnError(exception, message, tag);

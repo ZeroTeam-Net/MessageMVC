@@ -15,29 +15,17 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
     /// <summary>
     ///  ZeroMQ实现的RPC
     /// </summary>
-    public sealed class ZeroRpcTransport : IRpcTransfer
+    public sealed class ZeroRpcTransport : NetTransferBase, IRpcTransfer
     {
         #region 控制反转
 
         /// <summary>
         /// 初始化
         /// </summary>
-        void INetTransfer.Initialize()
+        bool INetTransfer.Prepare()
         {
             ZeroRpcFlow.ZeroNetEvents.Add(OnZeroNetEvent);
-        }
-
-        /// <summary>
-        /// 将要开始
-        /// </summary>
-        Task<bool> INetTransfer.Prepare()
-        {
-            if (!ZeroRpcFlow.ZerCenterIsRun)
-            {
-                return Task.FromResult(false);
-            }
-
-            return Task.FromResult(CheckConfig());
+            return CheckConfig();
         }
 
         /// <summary>
@@ -81,7 +69,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 }
 
                 Interlocked.Exchange(ref _realState, value);
-                ZeroTrace.SystemLog(Name, nameof(RealState), StationRealState.Text(_realState));
+                ZeroTrace.SystemLog(Service.Name, nameof(RealState), StationRealState.Text(_realState));
             }
         }
 
@@ -116,14 +104,6 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// </summary>
         bool checkWait;*/
 
-        ///<inheritdoc/>
-        public IService Service { get; set; }
-
-
-        ///<inheritdoc/>
-        public string Name { get; set; }
-
-
         /// <summary>
         /// 实例名称
         /// </summary>
@@ -152,22 +132,23 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <returns></returns>
         private bool CheckConfig()
         {
+            var name = Service.ServiceName;
             //取配置
-            Config = ZeroRpcFlow.Config[Name];
+            Config = ZeroRpcFlow.Config[name];
 
             if (Config == null)
             {
                 var mg = new ConfigManager(ZeroRpcFlow.Config.Master);
-                if (mg.TryInstall(Name, "Api"))
+                if (mg.TryInstall(name, "Api"))
                 {
-                    Config = mg.LoadConfig(Name);
+                    Config = mg.LoadConfig(name);
                     if (Config == null)
                     {
-                        ZeroTrace.WriteError(Name, "Station no find");
+                        ZeroTrace.WriteError(name, "Station no find");
                         RealState = StationRealState.ConfigError;
                         return false;
                     }
-                    ZeroTrace.SystemLog(Name, "successfully");
+                    ZeroTrace.SystemLog(name, "successfully");
                 }
                 Config.State = ZeroCenterState.Run;
             }
@@ -176,23 +157,23 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             {
                 case ZeroCenterState.None:
                 case ZeroCenterState.Stop:
-                    ZeroTrace.WriteError(Name, "Station is stop");
+                    ZeroTrace.WriteError(name, "Station is stop");
                     RealState = StationRealState.Stop;
                     return false;
                 //case ZeroCenterState.Failed:
-                //    ZeroTrace.WriteError(Name, "Station is failed");
+                //    ZeroTrace.WriteError(name, "Station is failed");
                 //    RealState = StationState.ConfigError;
                 //    ConfigState = ZeroCenterState.Stop;
                 //    return false;
                 case ZeroCenterState.Remove:
-                    ZeroTrace.WriteError(Name, "Station is remove");
+                    ZeroTrace.WriteError(name, "Station is remove");
                     RealState = StationRealState.Remove;
                     return false;
             }
-            InprocAddress = $"inproc://{Name}_{RandomCode.Generate(4)}.req";
+            InprocAddress = $"inproc://{name}_{RandomCode.Generate(4)}.req";
 
 
-            _option = ZeroRpcFlow.GetApiOption(Name);
+            _option = ZeroRpcFlow.GetApiOption(name);
             if (_option.SpeedLimitModel == SpeedLimitType.None)
             {
                 _option.SpeedLimitModel = SpeedLimitType.ThreadCount;
@@ -202,96 +183,16 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             //switch (_option.SpeedLimitModel)
             //{
             //    default:
-            //        ZeroTrace.SystemLog(Name, "WaitCount", MicroZeroApplication.Config.MaxWait);
+            //        ZeroTrace.SystemLog(name, "WaitCount", MicroZeroApplication.Config.MaxWait);
             //        checkWait = true;
             //        break;
             //    case SpeedLimitType.Single:
-            //        ZeroTrace.SystemLog(Name, "Single");
+            //        ZeroTrace.SystemLog(name, "Single");
             //        checkWait = false;
             //        break;
             //}
             return true;
         }
-
-        /*// <summary>
-        /// 站点状态变更时调用
-        /// </summary>
-        void OnStationStateChanged(StationConfig config)
-        {
-            while (RealState == StationState.Start || RealState == StationState.BeginRun || RealState == StationState.Closing)
-                Thread.Sleep(10);
-            //#if UseStateMachine
-            switch (config.State)
-            {
-                case ZeroCenterState.Initialize:
-                case ZeroCenterState.Start:
-                case ZeroCenterState.Run:
-                case ZeroCenterState.Pause:
-                    break;
-                case ZeroCenterState.Failed:
-                    if (!CanLoop)
-                        break;
-                    //运行状态中，与ZeroCenter一起重启
-                    if (RealState == StationState.Run)
-                        RealState = StationState.Closing;
-                    ConfigState = StationStateType.Failed;
-                    return;
-                //以下状态如在运行，均可自动关闭
-                case ZeroCenterState.Closing:
-                case ZeroCenterState.Closed:
-                case ZeroCenterState.Destroy:
-                    if (RealState == StationState.Run)
-                        RealState = StationState.Closing;
-                    ConfigState = StationStateType.Closed;
-                    return;
-                case ZeroCenterState.NoFind:
-                case ZeroCenterState.Remove:
-                    if (RealState == StationState.Run)
-                        RealState = StationState.Closing;
-                    ConfigState = StationStateType.Remove;
-                    return;
-                default:
-                    //case ZeroCenterState.None:
-                    //case ZeroCenterState.Stop:
-                    if (RealState == StationState.Run)
-                        RealState = StationState.Closing;
-                    ConfigState = StationStateType.Stop;
-                    return;
-            }
-            if (!ZeroApplication.CanDo)
-            {
-                return;
-            }
-            //可启动状态检查是否未运行
-            if (CanLoop)//这是一个可以正常运行的状态，无需要改变
-                return;
-            //是否未进行初始化
-            if (ConfigState == StationStateType.None)
-                Initialize();
-            else
-                ConfigState = StationStateType.Initialized;
-
-            Task.Run(Start);
-            //#else
-            //            ConfigState = config.State;
-            //            if (RealState < StationState.Start || RealState > StationState.Closing)
-            //            {
-            //                if (config.State <= ZeroCenterState.Pause && ZeroApplication.CanDo)
-            //                {
-            //                    ZeroTrace.SystemLog(StationName, $"Start by config state({config.State}) changed");
-            //                    Start();
-            //                }
-            //            }
-            //            else
-            //            {
-            //                if (config.State >= ZeroCenterState.Failed || !ZeroApplication.CanDo)
-            //                {
-            //                    ZeroTrace.SystemLog(StationName, $"Close by config state({config.State}) changed");
-            //                    Close();
-            //                }
-            //            }
-            //#endif
-        }*/
 
         private Task OnZeroNetEvent(ZeroRpcOption config, ZeroNetEventArgument e)
         {
@@ -370,7 +271,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         {
             try
             {
-                ZeroTrace.SystemLog(Name, "Task", "start", RealName);
+                ZeroTrace.SystemLog(Service.Name, "Task", "start", RealName);
 
                 var pSocket = ZSocketEx.CreatePoolSocket(Config.WorkerCallAddress, Config.ServiceKey, ZSocketType.PULL, Identity);
                 if (pSocket == null)
@@ -384,7 +285,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     pSocket,
                     ZSocketEx.CreateServiceSocket(InprocAddress, null, ZSocketType.ROUTER));
 
-                if (!Hearter.HeartReady(Name, RealName))
+                if (!Hearter.HeartReady(Service.Name, RealName))
                 {
                     RealState = StationRealState.Failed;
                     return Task.FromResult(false);
@@ -447,8 +348,8 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         Task INetTransfer.LoopComplete()
         {
             pool.Sockets[0].Disconnect(Config.WorkerCallAddress, out _);
-            Hearter.HeartLeft(Name, RealName);
-            ZeroTrace.SystemLog(Name, "closing");
+            Hearter.HeartLeft(Service.Name, RealName);
+            ZeroTrace.SystemLog(Service.Name, "closing");
             try
             {
                 int num = 0;
@@ -459,10 +360,10 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
             catch (Exception e)
             {
-                LogRecorder.Exception(e, "处理堆积任务出错{0}", Name);
+                LogRecorder.Exception(e, "处理堆积任务出错{0}", Service.Name);
             }
             pool.Dispose();
-            ZeroTrace.SystemLog(Name, "Task", "end", RealName);
+            ZeroTrace.SystemLog(Service.Name, "Task", "end", RealName);
             return Task.CompletedTask;
         }
 
@@ -549,7 +450,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
             if (!success)
             {
-                ZeroTrace.WriteError(Name, error.Text, error.Name);
+                ZeroTrace.WriteError(Service.Name, error.Text, error.Name);
             }
         }
 
@@ -639,7 +540,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             {
                 if (!CanLoop)
                 {
-                    ZeroTrace.WriteError(Name, "Can`t send result,station is closed");
+                    ZeroTrace.WriteError(Service.Name, "Can`t send result,station is closed");
                     return false;
                 }
                 try
@@ -663,13 +564,13 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                         return true;
                     }
 
-                    ZeroTrace.WriteError(Name, error.Text, error.Name);
-                    LogRecorder.MonitorTrace(() => $"{Name}({socket.Endpoint}) : {error.Text}");
+                    ZeroTrace.WriteError(Service.Name, error.Text, error.Name);
+                    LogRecorder.MonitorTrace(() => $"{Service.Name}({socket.Endpoint}) : {error.Text}");
                 }
                 catch (Exception e)
                 {
                     LogRecorder.Exception(e, "ApiStation.SendResult");
-                    LogRecorder.MonitorTrace(() => $"Exception : {Name} : {e.Message}");
+                    LogRecorder.MonitorTrace(() => $"Exception : {Service.Name} : {e.Message}");
                 }
             }
             Interlocked.Increment(ref SendError);
@@ -680,3 +581,83 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
 
     }
 }
+
+/*// <summary>
+/// 站点状态变更时调用
+/// </summary>
+void OnStationStateChanged(StationConfig config)
+{
+    while (RealState == StationState.Start || RealState == StationState.BeginRun || RealState == StationState.Closing)
+        Thread.Sleep(10);
+    //#if UseStateMachine
+    switch (config.State)
+    {
+        case ZeroCenterState.Initialize:
+        case ZeroCenterState.Start:
+        case ZeroCenterState.Run:
+        case ZeroCenterState.Pause:
+            break;
+        case ZeroCenterState.Failed:
+            if (!CanLoop)
+                break;
+            //运行状态中，与ZeroCenter一起重启
+            if (RealState == StationState.Run)
+                RealState = StationState.Closing;
+            ConfigState = StationStateType.Failed;
+            return;
+        //以下状态如在运行，均可自动关闭
+        case ZeroCenterState.Closing:
+        case ZeroCenterState.Closed:
+        case ZeroCenterState.Destroy:
+            if (RealState == StationState.Run)
+                RealState = StationState.Closing;
+            ConfigState = StationStateType.Closed;
+            return;
+        case ZeroCenterState.NoFind:
+        case ZeroCenterState.Remove:
+            if (RealState == StationState.Run)
+                RealState = StationState.Closing;
+            ConfigState = StationStateType.Remove;
+            return;
+        default:
+            //case ZeroCenterState.None:
+            //case ZeroCenterState.Stop:
+            if (RealState == StationState.Run)
+                RealState = StationState.Closing;
+            ConfigState = StationStateType.Stop;
+            return;
+    }
+    if (!ZeroApplication.CanDo)
+    {
+        return;
+    }
+    //可启动状态检查是否未运行
+    if (CanLoop)//这是一个可以正常运行的状态，无需要改变
+        return;
+    //是否未进行初始化
+    if (ConfigState == StationStateType.None)
+        Initialize();
+    else
+        ConfigState = StationStateType.Initialized;
+
+    Task.Run(Start);
+    //#else
+    //            ConfigState = config.State;
+    //            if (RealState < StationState.Start || RealState > StationState.Closing)
+    //            {
+    //                if (config.State <= ZeroCenterState.Pause && ZeroApplication.CanDo)
+    //                {
+    //                    ZeroTrace.SystemLog(StationName, $"Start by config state({config.State}) changed");
+    //                    Start();
+    //                }
+    //            }
+    //            else
+    //            {
+    //                if (config.State >= ZeroCenterState.Failed || !ZeroApplication.CanDo)
+    //                {
+    //                    ZeroTrace.SystemLog(StationName, $"Close by config state({config.State}) changed");
+    //                    Close();
+    //                }
+    //            }
+    //#endif
+}*/
