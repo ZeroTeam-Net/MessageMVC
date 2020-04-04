@@ -18,20 +18,15 @@ namespace ZeroTeam.MessageMVC.Http
         public bool EnableAuthToken { get; set; }
 
         /// <summary>
-        /// 启用UserAgent
-        /// </summary>
-        public bool EnableUserAgent { get; set; }
-
-        /// <summary>
         /// 启用快速调用,即直接使用ApiExecuter
         /// </summary>
         public bool FastCall { get; set; }
 
 
         /// <summary>
-        /// 启用HttpHeader
+        /// 启用Header跟踪(如HTTP请求头)
         /// </summary>
-        public bool EnableHttpHeader { get; set; }
+        public bool EnableHeader { get; set; }
 
         /// <summary>
         /// 特殊URL取第几个路径作为服务名称的映射表

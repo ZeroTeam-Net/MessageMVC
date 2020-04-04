@@ -1,5 +1,4 @@
-﻿using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.ZeroApis;
+﻿using ZeroTeam.MessageMVC.ZeroApis;
 using ZeroTeam.MessageMVC.PlanTasks;
 using System.Threading.Tasks;
 
@@ -14,18 +13,19 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         {
             await PlanPoster.PostAsync(new PlanTasks.PlanOption
             {
-                plan_type = PlanTasks.plan_date_type.second,
-                plan_repet = -1,
+                plan_type = plan_date_type.second,
+                plan_repet = 5,
+                retry_set = -1,
                 plan_value = 10,
             }, "api", "v1/do", null);
 
-            return ApiResult.Succees("Paln");
+            return ApiResultHelper.Succees("Paln");
         }
 
         [Route("v1/do")]
         public ApiResult DoPlan()
         {
-            return ApiResult.Succees("DoPlan");
+            return ApiResultHelper.Succees("DoPlan");
         }
     }
 }

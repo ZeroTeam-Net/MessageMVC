@@ -1,4 +1,7 @@
-﻿namespace ZeroTeam.MessageMVC.Messages
+﻿using Agebull.Common;
+using ZeroTeam.MessageMVC.Context;
+
+namespace ZeroTeam.MessageMVC.Messages
 {
     /// <summary>
     /// 消息交互格式
@@ -6,10 +9,9 @@
     public interface IMessageItem
     {
         /// <summary>
-        /// 唯一标识，UUID
+        /// 分类
         /// </summary>
-
-        string ID { get; set; }
+        string ID { get; }
 
         /// <summary>
         /// 分类
@@ -26,6 +28,16 @@
         /// 内容
         /// </summary>
         string Content { get; set; }
+
+        /// <summary>
+        /// 其他带外内容
+        /// </summary>
+        string Extend { get; set; }
+
+        /// <summary>
+        /// 扩展的二进制
+        /// </summary>
+        byte[] Binary { get; set; }
 
         /// <summary>
         /// 处理结果,对应状态的解释信息
@@ -47,20 +59,9 @@
         MessageState State { get; set; }
 
         /// <summary>
-        /// 生产时间戳,UNIX时间戳,自1970起秒数
+        ///     跟踪信息
         /// </summary>
-        int Timestamp { get; set; }
-
-
-        /// <summary>
-        /// 其他带外内容
-        /// </summary>
-        string Extend { get; set; }
-
-        /// <summary>
-        /// 上下文信息
-        /// </summary>
-        string Context { get; set; }
+        TraceInfo Trace { get; set; }
 
         /// <summary>
         /// 刷新操作

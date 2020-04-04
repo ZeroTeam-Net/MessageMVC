@@ -26,25 +26,13 @@ namespace ZeroTeam.MessageMVC
         ///     站点数据使用AppName为文件夹
         /// </summary>
         [DataMember]
-        public bool StationIsolate { get; set; }
-
-        /// <summary>
-        ///     短名称
-        /// </summary>
-        [DataMember]
-        public string ShortName { get; set; }
+        public bool IsolateFolder { get; set; }
 
         /// <summary>
         ///     本地数据文件夹
         /// </summary>
         [DataMember]
         public string DataFolder { get; set; }
-
-        /// <summary>
-        ///     本地日志文件夹
-        /// </summary>
-        [DataMember]
-        public string LogFolder { get; set; }
 
         /// <summary>
         ///     本地配置文件夹
@@ -65,16 +53,16 @@ namespace ZeroTeam.MessageMVC
         public bool EnableAddIn { get; set; }
 
         /// <summary>
-        ///     启用全局上下文
+        ///     启用调用链跟踪(使用IZeroContext全局上下文)
         /// </summary>
         [DataMember]
-        public bool EnableGlobalContext { get; set; }
+        public bool EnableLinkTrace { get; set; }
 
         /// <summary>
-        ///     启用日志记录器LogRecorder
+        ///     启用Monitor模式日志记录
         /// </summary>
         [DataMember]
-        public bool EnableLogRecorder { get; set; }
+        public bool EnableMonitorLog { get; set; }
 
         /// <summary>
         ///     启用埋点
@@ -96,6 +84,12 @@ namespace ZeroTeam.MessageMVC
 
 
         /// <summary>
+        ///     回执服务地址
+        /// </summary>
+        [DataMember]
+        public string ReceiptSviceName { get; set; }
+
+        /// <summary>
         /// 如果目标配置存在,则复制之
         /// </summary>
         /// <param name="option"></param>
@@ -106,9 +100,9 @@ namespace ZeroTeam.MessageMVC
                 return;
             }
 
-            if (option.StationIsolate)
+            if (option.IsolateFolder)
             {
-                StationIsolate = option.StationIsolate;
+                IsolateFolder = option.IsolateFolder;
             }
 
             if (!string.IsNullOrWhiteSpace(option.ConfigFolder))
@@ -120,15 +114,14 @@ namespace ZeroTeam.MessageMVC
             {
                 DataFolder = option.DataFolder;
             }
-
-            if (!string.IsNullOrWhiteSpace(option.ShortName))
+            if (!string.IsNullOrWhiteSpace(option.ReceiptSviceName))
             {
-                ShortName = option.ShortName;
+                ReceiptSviceName = option.ReceiptSviceName;
             }
-
+            
             if (option.EnableAddIn)
             {
-                EnableGlobalContext = option.EnableAddIn;
+                EnableLinkTrace = option.EnableAddIn;
             }
 
             if (!string.IsNullOrWhiteSpace(option.AddInPath))
@@ -136,19 +129,14 @@ namespace ZeroTeam.MessageMVC
                 AddInPath = option.AddInPath;
             }
 
-            if (option.EnableGlobalContext)
+            if (option.EnableLinkTrace)
             {
-                EnableGlobalContext = option.EnableGlobalContext;
+                EnableLinkTrace = option.EnableLinkTrace;
             }
 
-            if (option.EnableLogRecorder)
+            if (option.EnableMonitorLog)
             {
-                EnableLogRecorder = option.EnableLogRecorder;
-            }
-
-            if (!string.IsNullOrWhiteSpace(option.LogFolder))
-            {
-                LogFolder = option.LogFolder;
+                EnableMonitorLog = option.EnableMonitorLog;
             }
 
             if (option.EnableMessageReConsumer)
@@ -178,9 +166,9 @@ namespace ZeroTeam.MessageMVC
                 return;
             }
 
-            if (StationIsolate)
+            if (IsolateFolder)
             {
-                StationIsolate = option.StationIsolate;
+                IsolateFolder = option.IsolateFolder;
             }
 
             if (string.IsNullOrWhiteSpace(ConfigFolder))
@@ -193,14 +181,9 @@ namespace ZeroTeam.MessageMVC
                 DataFolder = option.DataFolder;
             }
 
-            if (string.IsNullOrWhiteSpace(ShortName))
-            {
-                ShortName = option.ShortName;
-            }
-
             if (EnableAddIn)
             {
-                EnableGlobalContext = option.EnableAddIn;
+                EnableLinkTrace = option.EnableAddIn;
             }
 
             if (string.IsNullOrWhiteSpace(AddInPath))
@@ -208,19 +191,14 @@ namespace ZeroTeam.MessageMVC
                 AddInPath = option.AddInPath;
             }
 
-            if (EnableGlobalContext)
+            if (EnableLinkTrace)
             {
-                EnableGlobalContext = option.EnableGlobalContext;
+                EnableLinkTrace = option.EnableLinkTrace;
             }
 
-            if (EnableLogRecorder)
+            if (EnableMonitorLog)
             {
-                EnableLogRecorder = option.EnableLogRecorder;
-            }
-
-            if (string.IsNullOrWhiteSpace(LogFolder))
-            {
-                LogFolder = option.LogFolder;
+                EnableMonitorLog = option.EnableMonitorLog;
             }
 
             if (EnableMessageReConsumer)
@@ -236,6 +214,11 @@ namespace ZeroTeam.MessageMVC
             if (string.IsNullOrWhiteSpace(MarkPointName))
             {
                 MarkPointName = option.MarkPointName;
+            }
+
+            if (string.IsNullOrWhiteSpace(ReceiptSviceName))
+            {
+                ReceiptSviceName = option.ReceiptSviceName;
             }
         }
     }

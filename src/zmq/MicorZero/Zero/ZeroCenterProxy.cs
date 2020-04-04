@@ -6,7 +6,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
     /// <summary>
     /// 服务中心代理
     /// </summary>
-    public class ZeroCenterProxy : HeartManager
+    internal class ZeroCenterProxy : HeartManager
     {
         #region 实例
 
@@ -41,7 +41,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         /// </summary>
         public bool HeartLeft()
         {
-            return HeartLeft("SystemManage", ZeroFlowControl.Config.RealName);
+            return HeartLeft("SystemManage", ZeroFlowControl.Config.TraceName);
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         /// </summary>
         public bool HeartReady()
         {
-            return HeartReady("SystemManage", ZeroFlowControl.Config.RealName);
+            return HeartReady("SystemManage", ZeroFlowControl.Config.TraceName);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         /// </summary>
         public bool HeartJoin()
         {
-            return HeartJoin("SystemManage", ZeroFlowControl.Config.RealName);
+            return HeartJoin("SystemManage", ZeroFlowControl.Config.TraceName);
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         /// </summary>
         public bool Heartbeat()
         {
-            return Heartbeat("SystemManage", ZeroFlowControl.Config.RealName);
+            return Heartbeat("SystemManage", ZeroFlowControl.Config.TraceName);
         }
 
         /*// <summary>

@@ -26,6 +26,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         void IMessagePoster.Initialize()
         {
+           
             State = StationStateType.Initialized;
             MessagePoster.RegistPoster(this, Service.ServiceName);
         }

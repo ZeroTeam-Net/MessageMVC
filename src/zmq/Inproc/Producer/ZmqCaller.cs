@@ -124,23 +124,23 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
             switch (State)
             {
                 case ZeroOperatorStateType.Ok:
-                    apiResult = ApiResultIoc.Ioc.Ok;
+                    apiResult = ApiResultHelper.Ioc.Ok;
                     break;
                 case ZeroOperatorStateType.NotFind:
                 case ZeroOperatorStateType.NoWorker:
                 case ZeroOperatorStateType.NotSupport:
-                    apiResult = ApiResultIoc.Ioc.NoFind;
+                    apiResult = ApiResultHelper.Ioc.NoFind;
                     break;
                 case ZeroOperatorStateType.LocalNoReady:
                 case ZeroOperatorStateType.LocalZmqError:
-                    apiResult = ApiResultIoc.Ioc.NoReady;
+                    apiResult = ApiResultHelper.Ioc.NoReady;
                     break;
                 case ZeroOperatorStateType.LocalSendError:
                 case ZeroOperatorStateType.LocalRecvError:
-                    apiResult = ApiResultIoc.Ioc.NetworkError;
+                    apiResult = ApiResultHelper.Ioc.NetworkError;
                     break;
                 case ZeroOperatorStateType.LocalException:
-                    apiResult = ApiResultIoc.Ioc.LocalException;
+                    apiResult = ApiResultHelper.Ioc.LocalException;
                     break;
                 case ZeroOperatorStateType.Plan:
                 case ZeroOperatorStateType.Runing:
@@ -150,39 +150,39 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
                 case ZeroOperatorStateType.VoteWaiting:
                 case ZeroOperatorStateType.VoteStart:
                 case ZeroOperatorStateType.VoteEnd:
-                    apiResult = ApiResultIoc.Ioc.Error(ErrorCode.Success, State.Text());
+                    apiResult = ApiResultHelper.Ioc.Error(DefaultErrorCode.Success, State.Text());
                     break;
                 case ZeroOperatorStateType.Error:
-                    apiResult = ApiResultIoc.Ioc.InnerError;
+                    apiResult = ApiResultHelper.Ioc.InnerError;
                     break;
                 case ZeroOperatorStateType.Unavailable:
-                    apiResult = ApiResultIoc.Ioc.Unavailable;
+                    apiResult = ApiResultHelper.Ioc.Unavailable;
                     break;
                 case ZeroOperatorStateType.NetTimeOut:
-                    apiResult = ApiResultIoc.Ioc.NetTimeOut;
+                    apiResult = ApiResultHelper.Ioc.NetTimeOut;
                     break;
                 case ZeroOperatorStateType.ExecTimeOut:
-                    apiResult = ApiResultIoc.Ioc.ExecTimeOut;
+                    apiResult = ApiResultHelper.Ioc.ExecTimeOut;
                     break;
                 case ZeroOperatorStateType.ArgumentInvalid:
-                    apiResult = ApiResultIoc.Ioc.ArgumentError;
+                    apiResult = ApiResultHelper.Ioc.ArgumentError;
                     break;
                 case ZeroOperatorStateType.FrameInvalid:
                 case ZeroOperatorStateType.NetError:
-                    apiResult = ApiResultIoc.Ioc.NetworkError;
+                    apiResult = ApiResultHelper.Ioc.NetworkError;
                     break;
                 case ZeroOperatorStateType.Bug:
                 case ZeroOperatorStateType.Failed:
-                    apiResult = ApiResultIoc.Ioc.LogicalError;
+                    apiResult = ApiResultHelper.Ioc.LogicalError;
                     break;
                 case ZeroOperatorStateType.Pause:
-                    apiResult = ApiResultIoc.Ioc.Pause;
+                    apiResult = ApiResultHelper.Ioc.Pause;
                     break;
                 case ZeroOperatorStateType.DenyAccess:
-                    apiResult = ApiResultIoc.Ioc.DenyAccess;
+                    apiResult = ApiResultHelper.Ioc.DenyAccess;
                     break;
                 default:
-                    apiResult = ApiResultIoc.Ioc.RemoteEmptyError;
+                    apiResult = ApiResultHelper.Ioc.RemoteEmptyError;
                     break;
             }
 
@@ -270,15 +270,16 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
 
         private async Task<bool> CallApi()
         {
+            var req = GlobalContext.CurrentNoLazy?.Trace;
             LastResult = await ZmqFlowMiddleware.Instance.CallZero(this,
                  CallDescription,
                  Commmand.ToZeroBytes(),
                  Argument.ToZeroBytes(),
                  ExtendArgument.ToZeroBytes(),
-                 GlobalContext.RequestInfo.RequestId.ToZeroBytes(),
+                 req == null ? JsonHelper.EmptyBytes : req.TraceId.ToZeroBytes(),
                  Name.ToString().ToZeroBytes(),
                  JsonHelper.EmptyBytes,// GlobalContext.Current.Organizational.RouteName.ToZeroBytes(),
-                 GlobalContext.RequestInfo.LocalGlobalId.ToZeroBytes(),
+                 req == null ? JsonHelper.EmptyBytes : req.LocalId.ToZeroBytes(),
                  ContextJson.ToZeroBytes() ?? GlobalContext.CurrentNoLazy.ToZeroBytes());
 
             State = LastResult.State;

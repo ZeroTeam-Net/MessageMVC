@@ -25,20 +25,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <returns></returns>
         public static ApiValueResult Succees(string data, string message = null)
         {
-            return message == null
-                ? new ApiValueResult
-                {
-                    Success = true,
-                    ResultData = data
-                }
-                : new ApiValueResult
+            return new ApiValueResult
                 {
                     Success = true,
                     ResultData = data,
-                    Status = new OperatorStatus
-                    {
-                        Message = message
-                    }
+                    Message = message
                 };
         }
 
@@ -52,11 +43,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return new ApiValueResult
             {
                 Success = false,
-                Status = new OperatorStatus
-                {
-                    Code = errCode,
-                    Message = ErrorCode.GetMessage(errCode)
-                }
+                Code = errCode,
+                Message = DefaultErrorCode.GetMessage(errCode)
             };
         }
 
@@ -71,11 +59,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return new ApiValueResult
             {
                 Success = false,
-                Status = new OperatorStatus
-                {
-                    Code = errCode,
-                    Message = message
-                }
+                Code = errCode,
+                Message = message
             };
         }
 
@@ -91,12 +76,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return new ApiValueResult
             {
                 Success = false,
-                Status = new OperatorStatus
-                {
-                    Code = errCode,
-                    Message = message,
-                    InnerMessage = innerMessage
-                }
+                Code = errCode,
+                Message = message,
+                InnerMessage = innerMessage
             };
         }
     }
@@ -121,20 +103,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <returns></returns>
         public static ApiValueResult<TData> Succees(TData data, string message = null)
         {
-            return message == null
-                ? new ApiValueResult<TData>
-                {
-                    Success = true,
-                    ResultData = data
-                }
-                : new ApiValueResult<TData>
+            return new ApiValueResult<TData>
                 {
                     Success = true,
                     ResultData = data,
-                    Status = new OperatorStatus
-                    {
-                        Message = message
-                    }
+                    Message = message
                 };
         }
 
@@ -148,11 +121,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return new ApiValueResult<TData>
             {
                 Success = false,
-                Status = new OperatorStatus
-                {
-                    Code = errCode,
-                    Message = ErrorCode.GetMessage(errCode)
-                }
+                Code = errCode,
+                Message = DefaultErrorCode.GetMessage(errCode)
             };
         }
 
@@ -167,11 +137,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return new ApiValueResult<TData>
             {
                 Success = false,
-                Status = new OperatorStatus
-                {
-                    Code = errCode,
-                    Message = message
-                }
+                Code = errCode,
+                Message = message
             };
         }
 
@@ -187,12 +154,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return new ApiValueResult<TData>
             {
                 Success = false,
-                Status = new OperatorStatus
-                {
-                    Code = errCode,
-                    Message = message,
-                    InnerMessage = innerMessage
-                }
+                Code = errCode,
+                Message = message,
+                InnerMessage = innerMessage
             };
         }
     }

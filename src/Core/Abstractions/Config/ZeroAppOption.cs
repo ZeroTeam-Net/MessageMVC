@@ -1,3 +1,4 @@
+using Agebull.Common.Ioc;
 using System.Runtime.Serialization;
 
 namespace ZeroTeam.MessageMVC
@@ -26,9 +27,9 @@ namespace ZeroTeam.MessageMVC
         public string ServiceName { get; set; }
 
         /// <summary>
-        ///     当前服务器的运行时名称
+        ///     当前服务器的跟踪名称
         /// </summary>
-        public string RealName { get; set; }
+        public string TraceName { get; set; }
 
         /// <summary>
         ///     应用所在的顶级目录
@@ -54,6 +55,19 @@ namespace ZeroTeam.MessageMVC
         [IgnoreDataMember]
         public bool IsLinux { get; set; }
 
+        /// <summary>
+        /// 实例
+        /// </summary>
+        public static ZeroAppOption Instance { get;private set; }
 
+
+        /// <summary>
+        /// 设置唯一实例,仅内部可用
+        /// </summary>
+        public static void SetInstance(ZeroAppOption option)
+        {
+            Instance = option;
+            IocHelper.AddSingleton(option);
+        }
     }
 }

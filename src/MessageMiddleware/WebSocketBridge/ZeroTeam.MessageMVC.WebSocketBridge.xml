@@ -24,7 +24,7 @@
             消息转发到WebSocket中间件
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Web.WebSocketNotify.Process">
+        <member name="P:ZeroTeam.MessageMVC.Web.WebSocketNotify.Processor">
             <summary>
             当前处理器
             </summary>

@@ -94,6 +94,37 @@ namespace Agebull.Common
         /// <summary>
         /// 反序列化
         /// </summary>
+        public static bool TryDeserializeObject<T>(string json, out T t)
+        {
+            if (string.IsNullOrEmpty(json))
+            {
+                t = default;
+                return false;
+            }
+            switch (json[0])
+            {
+                default:
+                    t = default;
+                    return false;
+                case '{':
+                case '[':
+                    break;
+            }
+            try
+            {
+                t = JsonConvert.DeserializeObject<T>(json);
+                return true;
+            }
+            catch
+            {
+                t = default;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 反序列化
+        /// </summary>
         public static T TryDeserializeObject<T>(string json)
         {
             try

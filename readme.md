@@ -26,7 +26,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         public ApiResult Result()
         {
             LogRecorder.Trace("Result");
-            return ApiResult.Succees();
+            return ApiResultHelper.Succees();
         }
 
     }

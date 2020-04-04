@@ -44,7 +44,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         ///     站点数据使用AppName为文件夹
         /// </summary>
         [DataMember]
-        public bool? StationIsolate { get; set; }
+        public bool? IsolateFolder { get; set; }
 
         /// <summary>
         /// 如果目标配置存在,则复制之
@@ -53,9 +53,9 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         internal void CopyByHase(ZeroRpcConfig option)
         {
             base.CopyByHase(option);
-            if (option.StationIsolate != null)
+            if (option.IsolateFolder != null)
             {
-                StationIsolate = option.StationIsolate;
+                IsolateFolder = option.IsolateFolder;
             }
 
             //if (option.TaskCpuMultiple > 0)
@@ -112,9 +112,9 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         public void CopyByEmpty(ZeroRpcConfig option)
         {
             base.CopyByEmpty(option);
-            if (StationIsolate == null)
+            if (IsolateFolder == null)
             {
-                StationIsolate = option.StationIsolate;
+                IsolateFolder = option.IsolateFolder;
             }
 
             if (CanRaiseEvent == null)

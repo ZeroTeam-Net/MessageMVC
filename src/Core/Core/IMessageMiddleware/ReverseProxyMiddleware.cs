@@ -14,7 +14,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// 当前处理器
         /// </summary>
-        public MessageProcessor Process { get; set; }
+        public MessageProcessor Processor { get; set; }
 
         /// <summary>
         /// 层级
@@ -46,33 +46,33 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 var (state, result) = await producer.Post(message);
                 message.Result = result;
                 message.State = state;
-                await service.Transport.OnMessageResult(message, tag);
+                await service.Transport.OnMessageResult(Processor, message, tag);
             }
             catch (OperationCanceledException ex)
             {
                 LogRecorder.MonitorTrace("Cancel");
                 message.State = MessageState.Cancel;
-                await service.Transport.OnMessageError(ex, message, tag);
+                await service.Transport.OnMessageError(Processor, ex, message, tag);
                 return MessageState.Cancel;
             }
             catch (ThreadInterruptedException ex)
             {
                 LogRecorder.MonitorTrace("Time out");
                 message.State = MessageState.Cancel;
-                await service.Transport.OnMessageError(ex, message, tag);
+                await service.Transport.OnMessageError(Processor, ex, message, tag);
                 return MessageState.Cancel;
             }
             catch (NetTransferException ex)
             {
                 message.State = MessageState.NetError;
-                await service.Transport.OnMessageError(ex, message, tag);
+                await service.Transport.OnMessageError(Processor, ex, message, tag);
                 return MessageState.Cancel;
             }
             catch (Exception ex)
             {
                 LogRecorder.Exception(ex, message);
                 message.State = MessageState.Exception;
-                await service.Transport.OnMessageError(ex, message, tag);
+                await service.Transport.OnMessageError(Processor, ex, message, tag);
                 return MessageState.Exception;
             }
             return message.State = MessageState.Success;

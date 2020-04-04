@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\MessageMiddleware\WebSocketBridge\ZeroTeam.MessageMVC.WebSocketBridge.csproj" />
+    <ProjectReference Include="..\..\Redis\RedisMQ\ZeroTeam.MessageMVC.RedisMQ.csproj" />
     <ProjectReference Include="..\..\zmq\Inproc\ZeroTeam.ZeroMQ.Inproc.csproj" />
   </ItemGroup>
 
@@ -15,9 +16,6 @@
 
   <ItemGroup>
     <None Update="libzmq.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="libzmq.pdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

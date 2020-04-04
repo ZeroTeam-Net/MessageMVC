@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC.PlanTasks
 {
@@ -12,21 +13,6 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// 消息标识
         /// </summary>
         public string plan_id;
-
-        /// <summary>
-        /// 发起者提供的标识
-        /// </summary>
-        public string request_id;
-
-        /// <summary>
-        /// 站点
-        /// </summary>
-        public string service;
-
-        /// <summary>
-        /// 原始请求者
-        /// </summary>
-        public string caller;
 
         /// <summary>
         /// 计划说明
@@ -49,7 +35,11 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// </remarks>
         public short plan_value;
 
-
+        /// <summary>
+        /// 重试次数(1-n次数,-1重试,0不重试)
+        /// </summary>
+        public int retry_set;
+        
         /// <summary>
         /// 跳过设置次数(1-n 跳过次数)
         /// </summary>
@@ -92,5 +82,9 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// </remarks>
         public long plan_time;
 
+        /// <summary>
+        ///     跟踪信息
+        /// </summary>
+        public TraceInfo trace { get; set; }
     }
 }

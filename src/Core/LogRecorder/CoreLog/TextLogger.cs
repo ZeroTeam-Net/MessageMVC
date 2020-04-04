@@ -25,6 +25,7 @@ namespace Agebull.Common.Logging
         /// 配置
         /// </summary>
         internal TextLoggerOption Option { get; set; }
+
         /// <summary>
         /// 范围
         /// </summary>
@@ -181,7 +182,7 @@ namespace Agebull.Common.Logging
         private void ResetFile(string sub, FileInfo info)
         {
             string fileName;
-            string folder = LogRecorder.LogPath ?? Option.LogPath;
+            string folder = Option.LogPath;
             info.Size = 0;
             if (!Option.DayFolder)//第一次
             {

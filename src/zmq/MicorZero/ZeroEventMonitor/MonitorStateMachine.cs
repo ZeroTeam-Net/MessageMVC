@@ -83,7 +83,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
             }
             else
             {
-                ConfigManager.LoadAllConfig();
+                StationConfigManager.LoadAllConfig();
             }
             ZeroRpcFlow.RaiseEvent(ZeroNetEventType.CenterSystemStart, true);
             return Task.CompletedTask;

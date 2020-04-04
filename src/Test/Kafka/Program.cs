@@ -23,7 +23,7 @@ namespace MicroZero.Kafka.QueueStation
         {
             for (int i = 0; ZeroFlowControl.CanDo && i < 10; i++)
             {
-                Thread.Sleep(100);
+                await Task.Delay(100);
 
                 await MessagePoster.PublishAsync("test1", "test/res", "agebull");
                 await MessagePoster.PublishAsync("test1", "test/arg", "{'Value':'test'}");

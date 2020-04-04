@@ -1,6 +1,8 @@
+using Agebull.Common.Configuration;
 using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -30,7 +32,7 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         ///     站点配置
         /// </summary>
-        public static ZeroAppOption Config { get; set; }
+        public static ZeroAppOption Config => ZeroAppOption.Instance;
 
         /// <summary>
         ///     运行状态
@@ -87,15 +89,18 @@ namespace ZeroTeam.MessageMVC
         #region Flow
 
         #region CheckOption
+        static ILogger logger;
 
         /// <summary>
         ///     配置校验,作为第一步
         /// </summary>
         public static void CheckOption()
         {
-            var asName = Assembly.GetExecutingAssembly().GetName();
+            var asName = Assembly.GetEntryAssembly().GetName();
             LogRecorder.Initialize();
-            Config = new ZeroAppOption
+            logger = IocHelper.LoggerFactory.CreateLogger(nameof(ZeroFlowControl));
+
+            var config = new ZeroAppOption
             {
                 AppName = asName.Name,
                 AppVersion = asName.Version?.ToString(),
@@ -103,22 +108,42 @@ namespace ZeroTeam.MessageMVC
                 RootPath = Environment.CurrentDirectory,
                 IsLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
             };
+            ZeroAppOption.SetInstance(config);
 
             Middlewares = IocHelper.RootProvider.GetServices<IFlowMiddleware>().OrderBy(p => p.Level).ToArray();
             foreach (var mid in Middlewares)
             {
                 try
                 {
-                    mid.CheckOption(Config);
+                    mid.CheckOption(config);
                 }
                 catch (Exception ex)
                 {
-                    LogRecorder.Exception(ex, "ZeroFlowControl.CheckOption:{0}", mid.GetTypeName());
+                    logger.Exception(ex, "ZeroFlowControl.CheckOption:{0}", mid.GetTypeName());
                     throw;
                 }
             }
-            IocHelper.ServiceCollection.AddSingleton(Config);
             IocHelper.Update();
+
+            //显示
+            Console.WriteLine($@"Wecome ZeroTeam MessageMVC
+      AppName : {config.AppName}
+      Version : {config.AppVersion}
+     RunModel : {ConfigurationManager.Root["ASPNETCORE_ENVIRONMENT_"]}
+  ServiceName : {config.ServiceName}
+           OS : {(config.IsLinux ? "Linux" : "Windows")}
+         Host : {config.LocalIpAddress}
+        AddIn : {(config.EnableAddIn ? "Enable" : "Disable")}({config.AddInPath})
+    TraceName : {config.TraceName}
+   ThreadPool : {config.MaxWorkThreads:N0}worker|{ config.MaxIOThreads:N0}threads
+    LinkTrace : {(config.EnableLinkTrace ? "Enable" : "Disable")}
+     RootPath : {config.RootPath}
+   DataFolder : {config.DataFolder}
+ ConfigFolder : {config.ConfigFolder}
+   MonitorLog : {(config.EnableMonitorLog ? "Enable" : "Disable")}
+   ReConsumer : {(config.EnableMessageReConsumer ? "Enable" : "Disable")}
+    MarkPoint : {config.MarkPointName}({(config.EnableMarkPoint ? "Enable" : "Disable")})
+");
         }
 
         /// <summary>
@@ -130,7 +155,6 @@ namespace ZeroTeam.MessageMVC
             {
                 Assembly = assembly
             };
-            LogRecorder.Trace("Api discove : {0}", discover.Assembly.FullName);
             discover.FindApies();
         }
 
@@ -197,9 +221,9 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         ///     运行
         /// </summary>
-        public static async Task<bool> RunAsync()
+        public static Task<bool> RunAsync()
         {
-            return await OnZeroStart();
+            return OnZeroStart();
         }
 
         /// <summary>
@@ -210,6 +234,8 @@ namespace ZeroTeam.MessageMVC
             OnZeroStart().Wait();
             waitTask = new TaskCompletionSource<bool>();
             waitTask.Task.Wait();
+            Console.CancelKeyPress += OnConsoleOnCancelKeyPress;
+            Console.WriteLine("MicroZero services is runing. Press Ctrl+C to shutdown.");
         }
 
         private static TaskCompletionSource<bool> waitTask;
@@ -220,6 +246,8 @@ namespace ZeroTeam.MessageMVC
         {
             await OnZeroStart();
             waitTask = new TaskCompletionSource<bool>();
+            Console.CancelKeyPress += OnConsoleOnCancelKeyPress;
+            Console.WriteLine("MicroZero services is runing. Press Ctrl+C to shutdown.");
             await waitTask.Task;
         }
 
@@ -241,14 +269,14 @@ namespace ZeroTeam.MessageMVC
             {
                 return;
             }
-            ZeroTrace.SystemLog("Begin shutdown...");
+            logger.Information("Begin shutdown...");
             ApplicationState = StationState.Closing;
             OnZeroClose();
             WaitAllObjectSafeClose();
             ApplicationState = StationState.Closed;
             OnZeroEnd();
             ApplicationState = StationState.Destroy;
-            ZeroTrace.SystemLog("Application shutdown ,see you late.");
+            logger.Information("Application shutdown ,see you late.");
             waitTask?.TrySetResult(true);
         }
 
@@ -291,7 +319,7 @@ namespace ZeroTeam.MessageMVC
         public static void OnObjectActive(IService obj)
         {
             bool can;
-            ZeroTrace.SystemLog(obj.ServiceName, "OnObjectActive");
+            logger.Information("[OnObjectActive] {0}", obj.ServiceName);
             lock (ActiveObjects)
             {
                 ActiveObjects.Add(obj);
@@ -308,7 +336,7 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public static void OnObjectFailed(IService obj)
         {
-            ZeroTrace.WriteError(obj.ServiceName, "OnObjectFailed");
+            logger.Information("[OnObjectFailed] {0}", obj.ServiceName);
             bool can;
             lock (ActiveObjects)
             {
@@ -326,7 +354,7 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public static void OnObjectClose(IService obj)
         {
-            ZeroTrace.SystemLog(obj.ServiceName, "OnObjectClose");
+            logger.Information("[OnObjectClose] {0}", obj.ServiceName);
             bool can;
             lock (ActiveObjects)
             {
@@ -337,6 +365,7 @@ namespace ZeroTeam.MessageMVC
             {
                 ActiveSemaphore.Release(); //发出完成信号
             }
+            
         }
 
         /// <summary>
@@ -372,19 +401,18 @@ namespace ZeroTeam.MessageMVC
             {
                 return false;
             }
-
-            ZeroTrace.SystemLog(service.ServiceName, "RegistZeroObject");
+            logger.Information("[RegistService] {0}", service.ServiceName);
 
             if (ApplicationState >= StationState.Initialized)
             {
                 try
                 {
+                    logger.Information("[Initialize]", service.ServiceName);
                     service.Initialize();
-                    ZeroTrace.SystemLog(service.ServiceName, "Initialize");
                 }
                 catch (Exception e)
                 {
-                    ZeroTrace.WriteException(service.ServiceName, e, "Initialize");
+                    logger.Exception(e, "[Initialize]", service.ServiceName);
                 }
             }
 
@@ -405,12 +433,12 @@ namespace ZeroTeam.MessageMVC
 
             try
             {
-                ZeroTrace.SystemLog(service.ServiceName, "Start");
+                logger.Information("[Start]", service.ServiceName);
                 service.Start();
             }
             catch (Exception e)
             {
-                ZeroTrace.WriteException(service.ServiceName, e, "Start");
+                logger.Exception(e, "[Start]", service.ServiceName);
             }
             return true;
         }
@@ -420,25 +448,33 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         internal static void OnZeroInitialize()
         {
-            ZeroTrace.SystemLog("Application", "[OnZeroInitialize>>");
+            logger.Information("[OnZeroInitialize>>");
             foreach (var mid in Middlewares)
-            {
-                mid.Initialize();
-            }
-
-            foreach (var obj in Services.Values.ToArray())
             {
                 try
                 {
-                    obj.Initialize();
-                    ZeroTrace.SystemLog(obj.ServiceName, "Initialize");
+                    logger.Information("[Initialize]", mid.Name);
+                    mid.Initialize();
                 }
                 catch (Exception e)
                 {
-                    ZeroTrace.WriteException(obj.ServiceName, e, "*Initialize");
+                    logger.Exception(e, "[Initialize]", mid.Name);
                 }
             }
-            ZeroTrace.SystemLog("Application", "<<OnZeroInitialize]");
+
+            foreach (var service in Services.Values.ToArray())
+            {
+                try
+                {
+                    logger.Information("[Initialize]", service.ServiceName);
+                    service.Initialize();
+                }
+                catch (Exception e)
+                {
+                    logger.Exception(e, "[Initialize]", service.ServiceName);
+                }
+            }
+            logger.Information("<<OnZeroInitialize]");
         }
 
         /// <summary>
@@ -447,22 +483,30 @@ namespace ZeroTeam.MessageMVC
         internal static async Task<bool> OnZeroStart()
         {
             ApplicationState = StationState.BeginRun;
-            ZeroTrace.SystemLog("Application", "[OnZeroStart>>");
+            logger.Information("[OnZeroStart>>");
             foreach (var mid in Middlewares)
-            {
-                _ = Task.Factory.StartNew(mid.Start);
-            }
-
-            foreach (var obj in Services.Values.ToArray())
             {
                 try
                 {
-                    ZeroTrace.SystemLog(obj.ServiceName, $"Try start by {StationState.Text(obj.RealState)}");
-                    _ = Task.Run(obj.Start);
+                    logger.Information("[Start]", mid.Name);
+                    _ = Task.Factory.StartNew(mid.Start);
                 }
                 catch (Exception e)
                 {
-                    ZeroTrace.WriteException(obj.ServiceName, e, "*Start");
+                    logger.Exception(e, "[Start]", mid.Name);
+                }
+            }
+
+            foreach (var service in Services.Values.ToArray())
+            {
+                try
+                {
+                    logger.Information("[Start]", service.ServiceName);
+                    _ = Task.Run(service.Start);
+                }
+                catch (Exception e)
+                {
+                    logger.Exception(e, "[Start]", service.ServiceName);
                 }
             }
 
@@ -470,9 +514,7 @@ namespace ZeroTeam.MessageMVC
             await ActiveSemaphore.WaitAsync();
 
             ApplicationState = StationState.Run;
-            ZeroTrace.SystemLog("Application", "<<OnZeroStart]");
-            Console.CancelKeyPress += OnConsoleOnCancelKeyPress;
-            ZeroTrace.SystemLog("MicroZero services is runing. Press Ctrl+C to shutdown.");
+            logger.Information("<<OnZeroStart]");
             return true;
         }
 
@@ -491,54 +533,63 @@ namespace ZeroTeam.MessageMVC
             var faileds = FailedObjects.ToArray();
             if (faileds.Length == 0)
             {
+                logger.Information("[StartFailed] all service is runing,no action");
                 return;
             }
 
+            logger.Information("[StartFailed>>");
             FailedObjects.Clear();
-            ZeroTrace.SystemLog("Application", "[OnFailedStart>>");
 
-            foreach (var obj in faileds)
+            foreach (var service in faileds)
             {
                 try
                 {
-                    ZeroTrace.SystemLog(obj.ServiceName, $"Try start by {StationState.Text(obj.RealState)}");
-                    obj.Start();
+                    logger.Information("[StartFailed]", service.ServiceName);
+                    service.Start();
                 }
                 catch (Exception e)
                 {
-                    ZeroTrace.WriteException(obj.ServiceName, e, "*Start");
+                    logger.Exception(e, "[StartFailed]", service.ServiceName);
                 }
             }
 
             //等待所有对象信号(全开或全关)
             ActiveSemaphore.Wait();
             Interlocked.Decrement(ref inFailed);
-            ZeroTrace.SystemLog("Application", "<<OnFailedStart]");
+            logger.Information("<<StartFailed]");
         }
         /// <summary>
         ///     注销时调用
         /// </summary>
         internal static void OnZeroClose()
         {
-            ZeroTrace.SystemLog("Application", "[OnZeroClose>>");
+            logger.Information("[OnZeroClose>>");
             foreach (var mid in Middlewares)
-            {
-                mid.Close();
-            }
-
-            foreach (var obj in Services.Values)
             {
                 try
                 {
-                    ZeroTrace.SystemLog("OnZeroClose", obj.ServiceName);
-                    obj.Close();
+                    logger.Information("[OnZeroClose]", mid.Name);
+                    mid.Close();
                 }
                 catch (Exception e)
                 {
-                    ZeroTrace.WriteException("OnZeroClose", e, obj.ServiceName);
+                    logger.Exception(e, "[OnZeroClose]", mid.Name);
                 }
             }
-            ZeroTrace.SystemLog("Application", "<<OnZeroClose]");
+
+            foreach (var service in Services.Values)
+            {
+                try
+                {
+                    logger.Information("[OnZeroClose]", service.ServiceName);
+                    service.Close();
+                }
+                catch (Exception e)
+                {
+                    logger.Exception(e, "[OnZeroClose]", service.ServiceName);
+                }
+            }
+            logger.Information("<<OnZeroClose]");
 
             GC.Collect();
         }
@@ -548,25 +599,33 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         internal static void OnZeroEnd()
         {
-            ZeroTrace.SystemLog("Application", "[OnZeroEnd>>");
+            logger.Information("[OnZeroEnd>>");
             foreach (var mid in Middlewares)
-            {
-                mid.End();
-            }
-
-            foreach (var obj in Services.Values)
             {
                 try
                 {
-                    ZeroTrace.SystemLog("OnZeroEnd", obj.ServiceName);
-                    obj.End();
+                    logger.Information("[OnZeroEnd]", mid.Name);
+                    mid.End();
                 }
                 catch (Exception e)
                 {
-                    ZeroTrace.WriteException("OnZeroEnd", e, obj.ServiceName);
+                    logger.Exception(e, "[OnZeroEnd]", mid.Name);
                 }
             }
-            ZeroTrace.SystemLog("Application", "<<OnZeroEnd]");
+
+            foreach (var service in Services.Values)
+            {
+                try
+                {
+                    logger.Information("[OnZeroEnd]", service.ServiceName);
+                    service.End();
+                }
+                catch (Exception e)
+                {
+                    logger.Exception(e, "[OnZeroEnd]", service.ServiceName);
+                }
+            }
+            logger.Information("<<OnZeroEnd]");
         }
 
         #endregion

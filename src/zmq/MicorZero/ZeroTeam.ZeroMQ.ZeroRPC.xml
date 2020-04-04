@@ -4,356 +4,6 @@
         <name>ZeroTeam.ZeroMQ.ZeroRPC</name>
     </assembly>
     <members>
-        <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ConfigManager">
-            <summary>
-            系统侦听器
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ConfigManager.#ctor(ZeroTeam.ZeroMQ.ZeroRPC.ZeroItem)">
-            <summary>
-            构造
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ConfigManager.Center">
-            <summary>
-              服务中心
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ConfigManager.TryInstall(System.String,System.String)">
-            <summary>
-            尝试安装站点
-            </summary>
-            <param name="station"></param>
-            <param name="type"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ConfigManager.TryStart(System.String)">
-            <summary>
-            尝试安装站点
-            </summary>
-            <param name="station"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ConfigManager.UploadDocument">
-            <summary>
-                上传文档
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ConfigManager.LoadDocument(System.String)">
-            <summary>
-                下载文档
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ConfigManager.LoadAllConfig">
-            <summary>
-                读取配置
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ConfigManager.LoadGroupConfig">
-            <summary>
-                读取配置
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ConfigManager.LoadConfig(System.String)">
-            <summary>
-                读取配置
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ZeroCenterProxy">
-            <summary>
-            服务中心代理
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ZeroCenterProxy.#ctor(ZeroTeam.ZeroMQ.ZeroRPC.ZeroItem)">
-            <summary>
-            构造
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ZeroCenterProxy.Master">
-            <summary>
-            单例
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ZeroCenterProxy.PingCenter">
-            <summary>
-                连接到
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ZeroCenterProxy.HeartLeft">
-            <summary>
-                连接到
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ZeroCenterProxy.HeartReady">
-            <summary>
-                连接到
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ZeroCenterProxy.HeartJoin">
-            <summary>
-                连接到
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ZeroCenterProxy.Heartbeat">
-            <summary>
-                连接到
-            </summary>
-        </member>
-        <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.MonitorStateMachine">
-            <summary>
-            系统侦听器状态机
-            </summary>
-        </member>
-        <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.MonitorStateMachine.EmptyStateMachine">
-            <summary>
-            监控状态机
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.MonitorStateMachine.EmptyStateMachine.ZeroTeam#ZeroMQ#ZeroRPC#ZeroManagemant#MonitorStateMachine#IMonitorStateMachine#OnMessagePush(ZeroTeam.ZeroMQ.ZeroRPC.ZeroNetEventType,System.String,System.String)">
-            <summary>
-                收到信息的处理
-            </summary>
-        </member>
-        <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.MonitorStateMachine.FailedStateMachine">
-            <summary>
-            监控状态机
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.MonitorStateMachine.FailedStateMachine.ZeroTeam#ZeroMQ#ZeroRPC#ZeroManagemant#MonitorStateMachine#IMonitorStateMachine#OnMessagePush(ZeroTeam.ZeroMQ.ZeroRPC.ZeroNetEventType,System.String,System.String)">
-            <summary>
-                收到信息的处理
-            </summary>
-        </member>
-        <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.MonitorStateMachine.IMonitorStateMachine">
-            <summary>
-            监控状态机
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.MonitorStateMachine.IMonitorStateMachine.OnMessagePush(ZeroTeam.ZeroMQ.ZeroRPC.ZeroNetEventType,System.String,System.String)">
-            <summary>
-                收到信息的处理
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.MonitorStateMachine.StateMachine">
-            <summary>
-            状态机
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.MonitorStateMachine.SyncAppState">
-            <summary>
-            状态变更同步状态机
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.MonitorStateMachine.worker_sound_off">
-            <summary>
-            站点心跳
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.MonitorStateMachine.station_trends(System.String,System.String)">
-            <summary>
-            站点动态
-            </summary>
-            <param name="name"></param>
-            <param name="content"></param>
-        </member>
-        <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.MonitorStateMachine.RuningStateMachine">
-            <summary>
-            监控状态机
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.MonitorStateMachine.RuningStateMachine.ZeroTeam#ZeroMQ#ZeroRPC#ZeroManagemant#MonitorStateMachine#IMonitorStateMachine#OnMessagePush(ZeroTeam.ZeroMQ.ZeroRPC.ZeroNetEventType,System.String,System.String)">
-            <summary>
-                收到信息的处理
-            </summary>
-        </member>
-        <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ZeroEventMonitor">
-            <summary>
-            系统侦听器
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ZeroEventMonitor.WaitMe">
-            <summary>
-            等待正常结束
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ZeroEventMonitor.Start">
-            <summary>
-                进入系统分布式消息侦听处理
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ZeroEventMonitor.Monitor">
-            <summary>
-                进入系统分布式消息侦听处理
-            </summary>
-        </member>
-        <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCApp">
-            <summary>
-            通过ZMQ实现的进程内通讯
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCApp.UseZeroRPC(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
-            <summary>
-            使用KafkaMVC
-            </summary>
-        </member>
-        <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroNetEventArgument">
-            <summary>
-            站点事件参数
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroNetEventArgument.#ctor(ZeroTeam.ZeroMQ.ZeroRPC.ZeroNetEventType,System.String,System.String,ZeroTeam.ZeroMQ.ZeroRPC.StationConfig)">
-            <summary>
-            构造
-            </summary>
-            <param name="centerEvent"></param>
-            <param name="name"></param>
-            <param name="context"></param>
-            <param name="config"></param>
-        </member>
-        <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroNetEventArgument.Event">
-            <summary>
-            站点名称
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroNetEventArgument.Name">
-            <summary>
-            内容
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroNetEventArgument.Context">
-            <summary>
-            内容
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroNetEventArgument.EventConfig">
-            <summary>
-            配置
-            </summary>
-        </member>
-        <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow">
-            <summary>
-                ZeroRPC流程控制器
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroTeam#MessageMVC#IZeroMiddleware#Level">
-            <summary>
-            等级,用于确定中间件优先级
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.Config">
-            <summary>
-                站点配置
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.WorkModel">
-            <summary>
-            工作模式
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroTeam#MessageMVC#IFlowMiddleware#CheckOption(ZeroTeam.MessageMVC.ZeroAppOption)">
-            <summary>
-                配置校验,作为第一步
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.GetApiOption(System.String)">
-            <summary>
-                配置校验
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.GetClientOption(System.String)">
-            <summary>
-                配置校验
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.GetStationOption(System.String)">
-            <summary>
-                配置校验
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow._state">
-            <summary>
-                运行状态
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroCenterState">
-            <summary>
-                应用中心状态
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.SetFailed">
-            <summary>
-            设置ZeroCenter与Application状态都为Failed
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZerCenterIsRun">
-            <summary>
-                应用中心是否正在运行
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.CanDo">
-            <summary>
-                运行状态（本地与服务器均正常）
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.IsAlive">
-            <summary>
-                运行状态（本地未关闭）
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.SystemMonitor">
-            <summary>
-            中心事件监控对象
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.JoinCenter">
-            <summary>
-                进入系统侦听
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroTeam#MessageMVC#IFlowMiddleware#Initialize">
-            <summary>
-                初始化
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroTeam#MessageMVC#IFlowMiddleware#Start">
-            <summary>
-                启动
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroTeam#MessageMVC#IFlowMiddleware#End">
-            <summary>
-                关闭
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroNetEvents">
-            <summary>
-            站点事件发生
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.InvokeEvent(ZeroTeam.ZeroMQ.ZeroRPC.ZeroNetEventType,System.String,System.String,ZeroTeam.ZeroMQ.ZeroRPC.StationConfig,System.Boolean)">
-            <summary>
-            发出事件
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.RaiseEvent(ZeroTeam.ZeroMQ.ZeroRPC.ZeroNetEventType,System.Boolean)">
-            <summary>
-            发出事件
-            </summary>
-            <param name="event"></param>
-            <param name="sync">是否为同步操作</param>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.InvokeEvent(System.Object,System.Boolean)">
-            <summary>
-            发出事件
-            </summary>
-            <param name="args"></param>
-            <param name="waitEnd"></param>
-        </member>
         <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.HeartManager">
             <summary>
             心跳
@@ -442,7 +92,7 @@
               是否需要发出事件
             </summary>
         </member>
-        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcConfig.StationIsolate">
+        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcConfig.IsolateFolder">
             <summary>
                 站点数据使用AppName为文件夹
             </summary>
@@ -1356,10 +1006,11 @@
             <param name="socket"></param>
             <param name="message"></param>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcTransport.OnExecuestEnd(System.String,ZeroTeam.ZeroMQ.ZeroRPC.ApiCallItem,ZeroTeam.ZeroMQ.ZeroRPC.ZeroOperatorStateType)">
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcTransport.OnExecuestEnd(ZeroTeam.MessageMVC.Messages.IMessageItem,System.String,ZeroTeam.ZeroMQ.ZeroRPC.ApiCallItem,ZeroTeam.ZeroMQ.ZeroRPC.ZeroOperatorStateType)">
             <summary>
             发送返回值 
             </summary>
+            <param name="message"></param>
             <param name="result"></param>
             <param name="item"></param>
             <param name="state"></param>
@@ -1372,12 +1023,370 @@
             <param name="item"></param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcTransport.SendResult(ZeroTeam.ZeroMQ.ZMessage)">
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcTransport.SendResult(ZeroTeam.ZeroMQ.ZMessage,ZeroTeam.MessageMVC.Messages.IMessageItem)">
+            <summary>
+            发送返回值 
+            </summary>
+            <param name="zmessage"></param>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcTransport.SendToZeroCenter(ZeroTeam.ZeroMQ.ZMessage)">
             <summary>
             发送返回值 
             </summary>
             <param name="message"></param>
             <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.MonitorStateMachine">
+            <summary>
+            系统侦听器状态机
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.MonitorStateMachine.EmptyStateMachine">
+            <summary>
+            监控状态机
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.MonitorStateMachine.EmptyStateMachine.ZeroTeam#ZeroMQ#ZeroRPC#ZeroManagemant#MonitorStateMachine#IMonitorStateMachine#OnMessagePush(ZeroTeam.ZeroMQ.ZeroRPC.ZeroNetEventType,System.String,System.String)">
+            <summary>
+                收到信息的处理
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.MonitorStateMachine.FailedStateMachine">
+            <summary>
+            监控状态机
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.MonitorStateMachine.FailedStateMachine.ZeroTeam#ZeroMQ#ZeroRPC#ZeroManagemant#MonitorStateMachine#IMonitorStateMachine#OnMessagePush(ZeroTeam.ZeroMQ.ZeroRPC.ZeroNetEventType,System.String,System.String)">
+            <summary>
+                收到信息的处理
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.MonitorStateMachine.IMonitorStateMachine">
+            <summary>
+            监控状态机
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.MonitorStateMachine.IMonitorStateMachine.OnMessagePush(ZeroTeam.ZeroMQ.ZeroRPC.ZeroNetEventType,System.String,System.String)">
+            <summary>
+                收到信息的处理
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.MonitorStateMachine.StateMachine">
+            <summary>
+            状态机
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.MonitorStateMachine.SyncAppState">
+            <summary>
+            状态变更同步状态机
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.MonitorStateMachine.worker_sound_off">
+            <summary>
+            站点心跳
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.MonitorStateMachine.station_trends(System.String,System.String)">
+            <summary>
+            站点动态
+            </summary>
+            <param name="name"></param>
+            <param name="content"></param>
+        </member>
+        <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.MonitorStateMachine.RuningStateMachine">
+            <summary>
+            监控状态机
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.MonitorStateMachine.RuningStateMachine.ZeroTeam#ZeroMQ#ZeroRPC#ZeroManagemant#MonitorStateMachine#IMonitorStateMachine#OnMessagePush(ZeroTeam.ZeroMQ.ZeroRPC.ZeroNetEventType,System.String,System.String)">
+            <summary>
+                收到信息的处理
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ZeroEventMonitor">
+            <summary>
+            系统侦听器
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ZeroEventMonitor.WaitMe">
+            <summary>
+            等待正常结束
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ZeroEventMonitor.Start">
+            <summary>
+                进入系统分布式消息侦听处理
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ZeroEventMonitor.Monitor">
+            <summary>
+                进入系统分布式消息侦听处理
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ZeroCenterProxy">
+            <summary>
+            服务中心代理
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ZeroCenterProxy.#ctor(ZeroTeam.ZeroMQ.ZeroRPC.ZeroItem)">
+            <summary>
+            构造
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ZeroCenterProxy.Master">
+            <summary>
+            单例
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ZeroCenterProxy.PingCenter">
+            <summary>
+                连接到
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ZeroCenterProxy.HeartLeft">
+            <summary>
+                连接到
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ZeroCenterProxy.HeartReady">
+            <summary>
+                连接到
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ZeroCenterProxy.HeartJoin">
+            <summary>
+                连接到
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant.ZeroCenterProxy.Heartbeat">
+            <summary>
+                连接到
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroNetEventArgument">
+            <summary>
+            站点事件参数
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroNetEventArgument.#ctor(ZeroTeam.ZeroMQ.ZeroRPC.ZeroNetEventType,System.String,System.String,ZeroTeam.ZeroMQ.ZeroRPC.StationConfig)">
+            <summary>
+            构造
+            </summary>
+            <param name="centerEvent"></param>
+            <param name="name"></param>
+            <param name="context"></param>
+            <param name="config"></param>
+        </member>
+        <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroNetEventArgument.Event">
+            <summary>
+            站点名称
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroNetEventArgument.Name">
+            <summary>
+            内容
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroNetEventArgument.Context">
+            <summary>
+            内容
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroNetEventArgument.EventConfig">
+            <summary>
+            配置
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.StationConfigManager">
+            <summary>
+            系统侦听器
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.StationConfigManager.#ctor(ZeroTeam.ZeroMQ.ZeroRPC.ZeroItem)">
+            <summary>
+            构造
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.StationConfigManager.Center">
+            <summary>
+              服务中心
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.StationConfigManager.TryInstall(System.String,System.String)">
+            <summary>
+            尝试安装站点
+            </summary>
+            <param name="station"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.StationConfigManager.TryStart(System.String)">
+            <summary>
+            尝试安装站点
+            </summary>
+            <param name="station"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.StationConfigManager.UploadDocument">
+            <summary>
+                上传文档
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.StationConfigManager.LoadDocument(System.String)">
+            <summary>
+                下载文档
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.StationConfigManager.LoadAllConfig">
+            <summary>
+                读取配置
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.StationConfigManager.LoadGroupConfig">
+            <summary>
+                读取配置
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.StationConfigManager.LoadConfig(System.String)">
+            <summary>
+                读取配置
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcApp">
+            <summary>
+            通过ZeroRpc实现的远程通讯
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcApp.UseZeroRpc(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            使用ZeroRpc
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow">
+            <summary>
+                ZeroRPC流程控制器
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroTeam#MessageMVC#IZeroMiddleware#Level">
+            <summary>
+            等级,用于确定中间件优先级
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.Config">
+            <summary>
+                站点配置
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.WorkModel">
+            <summary>
+            工作模式
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroTeam#MessageMVC#IFlowMiddleware#CheckOption(ZeroTeam.MessageMVC.ZeroAppOption)">
+            <summary>
+                配置校验,作为第一步
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.GetApiOption(System.String)">
+            <summary>
+                配置校验
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.GetClientOption(System.String)">
+            <summary>
+                配置校验
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.GetStationOption(System.String)">
+            <summary>
+                配置校验
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow._state">
+            <summary>
+                运行状态
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroCenterState">
+            <summary>
+                应用中心状态
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.SetFailed">
+            <summary>
+            设置ZeroCenter与Application状态都为Failed
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZerCenterIsRun">
+            <summary>
+                应用中心是否正在运行
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.CanDo">
+            <summary>
+                运行状态（本地与服务器均正常）
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.IsAlive">
+            <summary>
+                运行状态（本地未关闭）
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.SystemMonitor">
+            <summary>
+            中心事件监控对象
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.JoinCenter">
+            <summary>
+                进入系统侦听
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroTeam#MessageMVC#IFlowMiddleware#Initialize">
+            <summary>
+                初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroTeam#MessageMVC#IFlowMiddleware#Start">
+            <summary>
+                启动
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroTeam#MessageMVC#IFlowMiddleware#End">
+            <summary>
+                关闭
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroNetEvents">
+            <summary>
+            站点事件发生
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.InvokeEvent(ZeroTeam.ZeroMQ.ZeroRPC.ZeroNetEventType,System.String,System.String,ZeroTeam.ZeroMQ.ZeroRPC.StationConfig,System.Boolean)">
+            <summary>
+            发出事件
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.RaiseEvent(ZeroTeam.ZeroMQ.ZeroRPC.ZeroNetEventType,System.Boolean)">
+            <summary>
+            发出事件
+            </summary>
+            <param name="event"></param>
+            <param name="sync">是否为同步操作</param>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.InvokeEvent(System.Object,System.Boolean)">
+            <summary>
+            发出事件
+            </summary>
+            <param name="args"></param>
+            <param name="waitEnd"></param>
         </member>
     </members>
 </doc>

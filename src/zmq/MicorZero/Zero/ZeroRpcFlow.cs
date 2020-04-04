@@ -236,7 +236,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
 
             Config.ClearConfig();
-            if (!ConfigManager.LoadAllConfig())
+            if (!StationConfigManager.LoadAllConfig())
             {
                 SetFailed();
                 ZeroTrace.WriteError("ZeroCenter", "JoinCenter", "station configs can`t loaded.");
@@ -248,7 +248,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             {
                 if (WorkModel == ZeroWorkModel.Service)
                 {
-                    var m = new ConfigManager(Config.Master);
+                    var m = new StationConfigManager(Config.Master);
                     m.UploadDocument();
                 }
             }
@@ -277,7 +277,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             SystemMonitor.Start();
             if (ZeroFlowControl.ApplicationState == StationRealState.Run && WorkModel == ZeroWorkModel.Service)
             {
-                var m = new ConfigManager(Config.Master);
+                var m = new StationConfigManager(Config.Master);
                 m.UploadDocument();
             }
         }

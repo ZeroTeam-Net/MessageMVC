@@ -35,6 +35,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         public Type ResultType { get; set; }
 
         /// <summary>
+        ///     是合符合API契约规定
+        /// </summary>
+        public bool IsApiContract { get;  }
+
+        /// <summary>
         ///     还原参数
         /// </summary>
         bool RestoreArgument(string argument);

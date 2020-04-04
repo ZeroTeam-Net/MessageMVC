@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
+using ConsumeResult = Confluent.Kafka.ConsumeResult<Confluent.Kafka.Ignore, string>;
 
 namespace ZeroTeam.MessageMVC.Kafka
 {
@@ -51,15 +52,13 @@ namespace ZeroTeam.MessageMVC.Kafka
                     try
                     {
                         item = JsonHelper.DeserializeObject<MessageItem>(cr.Value);
-                        await OnMessagePush(item);
-                        consumer.Commit();
+                        await OnMessagePush(item, cr);
+                        
                     }
                     catch (Exception e)
                     {
-                        await ((IMessageConsumer)this).OnMessageError(e, new MessageItem
-                        {
-                            State = MessageState.FormalError,
-                        }, cr.Value);
+                        LogRecorder.Exception(e);
+                        consumer.Commit();//无法处理的消息,直接确认
                         Interlocked.Increment(ref ErrorCount);
                         continue;
                     }
@@ -80,9 +79,10 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// 消息处理
         /// </summary>
         /// <param name="message"></param>
-        private async Task OnMessagePush(IMessageItem message)
+        /// <param name="consumeResult"></param>
+        private async Task OnMessagePush(IMessageItem message, ConsumeResult consumeResult)
         {
-            var state = await MessageProcessor.OnMessagePush(Service, message);
+            var state = await MessageProcessor.OnMessagePush(Service, message, consumeResult);
             if (state == MessageState.Success)
             {
                 Interlocked.Increment(ref SuccessCount);
@@ -121,13 +121,14 @@ namespace ZeroTeam.MessageMVC.Kafka
         }
 
         /// <summary>
-        /// 表示已成功接收 
+        /// 标明调用结束
         /// </summary>
-        /// <returns></returns>
-        Task INetTransfer.Commit()
+        /// <returns>是否需要发送回执</returns>
+        Task<bool> INetTransfer.OnCallEnd(IMessageItem item, object tag)
         {
-            consumer.Commit();
-            return Task.CompletedTask;
+            var consumeResult = (ConsumeResult)tag;
+            consumer.Commit(consumeResult);
+            return Task.FromResult(false);
         }
     }
 }

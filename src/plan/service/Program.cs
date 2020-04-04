@@ -2,6 +2,7 @@ using Agebull.Common.Configuration;
 using Agebull.Common.Ioc;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.PlanTasks;
 using ZeroTeam.MessageMVC.RedisMQ;
@@ -12,9 +13,10 @@ namespace ZeroTeam.MessageMVC.Http
     public class Program
     {
 
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            RedisHelper.Initialization(new CSRedis.CSRedisClient(ConfigurationManager.Get("Redis").GetStr("ConnectionString")));
+            var connectionString = ConfigurationManager.Get("Redis").GetStr("ConnectionString");
+            RedisHelper.Initialization(new CSRedis.CSRedisClient(connectionString));
 
             ZeroFlowControl.RegistService(new ZeroService
             {
@@ -24,9 +26,8 @@ namespace ZeroTeam.MessageMVC.Http
             var services = IocHelper.ServiceCollection;
             services.UseCsRedis();
             services.AddSingleton<IMessageMiddleware, ReverseProxyMiddleware>();//通过反向代理组件处理计划任务消息发送
-            services.AddSingleton<IMessagePoster, HttpProducer>();
-            services.UseFlowByAutoDiscory();
-            Console.ReadKey();
+            services.AddSingleton<IMessagePoster, HttpPoster>();
+            await services.UseFlowAsync();
         }
     }
 }

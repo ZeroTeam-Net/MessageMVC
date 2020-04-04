@@ -51,12 +51,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         {
             return new ApiFileResult
             {
-                Success = errCode == ErrorCode.Success,
-                Status = new OperatorStatus
-                {
-                    Code = errCode,
-                    Message = message ?? ErrorCode.GetMessage(errCode)
-                }
+                Success = errCode == DefaultErrorCode.Success,
+                Code = errCode,
+                Message = message ?? DefaultErrorCode.GetMessage(errCode)
             };
         }
     }

@@ -14,15 +14,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
     /// </summary>
     public class InporcConsumer : NetTransferBase, IMessageConsumer
     {
-        /// <summary>
-        /// 本地代理
-        /// </summary>
-        private ZSocket socket;
-
-        /// <summary>
-        /// Pool对象
-        /// </summary>
-        private IZmqPool zmqPool;
+        #region IMessageConsumer
 
         /// <summary>
         /// 同步运行状态
@@ -80,7 +72,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         Task INetTransfer.OnError(Exception exception, IMessageItem message, object tag)
         {
             if (tag is ApiCallItem item)
-                OnResult(ApiResultIoc.LocalExceptionJson, item, (byte)ZeroOperatorStateType.LocalException);
+                OnResult(ApiResultHelper.LocalExceptionJson, item, (byte)ZeroOperatorStateType.LocalException);
             return Task.CompletedTask;
         }
 
@@ -97,36 +89,47 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
             return Task.CompletedTask;
         }
 
+        #endregion
+
         #region ZMQ
+
+        /// <summary>
+        /// 本地代理
+        /// </summary>
+        private ZSocket socket;
+
+        /// <summary>
+        /// Pool对象
+        /// </summary>
+        private IZmqPool zmqPool;
 
         private void Listen()
         {
-            if (!zmqPool.Poll() || !zmqPool.CheckIn(0, out var message))
+            if (!zmqPool.Poll() || !zmqPool.CheckIn(0, out var zMessage))
             {
                 return;
             }
 
-            if (!ApiCallItem.Unpack(message, out var item) || string.IsNullOrWhiteSpace(item.ApiName))
+            if (!ApiCallItem.Unpack(zMessage, out var callItem) || string.IsNullOrWhiteSpace(callItem.ApiName))
             {
-                SendLayoutErrorResult(item);
+                SendLayoutErrorResult(callItem);
                 return;
             }
 
-            var arg = new MessageItem
-            {
-                Title = item.ApiName,
-                Topic = item.Station,
-                Content = item.Argument,
-                Context = item.Context
-            };
+            var messageItem = MessageHelper.Restore(callItem.ApiName, callItem.Station, callItem.Argument, callItem.RequestId, callItem.Context);
+            messageItem.Trace.CallId = callItem.GlobalId;
+            messageItem.Trace.LocalId = callItem.LocalId;
+            messageItem.Extend = callItem.Extend;
+            messageItem.Binary = callItem.Binary;
+
             try
             {
-                _ = MessageProcessor.OnMessagePush(Service, arg, item);
+                _ = MessageProcessor.OnMessagePush(Service, messageItem, callItem);
             }
             catch (Exception e)
             {
                 LogRecorder.Exception(e);
-                OnResult(ApiResultIoc.LocalExceptionJson, item, (byte)ZeroOperatorStateType.LocalException);
+                OnResult(ApiResultHelper.LocalExceptionJson, callItem, (byte)ZeroOperatorStateType.LocalException);
             }
         }
 
@@ -153,7 +156,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
                 task.TaskSource.TrySetResult(new ZeroResult
                 {
                     State = ZeroOperatorStateType.FrameInvalid,
-                    Result = ApiResultIoc.ArgumentErrorJson
+                    Result = ApiResultHelper.ArgumentErrorJson
                 });
             }
             catch (Exception ex)

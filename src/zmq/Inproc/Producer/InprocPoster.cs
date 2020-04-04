@@ -183,7 +183,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
             {
                 client._core.CheckStateResult();
             }
-            return ApiResultIoc.Ioc.DeserializeObject<TResult>(client.Result);
+            return ApiResultHelper.Ioc.DeserializeObject<TResult>(client.Result);
         }
         /// <summary>
         /// 调用远程方法
@@ -206,7 +206,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
             {
                 client._core.CheckStateResult();
             }
-            return ApiResultIoc.Ioc.DeserializeObject(client.Result);
+            return ApiResultHelper.Ioc.DeserializeObject(client.Result);
         }
 
         /// <summary>
@@ -228,7 +228,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
             {
                 client._core.CheckStateResult();
             }
-            return ApiResultIoc.Ioc.DeserializeObject<TResult>(client.Result);
+            return ApiResultHelper.Ioc.DeserializeObject<TResult>(client.Result);
         }
 
         /// <summary>
@@ -249,7 +249,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
             {
                 client._core.CheckStateResult();
             }
-            return ApiResultIoc.Ioc.DeserializeObject(client.Result);
+            return ApiResultHelper.Ioc.DeserializeObject(client.Result);
         }
 
         /// <summary>

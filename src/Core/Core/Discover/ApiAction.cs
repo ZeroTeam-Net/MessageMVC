@@ -1,6 +1,7 @@
 using Agebull.Common;
 using System;
 using System.Threading.Tasks;
+using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
@@ -20,6 +21,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ///     Api名称
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        ///     是合符合API契约规定
+        /// </summary>
+        public bool IsApiContract { get; private set; }
 
         /// <summary>
         ///     访问控制
@@ -204,13 +210,15 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 }
                 else if (ResultType.IsSupperInterface(typeof(IApiResult)))
                 {
+                    IsApiContract = true;
                     FuncSync = arg =>
                     {
                         var res = Function(arg) as IApiResult;
+                        if (GlobalContext.CurrentNoLazy != null)
+                            GlobalContext.Current.Status.LastStatus = res;
                         return res == null
                             ? (MessageState.Failed, null)
-                            : (res.Success ? MessageState.Success : MessageState.Failed,
-                            JsonHelper.SerializeObject(res));
+                            : (res.Success ? MessageState.Success : MessageState.Failed, JsonHelper.SerializeObject(res));
                     };
                 }
                 else if (ResultType.IsValueType)
@@ -251,12 +259,15 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             }
             else if (ResultType.IsSupperInterface(typeof(IApiResult)))
             {
+                IsApiContract = true;
                 FuncAsync = async arg =>
                 {
                     var task = Function(arg) as Task;
                     await task;
                     dynamic dy = task;
                     var res = dy.Result as IApiResult;
+                    if (GlobalContext.CurrentNoLazy != null)
+                        GlobalContext.Current.Status.LastStatus = res;
                     return res == null
                         ? (MessageState.Failed, null)
                         : (res.Success ? MessageState.Success : MessageState.Failed,

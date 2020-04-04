@@ -128,7 +128,7 @@ namespace ZeroTeam.MessageMVC.Http
                     var service = ZeroFlowControl.GetService(data.ApiHost);
                     if (service == null)
                     {
-                        data.Result = ApiResultIoc.NoFindJson;
+                        data.Result = ApiResultHelper.NoFindJson;
                     }
                     else if (Option.FastCall)
                     {
@@ -150,7 +150,7 @@ namespace ZeroTeam.MessageMVC.Http
                     //Data.ZeroState = ZeroOperatorStateType.LocalException;
                     ZeroTrace.WriteException("Route", e);
                     ////IocHelper.Create<IRuntimeWaring>()?.Waring("Route", Data.Uri.LocalPath, e.Message);
-                    await context.Response.WriteAsync(ApiResultIoc.LocalErrorJson, Encoding.UTF8);
+                    await context.Response.WriteAsync(ApiResultHelper.LocalErrorJson, Encoding.UTF8);
                 }
                 catch (Exception exception)
                 {

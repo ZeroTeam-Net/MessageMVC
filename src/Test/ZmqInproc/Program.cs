@@ -25,7 +25,7 @@ namespace MicroZero.Kafka.QueueStation
             //var MessagePoster = IocHelper.Create<IMessagePoster>();
             for (int i = 0; ZeroFlowControl.CanDo && i < 10; i++)
             {
-                Thread.Sleep(100);
+                await Task.Delay(100);
                 MessagePoster.Publish("Inproc", "test/res", "agebull");
                 MessagePoster.Publish("Inproc", "test/arg", "{\"Value\":\"test\"}");
                 MessagePoster.Publish("Inproc", "test/full", "1");

@@ -12,7 +12,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         public ApiResult Result()
         {
             LogRecorder.Trace("Result");
-            return ApiResult.Succees();
+            return ApiResultHelper.Succees();
         }
 
         [Route("test/full")]
@@ -67,12 +67,10 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         public ApiResult TaskTest()
         {
             LogRecorder.Trace(Task.CurrentId?.ToString());
-            Task.Yield();
-            Thread.Sleep(100);
             Task.Delay(100);
             LogRecorder.Trace(Task.CurrentId?.ToString());
             LogRecorder.Trace("VoidAsync");
-            return ApiResult.Succees();
+            return ApiResultHelper.Succees();
         }
     }
 }

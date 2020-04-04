@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.ZeroApis;
 
-namespace ZeroTeam.MessageMVC.Sample.Controllers
+namespace ZeroTeam.MessageMVC.PlanTasks
 {
 
     [Consumer("PlanTask")]
@@ -10,18 +10,22 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         [Route("v1/post")]
         public async Task<ApiResult> Post(PlanTasks.PlanCallInfo info)
         {
-            var item = new PlanTasks.PlanItem
+            if (info.Option.retry_set == 0)
+                info.Option.retry_set = PlanSystemOption.Option.RetryCount;
+
+            var item = new PlanItem
             {
                 Option = info.Option,
                 Message = info.Message
             };
+
             if (!await item.FirstSave())
             {
-                return ApiResult.ArgumentError;
+                return ApiResultHelper.Error(DefaultErrorCode.ArgumentError);
             }
 
             await item.CheckNextTime();
-            return ApiResult.Succees();
+            return ApiResultHelper.Succees();
         }
     }
 }

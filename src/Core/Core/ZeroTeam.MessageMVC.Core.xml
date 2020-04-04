@@ -54,6 +54,11 @@
                 Api名称
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAction.IsApiContract">
+            <summary>
+                是合符合API契约规定
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAction.Access">
             <summary>
                 访问控制
@@ -132,6 +137,11 @@
             站点文档信息
             </summary>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.#cctor">
+            <summary>
+            构造
+            </summary>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.#ctor">
             <summary>
             构造
@@ -188,7 +198,7 @@
             上下文对象
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.GlobalContextMiddleware.Process">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.GlobalContextMiddleware.Processor">
             <summary>
             当前处理器
             </summary>
@@ -213,7 +223,7 @@
             日志处理中间件
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.LoggerMiddleware.Process">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.LoggerMiddleware.Processor">
             <summary>
             当前处理器
             </summary>
@@ -238,7 +248,7 @@
             埋点发出中间件
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.MarkPointMiddleware.Process">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.MarkPointMiddleware.Processor">
             <summary>
             当前处理器
             </summary>
@@ -263,7 +273,7 @@
             反向代理中间件
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ReverseProxyMiddleware.Process">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ReverseProxyMiddleware.Processor">
             <summary>
             当前处理器
             </summary>
@@ -288,7 +298,7 @@
             消息存储中间件
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.StorageMiddleware.Process">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.StorageMiddleware.Processor">
             <summary>
             当前处理器
             </summary>
@@ -308,37 +318,12 @@
             <param name="next">下一个处理方法</param>
             <returns></returns>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiController">
-            <summary>
-            ZeroApi控制器基类
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiController.UserInfo">
-            <summary>
-            当前登录用户
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiController.RequestId">
-            <summary>
-            调用标识
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiController.UserAgent">
-            <summary>
-            HTTP调用时的UserAgent
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiController.Message">
-            <summary>
-            原始调用帧消息
-            </summary>
-        </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter">
             <summary>
                 Api调用器
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.Process">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.Processor">
             <summary>
             当前处理器
             </summary>
@@ -600,6 +585,11 @@
             应用程序等待结果的信号量对象
             </summary>
         </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ZeroService.eventSlim">
+            <summary>
+            Run与Start互斥执行的事件对象
+            </summary>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApis.ZeroService.Initialize">
             <summary>
             初始化
@@ -730,6 +720,12 @@
             <param name="services"></param>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlowByAutoDiscory(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            使用主流程控制器
+            </summary>
+            <param name="services"></param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlowAsync(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             使用主流程控制器
             </summary>

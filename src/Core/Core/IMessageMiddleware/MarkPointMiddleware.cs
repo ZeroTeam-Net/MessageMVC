@@ -11,7 +11,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// 当前处理器
         /// </summary>
-        public MessageProcessor Process { get; set; }
+        public MessageProcessor Processor { get; set; }
 
         /// <summary>
         /// 层级
@@ -30,7 +30,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         {
             var state = await next();
             message.Flush();
-            Process.PushResult();
+            Processor.PushResult();
             MessagePoster.Publish(ZeroFlowControl.Config.MarkPointName, message.Topic, message);
             return state;
         }

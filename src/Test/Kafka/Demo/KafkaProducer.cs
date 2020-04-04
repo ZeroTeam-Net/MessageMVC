@@ -35,7 +35,7 @@ namespace KafkaTest
             for (var i = 0; i < 10; i++)
             {
                 await ProduceAsync($"DEMO {i}");
-                Thread.Sleep(1000);
+                await Task.Delay(1000);
             }
             Console.WriteLine("Production Close");
         }

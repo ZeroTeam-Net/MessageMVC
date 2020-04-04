@@ -31,11 +31,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return new ApiArrayResult<TData>
             {
                 Success = false,
-                Status = new OperatorStatus
-                {
-                    Code = errCode,
-                    Message = ErrorCode.GetMessage(errCode)
-                }
+                Code = errCode,
+                Message = DefaultErrorCode.GetMessage(errCode)
             };
         }
 
@@ -49,12 +46,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         {
             return new ApiArrayResult<TData>
             {
-                Success = errCode == ErrorCode.Success,
-                Status = new OperatorStatus
-                {
-                    Code = errCode,
-                    Message = message ?? ErrorCode.GetMessage(errCode)
-                }
+                Success = errCode == DefaultErrorCode.Success,
+                Code = errCode,
+                Message = message ?? DefaultErrorCode.GetMessage(errCode)
             };
         }
 
@@ -69,13 +63,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         {
             return new ApiArrayResult<TData>
             {
-                Success = errCode == ErrorCode.Success,
-                Status = new OperatorStatus
-                {
-                    Code = errCode,
-                    Message = message ?? ErrorCode.GetMessage(errCode),
-                    InnerMessage = innerMessage
-                }
+                Success = errCode == DefaultErrorCode.Success,
+                Code = errCode,
+                Message = message ?? DefaultErrorCode.GetMessage(errCode),
+                InnerMessage = innerMessage
             };
         }
         /// <summary>
@@ -91,12 +82,12 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         {
             return new ApiArrayResult<TData>
             {
-                Success = errCode == ErrorCode.Success,
-                Status = new OperatorStatus
+                Success = errCode == DefaultErrorCode.Success,
+                Code = errCode,
+                Message = message ?? DefaultErrorCode.GetMessage(errCode),
+                InnerMessage = innerMessage,
+                Trace = new OperatorTrace
                 {
-                    Code = errCode,
-                    Message = message ?? ErrorCode.GetMessage(errCode),
-                    InnerMessage = innerMessage,
                     Guide = guide,
                     Describe = describe
                 }
@@ -117,12 +108,12 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         {
             return new ApiArrayResult<TData>
             {
-                Success = errCode == ErrorCode.Success,
-                Status = new OperatorStatus
+                Success = errCode == DefaultErrorCode.Success,
+                Code = errCode,
+                Message = message ?? DefaultErrorCode.GetMessage(errCode),
+                InnerMessage = innerMessage,
+                Trace = new OperatorTrace
                 {
-                    Code = errCode,
-                    Message = message ?? ErrorCode.GetMessage(errCode),
-                    InnerMessage = innerMessage,
                     Point = point,
                     Guide = guide,
                     Describe = describe
@@ -136,20 +127,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <returns></returns>
         public static ApiArrayResult<TData> Succees(List<TData> data, string message = null)
         {
-            return message == null
-                ? new ApiArrayResult<TData>
-                {
-                    Success = true,
-                    ResultData = data
-                }
-                : new ApiArrayResult<TData>
+            return new ApiArrayResult<TData>
                 {
                     Success = true,
                     ResultData = data,
-                    Status = new OperatorStatus
-                    {
-                        Message = message
-                    }
+                    Message = message
                 };
         }
 
@@ -159,11 +141,13 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <returns></returns>
         public static new ApiArrayResult<TData> Error()
         {
-            return new ApiArrayResult<TData>
+            var result = new ApiArrayResult<TData>();
+            if (GlobalContext.CurrentNoLazy?.Status != null)
             {
-                Success = false,
-                Status =GlobalContext.CurrentNoLazy?.LastStatus
-            };
+                result.Code = GlobalContext.Current.Status.LastStatus.Code;
+                result.Message = GlobalContext.Current.Status.LastStatus.Message;
+            }
+            return result;
         }
 
     }

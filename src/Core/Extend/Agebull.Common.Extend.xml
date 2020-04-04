@@ -916,6 +916,33 @@
             <param name="methodName">原始调用方法</param>
             <returns>匿名委托</returns>
         </member>
+        <member name="T:System.Threading.ManualResetEventSlimScope">
+            <summary>
+            互斥锁范围
+            </summary>
+        </member>
+        <member name="F:System.Threading.ManualResetEventSlimScope.mutex">
+            <summary>
+            锁定对象
+            </summary>
+        </member>
+        <member name="M:System.Threading.ManualResetEventSlimScope.Scope(System.Threading.ManualResetEventSlim)">
+            <summary>
+            构造
+            </summary>
+            <param name="m">要锁定的一或多个对象</param>
+        </member>
+        <member name="M:System.Threading.ManualResetEventSlimScope.#ctor(System.Threading.ManualResetEventSlim)">
+            <summary>
+            构造
+            </summary>
+            <param name="m">要锁定的一或多个对象</param>
+        </member>
+        <member name="M:System.Threading.ManualResetEventSlimScope.OnDispose">
+            <summary>
+            清理资源
+            </summary>
+        </member>
         <member name="T:System.Text.ChineseMoneyHelper">
             <summary>
               中文金额 该类重载的 ToString() 方法返回的是大写金额字符串
@@ -3487,6 +3514,11 @@
             反序列化
             </summary>
         </member>
+        <member name="M:Agebull.Common.JsonHelper.TryDeserializeObject``1(System.String,``0@)">
+            <summary>
+            反序列化
+            </summary>
+        </member>
         <member name="M:Agebull.Common.JsonHelper.TryDeserializeObject``1(System.String)">
             <summary>
             反序列化
@@ -4281,6 +4313,28 @@
               正在被锁定名字集合
             </summary>
         </member>
+        <member name="T:Agebull.Common.ScopeGroup">
+            <summary>
+            有效范围组
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.ScopeGroup.CreateScope(System.IDisposable[])">
+            <summary>
+            构造，此时改变上下文，析构时自动还原
+            </summary>
+            <param name="scopes"></param>
+        </member>
+        <member name="M:Agebull.Common.ScopeGroup.#ctor(System.IDisposable[])">
+            <summary>
+            构造，此时改变上下文，析构时自动还原
+            </summary>
+            <param name="scopes"></param>
+        </member>
+        <member name="M:Agebull.Common.ScopeGroup.OnDispose">
+            <summary>
+            执行析构的事情
+            </summary>
+        </member>
         <member name="T:Agebull.Common.Frame.ThreadLockScope">
             <summary>
             线程锁范围
@@ -4312,28 +4366,6 @@
         <member name="M:Agebull.Common.Frame.ThreadLockScope.OnDispose">
             <summary>
             清理资源
-            </summary>
-        </member>
-        <member name="T:Agebull.Common.ScopeGroup">
-            <summary>
-            有效范围组
-            </summary>
-        </member>
-        <member name="M:Agebull.Common.ScopeGroup.CreateScope(System.IDisposable[])">
-            <summary>
-            构造，此时改变上下文，析构时自动还原
-            </summary>
-            <param name="scopes"></param>
-        </member>
-        <member name="M:Agebull.Common.ScopeGroup.#ctor(System.IDisposable[])">
-            <summary>
-            构造，此时改变上下文，析构时自动还原
-            </summary>
-            <param name="scopes"></param>
-        </member>
-        <member name="M:Agebull.Common.ScopeGroup.OnDispose">
-            <summary>
-            执行析构的事情
             </summary>
         </member>
         <member name="T:Agebull.Common.Text.MulitStringDictionary">

@@ -9,40 +9,6 @@
               日志记录器
             </summary>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Record(Microsoft.Extensions.Logging.ILogger,Agebull.Common.Logging.LogType,System.String,System.String,System.Object[])">
-            <summary>
-              记录日志
-            </summary>
-            <param name="logger">日志记录器</param>
-            <param name="type"> 消息类型 </param>
-            <param name="name"> 消息名称 </param>
-            <param name="message"> 日志详细信息 </param>
-            <param name="formatArgs">格式化参数</param>
-        </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Message(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
-            <summary>
-              记录消息
-            </summary>
-             <param name="logger">日志记录器</param>
-            <param name="message"> 日志详细信息 </param>
-            <param name="formatArgs"> 格式化的参数 </param>
-        </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.SystemLog(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
-            <summary>
-              记录系统日志
-            </summary>
-            <param name="logger">日志记录器</param>
-            <param name="message"> 日志详细信息 </param>
-            <param name="formatArgs">格式化参数</param>
-        </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.RecordMessage(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
-            <summary>
-              写入一般日志
-            </summary>
-             <param name="logger">日志记录器</param>
-            <param name="message"> 日志详细信息 </param>
-            <param name="formatArgs"> 格式化的参数 </param>
-        </member>
         <member name="M:Agebull.Common.Logging.LoggerExtend.Warning(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
             <summary>
               记录警告消息
@@ -50,6 +16,13 @@
              <param name="logger">日志记录器</param>
             <param name="message"> 日志详细信息 </param>
             <param name="formatArgs"> 格式化的参数 </param>
+        </member>
+        <member name="M:Agebull.Common.Logging.LoggerExtend.Warning(Microsoft.Extensions.Logging.ILogger,System.String)">
+            <summary>
+              记录警告消息
+            </summary>
+             <param name="logger">日志记录器</param>
+            <param name="message"> 日志详细信息 </param>
         </member>
         <member name="M:Agebull.Common.Logging.LoggerExtend.Error(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
             <summary>
@@ -76,14 +49,6 @@
             <param name="message"> 日志详细信息 </param>
             <param name="formatArgs">格式化参数</param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.RecordStackTrace(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
-             <summary>
-               记录堆栈跟踪
-             </summary>
-             <param name="logger">日志记录器</param>
-            <param name="message"> 日志详细信息 </param>
-            <param name="formatArgs"> 格式化的参数 </param>
-        </member>
         <member name="M:Agebull.Common.Logging.LoggerExtend.Trace(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
             <summary>
               写入调试日志
@@ -91,15 +56,6 @@
             <param name="logger">日志记录器</param>
             <param name="message"> 日志详细信息 </param>
             <param name="formatArgs">格式化参数</param>
-        </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Trace(Microsoft.Extensions.Logging.ILogger,System.String,System.String,System.Object[])">
-            <summary>
-              记录一般日志
-            </summary>
-             <param name="logger">日志记录器</param>
-            <param name="name"> </param>
-            <param name="message"> 消息 </param>
-            <param name="formatArgs"> 格式化的参数 </param>
         </member>
         <member name="M:Agebull.Common.Logging.LoggerExtend.DebugByStackTrace(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
             <summary>
@@ -132,6 +88,56 @@
             <param name="name"> </param>
             <param name="message"> 消息 </param>
             <param name="formatArgs"> 格式化的参数 </param>
+        </member>
+        <member name="M:Agebull.Common.Logging.LoggerExtend.Trace(Microsoft.Extensions.Logging.ILogger,System.Func{System.String})">
+            <summary>
+              写入调试日志
+            </summary>
+            <param name="logger">日志记录器</param>
+            <param name="func"> 消息方法</param>
+        </member>
+        <member name="M:Agebull.Common.Logging.LoggerExtend.Debug(Microsoft.Extensions.Logging.ILogger,System.Func{System.String})">
+            <summary>
+              写入调试日志
+            </summary>
+            <param name="logger">日志记录器</param>
+            <param name="func"> 消息方法</param>
+        </member>
+        <member name="M:Agebull.Common.Logging.LoggerExtend.Information(Microsoft.Extensions.Logging.ILogger,System.Func{System.String})">
+            <summary>
+              写入调试日志
+            </summary>
+            <param name="logger">日志记录器</param>
+            <param name="func"> 消息方法</param>
+        </member>
+        <member name="M:Agebull.Common.Logging.LoggerExtend.Information(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
+            <summary>
+              记录一般日志
+            </summary>
+             <param name="logger">日志记录器</param>
+            <param name="message"> 消息 </param>
+            <param name="formatArgs"> 格式化的参数 </param>
+        </member>
+        <member name="M:Agebull.Common.Logging.LoggerExtend.Information(Microsoft.Extensions.Logging.ILogger,System.String)">
+            <summary>
+              写入调试日志
+            </summary>
+            <param name="logger">日志记录器</param>
+            <param name="msg"> 消息</param>
+        </member>
+        <member name="M:Agebull.Common.Logging.LoggerExtend.Warning(Microsoft.Extensions.Logging.ILogger,System.Func{System.String})">
+            <summary>
+              写入调试日志
+            </summary>
+            <param name="logger">日志记录器</param>
+            <param name="func"> 消息方法</param>
+        </member>
+        <member name="M:Agebull.Common.Logging.LoggerExtend.Error(Microsoft.Extensions.Logging.ILogger,System.Func{System.String})">
+            <summary>
+              写入调试日志
+            </summary>
+            <param name="logger">日志记录器</param>
+            <param name="func"> 消息方法</param>
         </member>
         <member name="T:Agebull.Common.Logging.LogRecorder">
             <summary>

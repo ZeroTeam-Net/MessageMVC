@@ -136,29 +136,6 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         }
 
         /// <summary>
-        /// 还原调用上下文
-        /// </summary>
-        /// <returns></returns>
-        public void RestoryContext(string station)
-        {
-            try
-            {
-                GlobalContext.SetContext(!string.IsNullOrWhiteSpace(Context)
-                    ? JsonConvert.DeserializeObject<GlobalContext>(Context)
-                    : new GlobalContext());
-            }
-            catch (Exception e)
-            {
-                LogRecorder.MonitorTrace(() => $"Restory context exception:{e.Message}");
-                ZeroTrace.WriteException(station, e, "restory context", Context);
-                GlobalContext.SetContext(new GlobalContext());
-            }
-            GlobalContext.Current.Request.CallGlobalId = CallId;
-            GlobalContext.Current.Request.LocalGlobalId = GlobalId;
-            GlobalContext.Current.Request.RequestId = RequestId;
-        }
-
-        /// <summary>
         /// 显示到文本
         /// </summary>
         /// <returns></returns>

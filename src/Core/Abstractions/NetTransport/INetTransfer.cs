@@ -73,7 +73,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <remarks>
         /// 默认实现为保证OnCallEnd可控制且不再抛出异常,无特殊需要不应再次实现
         /// </remarks>
-        async Task OnMessageResult(IMessageItem message, object tag)
+        async Task OnMessageResult(MessageProcessor processor, IMessageItem message, object tag)
         {
             if (tag == null)//内部自调用,无需处理
                 return;
@@ -85,7 +85,16 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 LogRecorder.Exception(ex);
             }
-            await OnCallEnd(message, tag);
+            try
+            {
+                await OnCallEnd(message, tag);
+                return;
+            }
+            catch
+            {
+            }
+            processor.PushResult();//停止HttpCall的等待
+            await MessagePoster.PostReceipt(message);
         }
 
 
@@ -95,7 +104,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <remarks>
         /// 默认实现为保证OnCallEnd可控制且不再抛出异常,无特殊需要不应再次实现
         /// </remarks>
-        async Task OnMessageError(Exception exception, IMessageItem message, object tag)
+        async Task OnMessageError(MessageProcessor processor, Exception exception, IMessageItem message, object tag)
         {
             if (exception is NetTransferException ne)
             {
@@ -118,7 +127,18 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 LogRecorder.Exception(ex);
             }
-            await OnCallEnd(message, tag);
+
+            try
+            {
+                if (!await OnCallEnd(message, tag))
+                    return;
+            }
+            catch (Exception ex)
+            {
+                LogRecorder.Exception(ex);
+            }
+            processor.PushResult();
+            await MessagePoster.PostReceipt(message);
         }
 
         /// <summary>
@@ -136,7 +156,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// 标明调用结束
         /// </summary>
-        /// <returns></returns>
-        Task OnCallEnd(IMessageItem message, object tag) => Task.CompletedTask;
+        /// <returns>是否需要发送回执(默认不发送)</returns>
+        Task<bool> OnCallEnd(IMessageItem message, object tag) => Task.FromResult(false);
     }
 }

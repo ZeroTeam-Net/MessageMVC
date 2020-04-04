@@ -1,5 +1,7 @@
 ﻿using Agebull.Common;
 using Agebull.Common.Configuration;
+using Agebull.Common.Ioc;
+using Agebull.Common.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,6 +31,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// </summary>
         async Task<bool> INetTransfer.LoopBegin()
         {
+            PlanItem.logger.Information("Plan queue loog begin.");
             wait = 0;
             await PlanItem.Start();
             return true;
@@ -39,6 +42,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// </summary>
         async Task<bool> INetTransfer.Loop(CancellationToken token)
         {
+            CheckReceipt(token);
             bool succes = true;
             try
             {
@@ -56,6 +60,10 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                     while (wait > PlanSystemOption.Option.MaxRunTask)
                     {
                         await Task.Delay(PlanSystemOption.Option.LoopIdleTime);
+                        if (token.IsCancellationRequested)
+                        {
+                            return true;
+                        }
                     }
                     try
                     {
@@ -66,14 +74,16 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                         }
                         else if (item != null)
                         {
+                            PlanItem.logger.Debug(() => $"Plan message begin post.{item.Option.plan_id}");
+
                             Interlocked.Increment(ref wait);
-                            //await ExecMessage(item);
                             item.Message.Flush();
                             await MessageProcessor.OnMessagePush(Service, item.Message, item);
                         }
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        PlanItem.logger.Warning(() => $"Plan queue loop error.{ex.Message}");
                         succes = false;
                     }
                 }
@@ -85,6 +95,97 @@ namespace ZeroTeam.MessageMVC.PlanTasks
             return true;
         }
 
+
+        /// <summary>
+        /// 开启
+        /// </summary>
+        async void CheckReceipt(CancellationToken token)
+        {
+            var rep = MessagePoster.GetService(ZeroAppOption.Instance.ReceiptSviceName);
+            if (rep == null)
+            {
+                PlanItem.logger.Error("回执服务未注册,无法处理异常回执确认");
+                return;
+            }
+            await Task.Yield();
+            try
+            {
+                string pre = null;
+                const int idleTime = 10000;
+                const int waitTime = 30000;
+                while (!token.IsCancellationRequested)
+                {
+                    try
+                    {
+                        var id = await RedisHelper.RPopLPushAsync(PlanItem.planErrorKey, PlanItem.planErrorKey);
+                        if (id == null)
+                        {
+                            await Task.Delay(idleTime);
+                            continue;
+                        }
+                        if (id == pre)
+                            await Task.Delay(waitTime);//相同ID多次处理
+                        else
+                            pre = id;
+                        var item = PlanItem.LoadMessage(id, false);
+                        if (item == null)
+                        {
+                            await RedisHelper.LRemAsync(PlanItem.planErrorKey, 0, id);
+                            continue;
+                        }
+
+                        var (state, json) =
+                            await rep.Post(MessageHelper.Simple(id, ZeroAppOption.Instance.ReceiptSviceName, "receipt/v1/load", id));
+
+                        if (state != MessageState.Success || string.IsNullOrEmpty(json))
+                        {
+                            //取不到,在30分钟后认为失败
+                            if ((DateTime.Now - PlanItem.FromTime(item.RealInfo.exec_start_time)).TotalMinutes > 10)
+                            {
+                                await RedisHelper.LRemAsync(PlanItem.planErrorKey, 0, id);
+                                await item.ReTry();//远程错误,直接重试
+                            }
+                            continue;
+                        }
+
+                        var message = JsonHelper.DeserializeObject<MessageItem>(json);
+                        if (message == null)
+                        {
+                            await RedisHelper.LRemAsync(PlanItem.planErrorKey, 0, id);
+                            await item.ReTry();//远程错误,直接重试
+                            continue;
+                        }
+
+                        await item.SaveResult(message.Topic, message.Result);
+
+                        item.RealInfo.exec_state = item.Message.State;
+                        item.RealInfo.exec_end_time = PlanItem.NowTime();
+                        await item.SaveRealInfo();
+
+
+                        if (message.State == MessageState.Success || message.State == MessageState.Failed)
+                        {
+                            await item.CheckNextTime();
+                        }
+                        else
+                        {
+                            await item.ReTry();
+                        }
+                        await RedisHelper.LRemAsync(PlanItem.planErrorKey, 0, id);
+
+                        await rep.Post(MessageHelper.Simple(id, ZeroAppOption.Instance.ReceiptSviceName, "receipt/v1/remove", id));
+                    }
+                    catch (Exception ex)
+                    {
+                        PlanItem.logger.Warning(() => $"Check receipt queue loop error.{ex.Message}");
+                    }
+                }
+            }
+            catch (TaskCanceledException)
+            {
+            }
+        }
+
         /// <summary>
         /// 关闭
         /// </summary>
@@ -94,6 +195,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
             {
                 await Task.Delay(50);
             }
+            PlanItem.logger.Information("Plan queue loop complete.");
         }
 
         public void Dispose()
@@ -114,23 +216,23 @@ namespace ZeroTeam.MessageMVC.PlanTasks
             }
             ApiResult result = JsonHelper.TryDeserializeObject<ApiResult>(item.Message.Result);
 
-            await item.SaveResult(result?.Status?.Point ?? item.Message.Topic, item.Message.Result);
+            await item.SaveResult(result?.Trace?.Point ?? item.Message.Topic, item.Message.Result);
             if (result == null || result.Success)
             {
                 return true;
             }
-            switch (result.Status.Code)
+            switch (result.Code)
             {
-                case ErrorCode.ReTry:
-                case ErrorCode.NoReady:
-                case ErrorCode.Unavailable:
+                case DefaultErrorCode.ReTry:
+                case DefaultErrorCode.NoReady:
+                case DefaultErrorCode.Unavailable:
                     item.RealInfo.exec_state = MessageState.Cancel;
                     break;
-                case ErrorCode.NoFind:
+                case DefaultErrorCode.NoFind:
                     item.RealInfo.exec_state = MessageState.NoSupper;
                     break;
-                case ErrorCode.RemoteError:
-                case ErrorCode.LocalException:
+                case DefaultErrorCode.RemoteError:
+                case DefaultErrorCode.LocalException:
                     item.RealInfo.exec_state = MessageState.Exception;
                     break;
                 default:
@@ -167,21 +269,29 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         async Task INetTransfer.OnError(Exception exception, IMessageItem message, object tag)
         {
             PlanItem item = (PlanItem)tag;
-            await item.SaveResult(item.Message.Topic, item.Message.Result);
             item.RealInfo.error_num++;
             item.RealInfo.exec_state = item.Message.State;
-            item.RealInfo.exec_end_time = PlanItem.NowTime();
-            await item.ReTry();
+            if (message.State == MessageState.NetError)
+            {
+                await item.Error();
+            }
+            else
+            {
+                await item.SaveResult(item.Message.Topic, item.Message.Result);
+                item.RealInfo.exec_end_time = PlanItem.NowTime();
+                await item.ReTry();
+            }
         }
 
         /// <summary>
         /// 标明调用结束
         /// </summary>
         /// <returns></returns>
-        Task INetTransfer.OnCallEnd(IMessageItem message, object tag)
+        Task<bool> INetTransfer.OnCallEnd(IMessageItem message, object tag)
         {
             Interlocked.Decrement(ref wait);
-            return Task.CompletedTask;
+            PlanItem.logger.Debug(() => $"Plan post end.state {message.State}");
+            return Task.FromResult(false);
         }
         #endregion
     }

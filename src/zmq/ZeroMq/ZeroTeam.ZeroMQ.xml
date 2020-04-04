@@ -1528,12 +1528,6 @@
             帧内容
             </summary>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroNetMessage.RestoryContext(System.String)">
-            <summary>
-            还原调用上下文
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroNetMessage.ToString">
             <summary>
             显示到文本

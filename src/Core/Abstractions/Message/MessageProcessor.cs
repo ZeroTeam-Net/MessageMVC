@@ -1,4 +1,5 @@
 ﻿using Agebull.Common.Ioc;
+using Agebull.Common.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 using System.Threading;
@@ -29,7 +30,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 taskCompletionSource = new TaskCompletionSource<MessageState>(),
                 Tag = tag
             };
-            Task.Run(process.Process);
+            Task.Factory.StartNew(process.Process);
             return process.taskCompletionSource.Task;
         }
         #endregion
@@ -65,7 +66,15 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 index = 0;
                 State = MessageState.None;
                 middlewares = IocHelper.ServiceProvider.GetServices<IMessageMiddleware>().OrderBy(p => p.Level).ToArray();
-                await Handle();
+                try
+                {
+                    await Handle();
+                }
+                catch (System.Exception ex)
+                {
+                    LogRecorder.Exception(ex);
+                    await Service.Transport.OnMessageError(this,ex, Message, Tag);
+                }
                 PushResult();
             }
         }
@@ -82,7 +91,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             }
 
             var next = middlewares[index++];
-            next.Process = this;
+            next.Processor = this;
             return State = await next.Handle(Service, Message, Tag, Handle);
         }
         #endregion

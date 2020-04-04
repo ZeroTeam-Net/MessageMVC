@@ -42,10 +42,8 @@ OnResult 与 OnError 也无用,HttpRoute.Call方法是通过MessageProcessor的�
     "EnableFormFile": false,
     /// 启用身份令牌
     "EnableAuthToken": false,
-    /// 启用UserAgent
-    "EnableUserAgent": false,
-    /// 启用HttpHeader
-    "EnableHttpHeader": false,
+    /// 启用Header跟踪(如HTTP请求头)
+    "EnableHeader": false,
     /// 特殊URL取第几个路径作为服务名称的映射表
     "HostPaths": false,
     ///启用快速调用,即直接使用ApiExecuter
@@ -173,7 +171,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         [Route("v1/test")]
         public ApiResult OnOrderNew(Argument argument)
         {
-            return ApiResult.Succees(argument?.Value);
+            return ApiResultHelper.Succees(argument?.Value);
         }
     }
 }

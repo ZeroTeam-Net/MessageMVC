@@ -11,12 +11,7 @@
         </member>
         <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.ID">
             <summary>
-            唯一标识，UUID
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.Timestamp">
-            <summary>
-            生产时间戳,UNIX时间戳,自1970起秒数
+            唯一标识
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.Extend">
@@ -29,9 +24,14 @@
             其他带外内容
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.ZeroTeam#MessageMVC#Messages#IMessageItem#Context">
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.Trace">
             <summary>
-            上下文内容
+                跟踪信息
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.Binary">
+            <summary>
+            扩展的二进制
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.HttpContext">
@@ -54,11 +54,6 @@
                 请求的内容
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.GlobalContextJson">
-            <summary>
-                上下文的JSON内容(透传)
-            </summary>
-        </member>
         <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.Uri">
             <summary>
                 请求地址
@@ -67,21 +62,6 @@
         <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.HttpMethod">
             <summary>
                 HTTP method
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.Headers">
-            <summary>
-                请求的表单
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.UserAgent">
-            <summary>
-            HTTP的UserAgent
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.Token">
-            <summary>
-                Http Header中的Authorization信息
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.Arguments">
@@ -103,7 +83,7 @@
         </member>
         <member name="F:ZeroTeam.MessageMVC.Http.HttpMessage.Files">
             <summary>
-                返回二进制值
+                文件
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.Http.HttpMessage.Redirect">
@@ -244,19 +224,14 @@
             启用身份令牌
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.MessageRouteOption.EnableUserAgent">
-            <summary>
-            启用UserAgent
-            </summary>
-        </member>
         <member name="P:ZeroTeam.MessageMVC.Http.MessageRouteOption.FastCall">
             <summary>
             启用快速调用,即直接使用ApiExecuter
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.MessageRouteOption.EnableHttpHeader">
+        <member name="P:ZeroTeam.MessageMVC.Http.MessageRouteOption.EnableHeader">
             <summary>
-            启用HttpHeader
+            启用Header跟踪(如HTTP请求头)
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Http.MessageRouteOption.HostPaths">
@@ -267,27 +242,27 @@
             当启用NGINX代理时,NGINX可能会增加一级节点,而导致默认第1个路径作为服务名称失效
             </remarks>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.Http.HttpProducer">
+        <member name="T:ZeroTeam.MessageMVC.Http.HttpPoster">
             <summary>
                 Http生产者
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.HttpProducer.State">
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpPoster.State">
             <summary>
             运行状态
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Http.HttpProducer.ServiceMap">
+        <member name="F:ZeroTeam.MessageMVC.Http.HttpPoster.ServiceMap">
             <summary>
             服务到HttpClientName的查找表.
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpProducer.ZeroTeam#MessageMVC#Messages#IMessagePoster#Initialize">
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpPoster.ZeroTeam#MessageMVC#Messages#IMessagePoster#Initialize">
             <summary>
                 初始化
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpProducer.ZeroTeam#MessageMVC#Messages#IMessagePoster#Post(ZeroTeam.MessageMVC.Messages.IMessageItem)">
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpPoster.ZeroTeam#MessageMVC#Messages#IMessagePoster#Post(ZeroTeam.MessageMVC.Messages.IMessageItem)">
             <summary>
             生产消息
             </summary>

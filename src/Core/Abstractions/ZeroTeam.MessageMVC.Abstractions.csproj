@@ -24,14 +24,20 @@
 
   <ItemGroup>
     <Compile Remove="Auth\**" />
+    <Compile Remove="WebApi\**" />
     <EmbeddedResource Remove="Auth\**" />
+    <EmbeddedResource Remove="WebApi\**" />
     <None Remove="Auth\**" />
+    <None Remove="WebApi\**" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="Config\SpeedLimitType.cs" />
     <Compile Remove="Config\UserOperatorStateType.cs" />
     <Compile Remove="Config\ZeroOperatorStateType.cs" />
+    <Compile Remove="Context\ArgumentType.cs" />
+    <Compile Remove="Context\RequestType.cs" />
+    <Compile Remove="Message\IReceiptService.cs" />
   </ItemGroup>
 
   <ItemGroup>

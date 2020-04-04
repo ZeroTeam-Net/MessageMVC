@@ -12,7 +12,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         public ApiResult Result()
         {
             LogRecorder.Trace(GetType().FullName);
-            return ApiResult.Succees();
+            return ApiResultHelper.Succees();
         }
     }
 }

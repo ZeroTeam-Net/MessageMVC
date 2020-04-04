@@ -179,7 +179,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         {
             if (!ZeroRpcFlow.Config.TryGetConfig(caller.Station, out caller.Config))
             {
-                caller.Result = ApiResultIoc.NoFindJson;
+                caller.Result = ApiResultHelper.NoFindJson;
                 caller.State = ZeroOperatorStateType.NotFind;
                 return null;
             }
@@ -187,8 +187,8 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             if (caller.Config.State != ZeroCenterState.None && caller.Config.State != ZeroCenterState.Run)
             {
                 caller.Result = caller.Config.State == ZeroCenterState.Pause
-                    ? ApiResultIoc.PauseJson
-                    : ApiResultIoc.NotSupportJson;
+                    ? ApiResultHelper.PauseJson
+                    : ApiResultHelper.NotSupportJson;
                 caller.State = ZeroOperatorStateType.Pause;
                 return null;
             }
@@ -296,7 +296,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
 
         private void Prepare()
         {
-            var identity = ZeroFlowControl.Config.RealName.ToZeroBytes();
+            var identity = ZeroFlowControl.Config.TraceName.ToZeroBytes();
             foreach (var config in ZeroRpcFlow.Config.GetConfigs())
             {
                 StationProxy.Add(config.StationName, new StationProxyItem

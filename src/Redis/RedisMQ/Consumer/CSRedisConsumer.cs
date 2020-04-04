@@ -1,10 +1,13 @@
 ﻿using Agebull.Common;
 using Agebull.Common.Configuration;
+using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using CSRedis;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
 using static CSRedis.CSRedisClient;
@@ -16,6 +19,8 @@ namespace ZeroTeam.MessageMVC.RedisMQ
     /// </summary>
     public class CSRedisConsumer : NetTransferBase, IMessageConsumer, INetEvent
     {
+        ILogger logger;
+
         /// <summary>
         /// 连接字符串
         /// </summary>
@@ -36,11 +41,13 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         private string jobList;
         private string errList;
         private string bakList;
+
         /// <summary>
         /// 初始化
         /// </summary>
         public void Initialize()
         {
+            logger = IocHelper.LoggerFactory.CreateLogger(nameof(CSRedisConsumer));
             Option = ConfigurationManager.Get<RedisOption>("Redis");
             if (Option.GuardCheckTime <= 0)
             {
@@ -66,8 +73,17 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <returns></returns>
         Task<bool> INetTransfer.LoopBegin()
         {
-            client = new CSRedisClient(Option.ConnectionString);
-            return Task.FromResult(true);
+            try
+            {
+                client = new CSRedisClient(Option.ConnectionString);
+                var redis = client as IRedisClient;
+                return Task.FromResult(client != null);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(() => $"LoopBegin error.{ex.Message}");
+                return Task.FromResult(false);
+            }
         }
 
         private TaskCompletionSource<bool> loopTask;
@@ -75,8 +91,17 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         async Task<bool> INetTransfer.Loop(CancellationToken t)
         {
             token = t;
+            try
+            {
+                subscribeObject = client.Subscribe((Service.ServiceName, arg => OnMessagePush()));
+            }
+            catch (Exception ex)
+            {
+                logger.Error(() => $"Loop error.{ex.Message}");
+                await Task.Delay(3000);
+                return false;
+            }
             OnMessagePush();
-            subscribeObject = client.Subscribe((Service.ServiceName, arg => OnMessagePush()));
             loopTask = new TaskCompletionSource<bool>();
             await loopTask.Task;
             return true;
@@ -88,13 +113,20 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <returns></returns>
         async Task INetTransfer.Close()
         {
-            subscribeObject.Unsubscribe();
-            while (isBusy > 0)//等处理线程退出
+            try
             {
-                await Task.Delay(10);
-            }
+                subscribeObject?.Unsubscribe();
+                while (isBusy > 0)//等处理线程退出
+                {
+                    await Task.Delay(10);
+                }
 
-            loopTask?.SetResult(true);
+                loopTask?.SetResult(true);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(() => $"LoopBegin error.{ex.Message}");
+            }
 
         }
 
@@ -104,8 +136,8 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <returns></returns>
         Task INetTransfer.LoopComplete()
         {
-            subscribeObject.Dispose();
-            client.Dispose();
+            subscribeObject?.Dispose();
+            client?.Dispose();
             return Task.CompletedTask;
         }
         #region 消息处理
@@ -115,6 +147,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// </summary>
         private async Task Guard()
         {
+            logger.Information("异常消息守卫已启动");
             using var client = new CSRedisClient(Option.ConnectionString);
             //处理错误重新入列
             while (true)
@@ -125,27 +158,33 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                     break;
                 }
 
-                LogRecorder.Trace("异常消息重新入列:{0}", key);
+                logger.Debug(() => "异常消息重新入列:{key}");
                 client.LPush(jobList, key);
             }
             //非正常处理还原
             while (ZeroFlowControl.IsAlive)
             {
-                Thread.Sleep(Option.GuardCheckTime);
-
-                var key = await client.LPopAsync(bakList);
-                if (string.IsNullOrEmpty(key))
+                await Task.Delay(Option.GuardCheckTime);
+                try
                 {
-                    continue;
+                    var key = await client.LPopAsync(bakList);
+                    if (string.IsNullOrEmpty(key))
+                    {
+                        continue;
+                    }
+
+                    var guard = $"guard:{Service.ServiceName}:{key}";
+                    if (await client.SetNxAsync(guard, "Guard"))
+                    {
+                        client.Expire(guard, Option.MessageLockTime);
+                        logger.Debug(() => $"超时消息重新入列:{key}");
+                        await client.LPushAsync(jobList, key);
+                        await client.DelAsync(guard);
+                    }
                 }
-
-                var guard = $"guard:{Service.ServiceName}:{key}";
-                if (await client.SetNxAsync(guard, "Guard"))
+                catch (Exception ex)
                 {
-                    client.Expire(guard, Option.MessageLockTime);
-                    LogRecorder.Trace("超时消息重新入列:{0}", key);
-                    await client.LPushAsync(jobList, key);
-                    await client.DelAsync(guard);
+                    logger.Information(() => $"异常消息守卫错误.{ex.Message }");
                 }
             }
         }
@@ -176,6 +215,10 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             }
         }
 
+        #endregion
+
+        #region ReadList
+
         /// <summary>
         /// 取出队列,全部处理,为空后退出
         /// </summary>
@@ -186,90 +229,125 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             {
                 try
                 {
-                    var id = client.RPopLPush(jobList, bakList);
-                    if (string.IsNullOrEmpty(id))
-                    {
+                    if (!await Read())
                         return;
-                    }
-
-                    var key = $"msg:{Service.ServiceName}:{id}";
-                    var guard = $"guard:{Service.ServiceName}:{id}";
-                    if (await client.SetNxAsync(guard, "Guard"))
-                    {
-                        client.Expire(guard, Option.MessageLockTime);
-
-                        var str = client.Get(key);
-                        if (string.IsNullOrEmpty(str))
-                        {
-                            LogRecorder.Debug("Empty:{0}", key);
-                            await client.DelAsync(key);
-                            await client.LRemAsync(bakList, 0, id);
-                            await client.DelAsync(guard);
-                            continue;
-                        }
-                        else
-                        {
-                            MessageItem item;
-                            try
-                            {
-                                item = JsonHelper.DeserializeObject<MessageItem>(str);
-                            }
-                            catch
-                            {
-                                LogRecorder.Debug("Error:{0} =>{1}", key, str);
-                                await client.DelAsync(key);
-                                await client.LRemAsync(bakList, 0, id);
-                                await client.DelAsync(guard);
-                                continue;
-                            }
-                            try
-                            {
-                                item.ID = id;
-                                item.Topic = Service.ServiceName;
-                                switch (await MessageProcessor.OnMessagePush(Service, item))
-                                {
-                                    default:
-                                        //case MessageState.Cancel:
-                                        //case MessageState.Exception:
-                                        await client.LPushAsync(errList, id);
-                                        break;
-                                    case MessageState.FormalError:
-                                    case MessageState.Success:
-                                        await client.DelAsync(key);
-                                        break;
-                                    case MessageState.Failed:
-                                        if (Option.FailedIsError)
-                                        {
-                                            await client.LPushAsync(errList, id);
-                                        }
-
-                                        break;
-                                    case MessageState.NoSupper:
-                                        if (Option.NoSupperIsError)
-                                        {
-                                            await client.LPushAsync(errList, id);
-                                        }
-
-                                        break;
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                LogRecorder.Exception(ex);
-                                await client.LPushAsync(errList, id);
-                            }
-                        }
-                        await client.LRemAsync(bakList, 0, id);
-                        await client.DelAsync(guard);
-                    }
                 }
-                catch (Exception e)
+                catch (RedisClientException ex)
                 {
-                    LogRecorder.Exception(e);
-                    Thread.Sleep(300);
+                    logger.Warning(() => $"ReadList error.{ex.Message }");
+                    await Task.Delay(3000);
+                }
+                catch (Exception ex)
+                {
+                    var exxx = ex;
+                    logger.Warning(() => $"ReadList error.{ex.Message }");
+                    await Task.Delay(300);
                 }
             }
         }
+
+
+        /// <summary>
+        /// 取出队列,全部处理,为空后退出
+        /// </summary>
+        /// <returns></returns>
+        private async Task<bool> Read()
+        {
+            var id = client.RPopLPush(jobList, bakList);
+            if (string.IsNullOrEmpty(id))
+            {
+                return false;
+            }
+
+            var key = $"msg:{Service.ServiceName}:{id}";
+            var guard = $"guard:{Service.ServiceName}:{id}";
+            if (!await client.SetNxAsync(guard, "Guard"))
+            {
+                await Task.Delay(Option.MessageLockTime);
+                return true;
+            }
+            client.Expire(guard, Option.MessageLockTime);
+
+            var str = client.Get(key);
+            if (string.IsNullOrEmpty(str))
+            {
+                logger.Warning(() => $"ReadList key empty.{key}");
+                await client.DelAsync(key);
+                await client.LRemAsync(bakList, 0, id);
+                await client.DelAsync(guard);
+                return true;
+            }
+            MessageItem item;
+            try
+            {
+                item = JsonHelper.DeserializeObject<MessageItem>(str);
+            }
+            catch (Exception ex)
+            {
+                logger.Warning(() => $"ReadList deserialize error.{ex.Message }.{key} =>{str}");
+                await client.DelAsync(key);
+                await client.LRemAsync(bakList, 0, id);
+                await client.DelAsync(guard);
+                return true;
+            }
+            if (item.Trace == null)
+                item.Trace = new TraceInfo();
+            item.Trace.TraceId = id;
+            item.Topic = Service.ServiceName;
+            await MessageProcessor.OnMessagePush(Service, item);
+
+            return true;
+        }
+        async Task<bool> CheckState(MessageState state, string key, string id, string guard)
+        {
+            try
+            {
+                switch (state)
+                {
+                    case MessageState.FormalError:
+                    case MessageState.Success:
+                        await client.DelAsync(key);
+                        break;
+                    case MessageState.Failed:
+                        if (Option.FailedIsError)
+                            await client.LPushAsync(errList, id);
+                        break;
+                    case MessageState.NoSupper:
+                        if (Option.NoSupperIsError)
+                            await client.LPushAsync(errList, id);
+                        break;
+                    default:
+                        await client.LPushAsync(errList, id);
+                        break;
+                }
+                await client.LRemAsync(bakList, 0, id);
+                await client.DelAsync(guard);
+            }
+            catch (RedisClientException ex)
+            {
+                logger.Warning(() => $"ReadList error.{ex.Message }");
+                await Task.Delay(3000);
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// 标明调用结束
+        /// </summary>
+        /// <returns>是否需要发送回执</returns>
+        async Task<bool> INetTransfer.OnCallEnd(IMessageItem item, object tag)
+        {
+            var key = $"msg:{Service.ServiceName}:{item.ID}";
+            var guard = $"guard:{Service.ServiceName}:{item.ID}";
+            while (!await CheckState(item.State, key, item.ID, guard))
+            {
+                await Task.Delay(3000);
+            }
+            //写入回执备查
+            GlobalContext.Current.Option.Receipt = true;
+            return true;
+        }
+
         #endregion
     }
 }

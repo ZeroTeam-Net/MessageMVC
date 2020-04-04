@@ -3,6 +3,7 @@ using Agebull.Common.Configuration;
 using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Agebull.EntityModel.Common;
+using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Net;
@@ -41,22 +42,25 @@ namespace ZeroTeam.MessageMVC
         void IFlowMiddleware.CheckOption(ZeroAppOption config)
         {
             CheckConfig(config);
+            IocHelper.AddSingleton(config);
             IocHelper.Update();
             //上下文
-            if (config.EnableGlobalContext)
-            {
-                GlobalContext.AppName = config.AppName;
-                GlobalContext.ServiceName = config.ServiceName;
-            }
+            IocHelper.AddScoped<IZeroContext, ZeroContext>();
             //日志
-            if (config.EnableLogRecorder)
+            if (config.EnableLinkTrace)
             {
-                LogRecorder.LogPath = config.LogFolder;
-                LogRecorder.GetMachineNameFunc = () => config.RealName;
-                if (config.EnableGlobalContext)
+                LogRecorder.GetUserNameFunc = () => GlobalContext.CurrentNoLazy?.User?.UserId.ToString() ?? "-1";
+                LogRecorder.GetRequestIdFunc = () => GlobalContext.CurrentNoLazy?.Trace?.TraceId ?? RandomCode.Generate(10);
+            }
+            LogRecorder.GetMachineNameFunc = () => config.TraceName;
+            if (LogRecorder.UseBaseLogger)
+            {
+                var opt = ConfigurationManager.Get<TextLoggerOption>("Logging.Text");
+                if (string.IsNullOrWhiteSpace(opt.path))
                 {
-                    LogRecorder.GetUserNameFunc = () => GlobalContext.CurrentNoLazy?.User?.UserId.ToString() ?? "*";
-                    LogRecorder.GetRequestIdFunc = () => GlobalContext.CurrentNoLazy?.Request?.RequestId ?? RandomCode.Generate(10);
+                    LogRecorder.LogPath = config.IsolateFolder
+                         ? IOHelper.CheckPath(config.RootPath, "logs", config.AppName)
+                         : IOHelper.CheckPath(config.RootPath, "logs");
                 }
             }
             //线程数
@@ -70,24 +74,6 @@ namespace ZeroTeam.MessageMVC
                 config.MaxIOThreads = io;
                 config.MaxWorkThreads = worker;
             }
-            //显示
-            LogRecorder.SystemLog($@"
-      AppName : {config.AppName}
-      Version : {config.AppVersion}
-  ServiceName : {config.ServiceName}
-     RunModel : {ConfigurationManager.Root["ASPNETCORE_ENVIRONMENT_"]}
-           OS : {(config.IsLinux ? "Linux" : "Windows")}
-         Host : {config.ServiceName} {config.LocalIpAddress}
-     RealName : {config.RealName}
-     RootPath : {config.RootPath}
-    AddInPath : {config.AddInPath}({(config.EnableGlobalContext ? "Enable" : "Disable")})
-      LogPath : {config.LogFolder}({(config.EnableLogRecorder ? "Enable" : "Disable")})
-     DataPath : {config.DataFolder}
-   ConfigPath : {config.ConfigFolder}
-   ThreadPool : {config.MaxWorkThreads:N0}worker|{ config.MaxIOThreads:N0}threads
-GlobalContext : {(config.EnableGlobalContext ? "Enable" : "Disable")}
-   ReConsumer : {(config.EnableMessageReConsumer ? "Enable" : "Disable")}
-    MarkPoint : {config.MarkPointName}({(config.EnableMarkPoint ? "Enable" : "Disable")})");
         }
 
 
@@ -143,24 +129,17 @@ GlobalContext : {(config.EnableGlobalContext ? "Enable" : "Disable")}
             }
             config.LocalIpAddress = GetHostIps();
 
-            config.ShortName = string.IsNullOrWhiteSpace(config.ShortName)
-                ? config.ServiceName
-                : config.ShortName.Trim();
-            config.RealName = $"{config.AppName}v{config.AppVersion}({config.LocalIpAddress})";
+            config.TraceName = $"{config.AppName}({config.AppVersion})|{config.ServiceName}|{config.LocalIpAddress}";
+
             #endregion
 
             #region Folder
 
-            if (config.StationIsolate == true)
+            if (config.IsolateFolder == true)
             {
                 if (string.IsNullOrWhiteSpace(config.DataFolder))
                 {
                     config.DataFolder = IOHelper.CheckPath(config.RootPath, "datas", config.AppName);
-                }
-
-                if (string.IsNullOrWhiteSpace(config.LogFolder))
-                {
-                    config.LogFolder = IOHelper.CheckPath(config.RootPath, "logs", config.AppName);
                 }
 
                 if (string.IsNullOrWhiteSpace(config.ConfigFolder))
@@ -173,11 +152,6 @@ GlobalContext : {(config.EnableGlobalContext ? "Enable" : "Disable")}
                 if (string.IsNullOrWhiteSpace(config.DataFolder))
                 {
                     config.DataFolder = IOHelper.CheckPath(config.RootPath, "datas");
-                }
-
-                if (string.IsNullOrWhiteSpace(config.LogFolder))
-                {
-                    config.LogFolder = IOHelper.CheckPath(config.RootPath, "logs");
                 }
 
                 if (string.IsNullOrWhiteSpace(config.ConfigFolder))

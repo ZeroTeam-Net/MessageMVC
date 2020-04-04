@@ -68,7 +68,7 @@ namespace ZeroTeam.MessageMVC
                     return;
                 }
 
-                Thread.Sleep(10);
+                await Task.Delay(10);
                 try
                 {
                     var json = File.ReadAllText(file);

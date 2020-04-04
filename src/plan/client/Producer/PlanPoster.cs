@@ -1,6 +1,4 @@
-﻿using Agebull.Common.Ioc;
-using System.Threading.Tasks;
-using ZeroTeam.MessageMVC.Context;
+﻿using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.PlanTasks
@@ -15,19 +13,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <summary>
         /// 计划生产者
         /// </summary>
-        private static IPlanProducer PlanProducer;
-        private static ZeroAppOption appOption;
-
-        private static ZeroAppOption AppOption => appOption ??= IocHelper.Create<ZeroAppOption>();
-
-        /// <summary>
-        /// 发现传输对象
-        /// </summary>
-        /// <returns>传输对象构造器</returns>
-        private static IPlanProducer PlanService()
-        {
-            return PlanProducer ??= IocHelper.Create<IPlanProducer>() ?? new PlanProducer();
-        }
+        private static readonly PlanProducer PlanProducer = new PlanProducer();
 
         /// <summary>
         /// 生产消息
@@ -39,13 +25,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <returns></returns>
         public static ApiResult Post<TArg>(PlanOption option, string topic, string title, TArg content)
         {
-            if (AppOption.EnableGlobalContext)
-            {
-                option.request_id = GlobalContext.Current.Request.RequestId;
-                option.caller = AppOption.AppName;
-                option.service = AppOption.ServiceName;
-            }
-            return PlanService().Post(option, topic, title, content);
+            return PlanProducer.Post(option, topic, title, content);
         }
 
         /// <summary>
@@ -58,13 +38,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <returns></returns>
         public static ApiResult Post(PlanOption option, string topic, string title, string content)
         {
-            if (AppOption.EnableGlobalContext)
-            {
-                option.request_id = GlobalContext.Current.Request.RequestId;
-                option.caller = AppOption.AppName;
-                option.service = AppOption.ServiceName;
-            }
-            return PlanService().Post(option, topic, title, content);
+            return PlanProducer.Post(option, topic, title, content);
         }
 
         /// <summary>
@@ -77,13 +51,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <returns></returns>
         public static Task<ApiResult> PostAsync<TArg>(PlanOption option, string topic, string title, TArg content)
         {
-            if (AppOption.EnableGlobalContext)
-            {
-                option.request_id = GlobalContext.Current.Request.RequestId;
-                option.caller = AppOption.AppName;
-                option.service = AppOption.ServiceName;
-            }
-            return PlanService().PostAsync(option, topic, title, content);
+            return PlanProducer.PostAsync(option, topic, title, content);
         }
 
         /// <summary>
@@ -96,13 +64,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <returns></returns>
         public static Task<ApiResult> PostAsync(PlanOption option, string topic, string title, string content)
         {
-            if (AppOption.EnableGlobalContext)
-            {
-                option.request_id = GlobalContext.Current.Request.RequestId;
-                option.caller = AppOption.AppName;
-                option.service = AppOption.ServiceName;
-            }
-            return PlanService().PostAsync(option, topic, title, content);
+            return PlanProducer.PostAsync(option, topic, title, content);
         }
 
         #endregion

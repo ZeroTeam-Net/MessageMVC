@@ -25,12 +25,12 @@ namespace PlanUnitTest
         }
 
         [Test]
-        public void TestSecond()
+        public async void TestSecond()
         {
             var now = PlanItem.NowTime() + minute2ms;
             var item = new PlanItem
             {
-                Message = new MessageItem(),
+                Message = MessageHelper.Simple("test","test", "test","test"),
                 Option = new PlanOption
                 {
                     plan_type = plan_date_type.second,
@@ -42,25 +42,25 @@ namespace PlanUnitTest
                     plan_time = now
                 }
             };
-            item.CheckNextTime();
+            await item.CheckNextTime();
             now += 10 * second2ms;
             var next = PlanItem.FromTime(item.RealInfo.plan_time);
             Console.WriteLine($"{now}=>{item.RealInfo.plan_time} {next} : {item.RealInfo.plan_state}");
             Assert.IsTrue(item.RealInfo.plan_time == now, $"结果时间不同{now}=>{item.RealInfo.plan_time}");
 
             item.RealInfo.exec_num = 1;
-            item.CheckNextTime();
+            await item.CheckNextTime();
             Assert.IsTrue(item.RealInfo.plan_state == Plan_message_state.close, $"状态错误{Plan_message_state.close}=>{item.RealInfo.plan_state}");
 
         }
 
         [Test]
-        public void Testminute()
+        public async void Testminute()
         {
             var now = PlanItem.NowTime() + minute2ms;
             var item = new PlanItem
             {
-                Message = new MessageItem(),
+                Message = MessageHelper.Simple("test","test", "test","test"),
                 Option = new PlanOption
                 {
                     plan_type = plan_date_type.minute,
@@ -72,26 +72,26 @@ namespace PlanUnitTest
                     plan_time = now
                 }
             };
-            item.CheckNextTime();
+            await item.CheckNextTime();
             now += minute2ms;
             var next = PlanItem.FromTime(item.RealInfo.plan_time);
             Console.WriteLine($"{now}=>{item.RealInfo.plan_time} {next} : {item.RealInfo.plan_state}");
             Assert.IsTrue(item.RealInfo.plan_time == now, $"结果时间不同{now}=>{item.RealInfo.plan_time}");
 
             item.RealInfo.exec_num = 1;
-            item.CheckNextTime();
+            await item.CheckNextTime();
             Assert.IsTrue(item.RealInfo.plan_state == Plan_message_state.close, $"状态错误{Plan_message_state.close}=>{item.RealInfo.plan_state}");
 
         }
 
 
         [Test]
-        public void Testhour()
+        public async void Testhour()
         {
             var now = PlanItem.NowTime() + minute2ms;
             var item = new PlanItem
             {
-                Message = new MessageItem(),
+                Message = MessageHelper.Simple("test","test", "test","test"),
                 Option = new PlanOption
                 {
                     plan_type = plan_date_type.hour,
@@ -103,26 +103,26 @@ namespace PlanUnitTest
                     plan_time = now
                 }
             };
-            item.CheckNextTime();
+            await item.CheckNextTime();
             now += hour2ms;
             var next = PlanItem.FromTime(item.RealInfo.plan_time);
             Console.WriteLine($"{now}=>{item.RealInfo.plan_time} {next} : {item.RealInfo.plan_state}");
             Assert.IsTrue(item.RealInfo.plan_time == now, $"结果时间不同{now}=>{item.RealInfo.plan_time}");
 
             item.RealInfo.exec_num = 1;
-            item.CheckNextTime();
+            await item.CheckNextTime();
             Assert.IsTrue(item.RealInfo.plan_state == Plan_message_state.close, $"状态错误{Plan_message_state.close}=>{item.RealInfo.plan_state}");
 
         }
 
 
         [Test]
-        public void Testday()
+        public async void Testday()
         {
             var now = PlanItem.NowTime() + minute2ms;
             var item = new PlanItem
             {
-                Message = new MessageItem(),
+                Message = MessageHelper.Simple("test","test", "test","test"),
                 Option = new PlanOption
                 {
                     plan_type = plan_date_type.day,
@@ -134,26 +134,26 @@ namespace PlanUnitTest
                     plan_time = now
                 }
             };
-            item.CheckNextTime();
+            await item.CheckNextTime();
             now += day2ms;
             var next = PlanItem.FromTime(item.RealInfo.plan_time);
             Console.WriteLine($"{now}=>{item.RealInfo.plan_time} {next} : {item.RealInfo.plan_state}");
             Assert.IsTrue(item.RealInfo.plan_time == now, $"结果时间不同{now}=>{item.RealInfo.plan_time}");
 
             item.RealInfo.exec_num = 1;
-            item.CheckNextTime();
+            await item.CheckNextTime();
             Assert.IsTrue(item.RealInfo.plan_state == Plan_message_state.close, $"状态错误{Plan_message_state.close}=>{item.RealInfo.plan_state}");
 
         }
 
 
         [Test]
-        public void Testweek()
+        public async void Testweek()
         {
             var week = new Random(GetHashCode()).Next(0, 7);
             var item = new PlanItem
             {
-                Message = new MessageItem(),
+                Message = MessageHelper.Simple("test","test", "test","test"),
                 Option = new PlanOption
                 {
                     plan_type = plan_date_type.week,
@@ -165,25 +165,25 @@ namespace PlanUnitTest
                     plan_time = 0
                 }
             };
-            item.FirstSave();
-            item.CheckNextTime();
+            await item.FirstSave();
+            await item.CheckNextTime();
             var next = PlanItem.FromTime(item.RealInfo.plan_time);
             Console.WriteLine($"{(DayOfWeek)week}=>{next.DayOfWeek} {next} : {item.RealInfo.plan_state}");
             Assert.IsTrue((int)next.DayOfWeek == week, $"结果时间不同{week}=>{(int)next.DayOfWeek}");
 
             item.RealInfo.exec_num = 1;
-            item.CheckNextTime();
+            await item.CheckNextTime();
             Assert.IsTrue(item.RealInfo.plan_state == Plan_message_state.close, $"状态错误{Plan_message_state.close}=>{item.RealInfo.plan_state}");
 
         }
 
         [Test]
-        public void TestMonth()
+        public async void TestMonth()
         {
             var day = (short)new Random(GetHashCode()).Next(0, 32);
             var item = new PlanItem
             {
-                Message = new MessageItem(),
+                Message = MessageHelper.Simple("test","test", "test","test"),
                 Option = new PlanOption
                 {
                     plan_type = plan_date_type.month,
@@ -195,14 +195,14 @@ namespace PlanUnitTest
                     plan_time = PlanItem.NowTime()
                 }
             };
-            item.CheckNextTime();
+            await item.CheckNextTime();
             var next = PlanItem.FromTime(item.RealInfo.plan_time);
             Console.WriteLine($"{day}=>{(int)next.DayOfWeek} {next} : {item.RealInfo.plan_state}");
             Assert.IsTrue(next.Day == day, $"结果时间不同{day}=>{next.Day}");
 
             item = new PlanItem
             {
-                Message = new MessageItem(),
+                Message = MessageHelper.Simple("test","test", "test","test"),
                 Option = new PlanOption
                 {
                     plan_type = plan_date_type.month,
@@ -214,25 +214,25 @@ namespace PlanUnitTest
                     plan_time = PlanItem.NowTime()
                 }
             };
-            item.CheckNextTime();
+            await item.CheckNextTime();
             next = PlanItem.FromTime(item.RealInfo.plan_time);
             Console.WriteLine($"{next} : {item.RealInfo.plan_state}");
             Assert.IsTrue(next.Day == 1, $"结果时间不同{next.Day}=>1");
 
             item.RealInfo.exec_num = 1;
-            item.CheckNextTime();
+            await item.CheckNextTime();
             Assert.IsTrue(item.RealInfo.plan_state == Plan_message_state.close, $"状态错误{Plan_message_state.close}=>{item.RealInfo.plan_state}");
 
         }
 
 
         [Test]
-        public void TestRepet()
+        public async void TestRepet()
         {
             var now = PlanItem.NowTime() + second2ms;
             var item = new PlanItem
             {
-                Message = new MessageItem(),
+                Message = MessageHelper.Simple("test","test", "test","test"),
                 Option = new PlanOption
                 {
                     plan_type = plan_date_type.second,
@@ -247,7 +247,7 @@ namespace PlanUnitTest
             };
             for (int i = 0; i < 30; i++)
             {
-                item.CheckNextTime();
+                await item.CheckNextTime();
                 var next = PlanItem.FromTime(item.RealInfo.plan_time);
                 item.RealInfo.exec_num++;//模拟成功
                 now += second2ms;
@@ -255,7 +255,7 @@ namespace PlanUnitTest
                 Assert.IsTrue(item.RealInfo.plan_state == Plan_message_state.queue, $"状态错误{Plan_message_state.queue}=>{item.RealInfo.plan_state}");
                 Assert.IsTrue(item.RealInfo.plan_time == now, $"结果时间不同{now}=>{item.RealInfo.plan_time}");
             }
-            item.CheckNextTime();
+            await item.CheckNextTime();
             Console.WriteLine($"{PlanItem.FromTime(now)} => {PlanItem.FromTime(item.RealInfo.plan_time)} : {item.RealInfo.plan_state}");
             Assert.IsTrue(item.RealInfo.plan_state == Plan_message_state.close, $"状态错误{Plan_message_state.close}=>{item.RealInfo.plan_state}");
         }
@@ -263,12 +263,12 @@ namespace PlanUnitTest
 
 
         [Test]
-        public void TestNumberSkip()
+        public async void TestNumberSkip()
         {
             var now = PlanItem.NowTime() + second2ms;
             var item = new PlanItem
             {
-                Message = new MessageItem(),
+                Message = MessageHelper.Simple("test","test", "test","test"),
                 Option = new PlanOption
                 {
                     plan_type = plan_date_type.second,
@@ -285,7 +285,7 @@ namespace PlanUnitTest
             DateTime next;
             for (int i = 0; i < 29; i++)
             {
-                item.CheckNextTime();
+                await item.CheckNextTime();
                 item.RealInfo.skip_num++;//模拟成功
 
                 now += second2ms;
@@ -296,7 +296,7 @@ namespace PlanUnitTest
 
             }
 
-            item.CheckNextTime();
+            await item.CheckNextTime();
             item.RealInfo.exec_num++;//模拟成功
 
             now += second2ms;
@@ -306,7 +306,7 @@ namespace PlanUnitTest
             Assert.IsTrue(item.RealInfo.plan_time == now, $"结果时间不同{now}=>{item.RealInfo.plan_time}");
 
 
-            item.CheckNextTime();
+            await item.CheckNextTime();
 
             Console.WriteLine($"{PlanItem.FromTime(now)} => {PlanItem.FromTime(item.RealInfo.plan_time)} : {item.RealInfo.plan_state}");
             Assert.IsTrue(item.RealInfo.plan_state == Plan_message_state.close, $"状态错误{Plan_message_state.close}=>{item.RealInfo.plan_state}");
@@ -314,12 +314,12 @@ namespace PlanUnitTest
 
 
         [Test]
-        public void TestAlwaysSkip()
+        public async void TestAlwaysSkip()
         {
             var now = PlanItem.NowTime() + second2ms;
             var item = new PlanItem
             {
-                Message = new MessageItem(),
+                Message = MessageHelper.Simple("test","test", "test","test"),
                 Option = new PlanOption
                 {
                     plan_type = plan_date_type.second,
@@ -336,7 +336,7 @@ namespace PlanUnitTest
             DateTime next;
             for (int i = 0; i < 29; i++)
             {
-                item.CheckNextTime();
+                await item.CheckNextTime();
                 item.RealInfo.skip_num++;//模拟成功
 
                 now += second2ms;
@@ -349,7 +349,7 @@ namespace PlanUnitTest
 
             for (int i = 0; i < 29; i++)
             {
-                item.CheckNextTime();
+                await item.CheckNextTime();
                 item.RealInfo.exec_num++;//模拟成功
 
                 now += second2ms;

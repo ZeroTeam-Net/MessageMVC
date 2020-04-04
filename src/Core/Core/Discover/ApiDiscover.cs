@@ -14,6 +14,7 @@ using System.Reflection.Emit;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.ApiDocuments;
+using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -33,6 +34,15 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// 站点文档信息
         /// </summary>
         public Dictionary<string, ServiceInfo> ServiceInfos = new Dictionary<string, ServiceInfo>();
+
+        /// <summary>
+        /// 构造
+        /// </summary>
+        static ApiDiscover()
+        {
+            XmlMember.Load(typeof(IMessageItem).Assembly);
+            XmlMember.Load(typeof(ApiExecuter).Assembly);
+        }
 
         /// <summary>
         /// 构造

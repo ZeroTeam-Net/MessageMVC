@@ -1,12 +1,10 @@
 using Agebull.Common;
-using ZeroTeam.MessageMVC.Context;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
     /// <summary>API返回基类</summary>
     public class ApiResultDefault : IApiResultDefault
     {
-
         /// <summary>
         /// 反序列化
         /// </summary>
@@ -35,11 +33,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return new ApiResult
             {
                 Success = false,
-                Status = new OperatorStatus
-                {
-                    Code = errCode,
-                    Message = ErrorCode.GetMessage(errCode)
-                }
+                Code = errCode,
+                Message = DefaultErrorCode.GetMessage(errCode)
             };
         }
 
@@ -61,11 +56,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return new ApiResult
             {
                 Success = errCode == 0,
-                Status = new OperatorStatus
-                {
-                    Code = errCode,
-                    Message = message ?? ErrorCode.GetMessage(errCode)
-                }
+                Code = errCode,
+                Message = message ?? DefaultErrorCode.GetMessage(errCode)
             };
         }
         /// <summary>生成一个包含错误码的标准返回</summary>
@@ -78,12 +70,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return new ApiResult
             {
                 Success = errCode == 0,
-                Status = new OperatorStatus
-                {
-                    Code = errCode,
-                    Message = message ?? ErrorCode.GetMessage(errCode),
-                    InnerMessage = innerMessage
-                }
+                Code = errCode,
+                Message = message ?? DefaultErrorCode.GetMessage(errCode),
+                InnerMessage = innerMessage
             };
         }
 
@@ -99,11 +88,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return new ApiResult
             {
                 Success = errCode == 0,
-                Status = new OperatorStatus
+                Code = errCode,
+                Message = message ?? DefaultErrorCode.GetMessage(errCode),
+                InnerMessage = innerMessage,
+                Trace = new OperatorTrace
                 {
-                    Code = errCode,
-                    Message = message ?? ErrorCode.GetMessage(errCode),
-                    InnerMessage = innerMessage,
                     Guide = guide,
                     Describe = describe
                 }
@@ -123,11 +112,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return new ApiResult
             {
                 Success = errCode == 0,
-                Status = new OperatorStatus
+                Code = errCode,
+                Message = message ?? DefaultErrorCode.GetMessage(errCode),
+                InnerMessage = innerMessage,
+                Trace = new OperatorTrace
                 {
-                    Code = errCode,
-                    Message = message ?? ErrorCode.GetMessage(errCode),
-                    InnerMessage = innerMessage,
                     Point = point,
                     Guide = guide,
                     Describe = describe
@@ -154,11 +143,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return new ApiResult<TData>
             {
                 Success = false,
-                Status = new OperatorStatus
-                {
-                    Code = errCode,
-                    Message = ErrorCode.GetMessage(errCode)
-                }
+                Code = errCode,
+                Message = DefaultErrorCode.GetMessage(errCode)
             };
         }
 
@@ -171,11 +157,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return new ApiResult<TData>
             {
                 Success = false,
-                Status = new OperatorStatus
-                {
-                    Code = errCode,
-                    Message = message ?? ErrorCode.GetMessage(errCode)
-                }
+                Code = errCode,
+                Message = message ?? DefaultErrorCode.GetMessage(errCode)
             };
         }
 
@@ -189,12 +172,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return new ApiResult<TData>
             {
                 Success = errCode == 0,
-                Status = new OperatorStatus
-                {
-                    Code = errCode,
-                    Message = message ?? ErrorCode.GetMessage(errCode),
-                    InnerMessage = innerMessage
-                }
+                Code = errCode,
+                Message = message ?? DefaultErrorCode.GetMessage(errCode),
+                InnerMessage = innerMessage
             };
         }
 
@@ -210,11 +190,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return new ApiResult<TData>
             {
                 Success = errCode == 0,
-                Status = new OperatorStatus
+                Code = errCode,
+                Message = message ?? DefaultErrorCode.GetMessage(errCode),
+                InnerMessage = innerMessage,
+                Trace = new OperatorTrace
                 {
-                    Code = errCode,
-                    Message = message ?? ErrorCode.GetMessage(errCode),
-                    InnerMessage = innerMessage,
                     Guide = guide,
                     Describe = describe
                 }
@@ -234,11 +214,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return new ApiResult<TData>
             {
                 Success = errCode == 0,
-                Status = new OperatorStatus
+                Code = errCode,
+                Message = message ?? DefaultErrorCode.GetMessage(errCode),
+                InnerMessage = innerMessage,
+                Trace = new OperatorTrace
                 {
-                    Code = errCode,
-                    Message = message ?? ErrorCode.GetMessage(errCode),
-                    InnerMessage = innerMessage,
                     Point = point,
                     Guide = guide,
                     Describe = describe
@@ -250,99 +230,83 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <returns></returns>
         public IApiResult Error()
         {
-            return new ApiResult
-            {
-                Success = false,
-                Status =GlobalContext.CurrentNoLazy?.LastStatus
-            };
+            return ApiResultHelper.Error();
         }
 
         /// <summary>生成一个成功的标准返回</summary>
         /// <returns></returns>
         public IApiResult<TData> Error<TData>()
         {
-            return new ApiResult<TData>
-            {
-                Success = false,
-                Status =GlobalContext.CurrentNoLazy?.LastStatus
-            };
+            return ApiResultHelper.Error<TData>();
         }
 
         /// <summary>生成一个成功的标准返回</summary>
         /// <returns></returns>
         public IApiResult Succees()
         {
-            return new ApiResult
-            {
-                Success = true,
-                Status =GlobalContext.CurrentNoLazy?.LastStatus
-            };
+            return ApiResultHelper.Succees();
         }
 
         /// <summary>生成一个成功的标准返回</summary>
         /// <returns></returns>
         public IApiResult<TData> Succees<TData>()
         {
-            return new ApiResult<TData>
-            {
-                Success = true,
-                Status =GlobalContext.CurrentNoLazy?.LastStatus
-            };
+            return ApiResultHelper.Succees<TData>();
         }
 
         /// <summary>成功</summary>
         /// <remarks>成功</remarks>
-        public IApiResult Ok => ErrorBuilder(ErrorCode.Success);
+        public IApiResult Ok => ErrorBuilder(DefaultErrorCode.Success);
 
         /// <summary>页面不存在</summary>
-        public IApiResult NoFind => ErrorBuilder(ErrorCode.NoFind, "*页面不存在*");
+        public IApiResult NoFind => ErrorBuilder(DefaultErrorCode.NoFind, "*页面不存在*");
 
         /// <summary>不支持的操作</summary>
-        public IApiResult NotSupport => ErrorBuilder(ErrorCode.NoFind, "*页面不存在*");
+        public IApiResult NotSupport => ErrorBuilder(DefaultErrorCode.NoFind, "*页面不存在*");
 
         /// <summary>参数错误字符串</summary>
-        public IApiResult ArgumentError => ErrorBuilder(ErrorCode.ArgumentError, "参数错误");
+        public IApiResult ArgumentError => ErrorBuilder(DefaultErrorCode.ArgumentError, "参数错误");
 
         /// <summary>逻辑错误字符串</summary>
-        public IApiResult LogicalError => ErrorBuilder(ErrorCode.LogicalError, "逻辑错误");
+        public IApiResult LogicalError => ErrorBuilder(DefaultErrorCode.LogicalError, "逻辑错误");
 
         /// <summary>拒绝访问</summary>
-        public IApiResult DenyAccess => ErrorBuilder(ErrorCode.DenyAccess);
+        public IApiResult DenyAccess => ErrorBuilder(DefaultErrorCode.DenyAccess);
 
         /// <summary>服务器无返回值的字符串</summary>
-        public IApiResult RemoteEmptyError => ErrorBuilder(ErrorCode.RemoteError, "*服务器无返回值*");
+        public IApiResult RemoteEmptyError => ErrorBuilder(DefaultErrorCode.RemoteError, "*服务器无返回值*");
 
         /// <summary>服务器访问异常</summary>
-        public IApiResult NetworkError => ErrorBuilder(ErrorCode.NetworkError);
+        public IApiResult NetworkError => ErrorBuilder(DefaultErrorCode.NetworkError);
 
         /// <summary>本地错误</summary>
-        public IApiResult LocalError => ErrorBuilder(ErrorCode.LocalError);
+        public IApiResult LocalError => ErrorBuilder(DefaultErrorCode.LocalError);
 
         /// <summary>本地访问异常</summary>
-        public IApiResult LocalException => ErrorBuilder(ErrorCode.LocalException);
+        public IApiResult LocalException => ErrorBuilder(DefaultErrorCode.LocalException);
 
         /// <summary>系统未就绪</summary>
-        public IApiResult NoReady => ErrorBuilder(ErrorCode.NoReady);
+        public IApiResult NoReady => ErrorBuilder(DefaultErrorCode.NoReady);
 
         /// <summary>暂停服务</summary>
-        public IApiResult Pause => ErrorBuilder(ErrorCode.NoReady, "暂停服务");
+        public IApiResult Pause => ErrorBuilder(DefaultErrorCode.NoReady, "暂停服务");
 
         /// <summary>未知错误</summary>
-        public IApiResult UnknowError => ErrorBuilder(ErrorCode.LocalError, "未知错误");
+        public IApiResult UnknowError => ErrorBuilder(DefaultErrorCode.LocalError, "未知错误");
 
         /// <summary>网络超时</summary>
         /// <remarks>调用其它Api时时抛出未处理异常</remarks>
-        public IApiResult NetTimeOut => ErrorBuilder(ErrorCode.NetworkError, "网络超时");
+        public IApiResult NetTimeOut => ErrorBuilder(DefaultErrorCode.NetworkError, "网络超时");
 
         /// <summary>执行超时</summary>
         /// <remarks>Api执行超时</remarks>
-        public IApiResult ExecTimeOut => ErrorBuilder(ErrorCode.RemoteError, "执行超时");
+        public IApiResult ExecTimeOut => ErrorBuilder(DefaultErrorCode.RemoteError, "执行超时");
 
         /// <summary>内部错误</summary>
         /// <remarks>执行方法时抛出未处理异常</remarks>
-        public IApiResult InnerError => ErrorBuilder(ErrorCode.LocalError, "内部错误");
+        public IApiResult InnerError => ErrorBuilder(DefaultErrorCode.LocalError, "内部错误");
 
         /// <summary>服务不可用</summary>
-        public IApiResult Unavailable => ErrorBuilder(ErrorCode.Unavailable, "服务不可用");
+        public IApiResult Unavailable => ErrorBuilder(DefaultErrorCode.Unavailable, "服务不可用");
     }
 }

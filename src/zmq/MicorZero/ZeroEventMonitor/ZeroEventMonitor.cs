@@ -77,7 +77,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
                         ZeroTrace.WriteError("Zero center event monitor failed,there was no message for a long time");
                         ZeroRpcFlow.ZeroCenterState = ZeroCenterState.Failed;
                         ZeroRpcFlow.RaiseEvent(ZeroNetEventType.CenterSystemStop, true);
-                        Thread.Sleep(500);
+                        await Task.Delay(1000);
                         break;
                     }
                 }

@@ -1,4 +1,7 @@
+using Agebull.Common.Frame;
+using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -48,6 +51,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
         #region 状态管理
 
+        ILogger logger;
+
         /// <summary>
         ///     运行状态
         /// </summary>
@@ -62,12 +67,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             set
             {
                 if (_realState == value)
-                {
                     return;
-                }
-
                 Interlocked.Exchange(ref _realState, value);
-                ZeroTrace.SystemLog(ServiceName, nameof(RealState), StationState.Text(_realState));
+                logger.Information(()=>$"[RealState] {StationState.Text(_realState)}");
             }
         }
         //#if UseStateMachine
@@ -103,7 +105,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     StateMachine = new StartStateMachine { Service = this };
                     break;
             }
-            ZeroTrace.SystemLog(ServiceName, nameof(ConfigState), ConfigState, "StateMachine", StateMachine.GetTypeName());
+            logger.Information(() => $"[ConfigState] {ConfigState} [StateMachine] {StateMachine.GetTypeName()}");
         }
 
         /// <summary>
@@ -129,17 +131,20 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         private readonly SemaphoreSlim _waitToken = new SemaphoreSlim(0, int.MaxValue);
 
-        /*// <summary>
-        /// 应用程序等待结果的信号量对象
+        /// <summary>
+        /// Run与Start互斥执行的事件对象
         /// </summary>
-        private Mutex mutex;*/
+        private ManualResetEventSlim eventSlim;
 
         /// <summary>
         /// 初始化
         /// </summary>
         internal void Initialize()
         {
-            if(ServiceName == null)
+            logger ??= IocHelper.LoggerFactory.CreateLogger($"ZeroService({ServiceName})");
+
+            eventSlim = new ManualResetEventSlim(true);
+            if (ServiceName == null)
             {
                 ConfigState = StationStateType.ConfigError;
             }
@@ -151,9 +156,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 Transport.Initialize();
                 if (!Transport.Prepare())
                     ConfigState = StationStateType.ConfigError;
+                else
+                    ConfigState = StationStateType.Initialized;
             }
             ResetStateMachine();
-            //mutex = new Mutex();
         }
 
         /// <summary>
@@ -162,6 +168,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <returns></returns>
         private async Task<bool> DoStart()
         {
+            logger.Information(()=> $"Try start by {StationState.Text(RealState)}");
             try
             {
                 while (_waitToken.CurrentCount > 0)
@@ -171,6 +178,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
                 if (ConfigState == StationStateType.None || ConfigState >= StationStateType.Stop || !ZeroFlowControl.CanDo)
                 {
+                    logger.Warning(() => $"Start failed. ConfigState :{ConfigState} ,ZeroFlowControl.CanDo {ZeroFlowControl.CanDo}");
                     return false;
                 }
                 RealState = StationState.Start;
@@ -209,7 +217,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
             ResetStateMachine();
             _waitToken.Release();
-            //mutex.WaitOne();
+            logger.Information("[Run]");
+            using (ManualResetEventSlimScope.Scope(eventSlim))
             {
                 try
                 {
@@ -221,7 +230,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 }
                 catch (Exception e)
                 {
-                    ZeroTrace.WriteException(ServiceName, e, "Run");
+                    logger.Exception(e, "Function : Run");
                     RealState = StationState.Failed;
                     success = false;
                 }
@@ -244,14 +253,13 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     {
                         ConfigState = StationStateType.Failed;
                         ResetStateMachine();
-                        Thread.Sleep(100);
-                        _ = Task.Factory.StartNew(StateMachine.Start, TaskCreationOptions.DenyChildAttach);
+                        await Task.Delay(100);
+                        _ = Task.Factory.StartNew(StateMachine.Start);
                         return;
                     }
                 }
                 ResetStateMachine();
             }
-            //mutex.ReleaseMutex();
             GC.Collect();
         }
 
@@ -317,7 +325,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         void DoEnd()
         {
             Transport.End();
-            //mutex.Dispose();
+            eventSlim.Dispose();
         }
         #endregion
 
@@ -367,8 +375,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 return true;//已启动,不应该再次
             }
 
-            //mutex.WaitOne();//BUG
-            try
+            using (ManualResetEventSlimScope.Scope(eventSlim))
             {
                 if (RealState == StationState.BeginRun || RealState == StationState.Run)
                 {
@@ -386,23 +393,19 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 ZeroFlowControl.OnObjectFailed(this);
                 return false;
             }
-            finally
-            {
-                //mutex.ReleaseMutex();
-            }
         }
 
         async Task<bool> IStateMachineControl.DoClose()
         {
             if (RealState >= StationState.Closing || CancelToken == null || CancelToken.IsCancellationRequested)
             {
-                ZeroTrace.WriteError(ServiceName, "Close", "station not runing");
+                logger.Warning("[Close] service is closed");
                 return false;
             }
             RealState = StationState.Closing;
             CancelToken.Cancel();
             await Transport.Close();
-            ZeroTrace.SystemLog(ServiceName, "Close", "Run is cancel,waiting... ");
+            logger.Information("[Close] cancel,waiting loop end... ");
             return true;
         }
 
@@ -457,13 +460,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 ApiActions[name] = action;
             }
-
-            ZeroTrace.SystemLog(ServiceName,
-                info == null
-                    ? name
-                    : info.Controller == null
-                        ? $"{name}({info.Name})"
-                        : $"{name}({info.Controller}.{info.Name})");
+            logger ??= IocHelper.LoggerFactory.CreateLogger($"ZeroService({ServiceName})");
+            logger.Information(() => $"[Regist Action] {name}({info.Controller}.{info.Name})");
         }
 
         #endregion

@@ -20,7 +20,12 @@ namespace Agebull.Common.Ioc
         /// <returns></returns>
         public static IDisposable CreateScope(string name = null)
         {
-            Local.Value = new LocalValueType(name ?? "Scope", new DependencyObjects(), new List<Action>(), IocHelper.LoggerFactory.CreateLogger(name ?? "Log"));
+            Local.Value = new LocalValueType(
+                name ?? "Scope", 
+                new DependencyObjects(), 
+                new List<Action>(), 
+                IocHelper.LoggerFactory.CreateLogger(name ?? "Log"));
+
             return new IocScope
             {
                 _scope = IocHelper.CreateScope()

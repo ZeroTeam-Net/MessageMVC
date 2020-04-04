@@ -11,7 +11,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
     /// <summary>
     /// 计划投递对象
     /// </summary>
-    public class PlanProducer : IPlanProducer
+    public class PlanProducer //: IPlanProducer
     {
         /// <summary>
         /// 构造
@@ -49,17 +49,15 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <returns></returns>
         public ApiResult Post<TArg>(PlanOption option, string topic, string title, TArg content)
         {
+            if (ZeroAppOption.Instance.EnableLinkTrace && GlobalContext.CurrentNoLazy != null)
+            {
+                option.trace = GlobalContext.CurrentNoLazy.Trace;
+            }
             return MessagePoster.Call<PlanCallInfo, ApiResult>(Option.ServiceName, Option.PostApiName, new PlanCallInfo
             {
                 Option = option,
-                Message = new MessageItem
-                {
-                    Topic = topic,
-                    Title = title,
-                    Content = JsonHelper.SerializeObject(content),
-                    Context = JsonHelper.SerializeObject(GlobalContext.CurrentNoLazy)
-                }
-            });
+                Message = MessageHelper.NewRemote(topic, title, content)
+            });;
         }
 
         /// <summary>
@@ -72,17 +70,15 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <returns></returns>
         public ApiResult Post(PlanOption option, string topic, string title, string content)
         {
+            if (ZeroAppOption.Instance.EnableLinkTrace && GlobalContext.CurrentNoLazy != null)
+            {
+                option.trace = GlobalContext.CurrentNoLazy.Trace;
+            }
             return MessagePoster.Call<PlanCallInfo, ApiResult>(Option.ServiceName, Option.PostApiName,
                 new PlanCallInfo
                 {
                     Option = option,
-                    Message = new MessageItem
-                    {
-                        Topic = topic,
-                        Title = title,
-                        Content = content,
-                        Context = JsonHelper.SerializeObject(GlobalContext.CurrentNoLazy)
-                    }
+                    Message = MessageHelper.NewRemote(topic, title, content)
                 });
         }
 
@@ -96,17 +92,15 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <returns></returns>
         public Task<ApiResult> PostAsync<TArg>(PlanOption option, string topic, string title, TArg content)
         {
+            if (ZeroAppOption.Instance.EnableLinkTrace && GlobalContext.CurrentNoLazy != null)
+            {
+                option.trace = GlobalContext.CurrentNoLazy.Trace;
+            }
             return MessagePoster.CallAsync<PlanCallInfo, ApiResult>(Option.ServiceName, Option.PostApiName,
                 new PlanCallInfo
                 {
                     Option = option,
-                    Message = new MessageItem
-                    {
-                        Topic = topic,
-                        Title = title,
-                        Content = JsonHelper.SerializeObject(content),
-                        Context = JsonHelper.SerializeObject(GlobalContext.CurrentNoLazy)
-                    }
+                    Message = MessageHelper.NewRemote(topic, title, content)
                 });
         }
 
@@ -120,17 +114,15 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <returns></returns>
         public Task<ApiResult> PostAsync(PlanOption option, string topic, string title, string content)
         {
+            if (ZeroAppOption.Instance.EnableLinkTrace && GlobalContext.CurrentNoLazy != null)
+            {
+                option.trace = GlobalContext.CurrentNoLazy.Trace;
+            }
             return MessagePoster.CallAsync<PlanCallInfo, ApiResult>(Option.ServiceName, Option.PostApiName,
                 new PlanCallInfo
                 {
                     Option = option,
-                    Message = new MessageItem
-                    {
-                        Topic = topic,
-                        Title = title,
-                        Content = content,
-                        Context = JsonHelper.SerializeObject(GlobalContext.CurrentNoLazy)
-                    }
+                    Message = MessageHelper.NewRemote(topic, title, content)
                 });
         }
 

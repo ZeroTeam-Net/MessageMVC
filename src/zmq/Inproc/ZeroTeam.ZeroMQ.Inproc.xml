@@ -9,16 +9,6 @@
             表示进程内通讯
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.socket">
-            <summary>
-            本地代理
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.zmqPool">
-            <summary>
-            Pool对象
-            </summary>
-        </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.ZeroTeam#MessageMVC#ZeroApis#INetTransfer#LoopBegin">
             <summary>
             同步运行状态
@@ -42,6 +32,16 @@
             发送返回值 
             </summary>
             <returns></returns>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.socket">
+            <summary>
+            本地代理
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.zmqPool">
+            <summary>
+            Pool对象
+            </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.SendLayoutErrorResult(ZeroTeam.ZeroMQ.ZeroRPC.ApiCallItem)">
             <summary>

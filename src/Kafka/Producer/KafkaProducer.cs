@@ -217,7 +217,7 @@ namespace ZeroTeam.MessageMVC.Kafka
                 Title = title,
                 Content = content
             };
-            if (ZeroFlowControl.Config.EnableGlobalContext && GlobalContext.CurrentNoLazy != null)
+            if (ZeroFlowControl.Config.EnableLinkTrace && GlobalContext.CurrentNoLazy != null)
             {
                 item.Context = JsonHelper.SerializeObject(GlobalContext.CurrentNoLazy);
             }

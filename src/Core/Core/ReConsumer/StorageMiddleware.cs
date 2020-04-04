@@ -14,7 +14,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// 当前处理器
         /// </summary>
-        public MessageProcessor Process { get; set; }
+        public MessageProcessor Processor { get; set; }
 
         /// <summary>
         /// 层级

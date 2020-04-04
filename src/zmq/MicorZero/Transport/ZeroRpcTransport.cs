@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
+using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
 using ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant;
@@ -138,7 +139,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
 
             if (Config == null)
             {
-                var mg = new ConfigManager(ZeroRpcFlow.Config.Master);
+                var mg = new StationConfigManager(ZeroRpcFlow.Config.Master);
                 if (mg.TryInstall(name, "Api"))
                 {
                     Config = mg.LoadConfig(name);
@@ -368,12 +369,12 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         }
 
 
-        private void OnCall(ApiCallItem item)
+        private void OnCall(ApiCallItem callItem)
         {
-            switch (item.ApiName[0])
+            switch (callItem.ApiName[0])
             {
                 case '$':
-                    OnExecuestEnd(ApiResult.SucceesJson, item, ZeroOperatorStateType.Ok);
+                    OnExecuestEnd(null, ApiResultHelper.SucceesJson, callItem, ZeroOperatorStateType.Ok);
                     return;
                     //case '*':
                     //    item.Result = MicroZeroApplication.TestFunc();
@@ -381,21 +382,19 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     //    return;
             }
 
-            var arg = new MessageItem
-            {
-                Title = item.ApiName,
-                Topic = item.Station,
-                Content = item.Argument,
-                Context = item.Context
-            };
+            var messageItem = MessageHelper.Restore(callItem.ApiName, callItem.Station, callItem.Argument, callItem.RequestId, callItem.Context);
+            messageItem.Trace.CallId = callItem.GlobalId;
+            messageItem.Trace.LocalId = callItem.LocalId;
+            messageItem.Extend = callItem.Extend;
+            messageItem.Binary = callItem.Binary;
             try
             {
-                _ = MessageProcessor.OnMessagePush(Service, arg, item);
+                _ = MessageProcessor.OnMessagePush(Service, messageItem, callItem);
             }
             catch (Exception e)
             {
                 LogRecorder.Exception(e);
-                OnExecuestEnd(ApiResultIoc.LocalExceptionJson, item, ZeroOperatorStateType.LocalException);
+                OnExecuestEnd(messageItem, ApiResultHelper.LocalExceptionJson, callItem, ZeroOperatorStateType.LocalException);
             }
         }
 
@@ -409,7 +408,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <returns></returns>
         Task INetTransfer.OnResult(IMessageItem message, object tag)
         {
-            OnExecuestEnd(message.Result,
+            OnExecuestEnd(message, message.Result,
                 (ApiCallItem)tag,
                 message.State == MessageState.Success
                     ? ZeroOperatorStateType.Ok
@@ -423,7 +422,8 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <returns></returns>
         Task INetTransfer.OnError(Exception exception, IMessageItem message, object tag)
         {
-            OnExecuestEnd(ApiResultIoc.LocalExceptionJson,
+            OnExecuestEnd(message,
+                ApiResultHelper.LocalExceptionJson,
                 (ApiCallItem)tag,
                 ZeroOperatorStateType.LocalException);
             return Task.CompletedTask;
@@ -457,11 +457,12 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         /// 发送返回值 
         /// </summary>
+        /// <param name="message"></param>
         /// <param name="result"></param>
         /// <param name="item"></param>
         /// <param name="state"></param>
         /// <returns></returns>
-        internal bool OnExecuestEnd(string result, ApiCallItem item, ZeroOperatorStateType state)
+        internal Task<bool> OnExecuestEnd(IMessageItem message, string result, ApiCallItem item, ZeroOperatorStateType state)
         {
             int i = 0;
             var des = new byte[10 + item.Originals.Count];
@@ -495,7 +496,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             des[i++] = ZeroFrameType.SerivceKey;
             msg.Add(Config.ServiceKey);
             des[i] = item.EndTag > 0 ? item.EndTag : ZeroFrameType.ResultEnd;
-            return SendResult(new ZMessage(msg));
+            return SendResult(new ZMessage(msg), message);
         }
 
         private static readonly byte[] LayoutErrorFrame = new byte[]
@@ -519,13 +520,38 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 Interlocked.Increment(ref SendError);
                 return;
             }
-            SendResult(new ZMessage
+            _ = SendResult(new ZMessage
             {
                 new ZFrame(item.Caller),
                 new ZFrame(LayoutErrorFrame),
                 new ZFrame(item.Requester),
                 new ZFrame(Config.ServiceKey)
-            });
+            }, null);
+        }
+
+
+        /// <summary>
+        /// 发送返回值 
+        /// </summary>
+        /// <param name="zmessage"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        private async Task<bool> SendResult(ZMessage zmessage, IMessageItem item)
+        {
+            if (!CanLoop)
+            {
+                ZeroTrace.WriteError(Service.Name, "Can`t send result,station is closed");
+                return false;
+            }
+            bool state;
+            using (zmessage)
+            {
+                state = SendToZeroCenter(zmessage);
+                if (state && GlobalContext.CurrentNoLazy?.Option?.Receipt != true)
+                    return true;
+            }
+            await MessagePoster.PostReceipt(item);
+            return state;
         }
 
 
@@ -534,44 +560,36 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        private bool SendResult(ZMessage message)
+        private bool SendToZeroCenter(ZMessage message)
         {
-            using (message)
+            try
             {
-                if (!CanLoop)
+                var socket = ZSocketEx.CreateOnceSocket(InprocAddress, null, null, ZSocketType.PAIR);
+                if (socket == null)
                 {
-                    ZeroTrace.WriteError(Service.Name, "Can`t send result,station is closed");
+                    Interlocked.Increment(ref SendError);
                     return false;
                 }
-                try
+                ZError error;
+                bool success;
+                using (socket)
                 {
-                    var socket = ZSocketEx.CreateOnceSocket(InprocAddress, null, null, ZSocketType.PAIR);
-                    if (socket == null)
-                    {
-                        Interlocked.Increment(ref SendError);
-                        return false;
-                    }
-                    ZError error;
-                    bool success;
-                    using (socket)
-                    {
-                        success = socket.Send(message, out error);
-                    }
-
-                    if (success)
-                    {
-                        Interlocked.Increment(ref SendCount);
-                        return true;
-                    }
-
-                    ZeroTrace.WriteError(Service.Name, error.Text, error.Name);
-                    LogRecorder.MonitorTrace(() => $"{Service.Name}({socket.Endpoint}) : {error.Text}");
+                    success = socket.Send(message, out error);
                 }
-                catch (Exception e)
+
+                if (success)
                 {
-                    LogRecorder.Exception(e, "ApiStation.SendResult");
-                    LogRecorder.MonitorTrace(() => $"Exception : {Service.Name} : {e.Message}");
+                    Interlocked.Increment(ref SendCount);
+                    return true;
                 }
+
+                ZeroTrace.WriteError(Service.Name, error.Text, error.Name);
+                LogRecorder.MonitorTrace(() => $"{Service.Name}({socket.Endpoint}) : {error.Text}");
+            }
+            catch (Exception e)
+            {
+                LogRecorder.Exception(e, "ApiStation.SendResult");
+                LogRecorder.MonitorTrace(() => $"Exception : {Service.Name} : {e.Message}");
             }
             Interlocked.Increment(ref SendError);
             return false;

@@ -18,89 +18,8 @@ namespace Agebull.Common.Logging
     public static class LoggerExtend
     {
         private static EventId NewEventId(string name) => new EventId((int)Interlocked.Increment(ref LogRecorder.lastId), name);
+
         #region 记录
-
-        /// <summary>
-        ///   记录日志
-        /// </summary>
-        /// <param name="logger">日志记录器</param>
-        /// <param name="type"> 消息类型 </param>
-        /// <param name="name"> 消息名称 </param>
-        /// <param name="message"> 日志详细信息 </param>
-        /// <param name="formatArgs">格式化参数</param>
-        public static void Record(this ILogger logger, LogType type, string name, string message, params object[] formatArgs)
-        {
-            try
-            {
-                switch (type)
-                {
-                    case LogType.NetWork:
-                    case LogType.Plan:
-                    case LogType.Request:
-                    case LogType.System:
-                    case LogType.Login:
-                        logger.LogCritical(NewEventId(name), message, formatArgs);
-                        break;
-                    case LogType.Warning:
-                        logger.LogWarning(NewEventId(name), message, formatArgs);
-                        break;
-                    case LogType.Error:
-                    case LogType.Exception:
-                        logger.LogError(NewEventId(name), message, formatArgs);
-                        break;
-                    case LogType.DataBase:
-                        logger.LogTrace(NewEventId(name), message, formatArgs);
-                        break;
-                    case LogType.Trace:
-                    case LogType.Monitor:
-                        logger.LogTrace(NewEventId(name), message, formatArgs);
-                        break;
-                    case LogType.Debug:
-                        logger.LogDebug(NewEventId(name), message, formatArgs);
-                        break;
-                    default:
-                        logger.LogInformation(NewEventId(name), message, formatArgs);
-                        break;
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-        }
-
-        ///<summary>
-        ///  记录消息
-        ///</summary>
-        /// <param name="logger">日志记录器</param>
-        ///<param name="message"> 日志详细信息 </param>
-        ///<param name="formatArgs"> 格式化的参数 </param>
-        public static void Message(this ILogger logger, string message, params object[] formatArgs)
-        {
-            logger.LogInformation(NewEventId("Message"), message, formatArgs);
-        }
-
-        /// <summary>
-        ///   记录系统日志
-        /// </summary>
-        /// <param name="logger">日志记录器</param>
-        /// <param name="message"> 日志详细信息 </param>
-        /// <param name="formatArgs">格式化参数</param>
-        public static void SystemLog(this ILogger logger, string message, params object[] formatArgs)
-        {
-            logger.LogCritical(NewEventId("System"), message, formatArgs);
-        }
-
-        ///<summary>
-        ///  写入一般日志
-        ///</summary>
-        /// <param name="logger">日志记录器</param>
-        ///<param name="message"> 日志详细信息 </param>
-        ///<param name="formatArgs"> 格式化的参数 </param>
-        public static void RecordMessage(this ILogger logger, string message, params object[] formatArgs)
-        {
-            logger.LogInformation(NewEventId("Message"), message, formatArgs);
-        }
 
         ///<summary>
         ///  记录警告消息
@@ -111,6 +30,16 @@ namespace Agebull.Common.Logging
         public static void Warning(this ILogger logger, string message, params object[] formatArgs)
         {
             logger.LogWarning(NewEventId("Warning"), message, formatArgs);
+        }
+
+        ///<summary>
+        ///  记录警告消息
+        ///</summary>
+        /// <param name="logger">日志记录器</param>
+        ///<param name="message"> 日志详细信息 </param>
+        public static void Warning(this ILogger logger, string message)
+        {
+            logger.LogWarning(NewEventId("Warning"), message);
         }
 
         ///<summary>
@@ -148,21 +77,10 @@ namespace Agebull.Common.Logging
             logger.LogError(NewEventId("Exception"), ex, message, formatArgs);
             return ex.Message;
         }
+
         #endregion
 
         #region 跟踪
-
-        /// <summary>
-        ///   记录堆栈跟踪
-        /// </summary>
-        /// <param name="logger">日志记录器</param>
-        ///<param name="message"> 日志详细信息 </param>
-        ///<param name="formatArgs"> 格式化的参数 </param>
-
-        public static void RecordStackTrace(this ILogger logger, string message, params object[] formatArgs)
-        {
-            logger.LogTrace(NewEventId("Trace"), message, formatArgs);
-        }
 
         /// <summary>
         ///   写入调试日志
@@ -175,20 +93,6 @@ namespace Agebull.Common.Logging
         {
             logger.LogTrace(NewEventId("Trace"), message, formatArgs);
         }
-
-        ///<summary>
-        ///  记录一般日志
-        ///</summary>
-        /// <param name="logger">日志记录器</param>
-        ///<param name="name"> </param>
-        ///<param name="message"> 消息 </param>
-        ///<param name="formatArgs"> 格式化的参数 </param>
-
-        public static void Trace(this ILogger logger, string name, string message, params object[] formatArgs)
-        {
-            logger.LogTrace(NewEventId(name), message, formatArgs);
-        }
-
         #endregion
 
         #region 调试
@@ -202,7 +106,8 @@ namespace Agebull.Common.Logging
 
         public static void DebugByStackTrace(this ILogger logger, string message, params object[] formatArgs)
         {
-            logger.LogDebug(NewEventId("Debug"), LogRecorder.StackTraceInfomation(message, formatArgs));
+            if (logger.IsEnabled(LogLevel.Debug))
+                logger.LogDebug(NewEventId("Debug"), LogRecorder.StackTraceInfomation(message, formatArgs));
         }
 
         /// <summary>
@@ -216,6 +121,7 @@ namespace Agebull.Common.Logging
         {
             logger.LogDebug(NewEventId("Debug"), message, formatArgs);
         }
+
         /// <summary>
         ///   写入调试日志
         /// </summary>
@@ -240,6 +146,95 @@ namespace Agebull.Common.Logging
             logger.LogDebug(NewEventId(name), message, formatArgs);
         }
 
+        #endregion
+
+
+        #region 方法
+
+        /// <summary>
+        ///   写入调试日志
+        /// </summary>
+        /// <param name="logger">日志记录器</param>
+        /// <param name="func"> 消息方法</param>
+
+        public static void Trace(this ILogger logger, Func<string> func)
+        {
+            if (logger.IsEnabled(LogLevel.Trace))
+                logger.LogTrace(NewEventId("Information"), func());
+        }
+
+        /// <summary>
+        ///   写入调试日志
+        /// </summary>
+        /// <param name="logger">日志记录器</param>
+        /// <param name="func"> 消息方法</param>
+
+        public static void Debug(this ILogger logger, Func<string> func)
+        {
+            if (logger.IsEnabled(LogLevel.Debug))
+                logger.LogDebug(NewEventId("Information"), func());
+        }
+
+        /// <summary>
+        ///   写入调试日志
+        /// </summary>
+        /// <param name="logger">日志记录器</param>
+        /// <param name="func"> 消息方法</param>
+
+        public static void Information(this ILogger logger, Func<string> func)
+        {
+            if (logger.IsEnabled(LogLevel.Information))
+                logger.LogInformation(NewEventId("Information"), func());
+        }
+
+        ///<summary>
+        ///  记录一般日志
+        ///</summary>
+        /// <param name="logger">日志记录器</param>
+        ///<param name="message"> 消息 </param>
+        ///<param name="formatArgs"> 格式化的参数 </param>
+
+        public static void Information(this ILogger logger, string message, params object[] formatArgs)
+        {
+            if (logger.IsEnabled(LogLevel.Information))
+                logger.LogInformation(NewEventId("Information"), message, formatArgs);
+        }
+
+        /// <summary>
+        ///   写入调试日志
+        /// </summary>
+        /// <param name="logger">日志记录器</param>
+        /// <param name="msg"> 消息</param>
+
+        public static void Information(this ILogger logger, string msg)
+        {
+            if (logger.IsEnabled(LogLevel.Information))
+                logger.LogInformation(NewEventId("Information"), msg);
+        }
+
+        /// <summary>
+        ///   写入调试日志
+        /// </summary>
+        /// <param name="logger">日志记录器</param>
+        /// <param name="func"> 消息方法</param>
+
+        public static void Warning(this ILogger logger, Func<string> func)
+        {
+            if (logger.IsEnabled(LogLevel.Warning))
+                logger.LogWarning(NewEventId("Information"), func());
+        }
+
+        /// <summary>
+        ///   写入调试日志
+        /// </summary>
+        /// <param name="logger">日志记录器</param>
+        /// <param name="func"> 消息方法</param>
+
+        public static void Error(this ILogger logger, Func<string> func)
+        {
+            if (logger.IsEnabled(LogLevel.Error))
+                logger.LogError(NewEventId("Information"), func());
+        }
         #endregion
     }
 }

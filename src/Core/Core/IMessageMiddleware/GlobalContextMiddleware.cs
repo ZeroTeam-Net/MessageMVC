@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using Agebull.Common;
 using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
@@ -14,7 +14,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// 当前处理器
         /// </summary>
-        public MessageProcessor Process { get; set; }
+        public MessageProcessor Processor { get; set; }
 
         /// <summary>
         /// 层级
@@ -31,27 +31,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <returns></returns>
         Task<MessageState> IMessageMiddleware.Handle(IService service, IMessageItem message, object tag, Func<Task<MessageState>> next)
         {
-            try
+            if (JsonHelper.TryDeserializeObject<ZeroContext>(message.Trace?.ContextJson, out var ctx))
             {
-                if (!string.IsNullOrWhiteSpace(message.Context))
-                {
-                    GlobalContext.SetContext(JsonConvert.DeserializeObject<GlobalContext>(message.Context));
-                }
-                else
-                {
-                    GlobalContext.SetEmpty();
-                }
+                GlobalContext.SetContext(ctx);
             }
-            catch// (Exception e)
-            {
-                //LogRecorder.Trace(()=> "Restory context exception:{e.Message}");
-                //ZeroTrace.WriteException(service.ServiceName, e, message.Title, "restory context", message.Context);
-                //message.Result = ApiResultIoc.ArgumentErrorJson;
-                //message.State = MessageState.FormalError;
-                //return Task.FromResult(MessageState.FormalError);
-
-                GlobalContext.SetEmpty();
-            }
+            GlobalContext.CheckContext(message);
             return next();
         }
     }

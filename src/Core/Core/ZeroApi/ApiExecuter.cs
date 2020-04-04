@@ -18,7 +18,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// 当前处理器
         /// </summary>
-        public MessageProcessor Process { get; set; }
+        public MessageProcessor Processor { get; set; }
 
         /// <summary>
         /// 层级
@@ -57,52 +57,50 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             Service = service;
             Message = message;
             Tag = tag;
+            IApiAction action=null;
             try
             {
-                if (ZeroFlowControl.Config.EnableGlobalContext)
+                if (CommandPrepare(out action))
                 {
-                    GlobalContext.Current.DependencyObjects.Annex(Message);
-                }
-
-                if (CommandPrepare(out IApiAction action))
-                {
-                    if (ZeroFlowControl.Config.EnableGlobalContext)
-                    {
-                        GlobalContext.Current.DependencyObjects.Annex(Message);
-                        GlobalContext.Current.DependencyObjects.Annex(this);
-                        GlobalContext.Current.DependencyObjects.Annex(action);
-                    }
                     var (state, result) = await action.Execute();
                     Message.State = state;
                     Message.Result = result;
                 }
-                await Service.Transport.OnMessageResult(Message, Tag);
+                await Service.Transport.OnMessageResult(Processor, Message, Tag);
             }
             catch (OperationCanceledException ex)
             {
                 LogRecorder.MonitorTrace("Cancel");
                 Message.State = MessageState.Cancel;
-                await Service.Transport.OnMessageError(ex, Message, Tag);
+                if (action.IsApiContract)
+                    Message.Result = ApiResultHelper.UnavailableJson;
+                await Service.Transport.OnMessageError(Processor, ex, Message, Tag);
                 return MessageState.Cancel;
             }
             catch (ThreadInterruptedException ex)
             {
                 LogRecorder.MonitorTrace("Time out");
+                if (action.IsApiContract)
+                    Message.Result = ApiResultHelper.TimeOutJson;
                 Message.State = MessageState.Cancel;
-                await Service.Transport.OnMessageError(ex, Message, Tag);
+                await Service.Transport.OnMessageError(Processor, ex, Message, Tag);
                 return MessageState.Cancel;
             }
             catch (NetTransferException ex)
             {
+                if (action.IsApiContract)
+                    Message.Result = ApiResultHelper.NetworkErrorJson;
                 message.State = MessageState.NetError;
-                await service.Transport.OnMessageError(ex, message, tag);
+                await service.Transport.OnMessageError(Processor, ex, message, tag);
                 return MessageState.Cancel;
             }
             catch (Exception ex)
             {
                 LogRecorder.Exception(ex, message);
+                if (action.IsApiContract)
+                    Message.Result = ApiResultHelper.LocalExceptionJson;
                 Message.State = MessageState.Exception;
-                await Service.Transport.OnMessageError(ex, Message, Tag);
+                await Service.Transport.OnMessageError(Processor, ex, Message, Tag);
                 return MessageState.Exception;
             }
             if (next != null)
@@ -127,8 +125,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             //1 查找调用方法
             if (!Service.Actions.TryGetValue(Message.Title, out action))
             {
+                action = new ApiAction();
                 LogRecorder.Trace("Error: Action({0}) no find", Message.Title);
-                Message.Result = ApiResultIoc.NoFindJson;
                 Message.State = MessageState.NoSupper;
                 return false;
             }
@@ -153,7 +151,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 if (!action.RestoreArgument(Message.Content))
                 {
                     LogRecorder.Trace("Error: argument can't restory.");
-                    Message.Result = ApiResultIoc.ArgumentErrorJson;
+                    if (action.IsApiContract)
+                        Message.Result = ApiResultHelper.ArgumentErrorJson;
                     Message.State = MessageState.FormalError;
                     return false;
                 }
@@ -162,7 +161,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 LogRecorder.Trace("Error: argument restory {0}.", e.Message);
                 ZeroTrace.WriteException(Service.ServiceName, e, Message.Title, "restory argument", Message.Content);
-                Message.Result = ApiResultIoc.LocalExceptionJson;
+                if (action.IsApiContract)
+                    Message.Result = ApiResultHelper.LocalExceptionJson;
                 Message.State = MessageState.FormalError;
                 return false;
             }
@@ -174,15 +174,17 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     return true;
                 }
                 LogRecorder.Trace("Error: argument validate {0}.", message);
-                Message.Result = JsonHelper.SerializeObject(ApiResultIoc.Ioc.Error(ErrorCode.ArgumentError, message));
-                Message.State = MessageState.Failed;
+                if (action.IsApiContract)
+                    Message.Result = JsonHelper.SerializeObject(ApiResultHelper.Ioc.Error(DefaultErrorCode.ArgumentError, message));
+                Message.State = MessageState.FormalError;
                 return false;
             }
             catch (Exception e)
             {
                 LogRecorder.Trace("Error: argument validate {0}.", e.Message);
                 ZeroTrace.WriteException(Service.ServiceName, e, Message.Title, "invalidate argument", Message.Content);
-                Message.Result = ApiResultIoc.LocalExceptionJson;
+                if (action.IsApiContract)
+                    Message.Result = ApiResultHelper.LocalExceptionJson;
                 Message.State = MessageState.FormalError;
                 return false;
             }

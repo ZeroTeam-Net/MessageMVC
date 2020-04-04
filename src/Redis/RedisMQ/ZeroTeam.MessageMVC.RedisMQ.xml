@@ -71,49 +71,61 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.Read">
+            <summary>
+            取出队列,全部处理,为空后退出
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.ZeroTeam#MessageMVC#ZeroApis#INetTransfer#OnCallEnd(ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
+            <summary>
+            标明调用结束
+            </summary>
+            <returns>是否需要发送回执</returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster">
             <summary>
                 Redis生产者
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer.Instance">
+        <member name="F:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.Instance">
             <summary>
             单例
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer.State">
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.State">
             <summary>
             运行状态
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer.Post(ZeroTeam.MessageMVC.Messages.IMessageItem)">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.Post(ZeroTeam.MessageMVC.Messages.IMessageItem)">
             <summary>
             生产消息
             </summary>
             <param name="message">消息</param>
             <returns></returns>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer.ZeroTeam#MessageMVC#IZeroMiddleware#Name">
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.ZeroTeam#MessageMVC#IZeroMiddleware#Name">
             <summary>
             实例名称
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer.ZeroTeam#MessageMVC#IZeroMiddleware#Level">
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.ZeroTeam#MessageMVC#IZeroMiddleware#Level">
             <summary>
             等级
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer.Initialize">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.Initialize">
             <summary>
                 初始化
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer.Close">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.Close">
             <summary>
             关闭
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisProducer.End">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.End">
             <summary>
             注销时调用
             </summary>

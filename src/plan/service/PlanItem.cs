@@ -1,3 +1,6 @@
+using Agebull.Common.Ioc;
+using Agebull.Common.Logging;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,26 +12,29 @@ namespace ZeroTeam.MessageMVC.PlanTasks
 
     public class PlanItem
     {
+
         #region 系统配置与常量
+
+        internal static ILogger<PlanItem> logger = IocHelper.LoggerFactory.CreateLogger<PlanItem>();
 
         private int plan_auto_remove => PlanSystemOption.Option.CloseTimeout;
 
-        private const string OptionKey = "opt";
-        private const string RealKey = "rea";
-        private const string MessageKey = "msg";
+        internal const string OptionKey = "opt";
+        internal const string RealKey = "rea";
+        internal const string MessageKey = "msg";
 
         private string Key => $"msg:plan:{Option.plan_id}";
 
-        private const string planIdKey = "msg:plan:id";
-        private const string planSetKey = "plan:time:set";
-        private const string planDoingKey = "plan:time:do";
-        private const string planErrorKey = "plan:time:err";
-        private const string planPauseKey = "plan:time:pau";
+        internal const string planIdKey = "msg:plan:id";
+        internal const string planSetKey = "plan:time:set";
+        internal const string planDoingKey = "plan:time:do";
+        internal const string planErrorKey = "plan:time:err";
+        internal const string planPauseKey = "plan:time:pau";
 
-        private const int second2ms = 1000;
-        private const int minute2ms = 60 * 1000;
-        private const int hour2ms = 60 * 60 * 1000;
-        private const int day2ms = 24 * 60 * 60 * 1000;
+        internal const int second2ms = 1000;
+        internal const int minute2ms = 60 * 1000;
+        internal const int hour2ms = 60 * 60 * 1000;
+        internal const int day2ms = 24 * 60 * 60 * 1000;
 
         /// <summary>
         /// 基准时间 2020-3-12
@@ -135,7 +141,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
 
 #if !UNIT_TEST
             await RedisHelper.HSetAsync(Key, OptionKey, Option);
-            await RedisHelper.HSetAsync(Key, RealKey, RealInfo);
+            await SaveRealInfo();
             await RedisHelper.HSetAsync(Key, MessageKey, Message);
 #endif
             return true;
@@ -147,12 +153,14 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <returns></returns>
         public async Task<bool> Error()
         {
+            logger.Debug(() => $"Plan is error.{Option.plan_id}");
+
             RealInfo.plan_state = Plan_message_state.error;
 
 #if !UNIT_TEST
             await RemoveDoing();
             await RedisHelper.LPushAsync(planErrorKey, Option.plan_id);
-            await RedisHelper.HSetAsync(Key, RealKey, RealInfo);
+            await SaveRealInfo();
             await RedisHelper.ZRemAsync(planSetKey, Option.plan_id);
 #endif
             return true;
@@ -167,6 +175,15 @@ namespace ZeroTeam.MessageMVC.PlanTasks
 #endif
         }
 
+        public Task SaveRealInfo()
+        {
+#if !UNIT_TEST
+            return RedisHelper.HSetAsync(Key, RealKey, RealInfo);
+#else   
+            return Task.CompletedTask;
+#endif
+        }
+
         /// <summary>
         /// 重试
         /// </summary>
@@ -174,7 +191,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         public async Task<bool> ReTry()
         {
             RealInfo.plan_state = Plan_message_state.retry;
-            if (++RealInfo.retry_num >= PlanSystemOption.Option.RetryCount)
+            if (++RealInfo.retry_num > Option.retry_set)
             {
                 await Close();
                 return false;
@@ -195,7 +212,6 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <returns></returns>
         public async Task<bool> Reset()
         {
-            RealInfo.plan_state = Plan_message_state.none;
             await JoinQueue(RealInfo.plan_time);
             return true;
         }
@@ -206,12 +222,13 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <returns></returns>
         public async Task<bool> Pause()
         {
+            logger.Debug(() => $"Plan is pause.{Option.plan_id}");
             RealInfo.plan_state = Plan_message_state.pause;
 
 #if !UNIT_TEST
             await RemoveDoing();
             await RedisHelper.LPushAsync(planPauseKey, Option.plan_id);
-            await RedisHelper.HSetAsync(Key, RealKey, RealInfo);
+            await SaveRealInfo();
             await RedisHelper.ZRemAsync(planSetKey, Option.plan_id);
 #endif
             //plan_dispatcher.instance->zero_event(zero_net_event.event_plan_pause, this);
@@ -223,7 +240,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// </summary>
         /// <param name="set"></param>
         /// <returns></returns>
-        public async Task<bool> Skip(int set)
+        public async Task Skip(int set)
         {
             if (set < 0)
             {
@@ -236,12 +253,14 @@ namespace ZeroTeam.MessageMVC.PlanTasks
 #if !UNIT_TEST
             await RedisHelper.HSetAsync(Key, OptionKey, Option);
 #endif
-            if (Option.skip_set >= RealInfo.skip_num)
+            if (Option.skip_set < RealInfo.skip_num)
+            {
+                await CheckNextTime();
+            }
+            else
             {
                 await Close();
-                return false;
             }
-            return await CheckNextTime();
         }
 
         /// <summary>
@@ -254,9 +273,10 @@ namespace ZeroTeam.MessageMVC.PlanTasks
             if (plan_auto_remove > 0)
 #endif
             {
+                logger.Debug(() => $"Plan is close.{Option.plan_id},remove by {DateTime.Now.AddSeconds(plan_auto_remove)}");
                 RealInfo.plan_state = Plan_message_state.close;
 #if !UNIT_TEST
-                await RedisHelper.HSetAsync(Key, RealKey, RealInfo);
+                await SaveRealInfo();
                 await RedisHelper.ExpireAsync(Key, plan_auto_remove);
 
                 await RedisHelper.ZRemAsync(planSetKey, Option.plan_id);
@@ -279,6 +299,8 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <returns></returns>
         public static async Task<bool> Remove(string id)
         {
+            logger.Debug(() => $"Plan is remove.{id}");
+
 #if !UNIT_TEST
             await RedisHelper.HDelAsync(planDoingKey, id);
             await RedisHelper.ZRemAsync(planSetKey, id);
@@ -298,15 +320,23 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// </summary>
         public static async Task Start()
         {
-            var ids = await RedisHelper.HGetAllAsync<long>(planDoingKey);
-            if (ids != null)
+            try
             {
-                foreach (var id in ids)
+                var ids = await RedisHelper.HGetAllAsync<long>(planDoingKey);
+                if (ids != null)
                 {
-                    await RedisHelper.ZAddAsync(planSetKey, (id.Value, id.Key));
+                    logger.Information(() => $"Coutinue .{ids}");
+                    foreach (var id in ids)
+                    {
+                        await RedisHelper.ZAddAsync(planSetKey, (id.Value, id.Key));
+                    }
                 }
+                await RedisHelper.DelAsync(planDoingKey);
             }
-            await RedisHelper.DelAsync(planDoingKey);
+            catch (Exception ex)
+            {
+                logger.Warning(() => $"Start error.{ex.Message}");
+            }
         }
 
         /// <summary>
@@ -326,6 +356,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
             var message = LoadMessage(member, false);
             if (message == null || message.Option == null || message.RealInfo == null)
             {
+                logger.Debug(() => $"Read plan bad.{member}");
                 await Remove(member);
                 return (true, null);
             }
@@ -333,12 +364,14 @@ namespace ZeroTeam.MessageMVC.PlanTasks
             if (message.RealInfo.plan_state == Plan_message_state.skip)
             {
                 ++message.RealInfo.skip_num;
+                logger.Debug(() => $"Plan is skip.{member},skip {message.RealInfo.skip_num}");
                 await message.CheckNextTime();
                 return (true, null);
             }
             message.Message = RedisHelper.HGet<MessageItem>(message.Key, MessageKey);
             if (message.Message == null)
             {
+                logger.Debug(() => $"Read message bad.{member}");
                 await Remove(member);
                 return (true, null);
             }
@@ -362,46 +395,46 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// 保存下一次执行时间
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> CheckNextTime()
+        public async Task CheckNextTime()
         {
-            if (await DoCheckNext())
-            {
-                return true;
-            }
-            await Error();
-            return false;
+            await DoCheckNext();
         }
 
         /// <summary>
         /// 计算下一次执行时间
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> DoCheckNext()
+        public async Task DoCheckNext()
         {
             if ((Option.plan_repet > 0 && Option.plan_repet <= RealInfo.exec_num + RealInfo.skip_num) ||
                 Option.plan_repet == 0 && RealInfo.exec_num > 0)
             {
                 await Close();
-                return true;
+                return;
             }
             switch (Option.plan_type)
             {
                 case plan_date_type.time:
-                    return await CheckTime();
+                    await CheckTime();
+                    return;
                 case plan_date_type.second:
-                    return await CheckDelay(Option.plan_value * second2ms);
+                    await CheckDelay(Option.plan_value * second2ms);
+                    return;
                 case plan_date_type.minute:
-                    return await CheckDelay(Option.plan_value * minute2ms);
+                    await CheckDelay(Option.plan_value * minute2ms);
+                    return;
                 case plan_date_type.hour:
-                    return await CheckDelay(Option.plan_value * hour2ms);
+                    await CheckDelay(Option.plan_value * hour2ms);
+                    return;
                 case plan_date_type.day:
-                    return await CheckDelay(Option.plan_value * day2ms);
+                    await CheckDelay(Option.plan_value * day2ms);
+                    return;
                 case plan_date_type.week:
-                    return await CheckWeek();
+                    await CheckWeek();
+                    return;
                 case plan_date_type.month:
-                    return await CheckMonth();
-                default:
-                    return false;
+                    await CheckMonth();
+                    return;
             }
         }
 
@@ -546,15 +579,17 @@ namespace ZeroTeam.MessageMVC.PlanTasks
             {
                 RealInfo.plan_state = Plan_message_state.skip;
             }
-            else
+            else if (RealInfo.plan_state != Plan_message_state.retry)
             {
                 RealInfo.plan_state = Plan_message_state.queue;
             }
 
+            logger.Debug(() => $"Plan is queue.{Option.plan_id},state {RealInfo.plan_state},retry {RealInfo.retry_num}");
+
             RealInfo.plan_time = time;
 
 #if !UNIT_TEST
-            await RedisHelper.HSetAsync(Key, RealKey, RealInfo);
+            await SaveRealInfo();
             await RedisHelper.LRemAsync(planErrorKey, 0, Option.plan_id);
             await RedisHelper.ZAddAsync(planSetKey, (time, Option.plan_id));
             await RedisHelper.LRemAsync(planErrorKey, 0, Option.plan_id);
@@ -600,7 +635,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <param name="id"></param>
         /// <param name="loadMsg"></param>
         /// <returns></returns>
-        private static PlanItem LoadMessage(string id, bool loadMsg)
+        public static PlanItem LoadMessage(string id, bool loadMsg)
         {
             var key = $"msg:plan:{id}";
             var msg = new PlanItem
