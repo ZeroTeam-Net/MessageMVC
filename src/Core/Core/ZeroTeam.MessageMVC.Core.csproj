@@ -49,7 +49,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Application\ZeroFlowControl.Config.cs" />
+    <Compile Remove="Flow\ZeroFlowControl.Config.cs" />
   </ItemGroup>
 
   <ItemGroup>

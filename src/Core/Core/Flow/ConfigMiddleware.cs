@@ -3,7 +3,6 @@ using Agebull.Common.Configuration;
 using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Agebull.EntityModel.Common;
-using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Net;
@@ -22,19 +21,12 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 实例名称
         /// </summary>
-        string IZeroMiddleware.Name => "ZeroGlobal";
+        string IZeroMiddleware.Name => nameof(ConfigMiddleware);
 
         /// <summary>
         /// 等级
         /// </summary>
         int IZeroMiddleware.Level => int.MinValue;
-
-        /// <summary>
-        ///     关闭
-        /// </summary>
-        void IFlowMiddleware.Close()
-        {
-        }
 
         /// <summary>
         ///     配置校验,作为第一步
@@ -44,8 +36,6 @@ namespace ZeroTeam.MessageMVC
             CheckConfig(config);
             IocHelper.AddSingleton(config);
             IocHelper.Update();
-            //上下文
-            IocHelper.AddScoped<IZeroContext, ZeroContext>();
             //日志
             if (config.EnableLinkTrace)
             {

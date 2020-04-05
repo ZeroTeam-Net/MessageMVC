@@ -113,10 +113,30 @@ namespace ZeroTeam.MessageMVC.Messages
                 Title = title,
                 Content = content
             };
-            if (ZeroAppOption.Instance.EnableLinkTrace)
+            if (GlobalContext.EnableLinkTrace)
             {
-                msg.Trace = GlobalContext.CurrentNoLazy?.Trace ?? TraceInfo.New(id);
-                msg.Trace.ContextJson = JsonHelper.SerializeObject(GlobalContext.CurrentNoLazy);
+                //远程机器使用,所以Call是本机信息
+                msg.Trace = new TraceInfo()
+                {
+                    CallTimestamp = DateTime.Now.ToTimestamp(),
+                    CallApp = $"{ZeroAppOption.Instance.AppName}({ZeroAppOption.Instance.AppVersion})",
+                    CallMachine = $"{ZeroAppOption.Instance.ServiceName}({ZeroAppOption.Instance.LocalIpAddress})"
+                };
+                if(GlobalContext.CurrentNoLazy != null)
+                {
+                    msg.Trace.TraceId = GlobalContext.Current.Trace.TraceId;
+                    msg.Trace.CallId = GlobalContext.Current.Trace.LocalId;
+                    msg.Trace.Token = GlobalContext.Current.Trace.Token;
+                    msg.Trace.Headers = GlobalContext.Current.Trace.Headers;
+                    msg.Trace.Ip = GlobalContext.Current.Trace.Ip;
+                    msg.Trace.Ip = GlobalContext.Current.Trace.Ip;
+                    msg.Trace.Port = GlobalContext.Current.Trace.Port;
+                    msg.Trace.ContextJson = JsonHelper.SerializeObject(GlobalContext.CurrentNoLazy);
+                }
+                else
+                {
+                    msg.Trace.TraceId = id;
+                }
             }
             return msg;
         }

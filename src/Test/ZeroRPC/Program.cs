@@ -14,7 +14,7 @@ namespace MicroZero.Kafka.QueueStation
         {
             IocHelper.AddSingleton<IFlowMiddleware, ZeroRpcFlow>();
             IocHelper.AddSingleton<IFlowMiddleware, ZeroPostProxy>();
-            IocHelper.AddSingleton<IRpcTransfer, ZeroRpcTransport>();
+            IocHelper.AddSingleton<IServiceTransfer, ZeroRpcTransport>();
             IocHelper.AddSingleton<IMessagePoster, ZeroRPCPoster>();
 
 

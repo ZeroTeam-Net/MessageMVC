@@ -12,14 +12,14 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     public class GlobalContextMiddleware : IMessageMiddleware
     {
         /// <summary>
+        /// 层级
+        /// </summary>
+        int IMessageMiddleware.Level => int.MinValue;
+
+        /// <summary>
         /// 当前处理器
         /// </summary>
         public MessageProcessor Processor { get; set; }
-
-        /// <summary>
-        /// 层级
-        /// </summary>
-        int IMessageMiddleware.Level => -1;
 
         /// <summary>
         /// 准备
@@ -35,7 +35,24 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 GlobalContext.SetContext(ctx);
             }
-            GlobalContext.CheckContext(message);
+            else
+            {
+                GlobalContext.Reset();
+            }
+
+            GlobalContext.Current.Message = message;
+            if (GlobalContext.Current.User == null)
+                GlobalContext.Current.User = GlobalContext.Anymouse;
+            if (GlobalContext.Current.Status == null)
+                GlobalContext.Current.Status = new ContextStatus();
+            if (GlobalContext.Current.Option == null)
+                GlobalContext.Current.Option = new ContextOption
+                {
+                    EnableLinkTrace = ZeroAppOption.Instance.EnableLinkTrace
+                };
+            if (GlobalContext.Current.Trace == null)
+                GlobalContext.Current.Trace = message.Trace ?? TraceInfo.New(message.ID);
+
             return next();
         }
     }

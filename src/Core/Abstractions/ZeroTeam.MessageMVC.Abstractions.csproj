@@ -37,7 +37,6 @@
     <Compile Remove="Config\ZeroOperatorStateType.cs" />
     <Compile Remove="Context\ArgumentType.cs" />
     <Compile Remove="Context\RequestType.cs" />
-    <Compile Remove="Message\IReceiptService.cs" />
   </ItemGroup>
 
   <ItemGroup>

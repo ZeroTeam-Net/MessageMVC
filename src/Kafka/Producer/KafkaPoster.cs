@@ -4,7 +4,6 @@ using Agebull.Common.Logging;
 using Confluent.Kafka;
 using System;
 using System.Threading.Tasks;
-using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC.Kafka
@@ -12,7 +11,7 @@ namespace ZeroTeam.MessageMVC.Kafka
     /// <summary>
     ///     Kafka消息发布
     /// </summary>
-    public class KafkaProducer : IMessagePoster, IFlowMiddleware
+    public class KafkaPoster : IMessagePoster, IFlowMiddleware
     {
 
         #region IFlowMiddleware 
@@ -27,7 +26,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <summary>
         /// 实例名称
         /// </summary>
-        string IZeroMiddleware.Name => "KafkaProducer";
+        string IZeroMiddleware.Name => "KafkaPoster";
 
         /// <summary>
         /// 等级

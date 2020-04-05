@@ -3,9 +3,9 @@
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
     /// <summary>
-    /// 表示一个RPC传输对象
+    /// 表示一个远程服务(RPC或HTTP)传输对象
     /// </summary>
-    public interface IRpcTransfer : INetTransfer
+    public interface IServiceTransfer : INetTransfer
     {
     }
 

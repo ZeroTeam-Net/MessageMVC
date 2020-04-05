@@ -9,7 +9,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     /// </summary>
     public class TransportDiscover : ITransportDiscory
     {
-        private static INetTransfer RpcTransportBuilder(string name) => IocHelper.Create<IRpcTransfer>();
+        private static INetTransfer RpcTransportBuilder(string name) => IocHelper.Create<IServiceTransfer>();
         private static INetTransfer ConsumerTransportBuilder(string name) => IocHelper.Create<IMessageConsumer>();
         private static INetTransfer NetEventTransportBuilder(string name) => IocHelper.Create<INetEvent>();
 

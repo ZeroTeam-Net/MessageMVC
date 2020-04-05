@@ -30,7 +30,7 @@ namespace ZeroTeam.MessageMVC.Http
         {
             Option = ConfigurationManager.Get<MessageRouteOption>("HttpRoute");
 
-            services.AddTransient<IRpcTransfer, HttpTransfer>();
+            services.AddTransient<IServiceTransfer, HttpTransfer>();
 
             services.UseFlowByAutoDiscory();
 

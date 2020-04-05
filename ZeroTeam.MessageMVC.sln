@@ -28,9 +28,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{78391F4E-D2D
 		doc\INetTransport.md = doc\INetTransport.md
 		doc\IO.png = doc\IO.png
 		doc\MessageMVC.xmind = doc\MessageMVC.xmind
-		doc\MessageProcess.md = doc\MessageProcess.md
+		doc\MessagePoster.md = doc\MessagePoster.md
+		doc\MessageProcessor.md = doc\MessageProcessor.md
 		doc\Model.png = doc\Model.png
-		doc\MulitaNetTransfer.md = doc\MulitaNetTransfer.md
 		readme.md = readme.md
 		doc\ZeroTeam.MessageMVC.RedisMQ\readme.md = doc\ZeroTeam.MessageMVC.RedisMQ\readme.md
 		doc\ZeroFlowControl.md = doc\ZeroFlowControl.md
@@ -94,7 +94,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlanUnitTest", "src\UnitTes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.MulitNetTransfer.Sample", "src\Test\Mulit\ZeroTeam.MessageMVC.MulitNetTransfer.Sample.csproj", "{C401BFD3-8CE7-460D-B12C-8C46020BE6EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZeroTeam.MessageMVC.ReceiptCenter", "src\Receipt\ReceiptCenter\ZeroTeam.MessageMVC.ReceiptCenter.csproj", "{6E2AF2FF-3574-4990-953E-BA50508650E9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.ReceiptCenter", "src\Receipt\ReceiptCenter\ZeroTeam.MessageMVC.ReceiptCenter.csproj", "{6E2AF2FF-3574-4990-953E-BA50508650E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

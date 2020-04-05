@@ -20,8 +20,8 @@ namespace ZeroTeam.MessageMVC.Http
         public void ConfigureServices(IServiceCollection services)
         {
             //services.UseCsRedis();
-            services.AddSingleton<IFlowMiddleware, KafkaProducer>();//Kafka环境
-            services.AddSingleton<IMessagePoster, KafkaProducer>();//采用Kafka生产端
+            services.AddSingleton<IFlowMiddleware, KafkaPoster>();//Kafka环境
+            services.AddSingleton<IMessagePoster, KafkaPoster>();//采用Kafka生产端
             services.AddSingleton<IFlowMiddleware, CsRedisPoster>();//采用Redis生产端
             services.AddSingleton<IMessagePoster, CsRedisPoster>();//采用Redis生产端
             HttpRoute.Initialize(services);

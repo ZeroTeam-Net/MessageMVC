@@ -21,45 +21,45 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 生产时间戳,UNIX时间戳,自1970起秒数
         /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public int LocalTimestamp { get; set; }
 
         /// <summary>
-        /// 本地的全局标识,序列化后自动变成调用方
+        /// 本地的全局标识
         /// </summary>
-        [JsonProperty("CallId", DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
         public string LocalId { get; set; }
 
         /// <summary>
-        /// 本地的应用,序列化后自动变成调用方
+        /// 本地的应用
         /// </summary>
-        [JsonProperty("CallApp", DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
         public string LocalApp { get; set; }
 
         /// <summary>
-        /// 本地的机器,序列化后自动变成调用方
+        /// 本地的机器
         /// </summary>
-        [JsonProperty("CallMachine", DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
         public string LocalMachine { get; set; }
 
         /// <summary>
         /// 生产时间戳,UNIX时间戳,自1970起秒数
         /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
         public int CallTimestamp { get; set; }
 
         /// <summary>
         /// 请求的全局标识(传递)
         /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
         public string CallId { get; set; }
 
         /// <summary>
         /// 请求应用
         /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
         public string CallApp { get; set; }
 
         /// <summary>
         /// 请求机器
         /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
         public string CallMachine { get; set; }
 
         /// <summary>

@@ -8,7 +8,7 @@ namespace KafkaTest
     /// <summary>
     /// Kafka消息生产者
     /// </summary>
-    public class KafkaProducer
+    public class KafkaPoster
     {
 
         private static readonly ProducerConfig conf = new ProducerConfig { BootstrapServers = "47.111.0.73:9092" };

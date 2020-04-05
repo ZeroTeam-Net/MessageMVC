@@ -16,7 +16,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
     /// <summary>
     ///  ZeroMQ实现的RPC
     /// </summary>
-    public sealed class ZeroRpcTransport : NetTransferBase, IRpcTransfer
+    public sealed class ZeroRpcTransport : NetTransferBase, IServiceTransfer
     {
         #region 控制反转
 

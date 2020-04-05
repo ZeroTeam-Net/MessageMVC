@@ -59,11 +59,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         {
             XmlMember.Load(type.Assembly);
 
-            TransportDiscories = IocHelper.RootProvider.GetServices<ITransportDiscory>().ToArray();
-            if (TransportDiscories.Length == 0)
-            {
-                TransportDiscories = new[] { new TransportDiscover() };
-            }
+            TransportDiscories ??= IocHelper.RootProvider.GetServices<ITransportDiscory>().ToArray();
 
             FindApi(type, false);
             RegistToZero();
@@ -81,11 +77,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             //    {
             //        Name = StationName
             //    });
-            TransportDiscories = IocHelper.RootProvider.GetServices<ITransportDiscory>().ToArray();
-            if (TransportDiscories.Length == 0)
-            {
-                TransportDiscories = new[] { new TransportDiscover() };
-            }
+            TransportDiscories ??= IocHelper.RootProvider.GetServices<ITransportDiscory>().ToArray();
 
             var types = Assembly.GetTypes().Where(p => p.IsSupperInterface(typeof(IApiControler))).ToArray();
             foreach (var type in types)

@@ -6,6 +6,14 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     public interface IApiResultDefault
     {
         /// <summary>
+        /// 序列化
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        string SerializeObject<T>(T t);
+
+        /// <summary>
         /// 反序列化
         /// </summary>
         /// <param name="json"></param>
@@ -18,6 +26,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <param name="json"></param>
         /// <returns></returns>
         IApiResult<T> DeserializeObject<T>(string json);
+
+        /// <summary>生成一个成功的标准返回</summary>
+        /// <returns></returns>
+        IApiResult Succees(string message);
 
         /// <summary>生成一个包含错误码的标准返回</summary>
         /// <param name="errCode">错误码</param>
@@ -58,7 +70,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
         /// <summary>生成一个成功的标准返回</summary>
         /// <returns></returns>
-        IApiResult<TData> Succees<TData>(TData data);
+        IApiResult<TData> Succees<TData>(TData data, string message);
 
         /// <summary>生成一个包含错误码的标准返回</summary>
         /// <param name="errCode">错误码</param>
@@ -104,14 +116,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>生成一个成功的标准返回</summary>
         /// <returns></returns>
         IApiResult<TData> Error<TData>();
-
-        /// <summary>生成一个成功的标准返回</summary>
-        /// <returns></returns>
-        IApiResult Succees();
-
-        /// <summary>生成一个成功的标准返回</summary>
-        /// <returns></returns>
-        IApiResult<TData> Succees<TData>();
 
         /// <summary>成功</summary>
         /// <remarks>成功</remarks>

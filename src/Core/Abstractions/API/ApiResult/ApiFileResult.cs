@@ -41,20 +41,5 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         [JsonProperty("type", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public string FileType { get; set; }
 
-        /// <summary>
-        ///     生成一个包含错误码的标准返回
-        /// </summary>
-        /// <param name="errCode">错误码</param>
-        /// <param name="message">错误消息</param>
-        /// <returns></returns>
-        public static ApiFileResult ErrorResult(int errCode, string message = null)
-        {
-            return new ApiFileResult
-            {
-                Success = errCode == DefaultErrorCode.Success,
-                Code = errCode,
-                Message = message ?? DefaultErrorCode.GetMessage(errCode)
-            };
-        }
     }
 }

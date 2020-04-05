@@ -9,7 +9,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
     public class TestControler : IApiControler
     {
         [Route("test/res")]
-        public ApiResult Result()
+        public IApiResult Result()
         {
             LogRecorder.Trace("Result");
             return ApiResultHelper.Succees();
@@ -35,7 +35,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         }
 
         [Route("async/res")]
-        public async Task<ApiResult> ResultAsync()
+        public async Task<IApiResult> ResultAsync()
         {
             LogRecorder.Trace($"ResultAsync");
            return await Task.Factory.StartNew(TaskTest);
@@ -49,7 +49,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         }
 
         [Route("async/full")]
-        public Task<ApiResult> FullAsync(Argument arg)
+        public Task<IApiResult> FullAsync(Argument arg)
         {
             LogRecorder.Trace($"FullAsync : {arg.Value}");
             LogRecorder.Trace(Task.CurrentId?.ToString());
@@ -64,7 +64,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         }
 
 
-        public ApiResult TaskTest()
+        public IApiResult TaskTest()
         {
             LogRecorder.Trace(Task.CurrentId?.ToString());
             Task.Delay(100);

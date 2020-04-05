@@ -9,7 +9,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
     public class KafkaControler : IApiControler
     {
         [Route("test")]
-        public ApiResult Result()
+        public IApiResult Result()
         {
             LogRecorder.Trace(GetType().FullName);
             return ApiResultHelper.Succees();

@@ -70,37 +70,37 @@
             </summary>
             <param name="services"></param>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.Kafka.KafkaProducer">
+        <member name="T:ZeroTeam.MessageMVC.Kafka.KafkaPoster">
             <summary>
                 Kafka消息发布
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaProducer.State">
+        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaPoster.State">
             <summary>
             运行状态
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaProducer.ZeroTeam#MessageMVC#IZeroMiddleware#Name">
+        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#IZeroMiddleware#Name">
             <summary>
             实例名称
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaProducer.ZeroTeam#MessageMVC#IZeroMiddleware#Level">
+        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#IZeroMiddleware#Level">
             <summary>
             等级
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaProducer.Initialize">
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.Initialize">
             <summary>
             初始化
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaProducer.ZeroTeam#MessageMVC#IFlowMiddleware#Close">
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#IFlowMiddleware#Close">
             <summary>
                 关闭
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaProducer.Post(ZeroTeam.MessageMVC.Messages.IMessageItem)">
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.Post(ZeroTeam.MessageMVC.Messages.IMessageItem)">
             <summary>
             生产消息
             </summary>

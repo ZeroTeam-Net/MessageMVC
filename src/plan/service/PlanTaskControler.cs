@@ -8,7 +8,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
     internal class PlanTaskControler : IApiControler
     {
         [Route("v1/post")]
-        public async Task<ApiResult> Post(PlanTasks.PlanCallInfo info)
+        public async Task<IApiResult> Post(PlanTasks.PlanCallInfo info)
         {
             if (info.Option.retry_set == 0)
                 info.Option.retry_set = PlanSystemOption.Option.RetryCount;

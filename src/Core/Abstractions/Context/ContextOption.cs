@@ -9,6 +9,12 @@ namespace ZeroTeam.MessageMVC.Context
     public class ContextOption
     {
         /// <summary>
+        ///     启用调用链跟踪,默认为AppOption中的设置, 可通过远程传递而扩散
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public bool EnableLinkTrace { get; set; }
+
+        /// <summary>
         /// 当前调用需要回执
         /// </summary>
         /// <remarks>

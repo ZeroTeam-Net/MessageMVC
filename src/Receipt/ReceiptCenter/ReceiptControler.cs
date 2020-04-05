@@ -11,7 +11,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
     internal class ReceiptControler : IApiControler
     {
         [Route("v1/save")]
-        public async Task<ApiResult> Save(MessageItem message)
+        public async Task<IApiResult> Save(MessageItem message)
         {
             await RedisHelper.SetAsync($"receipt:{message.ID}", message);
             //var file = Path.Combine(ZeroFlowControl.Config.DataFolder, $"{message}.json");

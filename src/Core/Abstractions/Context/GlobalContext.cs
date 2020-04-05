@@ -33,6 +33,12 @@ namespace ZeroTeam.MessageMVC.Context
         }
 
         /// <summary>
+        ///     启用调用链跟踪,默认为AppOption中的设置, 可通过远程传递而扩散
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public static bool EnableLinkTrace => CurrentNoLazy?.Option.EnableLinkTrace ?? ZeroAppOption.Instance.EnableLinkTrace;
+
+        /// <summary>
         ///     当前线程的调用上下文(无懒构造)
         /// </summary>
         public static IZeroContext CurrentNoLazy => Local?.Value;
@@ -42,7 +48,6 @@ namespace ZeroTeam.MessageMVC.Context
         /// </summary>
         public static IZeroContext Reset()
         {
-
             Local.Value = IocHelper.Create<IZeroContext>();
             if (Local.Value != null)
             {
@@ -60,8 +65,10 @@ namespace ZeroTeam.MessageMVC.Context
         {
             Local.Value = null;
         }
-
-        private static IUser Anymouse { get; } = new UserInfo
+        /// <summary>
+        /// 表示一个匿名用户
+        /// </summary>
+        public static IUser Anymouse { get; } = new UserInfo
         {
             UserId = -1,
             NickName = "Anymouse"
@@ -81,24 +88,6 @@ namespace ZeroTeam.MessageMVC.Context
             {
                 Local.Value = context;
             }
-        }
-
-        /// <summary>
-        ///     检查上下文，规整信息
-        /// </summary>
-        public static void CheckContext(IMessageItem message)
-        {
-            Reset();
-
-            Current.Message = message;
-            if (Current.User == null)
-                Current.User = Anymouse;
-            if (Current.Status == null)
-                Current.Status = new ContextStatus();
-            if (Current.Option == null)
-                Current.Option = new ContextOption();
-            if (Current.Trace == null)
-                Current.Trace = message.Trace ?? TraceInfo.New(message.ID);
         }
     }
 }

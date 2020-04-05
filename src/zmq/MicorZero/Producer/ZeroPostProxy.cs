@@ -49,6 +49,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
 
 
         #endregion
+
         #region Socket
 
         /// <summary>
