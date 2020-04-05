@@ -24,24 +24,22 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{78391F4E-D2DF-4373-B40C-28517937E5A5}"
 	ProjectSection(SolutionItems) = preProject
 		doc\flow mind.md = doc\flow mind.md
-		doc\Flow.png = doc\Flow.png
 		doc\INetTransport.md = doc\INetTransport.md
-		doc\IO.png = doc\IO.png
-		doc\MessageMVC.xmind = doc\MessageMVC.xmind
+		doc\MessageMVC设计规范.md = doc\MessageMVC设计规范.md
 		doc\MessagePoster.md = doc\MessagePoster.md
 		doc\MessageProcessor.md = doc\MessageProcessor.md
-		doc\Model.png = doc\Model.png
+		doc\messageProcess高级功能.md = doc\messageProcess高级功能.md
 		readme.md = readme.md
 		doc\ZeroTeam.MessageMVC.RedisMQ\readme.md = doc\ZeroTeam.MessageMVC.RedisMQ\readme.md
+		doc\zero service状态机.md = doc\zero service状态机.md
+		doc\ZeroFlowControl(1).md = doc\ZeroFlowControl(1).md
 		doc\ZeroFlowControl.md = doc\ZeroFlowControl.md
-		doc\ZeroTeam.MessageMVC.RedisMQ\ZeroTeam.MessageMVC.RedisMQ.vsdx = doc\ZeroTeam.MessageMVC.RedisMQ\ZeroTeam.MessageMVC.RedisMQ.vsdx
-		doc\ZeroTeam.MessageMVC.RedisMQ\ZeroTeam.MessageMVC.RedisMQ_consumer.png = doc\ZeroTeam.MessageMVC.RedisMQ\ZeroTeam.MessageMVC.RedisMQ_consumer.png
-		doc\ZeroTeam.MessageMVC.RedisMQ\ZeroTeam.MessageMVC.RedisMQ_guard.vsdx = doc\ZeroTeam.MessageMVC.RedisMQ\ZeroTeam.MessageMVC.RedisMQ_guard.vsdx
-		doc\ZeroTeam.MessageMVC.RedisMQ\ZeroTeam.MessageMVC.RedisMQ_producer.png = doc\ZeroTeam.MessageMVC.RedisMQ\ZeroTeam.MessageMVC.RedisMQ_producer.png
+		doc\zerorpc.md = doc\zerorpc.md
 		doc\功能组件总览.md = doc\功能组件总览.md
-		doc\总体设计模式.md = doc\总体设计模式.md
-		doc\流程.vsdx = doc\流程.vsdx
-		doc\绘图1.png = doc\绘图1.png
+		doc\基于messageMVC的网关.md = doc\基于messageMVC的网关.md
+		doc\带异步调用回执发送.md = doc\带异步调用回执发送.md
+		doc\消息层面的链路追踪.md = doc\消息层面的链路追踪.md
+		doc\生产目标.md = doc\生产目标.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "zmq", "zmq", "{EB2EC8D7-FA6B-4540-A015-378F59EAF098}"
@@ -95,6 +93,24 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.MulitNetTransfer.Sample", "src\Test\Mulit\ZeroTeam.MessageMVC.MulitNetTransfer.Sample.csproj", "{C401BFD3-8CE7-460D-B12C-8C46020BE6EF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.ReceiptCenter", "src\Receipt\ReceiptCenter\ZeroTeam.MessageMVC.ReceiptCenter.csproj", "{6E2AF2FF-3574-4990-953E-BA50508650E9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "viso", "viso", "{92DA5BC7-8FFD-489A-AE7C-40506F081902}"
+	ProjectSection(SolutionItems) = preProject
+		doc\Flow.png = doc\Flow.png
+		doc\IO.png = doc\IO.png
+		doc\Model.png = doc\Model.png
+		doc\ZeroTeam.MessageMVC.RedisMQ\ZeroTeam.MessageMVC.RedisMQ.vsdx = doc\ZeroTeam.MessageMVC.RedisMQ\ZeroTeam.MessageMVC.RedisMQ.vsdx
+		doc\ZeroTeam.MessageMVC.RedisMQ\ZeroTeam.MessageMVC.RedisMQ_consumer.png = doc\ZeroTeam.MessageMVC.RedisMQ\ZeroTeam.MessageMVC.RedisMQ_consumer.png
+		doc\ZeroTeam.MessageMVC.RedisMQ\ZeroTeam.MessageMVC.RedisMQ_guard.vsdx = doc\ZeroTeam.MessageMVC.RedisMQ\ZeroTeam.MessageMVC.RedisMQ_guard.vsdx
+		doc\ZeroTeam.MessageMVC.RedisMQ\ZeroTeam.MessageMVC.RedisMQ_producer.png = doc\ZeroTeam.MessageMVC.RedisMQ\ZeroTeam.MessageMVC.RedisMQ_producer.png
+		doc\流程.vsdx = doc\流程.vsdx
+		doc\绘图1.png = doc\绘图1.png
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "xmind", "xmind", "{848B9173-F7CE-4D38-B4D7-350FDF107CB7}"
+	ProjectSection(SolutionItems) = preProject
+		doc\MessageMVC.xmind = doc\MessageMVC.xmind
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -231,6 +247,8 @@ Global
 		{53C0044E-A6F3-45A6-B03B-2CF65E1B4A73} = {E1BA22EE-D8CB-4C1A-B88F-C14B9FC3C855}
 		{C401BFD3-8CE7-460D-B12C-8C46020BE6EF} = {0474706D-4F72-454C-9E28-C43AC2F2629E}
 		{6E2AF2FF-3574-4990-953E-BA50508650E9} = {AD2473CB-7770-4EED-8198-7B59E31C4584}
+		{92DA5BC7-8FFD-489A-AE7C-40506F081902} = {78391F4E-D2DF-4373-B40C-28517937E5A5}
+		{848B9173-F7CE-4D38-B4D7-350FDF107CB7} = {78391F4E-D2DF-4373-B40C-28517937E5A5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {866CE928-6325-4962-BB28-9A3BAF4BBCD1}
