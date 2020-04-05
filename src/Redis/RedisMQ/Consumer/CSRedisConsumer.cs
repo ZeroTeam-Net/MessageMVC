@@ -294,7 +294,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                 item.Trace = new TraceInfo();
             item.Trace.TraceId = id;
             item.Topic = Service.ServiceName;
-            await MessageProcessor.OnMessagePush(Service, item);
+            await MessageProcessor.OnMessagePush(Service, item);//BUG:应该配置化同步或异步
 
             return true;
         }

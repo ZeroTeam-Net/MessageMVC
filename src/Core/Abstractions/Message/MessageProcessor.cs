@@ -1,6 +1,7 @@
 ﻿using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,12 +17,12 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         #region 处理入口
 
         /// <summary>
-        /// 消息处理
+        /// 消息处理(异步)
         /// </summary>
         /// <param name="service"></param>
         /// <param name="message"></param>
         /// <param name="tag"></param>
-        public static Task<MessageState> OnMessagePush(IService service, IMessageItem message, object tag = null)
+        public static Task OnMessagePush(IService service, IMessageItem message, object tag = null)
         {
             var process = new MessageProcessor
             {
@@ -30,9 +31,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 taskCompletionSource = new TaskCompletionSource<MessageState>(),
                 Tag = tag
             };
-            Task.Factory.StartNew(process.Process);
+            _ = process.Process();
             return process.taskCompletionSource.Task;
         }
+
         #endregion
 
         #region 中间件链式调用
@@ -69,13 +71,32 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 try
                 {
                     await Handle();
+                    await PushResult();
                 }
-                catch (System.Exception ex)
+                catch (OperationCanceledException ex)
+                {
+                    LogRecorder.MonitorTrace("Cancel");
+                    Message.State = MessageState.Cancel;
+                    await Service.Transport.OnMessageError(this, ex, Message, Tag);
+                }
+                catch (ThreadInterruptedException ex)
+                {
+                    LogRecorder.MonitorTrace("Time out");
+                    Message.State = MessageState.Cancel;
+                    await Service.Transport.OnMessageError(this, ex, Message, Tag);
+                }
+                catch (NetTransferException ex)
+                {
+                    LogRecorder.MonitorTrace(() => $"NetError : {ex.Message}");
+                    Message.State = MessageState.NetError;
+                    await Service.Transport.OnMessageError(this, ex, Message, Tag);
+                }
+                catch (Exception ex)
                 {
                     LogRecorder.Exception(ex);
-                    await Service.Transport.OnMessageError(this,ex, Message, Tag);
+                    LogRecorder.MonitorTrace(()=>$"UnkonwException : {ex.Message}");
+                    await Service.Transport.OnMessageError(this, ex, Message, Tag);
                 }
-                PushResult();
             }
         }
 
@@ -83,16 +104,16 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// 链式处理中间件
         /// </summary>
         /// <returns></returns>
-        private async Task<MessageState> Handle()
+        private async Task Handle()
         {
             if (index >= middlewares.Length)
             {
-                return MessageState.None;
+                return;
             }
 
             var next = middlewares[index++];
             next.Processor = this;
-            return State = await next.Handle(Service, Message, Tag, Handle);
+            await next.Handle(Service, Message, Tag, Handle);
         }
         #endregion
 
@@ -103,22 +124,12 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// 结果推到调用处
         /// </summary>
-        public void PushResult()
+        public async Task PushResult()
         {
             if (Interlocked.Increment(ref isPushed) == 1)
             {
+                await Service.Transport.OnMessageResult(this, Message, Tag);
                 taskCompletionSource.TrySetResult(Message.State = State);
-            }
-        }
-
-        /// <summary>
-        /// 结果推到调用处
-        /// </summary>
-        public void PushResult(MessageState state)
-        {
-            if (Interlocked.Increment(ref isPushed) == 1)
-            {
-                taskCompletionSource.TrySetResult(Message.State = state);
             }
         }
 

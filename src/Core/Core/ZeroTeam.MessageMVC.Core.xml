@@ -202,7 +202,7 @@
             调用的内容
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.Handle(ZeroTeam.MessageMVC.ZeroApis.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object,System.Func{System.Threading.Tasks.Task{ZeroTeam.MessageMVC.Messages.MessageState}})">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.Handle(ZeroTeam.MessageMVC.ZeroApis.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object,System.Func{System.Threading.Tasks.Task})">
             <summary>
             处理
             </summary>
@@ -214,7 +214,7 @@
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.CommandPrepare(ZeroTeam.MessageMVC.ZeroApis.IApiAction@)">
             <summary>
-                执行命令
+               准备,取出方法,参数校验
             </summary>
             <param name="action"></param>
             <returns></returns>
@@ -461,7 +461,7 @@
             当前处理器
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.GlobalContextMiddleware.ZeroTeam#MessageMVC#ZeroApis#IMessageMiddleware#Handle(ZeroTeam.MessageMVC.ZeroApis.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object,System.Func{System.Threading.Tasks.Task{ZeroTeam.MessageMVC.Messages.MessageState}})">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.GlobalContextMiddleware.ZeroTeam#MessageMVC#ZeroApis#IMessageMiddleware#Handle(ZeroTeam.MessageMVC.ZeroApis.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object,System.Func{System.Threading.Tasks.Task})">
             <summary>
             准备
             </summary>
@@ -486,7 +486,7 @@
             层级
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.LoggerMiddleware.ZeroTeam#MessageMVC#ZeroApis#IMessageMiddleware#Handle(ZeroTeam.MessageMVC.ZeroApis.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object,System.Func{System.Threading.Tasks.Task{ZeroTeam.MessageMVC.Messages.MessageState}})">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.LoggerMiddleware.ZeroTeam#MessageMVC#ZeroApis#IMessageMiddleware#Handle(ZeroTeam.MessageMVC.ZeroApis.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object,System.Func{System.Threading.Tasks.Task})">
             <summary>
             准备
             </summary>
@@ -511,7 +511,7 @@
             层级
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.MarkPointMiddleware.ZeroTeam#MessageMVC#ZeroApis#IMessageMiddleware#Handle(ZeroTeam.MessageMVC.ZeroApis.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object,System.Func{System.Threading.Tasks.Task{ZeroTeam.MessageMVC.Messages.MessageState}})">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.MarkPointMiddleware.ZeroTeam#MessageMVC#ZeroApis#IMessageMiddleware#Handle(ZeroTeam.MessageMVC.ZeroApis.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object,System.Func{System.Threading.Tasks.Task})">
             <summary>
             准备
             </summary>
@@ -536,7 +536,7 @@
             层级
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.StorageMiddleware.ZeroTeam#MessageMVC#ZeroApis#IMessageMiddleware#Handle(ZeroTeam.MessageMVC.ZeroApis.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object,System.Func{System.Threading.Tasks.Task{ZeroTeam.MessageMVC.Messages.MessageState}})">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.StorageMiddleware.ZeroTeam#MessageMVC#ZeroApis#IMessageMiddleware#Handle(ZeroTeam.MessageMVC.ZeroApis.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object,System.Func{System.Threading.Tasks.Task})">
             <summary>
             准备
             </summary>
@@ -561,7 +561,7 @@
             层级
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ReverseProxyMiddleware.ZeroTeam#MessageMVC#ZeroApis#IMessageMiddleware#Handle(ZeroTeam.MessageMVC.ZeroApis.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object,System.Func{System.Threading.Tasks.Task{ZeroTeam.MessageMVC.Messages.MessageState}})">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ReverseProxyMiddleware.ZeroTeam#MessageMVC#ZeroApis#IMessageMiddleware#Handle(ZeroTeam.MessageMVC.ZeroApis.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object,System.Func{System.Threading.Tasks.Task})">
             <summary>
             准备
             </summary>
@@ -784,11 +784,6 @@
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.ZeroService.CanLoop">
             <summary>
             能不能循环处理
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ZeroService._waitToken">
-            <summary>
-            应用程序等待结果的信号量对象
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.ZeroApis.ZeroService.eventSlim">

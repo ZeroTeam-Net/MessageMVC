@@ -29,7 +29,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <param name="tag">扩展信息</param>
         /// <param name="next">下一个处理方法</param>
         /// <returns></returns>
-        Task<MessageState> IMessageMiddleware.Handle(IService service, IMessageItem message, object tag, Func<Task<MessageState>> next)
+        Task IMessageMiddleware.Handle(IService service, IMessageItem message, object tag, Func<Task> next)
         {
             if (JsonHelper.TryDeserializeObject<ZeroContext>(message.Trace?.ContextJson, out var ctx))
             {

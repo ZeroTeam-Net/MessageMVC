@@ -29,22 +29,22 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <param name="tag">扩展信息</param>
         /// <param name="next">下一个处理方法</param>
         /// <returns></returns>
-        async Task<MessageState> IMessageMiddleware.Handle(IService service, IMessageItem message, object tag, Func<Task<MessageState>> next)
+        async Task IMessageMiddleware.Handle(IService service, IMessageItem message, object tag, Func<Task> next)
         {
             if (!LogRecorder.LogMonitor)
             {
-                return await next();
+                await next();
+                return;
             }
 
             using (MonitorScope.CreateScope($"{service.ServiceName}/{message.Title}"))
             {
                 LogRecorder.MonitorTrace(() => JsonConvert.SerializeObject(message, Formatting.Indented));
 
-                var state = await next();
+                await next();
 
                 LogRecorder.MonitorTrace("{0} {1}", message.State, message.Result);
 
-                return state;
             }
         }
     }

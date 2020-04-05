@@ -52,12 +52,12 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <param name="tag"></param>
         /// <param name="next">下一个处理方法</param>
         /// <returns></returns>
-        public async Task<MessageState> Handle(IService service, IMessageItem message, object tag, Func<Task<MessageState>> next)
+        public async Task Handle(IService service, IMessageItem message, object tag, Func<Task> next)
         {
             Service = service;
             Message = message;
             Tag = tag;
-            IApiAction action=null;
+            IApiAction action = null;
             try
             {
                 if (CommandPrepare(out action))
@@ -66,57 +66,43 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     Message.State = state;
                     Message.Result = result;
                 }
-                await Service.Transport.OnMessageResult(Processor, Message, Tag);
             }
-            catch (OperationCanceledException ex)
+            catch (OperationCanceledException)
             {
-                LogRecorder.MonitorTrace("Cancel");
-                Message.State = MessageState.Cancel;
                 if (action.IsApiContract)
                     Message.Result = ApiResultHelper.UnavailableJson;
-                await Service.Transport.OnMessageError(Processor, ex, Message, Tag);
-                return MessageState.Cancel;
+                throw;
             }
-            catch (ThreadInterruptedException ex)
+            catch (ThreadInterruptedException)
             {
-                LogRecorder.MonitorTrace("Time out");
                 if (action.IsApiContract)
                     Message.Result = ApiResultHelper.TimeOutJson;
-                Message.State = MessageState.Cancel;
-                await Service.Transport.OnMessageError(Processor, ex, Message, Tag);
-                return MessageState.Cancel;
+                throw;
             }
-            catch (NetTransferException ex)
+            catch (NetTransferException)
             {
                 if (action.IsApiContract)
                     Message.Result = ApiResultHelper.NetworkErrorJson;
-                message.State = MessageState.NetError;
-                await service.Transport.OnMessageError(Processor, ex, message, tag);
-                return MessageState.Cancel;
+                throw;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                LogRecorder.Exception(ex, message);
                 if (action.IsApiContract)
                     Message.Result = ApiResultHelper.LocalExceptionJson;
-                Message.State = MessageState.Exception;
-                await Service.Transport.OnMessageError(Processor, ex, Message, Tag);
-                return MessageState.Exception;
+                throw;
             }
             if (next != null)
             {
                 await next();
             }
-
-            return Message.State;
         }
 
         #endregion
 
-        #region 执行命令
+        #region CommandPrepare
 
         /// <summary>
-        ///     执行命令
+        ///    准备,取出方法,参数校验
         /// </summary>
         /// <param name="action"></param>
         /// <returns></returns>

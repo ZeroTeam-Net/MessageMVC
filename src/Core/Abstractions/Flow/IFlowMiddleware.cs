@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-
-namespace ZeroTeam.MessageMVC
+﻿namespace ZeroTeam.MessageMVC
 {
     /// <summary>
     /// 表示一个流程中间件

@@ -1129,7 +1129,7 @@
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApis.MessageProcessor.OnMessagePush(ZeroTeam.MessageMVC.ZeroApis.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
             <summary>
-            消息处理
+            消息处理(异步)
             </summary>
             <param name="service"></param>
             <param name="message"></param>
@@ -1166,11 +1166,6 @@
             结果推到调用处
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.MessageProcessor.PushResult(ZeroTeam.MessageMVC.Messages.MessageState)">
-            <summary>
-            结果推到调用处
-            </summary>
-        </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.IMessageMiddleware">
             <summary>
             消息处理中间件
@@ -1186,7 +1181,7 @@
             当前处理器
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IMessageMiddleware.Handle(ZeroTeam.MessageMVC.ZeroApis.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object,System.Func{System.Threading.Tasks.Task{ZeroTeam.MessageMVC.Messages.MessageState}})">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IMessageMiddleware.Handle(ZeroTeam.MessageMVC.ZeroApis.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object,System.Func{System.Threading.Tasks.Task})">
             <summary>
             准备
             </summary>
@@ -1323,9 +1318,9 @@
             </summary>
             <returns>是否需要发送回执(默认不发送)</returns>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.IRpcTransfer">
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.IServiceTransfer">
             <summary>
-            表示一个RPC传输对象
+            表示一个远程服务(RPC或HTTP)传输对象
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.ServiceAttribute">

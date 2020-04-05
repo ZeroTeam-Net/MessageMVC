@@ -127,11 +127,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         #region 执行流程
 
         /// <summary>
-        /// 应用程序等待结果的信号量对象
-        /// </summary>
-        private readonly SemaphoreSlim _waitToken = new SemaphoreSlim(0, int.MaxValue);
-
-        /// <summary>
         /// Run与Start互斥执行的事件对象
         /// </summary>
         private ManualResetEventSlim eventSlim;
@@ -166,16 +161,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// 开始
         /// </summary>
         /// <returns></returns>
-        private async Task<bool> DoStart()
+        private bool DoStart()
         {
             logger.Information(()=> $"Try start by {StationState.Text(RealState)}");
             try
             {
-                while (_waitToken.CurrentCount > 0)
-                {
-                    await _waitToken.WaitAsync();
-                }
-
                 if (ConfigState == StationStateType.None || ConfigState >= StationStateType.Stop || !ZeroFlowControl.CanDo)
                 {
                     logger.Warning(() => $"Start failed. ConfigState :{ConfigState} ,ZeroFlowControl.CanDo {ZeroFlowControl.CanDo}");
@@ -188,8 +178,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 //执行主任务
                 CancelToken = new CancellationTokenSource();
                 _ = Task.Factory.StartNew(Run, TaskCreationOptions.DenyChildAttach | TaskCreationOptions.LongRunning);
-                //保证Run真正执行后再完成本方法调用.
-                _waitToken.Wait();
                 return true;
             }
             catch (Exception e)
@@ -210,13 +198,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             if (!await LoopBegin())
             {
                 ResetStateMachine();
-                _waitToken.Release();
                 return;
             }
             RealState = StationState.Run;
 
             ResetStateMachine();
-            _waitToken.Release();
             logger.Information("[Run]");
             using (ManualResetEventSlimScope.Scope(eventSlim))
             {
@@ -382,7 +368,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     return true;//已启动,不应该再次
                 }
 
-                if (await DoStart())
+                if (DoStart())
                 {
                     return true;
                 }

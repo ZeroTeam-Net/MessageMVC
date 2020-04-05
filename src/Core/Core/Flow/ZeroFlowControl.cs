@@ -489,7 +489,7 @@ namespace ZeroTeam.MessageMVC
                 try
                 {
                     logger.Information("[Start]", mid.Name);
-                    _ = Task.Factory.StartNew(mid.Start);
+                    mid.Start();
                 }
                 catch (Exception e)
                 {
@@ -510,7 +510,7 @@ namespace ZeroTeam.MessageMVC
                 }
             }
 
-            //等待所有对象信号(全开或全关)
+            //等待所有对象信号(Active or Failed)
             await ActiveSemaphore.WaitAsync();
 
             ApplicationState = StationState.Run;

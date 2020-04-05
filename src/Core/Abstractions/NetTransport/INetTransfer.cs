@@ -93,7 +93,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             catch
             {
             }
-            processor.PushResult();//停止HttpCall的等待
+            await processor.PushResult();//停止HttpCall的等待
             await MessagePoster.PostReceipt(message);
         }
 
@@ -137,7 +137,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 LogRecorder.Exception(ex);
             }
-            processor.PushResult();
+            await processor.PushResult();
             await MessagePoster.PostReceipt(message);
         }
 

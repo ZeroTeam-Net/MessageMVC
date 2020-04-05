@@ -29,53 +29,24 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <param name="tag">扩展信息</param>
         /// <param name="next">下一个处理方法</param>
         /// <returns></returns>
-        async Task<MessageState> IMessageMiddleware.Handle(IService service, IMessageItem message, object tag, Func<Task<MessageState>> next)
+        async Task IMessageMiddleware.Handle(IService service, IMessageItem message, object tag, Func<Task> next)
         {
             if (service.ServiceName == message.Topic)
             {
-                return await next();
+                await next();
+                return;
             }
             var producer = MessagePoster.GetService(message.Topic);
             if (producer == null)
             {
-                return await next();
+                await next();
+                return;
             }
-            try
-            {
-                LogRecorder.MonitorTrace("ReverseProxy To..");
-                var (state, result) = await producer.Post(message);
-                message.Result = result;
-                message.State = state;
-                await service.Transport.OnMessageResult(Processor, message, tag);
-            }
-            catch (OperationCanceledException ex)
-            {
-                LogRecorder.MonitorTrace("Cancel");
-                message.State = MessageState.Cancel;
-                await service.Transport.OnMessageError(Processor, ex, message, tag);
-                return MessageState.Cancel;
-            }
-            catch (ThreadInterruptedException ex)
-            {
-                LogRecorder.MonitorTrace("Time out");
-                message.State = MessageState.Cancel;
-                await service.Transport.OnMessageError(Processor, ex, message, tag);
-                return MessageState.Cancel;
-            }
-            catch (NetTransferException ex)
-            {
-                message.State = MessageState.NetError;
-                await service.Transport.OnMessageError(Processor, ex, message, tag);
-                return MessageState.Cancel;
-            }
-            catch (Exception ex)
-            {
-                LogRecorder.Exception(ex, message);
-                message.State = MessageState.Exception;
-                await service.Transport.OnMessageError(Processor, ex, message, tag);
-                return MessageState.Exception;
-            }
-            return message.State = MessageState.Success;
+            LogRecorder.MonitorTrace("ReverseProxy To..");
+            var (state, result) = await producer.Post(message);
+            message.Result = result;
+            message.State = state;
+            await service.Transport.OnMessageResult(Processor, message, tag);
         }
     }
 }

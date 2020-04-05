@@ -53,7 +53,7 @@ namespace ZeroTeam.MessageMVC.Kafka
                     {
                         item = JsonHelper.DeserializeObject<MessageItem>(cr.Value);
                         await OnMessagePush(item, cr);
-                        
+
                     }
                     catch (Exception e)
                     {
@@ -82,8 +82,8 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <param name="consumeResult"></param>
         private async Task OnMessagePush(IMessageItem message, ConsumeResult consumeResult)
         {
-            var state = await MessageProcessor.OnMessagePush(Service, message, consumeResult);
-            if (state == MessageState.Success)
+            await MessageProcessor.OnMessagePush(Service, message, consumeResult);//BUG:应该配置化同步或异步
+            if (message.State == MessageState.Success)
             {
                 Interlocked.Increment(ref SuccessCount);
             }
