@@ -85,11 +85,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.ZeroRPC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.ZmqInproc.Sample", "src\sample\ZmqInproc\ZeroTeam.MessageMVC.ZmqInproc.Sample.csproj", "{9D501803-C63F-4644-A8CE-2B8F4AA14228}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inporc.NUnitTest", "src\test\NUnitTestInporc\Inporc.NUnitTest.csproj", "{4E49EC59-DF2C-4306-BD55-4805891DD671}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inporc.NUnitTest", "src\UnitTest\NUnitTestInporc\Inporc.NUnitTest.csproj", "{4E49EC59-DF2C-4306-BD55-4805891DD671}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{E1BA22EE-D8CB-4C1A-B88F-C14B9FC3C855}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlanUnitTest", "src\test\PlanUnitTest\PlanUnitTest.csproj", "{53C0044E-A6F3-45A6-B03B-2CF65E1B4A73}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlanUnitTest", "src\UnitTest\PlanUnitTest\PlanUnitTest.csproj", "{53C0044E-A6F3-45A6-B03B-2CF65E1B4A73}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.MulitNetTransfer.Sample", "src\sample\Mulit\ZeroTeam.MessageMVC.MulitNetTransfer.Sample.csproj", "{C401BFD3-8CE7-460D-B12C-8C46020BE6EF}"
 EndProject
