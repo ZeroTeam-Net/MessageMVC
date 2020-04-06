@@ -1,4 +1,4 @@
-namespace ZeroTeam.MessageMVC
+namespace ZeroTeam.MessageMVC.Context
 {
     /// <summary>
     ///     参数类型

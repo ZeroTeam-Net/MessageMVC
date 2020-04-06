@@ -1,4 +1,5 @@
 ﻿using System;
+using ZeroTeam.MessageMVC.MessageTransfers;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {

@@ -1,5 +1,6 @@
 using Agebull.EntityModel.Common;
 using ZeroTeam.MessageMVC.Messages;
+using System.Collections.Generic;
 
 namespace ZeroTeam.MessageMVC.Context
 {
@@ -26,7 +27,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         /// 上下文配置
         /// </summary>
-        ContextOption Option { get; set; }
+        Dictionary<string, string> Option { get; set; }
 
         /// <summary>
         /// 当前消息

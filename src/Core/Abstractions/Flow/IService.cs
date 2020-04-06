@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using ZeroTeam.MessageMVC.MessageTransfers;
+using ZeroTeam.MessageMVC.ZeroApis;
 
-namespace ZeroTeam.MessageMVC.ZeroApis
+namespace ZeroTeam.MessageMVC.Services
 {
     /// <summary>
     /// 站点连接池

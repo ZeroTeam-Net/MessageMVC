@@ -43,6 +43,16 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         public bool IsPublic => Access.HasFlag(ApiAccessOption.Public);
 
         /// <summary>
+        ///     参数名称
+        /// </summary>
+        public string ArgumentName { get; set; }
+
+        /// <summary>
+        ///     基本数据,即按参数名称取值
+        /// </summary>
+        public bool IsBaseValue { get; set; }
+
+        /// <summary>
         ///     参数类型
         /// </summary>
         public Type ArgumentType { get; set; }
@@ -156,30 +166,37 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             }
             else if (ArgumentType == typeof(string))
             {
+                IsBaseValue = true;
                 ArgumentConvert = arg => arg;
             }
             else if (ArgumentType == typeof(int))
             {
+                IsBaseValue = true;
                 ArgumentConvert = arg => int.Parse(arg);
             }
             else if (ArgumentType == typeof(long))
             {
+                IsBaseValue = true;
                 ArgumentConvert = arg => long.Parse(arg);
             }
             else if (ArgumentType == typeof(bool))
             {
+                IsBaseValue = true;
                 ArgumentConvert = arg => bool.Parse(arg);
             }
             else if (ArgumentType == typeof(decimal))
             {
+                IsBaseValue = true;
                 ArgumentConvert = arg => decimal.Parse(arg);
             }
             else if (ArgumentType == typeof(float))
             {
+                IsBaseValue = true;
                 ArgumentConvert = arg => float.Parse(arg);
             }
             else if (ArgumentType == typeof(double))
             {
+                IsBaseValue = true;
                 ArgumentConvert = arg => double.Parse(arg);
             }
             else

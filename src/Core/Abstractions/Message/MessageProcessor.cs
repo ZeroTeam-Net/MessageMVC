@@ -1,13 +1,17 @@
-﻿using Agebull.Common.Ioc;
+﻿using Agebull.Common;
+using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
+using ZeroTeam.MessageMVC.MessageTransfers;
+using ZeroTeam.MessageMVC.Services;
 
-namespace ZeroTeam.MessageMVC.ZeroApis
+namespace ZeroTeam.MessageMVC.Messages
 {
     /// <summary>
     ///    消息处理器
@@ -28,11 +32,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 Service = service,
                 Message = message,
-                taskCompletionSource = new TaskCompletionSource<MessageState>(),
+                //taskCompletionSource = new TaskCompletionSource<MessageState>(),
                 Tag = tag
             };
-            _ = process.Process();
-            return process.taskCompletionSource.Task;
+            return process.Process();
+            //return process.taskCompletionSource.Task;
         }
 
         #endregion
@@ -55,10 +59,13 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         internal object Tag;
 
         /// <summary>
-        /// 状态
+        /// 所有消息处理中间件
         /// </summary>
-        private MessageState State;
         private IMessageMiddleware[] middlewares;
+
+        /// <summary>
+        /// 当前中间件序号
+        /// </summary>
         private int index = 0;
 
         private async Task Process()
@@ -66,73 +73,133 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             using (IocScope.CreateScope($"MessageProcessor : {Message.Topic}/{Message.Title}"))
             {
                 index = 0;
-                State = MessageState.None;
+                Message.State = MessageState.Accept;
                 middlewares = IocHelper.ServiceProvider.GetServices<IMessageMiddleware>().OrderBy(p => p.Level).ToArray();
+
+                foreach (var middleware in middlewares)
+                    middleware.Processor = this;
                 try
                 {
                     await Handle();
-                    await PushResult();
                 }
                 catch (OperationCanceledException ex)
                 {
-                    LogRecorder.MonitorTrace("Cancel");
                     Message.State = MessageState.Cancel;
-                    await Service.Transport.OnMessageError(this, ex, Message, Tag);
+                    Message.Exception = ex;
+                    await OnMessageError();
                 }
                 catch (ThreadInterruptedException ex)
                 {
-                    LogRecorder.MonitorTrace("Time out");
                     Message.State = MessageState.Cancel;
-                    await Service.Transport.OnMessageError(this, ex, Message, Tag);
+                    Message.Exception = ex;
+                    await OnMessageError();
                 }
                 catch (NetTransferException ex)
                 {
-                    LogRecorder.MonitorTrace(() => $"NetError : {ex.Message}");
                     Message.State = MessageState.NetError;
-                    await Service.Transport.OnMessageError(this, ex, Message, Tag);
+                    Message.Exception = ex;
+                    await OnMessageError();
                 }
                 catch (Exception ex)
                 {
-                    LogRecorder.Exception(ex);
-                    LogRecorder.MonitorTrace(()=>$"UnkonwException : {ex.Message}");
-                    await Service.Transport.OnMessageError(this, ex, Message, Tag);
+                    Message.State = MessageState.Exception;
+                    Message.Exception = ex;
+                    await OnMessageError();
                 }
+                await PushResult();
             }
         }
 
         /// <summary>
-        /// 链式处理中间件
+        /// 中间件链式处理
         /// </summary>
         /// <returns></returns>
-        private async Task Handle()
+        private Task Handle()
         {
-            if (index >= middlewares.Length)
+            while (index < middlewares.Length)
             {
-                return;
+                var next = middlewares[index++];
+                if (!next.Scope.HasFlag(MessageHandleScope.Handle))
+                    continue;
+                return next.Handle(Service, Message, Tag, Handle);
             }
-
-            var next = middlewares[index++];
-            next.Processor = this;
-            await next.Handle(Service, Message, Tag, Handle);
+            return Task.CompletedTask;
         }
+
         #endregion
 
         #region 处理结果返回
 
-        private TaskCompletionSource<MessageState> taskCompletionSource;
-        private int isPushed;
+        //private TaskCompletionSource<MessageState> taskCompletionSource;
+        //private int isPushed;
         /// <summary>
         /// 结果推到调用处
         /// </summary>
-        public async Task PushResult()
+        private async Task PushResult()
         {
-            if (Interlocked.Increment(ref isPushed) == 1)
+            if (Tag == null)//内部自调用,无需处理
+                return;
+            //if (Interlocked.Increment(ref isPushed) == 1)
             {
-                await Service.Transport.OnMessageResult(this, Message, Tag);
-                taskCompletionSource.TrySetResult(Message.State = State);
+                await Service.Transport.OnResult(Message, Tag);
+                //taskCompletionSource.TrySetResult(Message.State = State);
             }
         }
 
+        #endregion
+        #region 异常处理
+
+        /// <summary>
+        /// 错误发生时处理
+        /// </summary>
+        /// <remarks>
+        /// 默认实现为保证OnCallEnd可控制且不再抛出异常,无特殊需要不应再次实现
+        /// </remarks>
+        async Task OnMessageError()
+        {
+            if (Message.Exception is NetTransferException ne)
+            {
+                Message.Result = ne.InnerException.Message;
+            }
+            else
+            {
+                if (Message.State <= MessageState.Accept)
+                    Message.State = MessageState.Exception;
+                Message.Result = Message.Exception.Message;
+            }
+            foreach (var middleware in middlewares.Where(p => p.Scope.HasFlag(MessageHandleScope.Exception)))
+            {
+                try
+                {
+                    await middleware.OnGlobalException(Service, Message, Tag);
+                }
+                catch (Exception ex)
+                {
+                    LogRecorder.Exception(ex);
+                }
+            }
+        }
+        #endregion
+
+        #region 数据发送结束
+
+        /// <summary>
+        /// 数据发送结束
+        /// </summary>
+        public async Task OnPostEnd()
+        {
+            foreach (var middleware in middlewares.Where(p => p.Scope.HasFlag(MessageHandleScope.End)))
+            {
+                try
+                {
+                    await middleware.OnEnd(Message);
+                }
+                catch (Exception ex)
+                {
+                    LogRecorder.Exception(ex);
+                }
+            }
+        }
         #endregion
     }
 }

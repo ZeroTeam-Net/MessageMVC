@@ -121,12 +121,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ///     生成一个成功的标准返回
         /// </summary>
         /// <returns></returns>
-        public IApiResult Succees(string message = null)
+        public IApiResult Succees()
         {
             return new ApiResult
             {
-                Success = true,
-                Message = message
+                Success = true
             };
         }
 
@@ -380,6 +379,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             }
             return result;
         }
+
         #endregion
 
     }

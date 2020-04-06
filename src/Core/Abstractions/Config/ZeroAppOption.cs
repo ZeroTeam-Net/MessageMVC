@@ -1,4 +1,8 @@
+using Agebull.Common.Configuration;
 using Agebull.Common.Ioc;
+using System;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
 namespace ZeroTeam.MessageMVC
@@ -11,19 +15,19 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         ///     当前应用名称
         /// </summary>
-        [DataMember]
+        
         public string AppName { get; set; }
 
         /// <summary>
         ///     当前应用版本号
         /// </summary>
-        [DataMember]
+        
         public string AppVersion { get; set; }
 
         /// <summary>
         ///     服务名称
         /// </summary>
-        [DataMember]
+        
         public string ServiceName { get; set; }
 
         /// <summary>
@@ -34,7 +38,7 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         ///     应用所在的顶级目录
         /// </summary>
-        [DataMember]
+        
         public string RootPath { get; set; }
 
         /// <summary>
@@ -58,16 +62,21 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 实例
         /// </summary>
-        public static ZeroAppOption Instance { get;private set; }
+        public static ZeroAppOption Instance { get;}
 
-
-        /// <summary>
-        /// 设置唯一实例,仅内部可用
-        /// </summary>
-        public static void SetInstance(ZeroAppOption option)
+        static ZeroAppOption()
         {
-            Instance = option;
-            IocHelper.AddSingleton(option);
+            var asName = Assembly.GetEntryAssembly().GetName();
+            Instance = new ZeroAppOption
+            {
+                AppName = asName.Name,
+                AppVersion = asName.Version?.ToString(),
+                BinPath = Environment.CurrentDirectory,
+                RootPath = Environment.CurrentDirectory,
+                IsLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
+            };
+            Instance.CopyByHase(ConfigurationManager.Get<ZeroAppConfig>("ZeroApp"));
+
         }
     }
 }

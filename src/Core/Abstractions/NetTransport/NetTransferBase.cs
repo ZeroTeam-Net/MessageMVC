@@ -1,7 +1,8 @@
 ﻿using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
+using ZeroTeam.MessageMVC.Services;
 
-namespace ZeroTeam.MessageMVC.ZeroApis
+namespace ZeroTeam.MessageMVC.MessageTransfers
 {
     /// <summary>
     /// 网络传输对象基类

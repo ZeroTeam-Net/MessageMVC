@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using System;
+using ZeroTeam.MessageMVC.Context;
 
 namespace ZeroTeam.MessageMVC.Messages
 {
@@ -67,6 +69,11 @@ namespace ZeroTeam.MessageMVC.Messages
         public string Result { get; set; }
 
         /// <summary>
+        /// 异常
+        /// </summary>
+        public Exception Exception { get; set; }
+
+        /// <summary>
         ///     跟踪信息
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
@@ -86,6 +93,15 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 接口参数,即Content
         /// </summary>
         public string Argument => Content;
+
+
+        /// <summary>
+        /// 取参数值
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="isBaseValue"></param>
+        public string GetArgument(string name, bool isBaseValue) => Content;
+
     }
 }
 

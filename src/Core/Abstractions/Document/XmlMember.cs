@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Xml.Linq;
 
-namespace ZeroTeam.MessageMVC.ApiDocuments
+namespace ZeroTeam.MessageMVC.Documents
 {
     /// <summary>
     ///     从程序集文档读取的注释信息
@@ -157,6 +157,8 @@ namespace ZeroTeam.MessageMVC.ApiDocuments
 
             Assemblies.Add(assembly);
             // ReSharper disable once AssignNullToNotNullAttribute
+            if (assembly.IsDynamic || assembly.Location == null)
+                return;
             Load(Path.Combine(Path.GetDirectoryName(assembly.Location),
                 Path.GetFileNameWithoutExtension(assembly.Location) + ".xml"));
         }

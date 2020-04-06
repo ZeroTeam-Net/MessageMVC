@@ -13,8 +13,9 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
-using ZeroTeam.MessageMVC.ApiDocuments;
+using ZeroTeam.MessageMVC.Documents;
 using ZeroTeam.MessageMVC.Messages;
+using ZeroTeam.MessageMVC.Services;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -116,6 +117,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                         Name = api.Key,
                         Function = info.Action,
                         Access = info.AccessOption,
+                        ArgumentName = info.ArgumentName,
                         ArgumentType = info.ArgumentType,
                         ResultType = info.ResultType,
                         IsAsync = info.IsAsync
@@ -259,6 +261,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 api.ArgumentInfo = ReadEntity(argInfo.ParameterType, argInfo.Name ?? "argument") ?? new TypeDocument();
                 api.ArgumentInfo.Name = arg.Name;
+                api.ArgumentName = arg.Name; 
                 api.ArgumentType = arg.ParameterType;
                 if (doc != null)
                 {
@@ -509,9 +512,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             //{
             //    if (sta.Aips.Count == 0)
             //        continue;
-            //    if (!ZeroFlowControl.Config.Documents.TryGetValue(sta.Name, out var doc))
+            //    if (!ZeroAppOption.Instance.Documents.TryGetValue(sta.Name, out var doc))
             //    {
-            //        ZeroFlowControl.Config.Documents.Add(sta.Name, sta);
+            //        ZeroAppOption.Instance.Documents.Add(sta.Name, sta);
             //        continue;
             //    }
             //    foreach (var api in sta.Aips)

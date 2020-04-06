@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ZeroTeam.MessageMVC
+﻿namespace ZeroTeam.MessageMVC
 {
     /// <summary>
     /// 表示一个应用中间件

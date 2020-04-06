@@ -1,5 +1,6 @@
 ﻿using Agebull.EntityModel.Common;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC.Context
@@ -20,7 +21,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// 上下文配置
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public  ContextOption Option { get; set; }
+        public Dictionary<string, string> Option { get; set; }
 
         /// <summary>
         /// 当前消息

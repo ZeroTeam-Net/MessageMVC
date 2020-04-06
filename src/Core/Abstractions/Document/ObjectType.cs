@@ -1,4 +1,4 @@
-﻿namespace ZeroTeam.MessageMVC.ApiDocuments
+﻿namespace ZeroTeam.MessageMVC.Documents
 {
     /// <summary>
     ///     对象类型

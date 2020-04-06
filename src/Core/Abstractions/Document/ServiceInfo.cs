@@ -1,9 +1,10 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Runtime.Serialization;
+using ZeroTeam.MessageMVC.MessageTransfers;
 using ZeroTeam.MessageMVC.ZeroApis;
 
-namespace ZeroTeam.MessageMVC.ApiDocuments
+namespace ZeroTeam.MessageMVC.Documents
 {
     /// <summary>
     /// 站点信息

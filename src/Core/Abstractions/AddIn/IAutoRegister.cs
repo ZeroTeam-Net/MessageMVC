@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Agebull.Common.Ioc
+namespace ZeroTeam.MessageMVC.AddIn
 {
     /// <summary>
     /// 生自注册对象
@@ -10,12 +10,12 @@ namespace Agebull.Common.Ioc
         /// <summary>
         /// 执行自动注册
         /// </summary>
-        void AutoRegist(IServiceCollection service);
+        void AutoRegist(IServiceCollection service) { }
 
         /// <summary>
         /// 初始化
         /// </summary>
-        void Initialize();
+        void Initialize() { }
 
 
     }

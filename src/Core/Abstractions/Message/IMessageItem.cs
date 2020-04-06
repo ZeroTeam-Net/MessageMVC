@@ -1,4 +1,4 @@
-﻿using Agebull.Common;
+﻿using System;
 using ZeroTeam.MessageMVC.Context;
 
 namespace ZeroTeam.MessageMVC.Messages
@@ -54,6 +54,11 @@ namespace ZeroTeam.MessageMVC.Messages
         string Result { get; set; }
 
         /// <summary>
+        /// 异常
+        /// </summary>
+        Exception Exception { get; set; }
+
+        /// <summary>
         /// 处理状态
         /// </summary>
         MessageState State { get; set; }
@@ -64,13 +69,22 @@ namespace ZeroTeam.MessageMVC.Messages
         TraceInfo Trace { get; set; }
 
         /// <summary>
-        /// 刷新操作
+        /// 重置
         /// </summary>
-        void Flush()
+        void Reset()
         {
             State = MessageState.None;
             Result = null;
         }
+
+        /// <summary>
+        /// 取参数值
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="isBaseValue"></param>
+        /// <returns>值</returns>
+        string GetArgument(string name, bool isBaseValue);
+
 
         /*// <summary>
         /// 生产者信息

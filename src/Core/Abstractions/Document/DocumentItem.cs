@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Runtime.Serialization;
 
-namespace ZeroTeam.MessageMVC.ApiDocuments
+namespace ZeroTeam.MessageMVC.Documents
 {
     /// <summary>
     ///     文档节点
@@ -10,15 +10,15 @@ namespace ZeroTeam.MessageMVC.ApiDocuments
         [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class DocumentItem : AnnotationsConfig
     {
-        [DataMember]
+        
         [JsonProperty("example", NullValueHandling = NullValueHandling.Ignore)]
         private string _example;
 
-        [DataMember]
+        
         [JsonProperty("seealso", NullValueHandling = NullValueHandling.Ignore)]
         private string _seealso;
 
-        [DataMember]
+        
         [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
         private string _value;
 

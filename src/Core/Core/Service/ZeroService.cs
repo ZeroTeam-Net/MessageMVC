@@ -1,4 +1,3 @@
-using Agebull.Common.Frame;
 using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Microsoft.Extensions.Logging;
@@ -6,11 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using ZeroTeam.MessageMVC.ApiDocuments;
-using ZeroTeam.MessageMVC.ZeroApis.StateMachine;
+using ZeroTeam.MessageMVC.Documents;
+using ZeroTeam.MessageMVC.MessageTransfers;
+using ZeroTeam.MessageMVC.Services.StateMachine;
+using ZeroTeam.MessageMVC.ZeroApis;
 
-
-namespace ZeroTeam.MessageMVC.ZeroApis
+namespace ZeroTeam.MessageMVC.Services
 {
 
     /// <summary>
@@ -354,30 +354,30 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
         #region 状态机接口
 
-        async Task<bool> IStateMachineControl.DoStart()
+        Task<bool> IStateMachineControl.DoStart()
         {
             if (RealState == StationState.BeginRun || RealState == StationState.Run)
             {
-                return true;//已启动,不应该再次
+                return Task.FromResult(true);//已启动,不应该再次
             }
 
             using (ManualResetEventSlimScope.Scope(eventSlim))
             {
                 if (RealState == StationState.BeginRun || RealState == StationState.Run)
                 {
-                    return true;//已启动,不应该再次
+                    return Task.FromResult(true);//已启动,不应该再次
                 }
 
                 if (DoStart())
                 {
-                    return true;
+                    return Task.FromResult(true);
                 }
 
                 RealState = StationState.Failed;
 
                 ResetStateMachine();
                 ZeroFlowControl.OnObjectFailed(this);
-                return false;
+                return Task.FromResult(false);
             }
         }
 

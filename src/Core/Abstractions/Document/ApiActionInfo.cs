@@ -2,7 +2,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace ZeroTeam.MessageMVC.ApiDocuments
+namespace ZeroTeam.MessageMVC.Documents
 {
     /// <summary>
     ///     Api方法的信息

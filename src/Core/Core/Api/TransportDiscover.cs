@@ -1,6 +1,7 @@
 ﻿using Agebull.Common.Ioc;
 using System;
 using System.Reflection;
+using ZeroTeam.MessageMVC.MessageTransfers;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {

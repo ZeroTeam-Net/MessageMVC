@@ -29,7 +29,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
         /// <summary>生成一个成功的标准返回</summary>
         /// <returns></returns>
-        IApiResult Succees(string message);
+        IApiResult Succees();
 
         /// <summary>生成一个包含错误码的标准返回</summary>
         /// <param name="errCode">错误码</param>

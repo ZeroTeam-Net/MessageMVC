@@ -49,10 +49,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Flow\ZeroFlowControl.Config.cs" />
+    <Compile Remove="Flow\ZeroAppOption.Instance.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="MessageMiddleware\" />
     <Folder Include="Properties\" />
   </ItemGroup>
 

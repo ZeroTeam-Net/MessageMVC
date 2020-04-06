@@ -1,0 +1,215 @@
+﻿<!DOCTYPE html>
+<html style="height: 100%;width:100%">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebNotify Sample</title>
+    <link href="http://cdn.staticfile.org/element-ui/2.13.0/theme-chalk/index.css" rel="stylesheet">
+
+    <script src="http://cdn.staticfile.org/jquery/3.3.1/jquery.min.js"></script>
+    <script src="http://cdn.staticfile.org/vue/2.6.10/vue.js"></script>
+    <script src="https://cdn.staticfile.org/axios/0.19.2/axios.min.js"></script>
+    <script src="http://cdn.staticfile.org/element-ui/2.13.0/index.js"></script>
+    <script src="http://cdn.staticfile.org/element-ui/2.13.0/locale/zh-CN.min.js"></script>
+
+
+    <link rel="stylesheet" href="/css/site.css" />
+
+    <style>
+        .item {
+            margin-top: 10px;
+            margin-right: 40px;
+        }
+
+        .my_label {
+            width: 60px;
+            display: inline-block;
+            text-align: right
+        }
+
+        .el-dialog {
+            background-color: whitesmoke
+        }
+
+        .el-dialog__body {
+            padding: 10px
+        }
+
+        .el-card__body {
+            padding: 10px 10px 0 10px;
+        }
+    </style>
+    <script src="/js/ws.js"></script>
+    <script src="/js/vue_ex.js"></script>
+</head>
+
+<body>
+    <div id="work_space" class="tiled" v-cloak>
+        <el-container class="tiled">
+            <el-header>
+                <div style="float:left;padding:0;color:white;font-size:20px" onclick="close_open();">
+                    <i v-bind:style="{color:(ws_active ? 'rgb(255, 208, 75)' : 'white')}" class="@icon"></i>
+                    <span style="color: rgb(255, 208, 75);padding-left:8px">配置编辑</span>
+                </div>
+                <div style="float:right">
+                    <el-button-group>
+                        <el-tooltip content="加入开源贡献者行列" placement="bottom-start">
+                            <el-button type="info" @@click="go_github">
+                                <svg height="12" viewBox="0 0 16 16" version="1.1" width="12" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path>
+                                </svg>
+                            </el-button>
+                        </el-tooltip>
+                    </el-button-group>
+                </div>
+            </el-header>
+            <el-container class="tiled">
+                <el-aside id="main_menu" class="message_boards">
+                    <div style="width: 100%; height: 100%; overflow: auto">
+                        <div style="width: 100%; overflow: visible">
+
+                            <el-menu :collapse="isCollapse" default-active="type-active"
+                                     @select="menu_select"
+                                     background-color="#545c64"
+                                     text-color="#fff" unique-opened
+                                     active-text-color="#ffd04b">
+                                <el-menu-item index="-flush">
+                                    <template slot="title">
+                                        <i class="el-icon-refresh"></i>
+                                        <span>刷新</span>
+                                    </template>
+                                </el-menu-item>
+                                <el-submenu index="-data">
+                                    <template slot="title">
+                                        <i class="el-icon-date"></i>
+                                        <span>配置列表</span>
+                                    </template>
+                                    <el-menu-item v-for="sec in sections" :index="sec">
+                                        <template slot="title">
+                                            <i class="el-icon-setting"></i>
+                                            <span>{{sec}}</span>
+                                        </template>
+                                    </el-menu-item>
+                                </el-submenu>
+                            </el-menu>
+                        </div>
+                    </div>
+                </el-aside>
+                <el-main class="tiled_scroll">
+                    <div>当前对象 : {{section}} </div>
+                    <el-input type="textarea"
+                              :rows="20"
+                              placeholder="请输入内容"
+                              v-model="value">
+                    </el-input>
+
+                    <el-button-group>
+                        <el-button type="primary" icon="el-icon-circle-plus" @click="add">新增</el-button>
+                        <el-button type="success" icon="el-icon-success" @click="update">更新</el-button>
+                        <i/>
+                        <el-button type="danger" icon="el-icon-error" @click="del">删除</el-button>
+                    </el-button-group>
+
+                </el-main>
+            </el-container>
+        </el-container>
+    </div>
+    <script>
+        if (!vue_option.data.menu_wid)
+            vue_option.data.menu_wid = '300px';
+
+        if (vue_option.data.isCollapse)
+            $('#main_menu').width('auto');
+        else
+            $('#main_menu').width(vue_option.data.menu_wid);
+
+        function close_open() {
+            vue_option.data.isCollapse = !vue_option.data.isCollapse;
+            if (vue_option.data.isCollapse)
+                $('#main_menu').width('auto');
+            else
+                $('#main_menu').width(vue_option.data.menu_wid);
+        }
+
+        extend_data({
+            sections: [],
+            section: '',
+            value: ""
+        });
+
+        extend_methods({
+            menu_select: function (index, indexPath) {
+                switch (index) {
+                    case "-flush":
+                        load();
+                        break;
+                    case "-add":
+                        add();
+                        break;
+                    case "-update":
+                        update();
+                        break;
+                    case "-delete":
+                        del();
+                        break;
+                    default:
+                        details(index);
+                        break;
+                }
+            },
+            add: function () {
+                vue_obj.$prompt('请输入节点名称', '新增', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消'
+                }).then((value) => {
+                    do_sync_post('/ConfigEdit/v1/add', `section=${value.value}`, "新增配置", data => {
+                        vue_option.data.sections = data;
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '取消输入'
+                    });
+                });
+            },
+            update: function () {
+                do_sync_post('/ConfigEdit/v1/update', {
+                    Section: vue_option.data.section,
+                    Type: "section",
+                    Value: vue_option.data.value
+                }, "更新配置");
+            },
+            del: function () {
+                this.$confirm('此操作将永久删除该配置项, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    do_sync_post('/ConfigEdit/v1/del', `section=${vue_option.data.section}`, "删除配置", data => {
+                        vue_option.data.sections = data;
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+            }
+        });
+        function load() {
+            do_sync_post('/ConfigEdit/v1/list', '', "载入配置", data => {
+                vue_option.data.sections = data;
+            });
+        }
+
+        function details(section) {
+            vue_option.data.section = section;
+            do_sync_post('/ConfigEdit/v1/details', `section=${section}`, "载入配置", data => {
+                vue_option.data.value = data;
+            });
+        }
+        vue_obj = new Vue(vue_option);
+        load();
+    </script>
+</body>
+</html>

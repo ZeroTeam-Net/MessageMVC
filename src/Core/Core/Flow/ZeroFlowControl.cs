@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using ZeroTeam.MessageMVC.Services;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC
@@ -23,16 +24,6 @@ namespace ZeroTeam.MessageMVC
         #region State
 
         private static IFlowMiddleware[] Middlewares;
-
-        /// <summary>
-        ///     当前应用名称
-        /// </summary>
-        public static string AppName => Config.AppName;
-
-        /// <summary>
-        ///     站点配置
-        /// </summary>
-        public static ZeroAppOption Config => ZeroAppOption.Instance;
 
         /// <summary>
         ///     运行状态
@@ -96,26 +87,16 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public static void CheckOption()
         {
-            var asName = Assembly.GetEntryAssembly().GetName();
             LogRecorder.Initialize();
             logger = IocHelper.LoggerFactory.CreateLogger(nameof(ZeroFlowControl));
 
-            var config = new ZeroAppOption
-            {
-                AppName = asName.Name,
-                AppVersion = asName.Version?.ToString(),
-                BinPath = Environment.CurrentDirectory,
-                RootPath = Environment.CurrentDirectory,
-                IsLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
-            };
-            ZeroAppOption.SetInstance(config);
-
+            IocHelper.Update();
             Middlewares = IocHelper.RootProvider.GetServices<IFlowMiddleware>().OrderBy(p => p.Level).ToArray();
             foreach (var mid in Middlewares)
             {
                 try
                 {
-                    mid.CheckOption(config);
+                    mid.CheckOption(ZeroAppOption.Instance);
                 }
                 catch (Exception ex)
                 {
@@ -127,30 +108,36 @@ namespace ZeroTeam.MessageMVC
 
             //显示
             Console.WriteLine($@"Wecome ZeroTeam MessageMVC
-      AppName : {config.AppName}
-      Version : {config.AppVersion}
+      AppName : {ZeroAppOption.Instance.AppName}
+      Version : {ZeroAppOption.Instance.AppVersion}
      RunModel : {ConfigurationManager.Root["ASPNETCORE_ENVIRONMENT_"]}
-  ServiceName : {config.ServiceName}
-           OS : {(config.IsLinux ? "Linux" : "Windows")}
-         Host : {config.LocalIpAddress}
-        AddIn : {(config.EnableAddIn ? "Enable" : "Disable")}({config.AddInPath})
-    TraceName : {config.TraceName}
-   ThreadPool : {config.MaxWorkThreads:N0}worker|{ config.MaxIOThreads:N0}threads
-    LinkTrace : {(config.EnableLinkTrace ? "Enable" : "Disable")}
-     RootPath : {config.RootPath}
-   DataFolder : {config.DataFolder}
- ConfigFolder : {config.ConfigFolder}
-   MonitorLog : {(config.EnableMonitorLog ? "Enable" : "Disable")}
-   ReConsumer : {(config.EnableMessageReConsumer ? "Enable" : "Disable")}
-    MarkPoint : {config.MarkPointName}({(config.EnableMarkPoint ? "Enable" : "Disable")})
+  ServiceName : {ZeroAppOption.Instance.ServiceName}
+           OS : {(ZeroAppOption.Instance.IsLinux ? "Linux" : "Windows")}
+         Host : {ZeroAppOption.Instance.LocalIpAddress}
+        AddIn : {(ZeroAppOption.Instance.EnableAddIn ? "Enable" : "Disable")}({ZeroAppOption.Instance.AddInPath})
+    TraceName : {ZeroAppOption.Instance.TraceName}
+   ThreadPool : {ZeroAppOption.Instance.MaxWorkThreads:N0}worker|{ ZeroAppOption.Instance.MaxIOThreads:N0}threads
+     RootPath : {ZeroAppOption.Instance.RootPath}
+   DataFolder : {ZeroAppOption.Instance.DataFolder}
+ ConfigFolder : {ZeroAppOption.Instance.ConfigFolder}
 ");
         }
+
+        #endregion
+
+        #region Discove
+
+
+        static List<Assembly> knowAssemblies = new List<Assembly>();
 
         /// <summary>
         ///     发现
         /// </summary>
         public static void Discove(Assembly assembly)
         {
+            if (knowAssemblies.Contains(assembly))
+                return;
+            knowAssemblies.Add(assembly);
             var discover = new ApiDiscover
             {
                 Assembly = assembly
@@ -162,25 +149,40 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         ///     发现
         /// </summary>
-        public static void Discove()
-        {
-            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                if (asm.FullName?.Contains("netstandard") == true ||
-                    asm.FullName?.Contains("System.") == true ||
-                    asm.FullName?.Contains("Microsoft.") == true ||
-                    asm.FullName?.Contains("Newtonsoft.") == true ||
-                    asm.FullName?.Contains("Agebull.Common.") == true ||
-                    asm.FullName?.Contains("ZeroTeam.MessageMVC.Abstractions") == true ||
-                    asm.FullName?.Contains("ZeroTeam.MessageMVC.Core") == true)
-                {
-                    continue;//
-                }
+        public static void Discove() => Discove(AppDomain.CurrentDomain.GetAssemblies());
 
+        /// <summary>
+        ///     发现
+        /// </summary>
+        public static void Discove(IEnumerable<Assembly> assemblies)
+        {
+            //AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+            foreach (var asm in assemblies)
+            {
+                //Console.WriteLine(asm.FullName);
+                if (knowAssemblies.Contains(asm) ||
+                    asm.FullName == null ||
+                    asm.FullName.Contains("netstandard") ||
+                    asm.FullName.Contains("System.") ||
+                    asm.FullName.Contains("Microsoft.") ||
+                    asm.FullName.Contains("Newtonsoft.") ||
+                    asm.FullName.Contains("Agebull.Common.") ||
+                    asm.FullName.Contains("ZeroTeam.MessageMVC.Abstractions") ||
+                    asm.FullName.Contains("ZeroTeam.MessageMVC.Core"))
+                {
+                    knowAssemblies.Add(asm);
+                    continue;
+                }
                 Discove(asm);
             }
-
         }
+
+        //private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        //{
+        //    Discove(args.RequestingAssembly);
+        //    return null;
+        //}
+
         #endregion
 
         #region Initialize
@@ -190,6 +192,7 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public static void Initialize()
         {
+            IocHelper.Update();
             Middlewares = IocHelper.RootProvider.GetServices<IFlowMiddleware>().OrderBy(p => p.Level).ToArray();
             var servcies = IocHelper.RootProvider.GetServices<IService>();
             if (servcies != null)
@@ -365,7 +368,7 @@ namespace ZeroTeam.MessageMVC
             {
                 ActiveSemaphore.Release(); //发出完成信号
             }
-            
+
         }
 
         /// <summary>

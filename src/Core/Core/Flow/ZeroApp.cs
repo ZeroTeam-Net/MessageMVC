@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Reflection;
 using System.Threading.Tasks;
+using ZeroTeam.MessageMVC.AddIn;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
@@ -20,51 +21,29 @@ namespace ZeroTeam.MessageMVC
         /// <param name="services"></param>
         public static void CheckOption(this IServiceCollection services)
         {
+            if (IocHelper.ServiceCollection != services)
+            {
+                IocHelper.SetServiceCollection(services);
+            }
             //配置\依赖对象初始化,系统配置获取
-            services.TryAddTransient<IFlowMiddleware, ConfigMiddleware>();
+            services.AddTransient<IFlowMiddleware, ConfigMiddleware>();
             //消息选择器
-            services.TryAddTransient<IFlowMiddleware, MessagePoster>();
+            services.AddTransient<IFlowMiddleware, MessagePoster>();
             //API路由与执行
-            services.TryAddTransient<IMessageMiddleware, ApiExecuter>();
+            services.AddTransient<IMessageMiddleware, ApiExecuter>();
             //IZeroContext构造
             services.TryAddTransient<IZeroContext, ZeroContext>();
             //ApiResult构造
             services.TryAddTransient<IApiResultDefault, ApiResultDefault>();
             //网络传输服务自动发现
             services.AddTransient<ITransportDiscory, TransportDiscover>();
-
-            if (IocHelper.ServiceCollection != services)
+            //插件载入
+            if (ZeroAppOption.Instance.EnableAddIn)
             {
-                IocHelper.SetServiceCollection(services);
+                services.AddSingleton<IFlowMiddleware>(AddInImporter.Instance);
             }
 
             ZeroFlowControl.CheckOption();
-            //插件载入
-            if (ZeroFlowControl.Config.EnableAddIn)
-            {
-                services.TryAddTransient<IFlowMiddleware, AddInImporter>();
-            }
-            //启用跟踪日志
-            if (ZeroFlowControl.Config.EnableMonitorLog)
-            {
-                services.TryAddTransient<IMessageMiddleware, LoggerMiddleware>();
-            }
-            //启用调用链跟踪(使用IZeroContext全局上下文)
-            if (ZeroFlowControl.Config.EnableLinkTrace)
-            {
-                services.TryAddTransient<IMessageMiddleware, GlobalContextMiddleware>();
-            }
-            //启用数据埋点
-            if (ZeroFlowControl.Config.EnableMarkPoint)
-            {
-                services.AddSingleton<IMessageMiddleware, MarkPointMiddleware>();
-            }
-            //消息存储与异常消息重新消费
-            if (ZeroFlowControl.Config.EnableMessageReConsumer)
-            {
-                services.TryAddTransient<IMessageMiddleware, StorageMiddleware>();
-                services.TryAddTransient<IFlowMiddleware, ReConsumerMiddleware>();
-            }
             IocHelper.Update();
         }
 
@@ -99,8 +78,6 @@ namespace ZeroTeam.MessageMVC
         {
             services.AddTransient<IFlowMiddleware, MessagePoster>();//消息选择器
             services.AddTransient<IFlowMiddleware, ConfigMiddleware>();//配置\依赖对象初始化,系统配置获取
-            services.AddTransient<IMessageMiddleware, LoggerMiddleware>();//启用日志
-            //services.AddTransient<IMessageMiddleware, GlobalContextMiddleware>();//启用调用链跟踪(使用IZeroContext全局上下文)
             services.AddTransient<IMessageMiddleware, ApiExecuter>();//API路由与执行
 
             if (IocHelper.ServiceCollection != services)

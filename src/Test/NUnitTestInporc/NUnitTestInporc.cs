@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Messages;
+using ZeroTeam.MessageMVC.MessageTransfers;
 using ZeroTeam.MessageMVC.Sample.Controllers;
 using ZeroTeam.MessageMVC.ZeroApis;
 using ZeroTeam.MessageMVC.ZeroMQ.Inporc;

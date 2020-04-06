@@ -36,6 +36,7 @@
     <Compile Remove="Config\UserOperatorStateType.cs" />
     <Compile Remove="Config\ZeroOperatorStateType.cs" />
     <Compile Remove="Context\ArgumentType.cs" />
+    <Compile Remove="Context\ContextOption.cs" />
     <Compile Remove="Context\RequestType.cs" />
   </ItemGroup>
 
@@ -44,6 +45,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LogRecorder\Agebull.Common.LogRecorder.csproj" />
+    <ProjectReference Include="..\..\agebull\LogRecorder\Agebull.Common.LogRecorder.csproj" />
   </ItemGroup>
+
 </Project>

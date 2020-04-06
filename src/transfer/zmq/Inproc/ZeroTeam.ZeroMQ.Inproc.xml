@@ -1,0 +1,466 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ZeroTeam.ZeroMQ.Inproc</name>
+    </assembly>
+    <members>
+        <member name="T:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer">
+            <summary>
+            表示进程内通讯
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.ZeroTeam#MessageMVC#MessageTransfers#INetTransfer#LoopBegin">
+            <summary>
+            同步运行状态
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.ZeroTeam#MessageMVC#MessageTransfers#INetTransfer#LoopComplete">
+            <summary>
+            同步关闭状态
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.ZeroTeam#MessageMVC#MessageTransfers#INetTransfer#OnResult(ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
+            <summary>
+            发送返回值 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.socket">
+            <summary>
+            本地代理
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.zmqPool">
+            <summary>
+            Pool对象
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.SendLayoutErrorResult(ZeroTeam.ZeroMQ.ZeroRPC.ApiCallItem)">
+            <summary>
+            发送返回值 
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.OnResult(System.String,ZeroTeam.ZeroMQ.ZeroRPC.ApiCallItem,System.Byte)">
+            <summary>
+            发送返回值 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InprocPoster">
+            <summary>
+                ZMQ生产者
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InprocPoster.State">
+            <summary>
+            运行状态
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InprocPoster.Instance">
+            <summary>
+            实例
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InprocPoster.#ctor">
+            <summary>
+            构造
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InprocPoster._core">
+            <summary>
+                调用器
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InprocPoster.ResultType">
+            <summary>
+                返回值
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InprocPoster.Binary">
+            <summary>
+                返回值
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InprocPoster.Result">
+            <summary>
+                返回值
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InprocPoster.Station">
+            <summary>
+                请求站点
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InprocPoster.ContextJson">
+            <summary>
+                上下文内容（透传方式）
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InprocPoster.Title">
+            <summary>
+                标题
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InprocPoster.Commmand">
+            <summary>
+                调用命令
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InprocPoster.Argument">
+            <summary>
+                参数
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InprocPoster.ExtendArgument">
+            <summary>
+                扩展参数
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InprocPoster.OperatorState">
+            <summary>
+                结果状态
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InprocPoster.LastResult">
+            <summary>
+            最后一个返回值
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InprocPoster.Simple">
+            <summary>
+            简单调用
+            </summary>
+            <remarks>
+            1 不获取全局标识(过时）
+            2 无远程定向路由,
+            3 无上下文信息
+            </remarks>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InprocPoster.CallCommand">
+            <summary>
+                远程调用
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InprocPoster.CheckStateResult">
+            <summary>
+                检查在非成功状态下的返回值
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InprocPoster.MessageState">
+            <summary>
+                检查在非成功状态下的返回值
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InprocPoster.CallCommandAsync">
+            <summary>
+                远程调用
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InprocPoster.CallAsync(System.String,System.String,System.String)">
+            <summary>
+                远程调用
+            </summary>
+            <param name="station"></param>
+            <param name="commmand"></param>
+            <param name="argument"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InprocPoster.CallApi``2(System.String,System.String,``0)">
+            <summary>
+            调用远程方法
+            </summary>
+            <typeparam name="TArgument">参数类型</typeparam>
+            <typeparam name="TResult">返回值类型</typeparam>
+            <param name="station">站点</param>
+            <param name="api">api名称</param>
+            <param name="arg">参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InprocPoster.CallApi``1(System.String,System.String,``0)">
+            <summary>
+            调用远程方法
+            </summary>
+            <typeparam name="TArgument">参数类型</typeparam>
+            <param name="station">站点</param>
+            <param name="api">api名称</param>
+            <param name="arg">参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InprocPoster.CallApi``1(System.String,System.String)">
+            <summary>
+            调用远程方法
+            </summary>
+            <typeparam name="TResult">参数类型</typeparam>
+            <param name="station">站点</param>
+            <param name="api">api名称</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InprocPoster.CallApi(System.String,System.String)">
+            <summary>
+            调用远程方法
+            </summary>
+            <param name="station">站点</param>
+            <param name="api">api名称</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InprocPoster.Call``2(System.String,System.String,``0)">
+            <summary>
+            调用远程方法
+            </summary>
+            <typeparam name="TArgument">参数类型</typeparam>
+            <typeparam name="TResult">返回值类型</typeparam>
+            <param name="station">站点</param>
+            <param name="api">api名称</param>
+            <param name="arg">参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InprocPoster.Call``1(System.String,System.String)">
+            <summary>
+            调用远程方法
+            </summary>
+            <typeparam name="TResult">参数类型</typeparam>
+            <param name="station">站点</param>
+            <param name="api">api名称</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InprocPoster.Post(ZeroTeam.MessageMVC.Messages.IMessageItem)">
+            <summary>
+            生产消息
+            </summary>
+            <param name="message">消息</param>
+            <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqCaller">
+            <summary>
+                Api站点
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqCaller.GetId">
+            <summary>
+            取得Id
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqCaller.Name">
+            <summary>
+                调用时使用的名称
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqCaller.ResultType">
+            <summary>
+                返回值
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqCaller.Result">
+            <summary>
+                返回值
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqCaller.Binary">
+            <summary>
+                返回值
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqCaller.Station">
+            <summary>
+                请求站点
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqCaller.ContextJson">
+            <summary>
+                上下文内容（透传方式）
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqCaller.Title">
+            <summary>
+                标题
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqCaller.Commmand">
+            <summary>
+                调用命令
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqCaller.Argument">
+            <summary>
+                参数
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqCaller.ExtendArgument">
+            <summary>
+                扩展参数
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqCaller.State">
+            <summary>
+                结果状态
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqCaller.LastResult">
+            <summary>
+            最后一个返回值
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqCaller.Call">
+            <summary>
+                远程调用
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqCaller.CallAsync">
+            <summary>
+                远程调用
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqCaller.CheckStateResult">
+            <summary>
+                检查在非成功状态下的返回值
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqCaller.MessageState">
+            <summary>
+                消息状态
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqCaller.CallDescription">
+            <summary>
+                请求格式说明
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqFlowMiddleware">
+            <summary>
+                ZMQ环境流程处理
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqFlowMiddleware.InprocAddress">
+            <summary>
+            代理地址
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqFlowMiddleware.ServiceKey">
+            <summary>
+            服务令牌
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqFlowMiddleware.GetProxySocket(System.String)">
+            <summary>
+            取得连接器
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqFlowMiddleware.ZeroTeam#MessageMVC#IZeroMiddleware#Name">
+            <summary>
+            实例名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqFlowMiddleware.ZeroTeam#MessageMVC#IZeroMiddleware#Level">
+            <summary>
+            等级
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqFlowMiddleware.Instance">
+            <summary>
+            实例
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqFlowMiddleware.Initialize">
+            <summary>
+                初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqFlowMiddleware.Close">
+            <summary>
+            注销时调用
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqFlowMiddleware.End">
+            <summary>
+            注销时调用
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqFlowMiddleware.CallZero(ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqCaller,System.Byte[],System.Byte[][])">
+            <summary>
+                一次请求
+            </summary>
+            <param name="caller"></param>
+            <param name="description"></param>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqFlowMiddleware.TaskInfo.TaskSource">
+            <summary>
+            TaskCompletionSource
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqFlowMiddleware.TaskInfo.Start">
+            <summary>
+            任务开始时间
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZmqFlowMiddleware.TaskInfo.Caller">
+            <summary>
+            调用对象
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZeroMQInporc">
+            <summary>
+            通过ZMQ实现的进程内通讯
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.ZeroMQInporc.UseZeroMQInporc(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            使用KafkaMVC
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.InprocAttribute">
+            <summary>
+            使用ZeroMQ实现的进程内通讯
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.InprocAttribute.#ctor(System.String)">
+            <summary>
+            构造
+            </summary>
+            <param name="name"></param>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.InprocAttribute.Name">
+            <summary>
+            配置
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.InprocDiscory">
+            <summary>
+            默认网络传输对象发现
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.InprocDiscory.ZeroTeam#MessageMVC#ZeroApis#ITransportDiscory#DiscoryNetTransport(System.Type,System.String@)">
+            <summary>
+            发现传输对象
+            </summary>
+            <param name="type">控制器类型</param>
+            <param name="name">发现的服务名称</param>
+            <returns>传输对象构造器</returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.TestDiscory">
+            <summary>
+            测试对象发现
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.TestDiscory.ZeroTeam#MessageMVC#ZeroApis#ITransportDiscory#DiscoryNetTransport(System.Type,System.String@)">
+            <summary>
+            发现传输对象
+            </summary>
+            <param name="type">控制器类型</param>
+            <param name="name">发现的服务名称</param>
+            <returns>传输对象构造器</returns>
+        </member>
+    </members>
+</doc>

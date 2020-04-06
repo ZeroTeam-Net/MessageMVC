@@ -37,12 +37,23 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         ///     是合符合API契约规定
         /// </summary>
-        public bool IsApiContract { get;  }
+        public bool IsApiContract { get; }
 
         /// <summary>
         ///     还原参数
         /// </summary>
         bool RestoreArgument(string argument);
+
+        /// <summary>
+        ///     基本数据,即按参数名称取值
+        /// </summary>
+        bool IsBaseValue { get; set; }
+
+
+        /// <summary>
+        ///     参数名称
+        /// </summary>
+        string ArgumentName { get; set; }
 
         /// <summary>
         ///     参数校验

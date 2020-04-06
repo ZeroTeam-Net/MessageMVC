@@ -36,7 +36,7 @@ namespace ZeroTeam.MessageMVC.Context
         ///     启用调用链跟踪,默认为AppOption中的设置, 可通过远程传递而扩散
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public static bool EnableLinkTrace => CurrentNoLazy?.Option.EnableLinkTrace ?? ZeroAppOption.Instance.EnableLinkTrace;
+        public static bool EnableLinkTrace => CurrentNoLazy?.Option["EnableLinkTrace"] == "true";
 
         /// <summary>
         ///     当前线程的调用上下文(无懒构造)

@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ZeroRPC\ZeroTeam.MessageMVC.ZeroRPC.Sample.csproj" />
+    <ProjectReference Include="..\..\sample\ZeroRPC\ZeroTeam.MessageMVC.ZeroRPC.Sample.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -14,7 +14,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         public OperatorTrace()
         {
-            if (ZeroAppOption.Instance.EnableLinkTrace)
+            if (GlobalContext.CurrentNoLazy?.Option["EnableLinkTrace"] == "true")
             {
                 Point = $"{GlobalContext.CurrentNoLazy?.Trace?.LocalMachine}|{GlobalContext.CurrentNoLazy?.Trace?.LocalApp}";
                 Timestamp = GlobalContext.CurrentNoLazy?.Trace?.LocalTimestamp;

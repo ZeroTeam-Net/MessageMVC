@@ -11,13 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.Core", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Kafka", "Kafka", "{D7F1C9FB-F240-43BE-AE80-4FDE698A3ECF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.Kafka", "src\Kafka\ZeroTeam.MessageMVC.Kafka.csproj", "{9643C0D2-90FB-4952-BAFA-0252559001BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.Kafka", "src\transfer\kafka\ZeroTeam.MessageMVC.Kafka.csproj", "{9643C0D2-90FB-4952-BAFA-0252559001BF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Base", "Base", "{829C324D-4D1E-459F-B899-209699B342CB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Agebull.Common.Extend.Core", "src\Core\Extend\Agebull.Common.Extend.Core.csproj", "{4A05571F-5E94-4AF1-B319-98798AA744B2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Agebull.Common.Extend.Core", "src\agebull\Extend\Agebull.Common.Extend.Core.csproj", "{4A05571F-5E94-4AF1-B319-98798AA744B2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Agebull.Common.LogRecorder", "src\Core\LogRecorder\Agebull.Common.LogRecorder.csproj", "{184BE221-0199-46A7-AAD1-9D86F9584DE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Agebull.Common.LogRecorder", "src\agebull\LogRecorder\Agebull.Common.LogRecorder.csproj", "{184BE221-0199-46A7-AAD1-9D86F9584DE1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7CF8A384-37FA-484D-8D99-61CED654D0FB}"
 EndProject
@@ -35,6 +35,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{78391F4E-D2D
 		doc\ZeroFlowControl(1).md = doc\ZeroFlowControl(1).md
 		doc\ZeroFlowControl.md = doc\ZeroFlowControl.md
 		doc\zerorpc.md = doc\zerorpc.md
+		doc\中间件列表.md = doc\中间件列表.md
 		doc\功能组件总览.md = doc\功能组件总览.md
 		doc\基于messageMVC的网关.md = doc\基于messageMVC的网关.md
 		doc\带异步调用回执发送.md = doc\带异步调用回执发送.md
@@ -44,55 +45,53 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{78391F4E-D2D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "zmq", "zmq", "{EB2EC8D7-FA6B-4540-A015-378F59EAF098}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.ZeroMQ", "src\zmq\ZeroMq\ZeroTeam.ZeroMQ.csproj", "{2453729C-0182-4F93-B567-2CE64352569A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.ZeroMQ", "src\transfer\zmq\ZeroMq\ZeroTeam.ZeroMQ.csproj", "{2453729C-0182-4F93-B567-2CE64352569A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.ZeroMQ.Inproc", "src\zmq\Inproc\ZeroTeam.ZeroMQ.Inproc.csproj", "{A32E7AF0-C18F-40C6-8C82-F0832C259118}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.ZeroMQ.Inproc", "src\transfer\zmq\Inproc\ZeroTeam.ZeroMQ.Inproc.csproj", "{A32E7AF0-C18F-40C6-8C82-F0832C259118}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NetTransfer", "NetTransfer", "{484C92F6-14EA-480D-80A8-1318F732A914}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MessageMiddleware", "MessageMiddleware", "{32041E80-31C0-4383-962B-5F7944ACCB2E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.WebSocketBridge", "src\MessageMiddleware\WebSocketBridge\ZeroTeam.MessageMVC.WebSocketBridge.csproj", "{AC984B06-1D6C-4B63-A07A-F183A6615EC6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.WebSocketBridge", "src\middleware\WebSocketBridge\ZeroTeam.MessageMVC.WebSocketBridge.csproj", "{AC984B06-1D6C-4B63-A07A-F183A6615EC6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.ZeroMQ.ZeroRPC", "src\zmq\MicorZero\ZeroTeam.ZeroMQ.ZeroRPC.csproj", "{F30B4F19-68FE-40EB-A15E-427CBF196D96}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.ZeroMQ.ZeroRPC", "src\transfer\zmq\MicorZero\ZeroTeam.ZeroMQ.ZeroRPC.csproj", "{F30B4F19-68FE-40EB-A15E-427CBF196D96}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Redis", "Redis", "{10FF3634-BFDE-4E18-9F91-406A590FC7A1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.RedisMQ", "src\Redis\RedisMQ\ZeroTeam.MessageMVC.RedisMQ.csproj", "{BA540876-3C78-4774-A33E-E8F01593CA67}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.RedisMQ", "src\transfer\redis\RedisMQ\ZeroTeam.MessageMVC.RedisMQ.csproj", "{BA540876-3C78-4774-A33E-E8F01593CA67}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Http", "Http", "{0C528260-C7A5-45D9-A118-C2D1E5231EF0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.Http", "src\Http\ZeroTeam.MessageMVC.Http.csproj", "{0855022D-8028-4ECC-BEE9-A59EFD84E11E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.Http", "src\transfer\Http\ZeroTeam.MessageMVC.Http.csproj", "{0855022D-8028-4ECC-BEE9-A59EFD84E11E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plan", "Plan", "{AD2473CB-7770-4EED-8198-7B59E31C4584}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.Plan.Client", "src\plan\client\ZeroTeam.MessageMVC.Plan.Client.csproj", "{01DA9EAD-38D2-453E-991D-85A17C9FEB77}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.Plan.Client", "src\tools\plan\client\ZeroTeam.MessageMVC.Plan.Client.csproj", "{01DA9EAD-38D2-453E-991D-85A17C9FEB77}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.Plan.Service", "src\plan\service\ZeroTeam.MessageMVC.Plan.Service.csproj", "{EE0F6EC4-2291-4FA1-88E6-9F07327BE416}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.Plan.Service", "src\tools\plan\service\ZeroTeam.MessageMVC.Plan.Service.csproj", "{EE0F6EC4-2291-4FA1-88E6-9F07327BE416}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample", "sample", "{0474706D-4F72-454C-9E28-C43AC2F2629E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.Http.Sample", "src\Test\Http\ZeroTeam.MessageMVC.Http.Sample.csproj", "{643F9E44-BB3E-4116-99B1-4F8DE1409750}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.Http.Sample", "src\sample\Http\ZeroTeam.MessageMVC.Http.Sample.csproj", "{643F9E44-BB3E-4116-99B1-4F8DE1409750}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.Kafka.Sample", "src\Test\Kafka\ZeroTeam.MessageMVC.Kafka.Sample.csproj", "{9734F69F-22B1-47A4-AE54-DBE7D6945FF3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.Kafka.Sample", "src\sample\Kafka\ZeroTeam.MessageMVC.Kafka.Sample.csproj", "{9734F69F-22B1-47A4-AE54-DBE7D6945FF3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.RedisMQ.Sample", "src\Test\Redis\ZeroTeam.MessageMVC.RedisMQ.Sample.csproj", "{E924A897-C665-4693-B58F-EDB9EDCA0416}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.RedisMQ.Sample", "src\sample\Redis\ZeroTeam.MessageMVC.RedisMQ.Sample.csproj", "{E924A897-C665-4693-B58F-EDB9EDCA0416}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.WebSocketBridge.Sample", "src\Test\WebSocketBridge\ZeroTeam.MessageMVC.WebSocketBridge.Sample.csproj", "{65B8AFE3-171A-43B3-ACA0-E72F1B36BE47}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.WebSocketBridge.Sample", "src\sample\WebSocketBridge\ZeroTeam.MessageMVC.WebSocketBridge.Sample.csproj", "{65B8AFE3-171A-43B3-ACA0-E72F1B36BE47}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.ZeroRPC.Sample", "src\Test\ZeroRPC\ZeroTeam.MessageMVC.ZeroRPC.Sample.csproj", "{19E6E010-DBD0-4734-84E9-3C9EF03CE622}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.ZeroRPC.Sample", "src\sample\ZeroRPC\ZeroTeam.MessageMVC.ZeroRPC.Sample.csproj", "{19E6E010-DBD0-4734-84E9-3C9EF03CE622}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.ZmqInproc.Sample", "src\Test\ZmqInproc\ZeroTeam.MessageMVC.ZmqInproc.Sample.csproj", "{9D501803-C63F-4644-A8CE-2B8F4AA14228}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.ZmqInproc.Sample", "src\sample\ZmqInproc\ZeroTeam.MessageMVC.ZmqInproc.Sample.csproj", "{9D501803-C63F-4644-A8CE-2B8F4AA14228}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inporc.NUnitTest", "src\Test\NUnitTestInporc\Inporc.NUnitTest.csproj", "{4E49EC59-DF2C-4306-BD55-4805891DD671}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inporc.NUnitTest", "src\test\NUnitTestInporc\Inporc.NUnitTest.csproj", "{4E49EC59-DF2C-4306-BD55-4805891DD671}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{E1BA22EE-D8CB-4C1A-B88F-C14B9FC3C855}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlanUnitTest", "src\UnitTest\PlanUnitTest\PlanUnitTest.csproj", "{53C0044E-A6F3-45A6-B03B-2CF65E1B4A73}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlanUnitTest", "src\test\PlanUnitTest\PlanUnitTest.csproj", "{53C0044E-A6F3-45A6-B03B-2CF65E1B4A73}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.MulitNetTransfer.Sample", "src\Test\Mulit\ZeroTeam.MessageMVC.MulitNetTransfer.Sample.csproj", "{C401BFD3-8CE7-460D-B12C-8C46020BE6EF}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.ReceiptCenter", "src\Receipt\ReceiptCenter\ZeroTeam.MessageMVC.ReceiptCenter.csproj", "{6E2AF2FF-3574-4990-953E-BA50508650E9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.MulitNetTransfer.Sample", "src\sample\Mulit\ZeroTeam.MessageMVC.MulitNetTransfer.Sample.csproj", "{C401BFD3-8CE7-460D-B12C-8C46020BE6EF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "viso", "viso", "{92DA5BC7-8FFD-489A-AE7C-40506F081902}"
 	ProjectSection(SolutionItems) = preProject
@@ -111,6 +110,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "xmind", "xmind", "{848B9173
 	ProjectSection(SolutionItems) = preProject
 		doc\MessageMVC.xmind = doc\MessageMVC.xmind
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{9AB69E07-EE4B-4026-A717-9FEE6CE39808}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Config", "Config", "{4B8FA2D8-CD14-452A-A627-1A7830241331}"
+	ProjectSection(SolutionItems) = preProject
+		src\tools\ConfigSync\readme.md = src\tools\ConfigSync\readme.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Receipt", "Receipt", "{2745E5C7-366C-4981-AC1E-1A53DD3818AB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.ConfigSync", "src\tools\ConfigSync\Client\ZeroTeam.MessageMVC.ConfigSync.csproj", "{B4156FAA-44DB-43FD-B819-7C9F4CDDF7D6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.ConfigEdit", "src\tools\ConfigSync\Service\ZeroTeam.MessageMVC.ConfigEdit.csproj", "{B8468B3E-E4AA-4322-A80F-1F5970C87154}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.Tools", "src\tools\Tools\ZeroTeam.MessageMVC.Tools.csproj", "{0551D4D6-4310-4FBA-989A-8BF218C7C9EC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.TrdReceipt", "src\tools\Receipt\TrdReceipt\ZeroTeam.MessageMVC.TrdReceipt.csproj", "{2FA6868A-1EBF-4421-85D3-C6398341AF6C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -206,10 +222,22 @@ Global
 		{C401BFD3-8CE7-460D-B12C-8C46020BE6EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C401BFD3-8CE7-460D-B12C-8C46020BE6EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C401BFD3-8CE7-460D-B12C-8C46020BE6EF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6E2AF2FF-3574-4990-953E-BA50508650E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6E2AF2FF-3574-4990-953E-BA50508650E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6E2AF2FF-3574-4990-953E-BA50508650E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6E2AF2FF-3574-4990-953E-BA50508650E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4156FAA-44DB-43FD-B819-7C9F4CDDF7D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4156FAA-44DB-43FD-B819-7C9F4CDDF7D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4156FAA-44DB-43FD-B819-7C9F4CDDF7D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4156FAA-44DB-43FD-B819-7C9F4CDDF7D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8468B3E-E4AA-4322-A80F-1F5970C87154}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8468B3E-E4AA-4322-A80F-1F5970C87154}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8468B3E-E4AA-4322-A80F-1F5970C87154}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8468B3E-E4AA-4322-A80F-1F5970C87154}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0551D4D6-4310-4FBA-989A-8BF218C7C9EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0551D4D6-4310-4FBA-989A-8BF218C7C9EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0551D4D6-4310-4FBA-989A-8BF218C7C9EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0551D4D6-4310-4FBA-989A-8BF218C7C9EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FA6868A-1EBF-4421-85D3-C6398341AF6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FA6868A-1EBF-4421-85D3-C6398341AF6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FA6868A-1EBF-4421-85D3-C6398341AF6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FA6868A-1EBF-4421-85D3-C6398341AF6C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -234,7 +262,7 @@ Global
 		{BA540876-3C78-4774-A33E-E8F01593CA67} = {10FF3634-BFDE-4E18-9F91-406A590FC7A1}
 		{0C528260-C7A5-45D9-A118-C2D1E5231EF0} = {484C92F6-14EA-480D-80A8-1318F732A914}
 		{0855022D-8028-4ECC-BEE9-A59EFD84E11E} = {0C528260-C7A5-45D9-A118-C2D1E5231EF0}
-		{AD2473CB-7770-4EED-8198-7B59E31C4584} = {7CF8A384-37FA-484D-8D99-61CED654D0FB}
+		{AD2473CB-7770-4EED-8198-7B59E31C4584} = {9AB69E07-EE4B-4026-A717-9FEE6CE39808}
 		{01DA9EAD-38D2-453E-991D-85A17C9FEB77} = {AD2473CB-7770-4EED-8198-7B59E31C4584}
 		{EE0F6EC4-2291-4FA1-88E6-9F07327BE416} = {AD2473CB-7770-4EED-8198-7B59E31C4584}
 		{643F9E44-BB3E-4116-99B1-4F8DE1409750} = {0474706D-4F72-454C-9E28-C43AC2F2629E}
@@ -246,9 +274,14 @@ Global
 		{4E49EC59-DF2C-4306-BD55-4805891DD671} = {E1BA22EE-D8CB-4C1A-B88F-C14B9FC3C855}
 		{53C0044E-A6F3-45A6-B03B-2CF65E1B4A73} = {E1BA22EE-D8CB-4C1A-B88F-C14B9FC3C855}
 		{C401BFD3-8CE7-460D-B12C-8C46020BE6EF} = {0474706D-4F72-454C-9E28-C43AC2F2629E}
-		{6E2AF2FF-3574-4990-953E-BA50508650E9} = {AD2473CB-7770-4EED-8198-7B59E31C4584}
 		{92DA5BC7-8FFD-489A-AE7C-40506F081902} = {78391F4E-D2DF-4373-B40C-28517937E5A5}
 		{848B9173-F7CE-4D38-B4D7-350FDF107CB7} = {78391F4E-D2DF-4373-B40C-28517937E5A5}
+		{4B8FA2D8-CD14-452A-A627-1A7830241331} = {9AB69E07-EE4B-4026-A717-9FEE6CE39808}
+		{2745E5C7-366C-4981-AC1E-1A53DD3818AB} = {9AB69E07-EE4B-4026-A717-9FEE6CE39808}
+		{B4156FAA-44DB-43FD-B819-7C9F4CDDF7D6} = {4B8FA2D8-CD14-452A-A627-1A7830241331}
+		{B8468B3E-E4AA-4322-A80F-1F5970C87154} = {4B8FA2D8-CD14-452A-A627-1A7830241331}
+		{0551D4D6-4310-4FBA-989A-8BF218C7C9EC} = {85554FA9-20AE-4261-A58E-CD36624FEFEB}
+		{2FA6868A-1EBF-4421-85D3-C6398341AF6C} = {2745E5C7-366C-4981-AC1E-1A53DD3818AB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {866CE928-6325-4962-BB28-9A3BAF4BBCD1}

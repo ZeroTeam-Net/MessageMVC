@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace ZeroTeam.MessageMVC.ApiDocuments
+namespace ZeroTeam.MessageMVC.Documents
 {
     /// <summary>
     ///     Api方法的信息
@@ -15,7 +15,7 @@ namespace ZeroTeam.MessageMVC.ApiDocuments
         /// <summary>
         ///     Api方法
         /// </summary>
-        [DataMember]
+        
         [JsonProperty("aips", NullValueHandling = NullValueHandling.Ignore)]
         private Dictionary<string, ApiDocument> aips;
 

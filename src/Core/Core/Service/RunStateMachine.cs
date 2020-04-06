@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace ZeroTeam.MessageMVC.ZeroApis.StateMachine
+namespace ZeroTeam.MessageMVC.Services.StateMachine
 {
     /// <summary>
     /// 监控状态机

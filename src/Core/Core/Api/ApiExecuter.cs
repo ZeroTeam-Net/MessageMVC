@@ -3,8 +3,9 @@ using Agebull.Common.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ZeroTeam.MessageMVC.Context;
+using ZeroTeam.MessageMVC.Services;
 using ZeroTeam.MessageMVC.Messages;
+using ZeroTeam.MessageMVC.MessageTransfers;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -24,6 +25,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// 层级
         /// </summary>
         int IMessageMiddleware.Level => short.MaxValue;
+
+        /// <summary>
+        /// 消息中间件的处理范围
+        /// </summary>
+        MessageHandleScope IMessageMiddleware.Scope => MessageHandleScope.Handle;
 
         /// <summary>
         /// 当前站点
@@ -134,7 +140,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
             try
             {
-                if (!action.RestoreArgument(Message.Content))
+                if (!action.RestoreArgument(Message.GetArgument(action.ArgumentName,action.IsBaseValue)))
                 {
                     LogRecorder.Trace("Error: argument can't restory.");
                     if (action.IsApiContract)

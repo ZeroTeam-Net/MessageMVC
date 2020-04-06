@@ -1,16 +1,22 @@
 ﻿using Agebull.Common;
 using Agebull.Common.Ioc;
+using Agebull.Common.Logging;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
+using System.IO;
 
-namespace ZeroTeam.MessageMVC.ZeroApis
+namespace ZeroTeam.MessageMVC.AddIn
 {
     /// <summary>
     /// MEF插件导入器
     /// </summary>
     public class AddInImporter : IFlowMiddleware
     {
+        /// <summary>
+        /// 单例
+        /// </summary>
+        public static AddInImporter Instance = new AddInImporter();
         /// <summary>
         /// 运行状态
         /// </summary>
@@ -33,46 +39,49 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         public IEnumerable<IAutoRegister> Registers { get; set; }
 
         /// <summary>
-        ///     配置校验,作为第一步
+        /// 配置校验
         /// </summary>
-        public void CheckOption(ZeroAppOption config)
+        void IFlowMiddleware.CheckOption(ZeroAppOption config)
         {
-            if (string.IsNullOrEmpty(ZeroFlowControl.Config.AddInPath))
+            string path;
+            if (string.IsNullOrEmpty(ZeroAppOption.Instance.AddInPath))
             {
-                return;
+                ZeroAppOption.Instance.AddInPath = path = Path.GetDirectoryName(this.GetType().Assembly.Location);
+            }
+            else
+            {
+                path = ZeroAppOption.Instance.AddInPath[0] == '/'
+                     ? ZeroAppOption.Instance.AddInPath
+                     : IOHelper.CheckPath(ZeroAppOption.Instance.RootPath, ZeroAppOption.Instance.AddInPath);
             }
 
-            var path = ZeroFlowControl.Config.AddInPath[0] == '/'
-                ? ZeroFlowControl.Config.AddInPath
-                : IOHelper.CheckPath(ZeroFlowControl.Config.RootPath, ZeroFlowControl.Config.AddInPath);
-
-            ZeroTrace.SystemLog("AddIn(Service)", path);
 
             // 通过容器对象将宿主和部件组装到一起。 
             DirectoryCatalog directoryCatalog = new DirectoryCatalog(path);
             var container = new CompositionContainer(directoryCatalog);
             container.ComposeParts(this);
+            var logger = IocHelper.LoggerFactory.CreateLogger(nameof(AddInImporter));
+            if (Registers == null)
+            {
+                return;
+            }
             foreach (var reg in Registers)
             {
-                ZeroTrace.SystemLog("AddIn(Extend)", reg.GetType().Assembly.FullName);
+                logger.Information(() => reg.GetType().Assembly.FullName);
+                reg.AutoRegist(IocHelper.ServiceCollection);
             }
+
         }
 
         /// <summary>
         /// 初始化
         /// </summary>
-        public void Initialize()
+        void IFlowMiddleware.Initialize()
         {
             if (Registers == null)
             {
                 return;
             }
-
-            foreach (var reg in Registers)
-            {
-                reg.AutoRegist(IocHelper.ServiceCollection);
-            }
-
             foreach (var reg in Registers)
             {
                 reg.Initialize();

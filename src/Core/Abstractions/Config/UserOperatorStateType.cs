@@ -1,4 +1,4 @@
-namespace ZeroTeam.MessageMVC.ZeroApis
+namespace ZeroTeam.MessageMVC
 {
     /// <summary>
     /// 一次路由执行状态

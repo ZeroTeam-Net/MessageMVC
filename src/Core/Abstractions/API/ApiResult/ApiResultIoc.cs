@@ -82,7 +82,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ///     生成一个成功的标准返回
         /// </summary>
         /// <returns></returns>
-        public static IApiResult Succees(string message = null) => Ioc.Succees(message);
+        public static IApiResult Succees() => Ioc.Succees();
 
         /// <summary>
         ///     生成一个包含错误码的标准返回

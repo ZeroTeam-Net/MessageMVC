@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 
-namespace ZeroTeam.MessageMVC.Messages
+namespace ZeroTeam.MessageMVC.Context
 {
     /// <summary>
     /// 跟踪信息

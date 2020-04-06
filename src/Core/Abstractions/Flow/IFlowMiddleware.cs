@@ -6,7 +6,7 @@
     public interface IFlowMiddleware : IZeroMiddleware
     {
         /// <summary>
-        ///     配置校验,作为第一步
+        ///     配置校验
         /// </summary>
         void CheckOption(ZeroAppOption config) { }
 

@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 // ReSharper disable All
 
 
-namespace ZeroTeam.MessageMVC.ApiDocuments
+namespace ZeroTeam.MessageMVC.Documents
 {
     /// <summary>
     ///     自注释配置对象

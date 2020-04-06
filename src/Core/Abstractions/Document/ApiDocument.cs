@@ -1,7 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System.Runtime.Serialization;
+using ZeroTeam.MessageMVC.ZeroApis;
 
-namespace ZeroTeam.MessageMVC.ApiDocuments
+namespace ZeroTeam.MessageMVC.Documents
 {
     /// <summary>
     ///     Api方法的信息
@@ -13,42 +14,49 @@ namespace ZeroTeam.MessageMVC.ApiDocuments
         /// <summary>
         ///     访问设置
         /// </summary>
-        [DataMember]
+        
         [JsonProperty("access", NullValueHandling = NullValueHandling.Ignore)]
         public ApiAccessOption AccessOption;
 
         /// <summary>
+        ///     参数名称
+        /// </summary>
+        
+        [JsonProperty("argumentName", NullValueHandling = NullValueHandling.Ignore)]
+        public string ArgumentName { get; set; }
+
+        /// <summary>
         ///     参数说明
         /// </summary>
-        [DataMember]
+        
         [JsonProperty("argument", NullValueHandling = NullValueHandling.Ignore)]
         public TypeDocument ArgumentInfo;
 
         /// <summary>
         ///     分类
         /// </summary>
-        [DataMember]
+        
         [JsonProperty("category", NullValueHandling = NullValueHandling.Ignore)]
         public string Category;
 
         /// <summary>
         ///     返回值说明
         /// </summary>
-        [DataMember]
+        
         [JsonProperty("result", NullValueHandling = NullValueHandling.Ignore)]
         public TypeDocument ResultInfo;
 
         /// <summary>
         ///     Api路由名称
         /// </summary>
-        [DataMember]
+        
         [JsonProperty("route", NullValueHandling = NullValueHandling.Ignore)]
         public string RouteName;
 
         /// <summary>
         ///     Api名称
         /// </summary>
-        [DataMember]
+        
         [JsonProperty("api", NullValueHandling = NullValueHandling.Ignore)]
 
         public string ApiName;
@@ -56,7 +64,7 @@ namespace ZeroTeam.MessageMVC.ApiDocuments
         /// <summary>
         ///     承载页面
         /// </summary>
-        [DataMember]
+        
         [JsonProperty("page", NullValueHandling = NullValueHandling.Ignore)]
 
         public string PageUrl;

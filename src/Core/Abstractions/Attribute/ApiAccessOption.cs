@@ -1,6 +1,6 @@
 using System;
 
-namespace ZeroTeam.MessageMVC
+namespace ZeroTeam.MessageMVC.ZeroApis
 {
     /// <summary>
     ///     API∑√Œ ≈‰÷√
