@@ -8,7 +8,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Services;
@@ -80,14 +79,15 @@ namespace ZeroTeam.MessageMVC
         #region Flow
 
         #region CheckOption
-        static ILogger logger;
+        private static ILogger logger;
 
         /// <summary>
         ///     配置校验,作为第一步
         /// </summary>
         public static void CheckOption()
         {
-            LogRecorder.Initialize();
+            if (LogRecorder.NoRegist)
+                LogRecorder.DoInitialize();
             logger = IocHelper.LoggerFactory.CreateLogger(nameof(ZeroFlowControl));
 
             IocHelper.Update();
@@ -128,7 +128,7 @@ namespace ZeroTeam.MessageMVC
         #region Discove
 
 
-        static List<Assembly> knowAssemblies = new List<Assembly>();
+        private static readonly List<Assembly> knowAssemblies = new List<Assembly>();
 
         /// <summary>
         ///     发现
@@ -136,7 +136,10 @@ namespace ZeroTeam.MessageMVC
         public static void Discove(Assembly assembly)
         {
             if (knowAssemblies.Contains(assembly))
+            {
                 return;
+            }
+
             knowAssemblies.Add(assembly);
             var discover = new ApiDiscover
             {
@@ -404,7 +407,7 @@ namespace ZeroTeam.MessageMVC
             {
                 return false;
             }
-            logger.Information("[RegistService] {0}", service.ServiceName);
+            logger?.Information("[RegistService] {0}", service.ServiceName);
 
             if (ApplicationState >= StationState.Initialized)
             {

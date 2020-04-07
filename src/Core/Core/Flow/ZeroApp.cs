@@ -35,8 +35,8 @@ namespace ZeroTeam.MessageMVC
             services.TryAddTransient<IZeroContext, ZeroContext>();
             //ApiResult构造
             services.TryAddTransient<IApiResultDefault, ApiResultDefault>();
-            //网络传输服务自动发现
-            services.AddTransient<ITransportDiscory, TransportDiscover>();
+            //消息接收服务自动发现
+            services.AddTransient<IReceiverDiscory, ReceiverDiscory>();
             //插件载入
             if (ZeroAppOption.Instance.EnableAddIn)
             {

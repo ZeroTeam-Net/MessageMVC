@@ -49,17 +49,27 @@ namespace ZeroTeam.MessageMVC.Context
 
             GlobalContext.Current.Message = message;
             if (GlobalContext.Current.User == null)
+            {
                 GlobalContext.Current.User = GlobalContext.Anymouse;
+            }
+
             if (GlobalContext.Current.Status == null)
+            {
                 GlobalContext.Current.Status = new ContextStatus();
+            }
+
             if (GlobalContext.Current.Option == null)
             {
                 GlobalContext.Current.Option = new System.Collections.Generic.Dictionary<string, string>();
                 if (ToolsOption.Instance.EnableLinkTrace)
+                {
                     GlobalContext.Current.Option.Add("EnableLinkTrace", "true");
+                }
             }
             if (GlobalContext.Current.Trace == null)
+            {
                 GlobalContext.Current.Trace = message.Trace ?? TraceInfo.New(message.ID);
+            }
 
             return next();
         }

@@ -39,7 +39,7 @@ namespace System
         /// <param name="str">字符串</param>
         /// <param name="chars">首尾清除的字符</param>
         /// <returns>无空白字符串,如全为空白则返回nul</returns>
-        public static string SafeTrim(this string str,params char[] chars)
+        public static string SafeTrim(this string str, params char[] chars)
         {
             return string.IsNullOrWhiteSpace(str) ? null : str.Trim(chars);
         }
@@ -137,7 +137,7 @@ namespace System
         /// <returns></returns>
         public static string ToNullString(this string str, string nullString = null)
         {
-            return String.IsNullOrWhiteSpace(str) ? nullString : str;
+            return string.IsNullOrWhiteSpace(str) ? nullString : str;
         }
 
         /// <summary>
@@ -940,49 +940,82 @@ namespace System.Text
             return sb.ToString();
         }
 
+
         /// <summary>
         /// 使每行都缩进相同个数的空格
         /// </summary>
-        /// <param name="str"></param>
-        /// <param name="space"></param>
-        /// <param name="head"> </param>
-        /// <returns></returns>
-        public static string SpaceLine(this string str, int space, string head = null)
+        /// <param name="str">原始文本</param>
+        /// <param name="space">空格数量</param>
+        /// <param name="first">是否缩进首行</param>
+        /// <returns>结果文本</returns>
+        public static string SpaceLine(this string str, int space, bool first = true)
         {
             if (str == null)
                 return null;
             var sb = new StringBuilder();
-            var empty = false;
-            var isFirst = true;
-            foreach (var s in str.Trim().Replace("\r", "").Split('\n'))
+            if (first)
             {
-                if (!string.IsNullOrEmpty(s))
-                {
-                    if (isFirst)
-                        isFirst = false;
-                    else
-                        sb.AppendLine();
-                    empty = false;
+                sb.Append(' ', space);
+            }
+            foreach (char ch in str)
+            {
+                sb.Append(ch);
+                if (ch == '\n')
                     sb.Append(' ', space);
+            }
+            //var isFirst = true;
+            //var lines = str.Replace("\r", "").Split('\n');
+            //int i = 0;
+            //if (!first)
+            //{
+            //    i = 1;
+            //    sb.Append(lines[0]);
+            //    isFirst = false;
+            //}
+            //if (!first)
+            //{
+            //    sb.Append(' ', space);
+            //    sb.Append(lines[0]);
+            //    isFirst = false;
+            //}
+
+            //for (; i < lines.Length; i++)
+            //{
+            //    if (isFirst)
+            //        isFirst = false;
+            //    else
+            //        sb.AppendLine();
+            //    sb.Append(' ', space);
+            //    sb.Append(lines[i]);
+            //}
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// 使每行都缩进相同个数的空格
+        /// </summary>
+        /// <param name="str">原始文本</param>
+        /// <param name="head">头部文字</param>
+        /// <param name="first">是否缩进首行</param>
+        /// <returns>结果文本</returns>
+        public static string SpaceLine(this string str,string head, bool first = true)
+        {
+            if (str == null)
+                return null;
+            var sb = new StringBuilder();
+            if (first)
+            {
+                sb.Append(head);
+            }
+            foreach (char ch in str)
+            {
+                sb.Append(ch);
+                if (ch == '\n')
                     sb.Append(head);
-                    sb.Append(s.Trim());
-                }
-                else
-                {
-                    if (empty)
-                    {
-                        continue;
-                    }
-                    empty = true;
-                    if (isFirst)
-                        isFirst = false;
-                    else
-                        sb.AppendLine();
-                    sb.Append(head);
-                }
             }
             return sb.ToString();
         }
+
         /// <summary>
         ///   为空或是缺省文本
         /// </summary>
@@ -1001,7 +1034,7 @@ namespace System.Text
         /// <returns> </returns>
         public static bool IsName(this string text)
         {
-            if (String.IsNullOrWhiteSpace(text))
+            if (string.IsNullOrWhiteSpace(text))
             {
                 return false;
             }
@@ -1022,9 +1055,9 @@ namespace System.Text
         /// <returns> </returns>
         public static string ToUWord(this string word)
         {
-            if (String.IsNullOrWhiteSpace(word))
+            if (string.IsNullOrWhiteSpace(word))
             {
-                return String.Empty;
+                return string.Empty;
             }
             return word.Length == 1
                            ? word.ToUpper()
@@ -1038,9 +1071,9 @@ namespace System.Text
         /// <returns> </returns>
         public static string ToLWord(this string word)
         {
-            if (String.IsNullOrWhiteSpace(word))
+            if (string.IsNullOrWhiteSpace(word))
             {
-                return String.Empty;
+                return string.Empty;
             }
             return word.Length == 1
                            ? word.ToUpper()

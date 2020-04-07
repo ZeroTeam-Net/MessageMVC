@@ -1,10 +1,7 @@
-﻿using Agebull.Common.Ioc;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using ZeroTeam.MessageMVC.Kafka;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.MessageTransfers;
 using ZeroTeam.MessageMVC.RedisMQ;
 
 namespace ZeroTeam.MessageMVC.Http
@@ -21,8 +18,8 @@ namespace ZeroTeam.MessageMVC.Http
         public void ConfigureServices(IServiceCollection services)
         {
             //services.UseCsRedis();
-            services.AddSingleton<IFlowMiddleware, KafkaPoster>();//Kafka环境
-            services.AddSingleton<IMessagePoster, KafkaPoster>();//采用Kafka生产端
+            //services.AddSingleton<IFlowMiddleware, KafkaPoster>();//Kafka环境
+            //services.AddSingleton<IMessagePoster, KafkaPoster>();//采用Kafka生产端
             services.AddSingleton<IFlowMiddleware, CsRedisPoster>();//采用Redis生产端
             services.AddSingleton<IMessagePoster, CsRedisPoster>();//采用Redis生产端
             HttpRoute.Initialize(services);

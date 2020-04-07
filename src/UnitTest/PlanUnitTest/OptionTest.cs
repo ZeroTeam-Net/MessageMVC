@@ -16,12 +16,9 @@ namespace PlanUnitTest
         public void Setup()
         {
             //如果未设置 UNIT_TEST ,需要打开Redis
-            //var config = ConfigurationManager.Get("Redis").GetStr("ConnectionString");
-            //Trace.TraceInformation(config);
-            //RedisHelper.Initialization(new CSRedisClient(config));
+            //RedisHelper.Initialization(new CSRedisClient(RedisOption.Instance.ConnectionString));
 
-            //PlanSystemOption.Option = ConfigurationManager.Get<PlanSystemOption>("PlanTask")
-            //                                ?? new PlanSystemOption();
+            //PlanSystemOption.Option = ConfigurationManager.Get<PlanSystemOption>("PlanTask") ?? new PlanSystemOption();
         }
 
         [Test]

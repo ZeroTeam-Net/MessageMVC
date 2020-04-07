@@ -158,7 +158,10 @@ namespace ZeroTeam.MessageMVC.Documents
             Assemblies.Add(assembly);
             // ReSharper disable once AssignNullToNotNullAttribute
             if (assembly.IsDynamic || assembly.Location == null)
+            {
                 return;
+            }
+
             Load(Path.Combine(Path.GetDirectoryName(assembly.Location),
                 Path.GetFileNameWithoutExtension(assembly.Location) + ".xml"));
         }

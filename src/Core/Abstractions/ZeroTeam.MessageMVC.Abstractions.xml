@@ -1170,12 +1170,12 @@
             配置
             </summary>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ITransportDiscory">
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.IReceiverDiscory">
             <summary>
-            自定义网络传输对象发现
+            自定义消息接收对象发现
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ITransportDiscory.DiscoryNetTransport(System.Type,System.String@)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IReceiverDiscory.DiscoryNetTransport(System.Type,System.String@)">
             <summary>
             发现传输对象
             </summary>
@@ -1327,6 +1327,11 @@
                 本地站点配置
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.AppName">
+            <summary>
+                当前应用名称
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.MaxWorkThreads">
             <summary>
               线程池最大工作线程数
@@ -1379,11 +1384,6 @@
                 本地站点配置
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroAppOption.AppName">
-            <summary>
-                当前应用名称
-            </summary>
-        </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroAppOption.AppVersion">
             <summary>
                 当前应用版本号
@@ -1391,7 +1391,7 @@
         </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroAppOption.ServiceName">
             <summary>
-                服务名称
+                服务器名称
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroAppOption.TraceName">
@@ -1916,7 +1916,7 @@
         </member>
         <member name="P:ZeroTeam.MessageMVC.Documents.ServiceInfo.NetBuilder">
             <summary>
-            网络传输对象构造器
+            消息接收对象构造器
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Documents.TypeDocument">
@@ -2106,7 +2106,7 @@
         </member>
         <member name="P:ZeroTeam.MessageMVC.Services.IService.Transport">
             <summary>
-            网络传输对象
+            消息接收对象
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Services.IService.ConfigState">
@@ -2236,6 +2236,15 @@
             当前处理器
             </summary>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageMiddleware.Prepare(ZeroTeam.MessageMVC.Services.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
+            <summary>
+            准备
+            </summary>
+            <param name="service">当前服务</param>
+            <param name="message">当前消息</param>
+            <param name="tag">扩展信息</param>
+            <returns></returns>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.IMessageMiddleware.Handle(ZeroTeam.MessageMVC.Services.IService,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object,System.Func{System.Threading.Tasks.Task})">
             <summary>
             处理消息
@@ -2270,6 +2279,11 @@
         <member name="F:ZeroTeam.MessageMVC.Messages.MessageHandleScope.None">
             <summary>
             什么也不处理
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Messages.MessageHandleScope.Prepare">
+            <summary>
+            准备
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.Messages.MessageHandleScope.Handle">
@@ -2473,6 +2487,18 @@
             当前中间件序号
             </summary>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessageProcessor.Prepare">
+            <summary>
+            准备处理
+            </summary>
+            <returns>是否需要正式处理</returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessageProcessor.DoHandle">
+            <summary>
+            中间件链式处理
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.MessageProcessor.Handle">
             <summary>
             中间件链式处理
@@ -2517,14 +2543,14 @@
             格式错误
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.NetError">
-            <summary>
-            网络传输错误
-            </summary>
-        </member>
         <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.Accept">
             <summary>
             已接受
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.NetError">
+            <summary>
+            消息接收错误
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.Success">
@@ -2534,7 +2560,7 @@
         </member>
         <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.NoSupper">
             <summary>
-            无处理方法
+            不支持处理
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.Failed">
@@ -2547,89 +2573,84 @@
             处理异常
             </summary>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.MessageTransfers.IMessageConsumer">
+        <member name="T:ZeroTeam.MessageMVC.Messages.IMessageConsumer">
             <summary>
             表示一个消息队列消费对象
             </summary>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.MessageTransfers.IMessagePoster">
+        <member name="T:ZeroTeam.MessageMVC.Messages.IMessagePoster">
             <summary>
             消息投递对象
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.MessageTransfers.IMessagePoster.State">
+        <member name="P:ZeroTeam.MessageMVC.Messages.IMessagePoster.State">
             <summary>
             运行状态
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.MessageTransfers.IMessagePoster.Initialize">
+        <member name="M:ZeroTeam.MessageMVC.Messages.IMessagePoster.Initialize">
             <summary>
                 初始化
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.MessageTransfers.IMessagePoster.Post(ZeroTeam.MessageMVC.Messages.IMessageItem)">
+        <member name="M:ZeroTeam.MessageMVC.Messages.IMessagePoster.Post(ZeroTeam.MessageMVC.Messages.IMessageItem)">
             <summary>
             投递消息
             </summary>
             <param name="message">消息</param>
             <returns></returns>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.MessageTransfers.INetEvent">
+        <member name="T:ZeroTeam.MessageMVC.Messages.IMessageReceiver">
             <summary>
-            表示一个分布式事件对象
+            表示一个消息接收对象
             </summary>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.MessageTransfers.INetTransfer">
-            <summary>
-            表示一个网络传输对象
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.MessageTransfers.INetTransfer.Service">
+        <member name="P:ZeroTeam.MessageMVC.Messages.IMessageReceiver.Service">
             <summary>
             服务
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.MessageTransfers.INetTransfer.End">
+        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageReceiver.End">
             <summary>
             关闭
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.MessageTransfers.INetTransfer.Prepare">
+        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageReceiver.Prepare">
             <summary>
             准备
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.MessageTransfers.INetTransfer.Close">
+        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageReceiver.Close">
             <summary>
             关闭
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.MessageTransfers.INetTransfer.LoopBegin">
+        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageReceiver.LoopBegin">
             <summary>
             开始轮询前的工作
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.MessageTransfers.INetTransfer.Loop(System.Threading.CancellationToken)">
+        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageReceiver.Loop(System.Threading.CancellationToken)">
             <summary>
             轮询
             </summary>
             <returns>返回False表明需要重启</returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.MessageTransfers.INetTransfer.LoopComplete">
+        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageReceiver.LoopComplete">
             <summary>
             结束轮询前的工作
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.MessageTransfers.INetTransfer.Commit">
+        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageReceiver.Commit">
             <summary>
             表示已成功接收 
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.MessageTransfers.INetTransfer.OnMessageResult(ZeroTeam.MessageMVC.Messages.MessageProcessor,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
+        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageReceiver.OnMessageResult(ZeroTeam.MessageMVC.Messages.MessageProcessor,ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
             <summary>
             返回值已给出
             </summary>
@@ -2638,7 +2659,7 @@
             默认实现为保证OnCallEnd可控制且不再抛出异常,无特殊需要不应再次实现
             </remarks>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.MessageTransfers.INetTransfer.OnResult(ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
+        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageReceiver.OnResult(ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
             <summary>
             发送返回值 
             </summary>
@@ -2647,52 +2668,57 @@
             默认实现为保证OnCallEnd可控制且不再抛出异常,无特殊需要不应再次实现
             </remarks>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.MessageTransfers.IServiceTransfer">
+        <member name="T:ZeroTeam.MessageMVC.Messages.INetEvent">
+            <summary>
+            表示一个分布式事件对象
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Messages.IServiceTransfer">
             <summary>
             表示一个远程服务(RPC或HTTP)传输对象
             </summary>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.MessageTransfers.NetTransferBase">
+        <member name="T:ZeroTeam.MessageMVC.Messages.MessageReceiveException">
             <summary>
-            网络传输对象基类
-            </summary>
-            <remarks>
-            实现了IMessagePoster自注册,可以做到本进程调用不会提升到网络层面
-            </remarks>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.MessageTransfers.NetTransferBase.Service">
-            <summary>
-            服务
+            表示消息接收的异常,用于集中处理,也基于透明化消息接收过程的需要
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.MessageTransfers.NetTransferBase.State">
-            <summary>
-            运行状态
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.MessageTransfers.NetTransferBase.ZeroTeam#MessageMVC#MessageTransfers#IMessagePoster#Initialize">
-            <summary>
-            初始化
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.MessageTransfers.NetTransferBase.ZeroTeam#MessageMVC#MessageTransfers#IMessagePoster#Post(ZeroTeam.MessageMVC.Messages.IMessageItem)">
-            <summary>
-            生产消息
-            </summary>
-            <param name="message">消息</param>
-            <returns></returns>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.MessageTransfers.NetTransferException">
-            <summary>
-            表示网络传输的异常,用于集中处理,也基于透明化网络传输对象的需要
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.MessageTransfers.NetTransferException.#ctor(System.String,System.Exception)">
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessageReceiveException.#ctor(System.String,System.Exception)">
             <summary>
             构造
             </summary>
             <param name="msg">消息</param>
             <param name="exception">原始异常</param>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Messages.MessageReceiverBase">
+            <summary>
+            消息接收对象基类
+            </summary>
+            <remarks>
+            实现了IMessagePoster自注册,可以做到本进程调用不会提升到网络层面
+            </remarks>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.Service">
+            <summary>
+            服务
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.State">
+            <summary>
+            运行状态
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.ZeroTeam#MessageMVC#Messages#IMessagePoster#Initialize">
+            <summary>
+            初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.ZeroTeam#MessageMVC#Messages#IMessagePoster#Post(ZeroTeam.MessageMVC.Messages.IMessageItem)">
+            <summary>
+            生产消息
+            </summary>
+            <param name="message">消息</param>
+            <returns></returns>
         </member>
         <member name="T:ZeroTeam.MessageMVC.MessagePoster">
             <summary>
@@ -2714,7 +2740,7 @@
                 手动注册
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.MessagePoster.RegistPoster(ZeroTeam.MessageMVC.MessageTransfers.IMessagePoster,System.String[])">
+        <member name="M:ZeroTeam.MessageMVC.MessagePoster.RegistPoster(ZeroTeam.MessageMVC.Messages.IMessagePoster,System.String[])">
             <summary>
                 手动注册
             </summary>

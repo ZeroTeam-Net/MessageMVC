@@ -3,7 +3,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.MessageTransfers;
 using ZeroTeam.MessageMVC.ZeroApis;
 using ZeroTeam.ZeroMQ;
 using ZeroTeam.ZeroMQ.ZeroRPC;
@@ -13,7 +12,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
     /// <summary>
     /// 表示进程内通讯
     /// </summary>
-    public class InporcConsumer : NetTransferBase, IMessageConsumer
+    public class InporcConsumer : MessageReceiverBase, IMessageConsumer
     {
         #region IMessageConsumer
 
@@ -21,7 +20,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// 同步运行状态
         /// </summary>
         /// <returns></returns>
-        Task<bool> INetTransfer.LoopBegin()
+        Task<bool> IMessageReceiver.LoopBegin()
         {
             socket = ZSocketEx.CreateServiceSocket(ZmqFlowMiddleware.InprocAddress, null, ZSocketType.ROUTER);
             if (socket == null)
@@ -36,7 +35,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
             return Task.FromResult(true);
         }
 
-        Task<bool> INetTransfer.Loop(CancellationToken token)
+        Task<bool> IMessageReceiver.Loop(CancellationToken token)
         {
             while (!token.IsCancellationRequested)
             {
@@ -60,7 +59,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// 同步关闭状态
         /// </summary>
         /// <returns></returns>
-        Task INetTransfer.LoopComplete()
+        Task IMessageReceiver.LoopComplete()
         {
             zmqPool.Dispose();
             socket.Dispose();
@@ -71,7 +70,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// 发送返回值 
         /// </summary>
         /// <returns></returns>
-        Task<bool> INetTransfer.OnResult(IMessageItem message, object tag)
+        Task<bool> IMessageReceiver.OnResult(IMessageItem message, object tag)
         {
             if (tag is ApiCallItem item)
                 OnResult(message.Result, item,

@@ -27,6 +27,20 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         MessageProcessor Processor { get; set; }
 
+
+        /// <summary>
+        /// 准备
+        /// </summary>
+        /// <param name="service">当前服务</param>
+        /// <param name="message">当前消息</param>
+        /// <param name="tag">扩展信息</param>
+        /// <returns></returns>
+        Task<bool> Prepare(IService service, IMessageItem message, object tag)
+        {
+            return Task.FromResult(true);
+        }
+
+
         /// <summary>
         /// 处理消息
         /// </summary>
@@ -37,7 +51,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <returns></returns>
         Task Handle(IService service, IMessageItem message, object tag, Func<Task> next)
         {
-            return Task.CompletedTask;
+            return next();
         }
 
 
@@ -50,7 +64,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <returns></returns>
         Task OnGlobalException(IService service, IMessageItem message, object tag)
         {
-           return Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
         /// <summary>

@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.MessageTransfers;
-using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.ZeroMQ.ZeroRPC
 {

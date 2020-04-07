@@ -2,7 +2,6 @@
 using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.MessageTransfers;
 using ZeroTeam.MessageMVC.Services;
 
 namespace ZeroTeam.MessageMVC.Tools
@@ -49,6 +48,7 @@ namespace ZeroTeam.MessageMVC.Tools
                 await next();
                 return;
             }
+            message.State = MessageState.Accept;
             LogRecorder.MonitorTrace("ReverseProxy To..");
             try
             {
@@ -62,7 +62,6 @@ namespace ZeroTeam.MessageMVC.Tools
                 message.Exception = ex;
                 message.State = MessageState.Exception;
             }
-            await service.Transport.OnResult(message, tag);
         }
     }
 }

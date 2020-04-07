@@ -55,7 +55,7 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <summary>
         /// 实例
         /// </summary>
-        public readonly static ToolsOption Instance = new ToolsOption();
+        public static readonly ToolsOption Instance = new ToolsOption();
 
         static ToolsOption()
         {
@@ -67,7 +67,7 @@ namespace ZeroTeam.MessageMVC.Tools
         /// </summary>
         private void Update()
         {
-            ToolsOption option = ConfigurationManager.Get<ToolsOption>("ZeroApp.Tools");
+            ToolsOption option = ConfigurationManager.Get<ToolsOption>("MessageMVC:Tools");
 
             ReceiptService = option.ReceiptService;
             ReceiptApi = option.ReceiptApi;

@@ -1,5 +1,4 @@
 using Agebull.Common.Configuration;
-using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Http;
@@ -8,7 +7,6 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.MessageTransfers;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Http
@@ -30,7 +28,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// </summary>
         public static void Initialize(IServiceCollection services)
         {
-            Option = ConfigurationManager.Get<MessageRouteOption>("HttpRoute");
+            Option = ConfigurationManager.Get<MessageRouteOption>("MessageMVC:HttpRoute");
 
             services.AddTransient<IServiceTransfer, HttpTransfer>();
 

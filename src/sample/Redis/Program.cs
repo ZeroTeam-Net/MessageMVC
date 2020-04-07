@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
-using ZeroTeam.MessageMVC.MessageTransfers;
 using ZeroTeam.MessageMVC.RedisMQ;
 using ZeroTeam.MessageMVC.Sample;
 

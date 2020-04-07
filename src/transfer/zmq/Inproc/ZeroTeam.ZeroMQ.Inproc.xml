@@ -9,19 +9,19 @@
             表示进程内通讯
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.ZeroTeam#MessageMVC#MessageTransfers#INetTransfer#LoopBegin">
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.ZeroTeam#MessageMVC#Messages#IMessageReceiver#LoopBegin">
             <summary>
             同步运行状态
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.ZeroTeam#MessageMVC#MessageTransfers#INetTransfer#LoopComplete">
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.ZeroTeam#MessageMVC#Messages#IMessageReceiver#LoopComplete">
             <summary>
             同步关闭状态
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.ZeroTeam#MessageMVC#MessageTransfers#INetTransfer#OnResult(ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroMQ.Inporc.InporcConsumer.ZeroTeam#MessageMVC#Messages#IMessageReceiver#OnResult(ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
             <summary>
             发送返回值 
             </summary>
@@ -438,10 +438,10 @@
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.InprocDiscory">
             <summary>
-            默认网络传输对象发现
+            默认消息接收对象发现
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.InprocDiscory.ZeroTeam#MessageMVC#ZeroApis#ITransportDiscory#DiscoryNetTransport(System.Type,System.String@)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.InprocDiscory.ZeroTeam#MessageMVC#ZeroApis#IReceiverDiscory#DiscoryNetTransport(System.Type,System.String@)">
             <summary>
             发现传输对象
             </summary>
@@ -454,7 +454,7 @@
             测试对象发现
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.TestDiscory.ZeroTeam#MessageMVC#ZeroApis#ITransportDiscory#DiscoryNetTransport(System.Type,System.String@)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.TestDiscory.ZeroTeam#MessageMVC#ZeroApis#IReceiverDiscory#DiscoryNetTransport(System.Type,System.String@)">
             <summary>
             发现传输对象
             </summary>

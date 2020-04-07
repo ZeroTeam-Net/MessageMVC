@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
-using ZeroTeam.MessageMVC.Messages;
 
-namespace ZeroTeam.MessageMVC.MessageTransfers
+namespace ZeroTeam.MessageMVC.Messages
 {
     /// <summary>
     /// 消息投递对象

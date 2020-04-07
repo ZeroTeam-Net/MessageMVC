@@ -6,9 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
-using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.MessageTransfers;
 using ZeroTeam.MessageMVC.Services;
 using ZeroTeam.MessageMVC.ZeroApis;
 using ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant;
@@ -18,14 +16,14 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
     /// <summary>
     ///  ZeroMQ实现的RPC
     /// </summary>
-    public sealed class ZeroRpcTransport : NetTransferBase, IServiceTransfer
+    public sealed class ZeroRpcTransport : MessageReceiverBase, IServiceTransfer
     {
         #region 控制反转
 
         /// <summary>
         /// 初始化
         /// </summary>
-        bool INetTransfer.Prepare()
+        bool IMessageReceiver.Prepare()
         {
             ZeroRpcFlow.ZeroNetEvents.Add(OnZeroNetEvent);
             return CheckConfig();
@@ -270,7 +268,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// 同步运行状态
         /// </summary>
         /// <returns></returns>
-        Task<bool> INetTransfer.LoopBegin()
+        Task<bool> IMessageReceiver.LoopBegin()
         {
             try
             {
@@ -354,7 +352,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// 同步关闭状态
         /// </summary>
         /// <returns></returns>
-        Task INetTransfer.LoopComplete()
+        Task IMessageReceiver.LoopComplete()
         {
             pool.Sockets[0].Disconnect(Config.WorkerCallAddress, out _);
             Hearter.HeartLeft(Service.Name, RealName);
@@ -414,7 +412,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// 发送返回值 
         /// </summary>
         /// <returns></returns>
-        Task<bool> INetTransfer.OnResult(IMessageItem message, object tag)
+        Task<bool> IMessageReceiver.OnResult(IMessageItem message, object tag)
         {
             if (tag is ApiCallItem item)
             {

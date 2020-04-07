@@ -45,7 +45,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// 其他带外内容
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Content => HttpContent != null ? HttpContent : JsonHelper.SerializeObject(Arguments);
+        public string Content => HttpContent ?? JsonHelper.SerializeObject(Arguments);
 
         string IMessageItem.Topic { get => ApiHost; set => ApiHost = value; }
 
@@ -118,11 +118,6 @@ namespace ZeroTeam.MessageMVC.Http
         #endregion
 
         #region Response
-
-        /// <summary>
-        ///     缓存键
-        /// </summary>
-        public string CacheKey;
 
         /// <summary>
         ///     文件
@@ -348,15 +343,13 @@ namespace ZeroTeam.MessageMVC.Http
 
                 if (request.ContentLength != null && request.ContentLength > 0)
                 {
-                    using (var texter = new StreamReader(request.Body))
+                    using var texter = new StreamReader(request.Body);
+                    HttpContent = await texter.ReadToEndAsync();
+                    if (string.IsNullOrEmpty(HttpContent))
                     {
-                        HttpContent = await texter.ReadToEndAsync();
-                        if (string.IsNullOrEmpty(HttpContent))
-                        {
-                            HttpContent = null;
-                        }
-                        texter.Close();
+                        HttpContent = null;
                     }
+                    texter.Close();
                 }
                 if (arguments.Count > 0)
                     Arguments = arguments;

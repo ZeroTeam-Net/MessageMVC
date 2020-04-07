@@ -47,6 +47,6 @@
 2. 还原参数(如果有)
 3. 调用对应的Action
 4. 处理返回值
-5. 与INetTransport交互,调用OnResult/OnError之一(只调用其中一个方法一次)以传送结果.
+5. 与IMessageReceiver交互,调用OnResult/OnError之一(只调用其中一个方法一次)以传送结果.
 
 

@@ -93,42 +93,20 @@ namespace Agebull.Common.Logging
         public static void Initialize()
         {
             ReadConfig();
-            if (NoRegist)
+            if (!NoRegist)
             {
-                return;
+                DoInitialize();
             }
-
-            IocHelper.ServiceCollection.AddLogging(builder =>
-            {
-                builder.AddConfiguration(ConfigurationManager.Root.GetSection("Logging"));
-                if (UseConsoleLogger)
-                {
-                    builder.AddConsole();
-                }
-
-                if (!UseBaseLogger)
-                {
-                    return;
-                }
-
-                builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, TextLoggerProvider>());
-                LoggerProviderOptions.RegisterProviderOptions<TextLoggerOption, TextLoggerProvider>(builder.Services);
-
-            });
-            IocHelper.Update();
-            ConfigurationManager.RegistOnChange(ReadConfig, false);
         }
+        static int isInitialized;
 
         /// <summary>
         ///     初始化
         /// </summary>
         public static void DoInitialize()
         {
-            if (!NoRegist)
-            {
+            if (Interlocked.Increment(ref isInitialized) > 1)
                 return;
-            }
-
             IocHelper.ServiceCollection.AddLogging(builder =>
             {
                 builder.AddConfiguration(ConfigurationManager.Root.GetSection("Logging"));

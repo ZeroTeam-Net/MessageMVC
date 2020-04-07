@@ -5,7 +5,6 @@ using Confluent.Kafka;
 using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.MessageTransfers;
 
 namespace ZeroTeam.MessageMVC.Kafka
 {
@@ -39,7 +38,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// </summary>
         public void Initialize()
         {
-            ConsumerConfig config = ConfigurationManager.Get<ConsumerConfig>("Kafka");
+            ConsumerConfig config = ConfigurationManager.Get<ConsumerConfig>("MessageMVC:Kafka");
             producer = new ProducerBuilder<Null, string>(new ProducerConfig
             {
                 BootstrapServers = config.BootstrapServers

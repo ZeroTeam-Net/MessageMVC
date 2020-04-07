@@ -153,7 +153,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <returns></returns>
         public async Task<bool> Error()
         {
-            logger.Debug(() => $"Plan is error.{Option.plan_id}");
+            logger.Trace(() => $"Plan is error.{Option.plan_id}");
 
             RealInfo.plan_state = Plan_message_state.error;
 
@@ -222,7 +222,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <returns></returns>
         public async Task<bool> Pause()
         {
-            logger.Debug(() => $"Plan is pause.{Option.plan_id}");
+            logger.Trace(() => $"Plan is pause.{Option.plan_id}");
             RealInfo.plan_state = Plan_message_state.pause;
 
 #if !UNIT_TEST
@@ -273,7 +273,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
             if (plan_auto_remove > 0)
 #endif
             {
-                logger.Debug(() => $"Plan is close.{Option.plan_id},remove by {DateTime.Now.AddSeconds(plan_auto_remove)}");
+                logger.Trace(() => $"Plan is close.{Option.plan_id},remove by {DateTime.Now.AddSeconds(plan_auto_remove)}");
                 RealInfo.plan_state = Plan_message_state.close;
 #if !UNIT_TEST
                 await SaveRealInfo();
@@ -299,7 +299,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <returns></returns>
         public static async Task<bool> Remove(string id)
         {
-            logger.Debug(() => $"Plan is remove.{id}");
+            logger.Trace(() => $"Plan is remove.{id}");
 
 #if !UNIT_TEST
             await RedisHelper.HDelAsync(planDoingKey, id);
@@ -356,7 +356,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
             var message = LoadMessage(member, false);
             if (message == null || message.Option == null || message.RealInfo == null)
             {
-                logger.Debug(() => $"Read plan bad.{member}");
+                logger.Trace(() => $"Read plan bad.{member}");
                 await Remove(member);
                 return (true, null);
             }
@@ -364,14 +364,14 @@ namespace ZeroTeam.MessageMVC.PlanTasks
             if (message.RealInfo.plan_state == Plan_message_state.skip)
             {
                 ++message.RealInfo.skip_num;
-                logger.Debug(() => $"Plan is skip.{member},skip {message.RealInfo.skip_num}");
+                logger.Trace(() => $"Plan is skip.{member},skip {message.RealInfo.skip_num}");
                 await message.CheckNextTime();
                 return (true, null);
             }
             message.Message = RedisHelper.HGet<MessageItem>(message.Key, MessageKey);
             if (message.Message == null)
             {
-                logger.Debug(() => $"Read message bad.{member}");
+                logger.Trace(() => $"Read message bad.{member}");
                 await Remove(member);
                 return (true, null);
             }
@@ -584,7 +584,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                 RealInfo.plan_state = Plan_message_state.queue;
             }
 
-            logger.Debug(() => $"Plan is queue.{Option.plan_id},state {RealInfo.plan_state},retry {RealInfo.retry_num}");
+            logger.Trace(() => $"Plan is queue.{Option.plan_id},state {RealInfo.plan_state},retry {RealInfo.retry_num}");
 
             RealInfo.plan_time = time;
 

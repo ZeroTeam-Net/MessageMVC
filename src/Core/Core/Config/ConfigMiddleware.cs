@@ -2,14 +2,11 @@
 using Agebull.Common.Configuration;
 using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
-using Agebull.EntityModel.Common;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading;
-using ZeroTeam.MessageMVC.Context;
 
 
 namespace ZeroTeam.MessageMVC
@@ -72,7 +69,7 @@ namespace ZeroTeam.MessageMVC
             bool useZero = !string.IsNullOrEmpty(config.RootPath);
             if (!useZero)
             {
-                bool.TryParse(ConfigurationManager.Root["UseZero"], out useZero);
+                bool.TryParse(ConfigurationManager.Root["MessageMVC:Option:UseZero"] ?? "false", out useZero);
                 if (!useZero || ConfigurationManager.Root["ASPNETCORE_ENVIRONMENT_"] == "Development")
                 {
                     config.RootPath = Environment.CurrentDirectory;
@@ -89,13 +86,13 @@ namespace ZeroTeam.MessageMVC
                 if (File.Exists(file))
                 {
                     ConfigurationManager.Load(file);
-                    config.CopyByEmpty(ConfigurationManager.Get<ZeroAppConfig>("ZeroApp"));
+                    config.CopyByEmpty(ConfigurationManager.Get<ZeroAppConfig>("MessageMVC:Option"));
                 }
                 file = Path.Combine(config.RootPath, "config", $"{config.AppName}.json");
                 if (File.Exists(file))
                 {
                     ConfigurationManager.Load(file);
-                    config.CopyByHase(ConfigurationManager.Get<ZeroAppConfig>("ZeroApp"));
+                    config.CopyByHase(ConfigurationManager.Get<ZeroAppConfig>("MessageMVC:Option"));
                 }
             }
             #endregion

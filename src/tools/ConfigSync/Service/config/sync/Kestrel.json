@@ -1,1 +1,12 @@
-﻿{}
+﻿{
+  "Kestrel" : {
+    "AddServerHeader": true,
+    "AllowSynchronousIO": false,
+    "EndpointDefaults": {
+      "Protocols": "Http1AndHttp2"
+    },
+    "Limits": {
+      "MinResponseDataRate": null
+    }
+  }
+}

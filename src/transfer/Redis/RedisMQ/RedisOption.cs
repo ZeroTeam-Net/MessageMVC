@@ -1,9 +1,11 @@
-﻿namespace ZeroTeam.MessageMVC.RedisMQ
+﻿using Agebull.Common.Configuration;
+
+namespace ZeroTeam.MessageMVC.RedisMQ
 {
     /// <summary>
     /// Redis的配置项
     /// </summary>
-    internal class RedisOption
+    public class RedisOption
     {
         /// <summary>
         /// 连接字符串
@@ -39,5 +41,40 @@
         /// </summary>
 
         public bool NoSupperIsError { get; set; }
+
+        /// <summary>
+        /// 实例
+        /// </summary>
+        public static readonly RedisOption Instance = new RedisOption();
+
+
+        static RedisOption()
+        {
+            ConfigurationManager.RegistOnChange(Instance.Update, true);
+        }
+
+        /// <summary>
+        /// 重新载入并更新
+        /// </summary>
+        private void Update()
+        {
+            RedisOption option = ConfigurationManager.Option<RedisOption>("MessageMVC:Redis") ;
+
+            ConnectionString = option.ConnectionString;
+            GuardCheckTime = option.GuardCheckTime;
+            MessageLockTime = option.MessageLockTime;
+            FailedIsError = option.FailedIsError;
+            NoSupperIsError = option.NoSupperIsError;
+
+            if (GuardCheckTime <= 0)
+            {
+                GuardCheckTime = 3000;
+            }
+
+            if (MessageLockTime <= 0)
+            {
+                MessageLockTime = 1000;
+            }
+        }
     }
 }

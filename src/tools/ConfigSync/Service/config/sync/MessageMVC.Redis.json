@@ -1,0 +1,11 @@
+﻿{
+  "MessageMVC" : {
+    "Redis" : {
+      "ConnectionString": "47.98.229.139",
+      "GuardCheckTime": 3000,
+      "MessageLockTime": 3000,
+      "FailedIsError": false,
+      "NoSupperIsError": false
+    }
+  }
+}

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using ZeroTeam.MessageMVC.MessageTransfers;
+using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Services
@@ -20,9 +20,9 @@ namespace ZeroTeam.MessageMVC.Services
         int RealState { get; }
 
         /// <summary>
-        /// 网络传输对象
+        /// 消息接收对象
         /// </summary>
-        public INetTransfer Transport { get; }
+        public IMessageReceiver Transport { get; }
 
         /// <summary>
         ///     配置状态

@@ -6,7 +6,6 @@ using System.Linq;
 using System.Runtime.Serialization;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Documents;
-using ZeroTeam.MessageMVC.MessageTransfers;
 
 namespace ZeroTeam.ZeroMQ.ZeroRPC
 {

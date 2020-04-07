@@ -33,7 +33,7 @@ namespace ZeroTeam.MessageMVC.Services.StateMachine
                 return Task.FromResult(false);
             }
             IsDisposed = true;
-           return Control.DoEnd();
+            return Control.DoEnd();
         }
     }
 }

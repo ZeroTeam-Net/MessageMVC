@@ -4,8 +4,6 @@ using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Kafka;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.MessageTransfers;
-using ZeroTeam.MessageMVC.ZeroApis;
 using ZeroTeam.MessageMVC.ZeroMQ.Inporc;
 using ZeroTeam.ZeroMQ.ZeroRPC;
 

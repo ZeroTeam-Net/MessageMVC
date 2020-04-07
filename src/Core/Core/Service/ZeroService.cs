@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Documents;
-using ZeroTeam.MessageMVC.MessageTransfers;
+using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.Services.StateMachine;
 using ZeroTeam.MessageMVC.ZeroApis;
 
@@ -33,9 +33,9 @@ namespace ZeroTeam.MessageMVC.Services
         public string ServiceName { get; set; }
 
         /// <summary>
-        /// 网络传输对象
+        /// 消息接收对象
         /// </summary>
-        public INetTransfer Transport { get; set; }
+        public IMessageReceiver Transport { get; set; }
 
         /// <summary>
         /// 是否自动发现对象
@@ -43,15 +43,15 @@ namespace ZeroTeam.MessageMVC.Services
         public bool IsDiscover { get; internal set; }
 
         /// <summary>
-        /// 网络传输对象构造器
+        /// 消息接收对象构造器
         /// </summary>
-        public Func<string, INetTransfer> TransportBuilder { get; set; }
+        public Func<string, IMessageReceiver> TransportBuilder { get; set; }
 
         #endregion
 
         #region 状态管理
 
-        ILogger logger;
+        private ILogger logger;
 
         /// <summary>
         ///     运行状态
@@ -67,9 +67,12 @@ namespace ZeroTeam.MessageMVC.Services
             set
             {
                 if (_realState == value)
+                {
                     return;
+                }
+
                 Interlocked.Exchange(ref _realState, value);
-                logger.Information(()=>$"[RealState] {StationState.Text(_realState)}");
+                logger.Information(() => $"[RealState] {StationState.Text(_realState)}");
             }
         }
         //#if UseStateMachine
@@ -150,9 +153,13 @@ namespace ZeroTeam.MessageMVC.Services
                 Transport.Service = this;
                 Transport.Initialize();
                 if (!Transport.Prepare())
+                {
                     ConfigState = StationStateType.ConfigError;
+                }
                 else
+                {
                     ConfigState = StationStateType.Initialized;
+                }
             }
             ResetStateMachine();
         }
@@ -163,7 +170,7 @@ namespace ZeroTeam.MessageMVC.Services
         /// <returns></returns>
         private bool DoStart()
         {
-            logger.Information(()=> $"Try start by {StationState.Text(RealState)}");
+            logger.Information(() => $"Try start by {StationState.Text(RealState)}");
             try
             {
                 if (ConfigState == StationStateType.None || ConfigState >= StationStateType.Stop || !ZeroFlowControl.CanDo)
@@ -308,7 +315,7 @@ namespace ZeroTeam.MessageMVC.Services
         /// <summary>
         /// 析构
         /// </summary>
-        void DoEnd()
+        private void DoEnd()
         {
             Transport.End();
             eventSlim.Dispose();

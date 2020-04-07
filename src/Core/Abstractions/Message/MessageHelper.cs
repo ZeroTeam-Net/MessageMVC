@@ -122,7 +122,7 @@ namespace ZeroTeam.MessageMVC.Messages
                     CallApp = $"{ZeroAppOption.Instance.AppName}({ZeroAppOption.Instance.AppVersion})",
                     CallMachine = $"{ZeroAppOption.Instance.ServiceName}({ZeroAppOption.Instance.LocalIpAddress})"
                 };
-                if(GlobalContext.CurrentNoLazy != null)
+                if (GlobalContext.CurrentNoLazy != null)
                 {
                     msg.Trace.TraceId = GlobalContext.Current.Trace.TraceId;
                     msg.Trace.CallId = GlobalContext.Current.Trace.LocalId;

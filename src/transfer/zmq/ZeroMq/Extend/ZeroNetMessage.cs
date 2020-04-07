@@ -5,8 +5,6 @@ using System.Text;
 using Agebull.Common.Logging;
 
 using Newtonsoft.Json;
-using ZeroTeam.MessageMVC;
-using ZeroTeam.MessageMVC.Context;
 
 namespace ZeroTeam.ZeroMQ.ZeroRPC
 {

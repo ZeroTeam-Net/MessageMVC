@@ -3,7 +3,6 @@ using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.MessageTransfers;
 using ZeroTeam.ZeroMQ.ZeroRPC;
 
 namespace MicroZero.Kafka.QueueStation

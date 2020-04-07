@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using ZeroTeam.ZeroMQ.lib;
 
 namespace ZeroTeam.ZeroMQ

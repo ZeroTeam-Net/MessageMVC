@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
+using System.Reflection;
 
 namespace ZeroTeam.MessageMVC.AddIn
 {
@@ -43,24 +44,30 @@ namespace ZeroTeam.MessageMVC.AddIn
         /// </summary>
         void IFlowMiddleware.CheckOption(ZeroAppOption config)
         {
-            string path;
+            DirectoryCatalog directoryCatalog;
             if (string.IsNullOrEmpty(ZeroAppOption.Instance.AddInPath))
             {
-                ZeroAppOption.Instance.AddInPath = path = Path.GetDirectoryName(this.GetType().Assembly.Location);
+                directoryCatalog = new DirectoryCatalog(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
+                    "ZeroTeam.MessageMVC.*.dll");
             }
             else
             {
-                path = ZeroAppOption.Instance.AddInPath[0] == '/'
+                directoryCatalog = new DirectoryCatalog(ZeroAppOption.Instance.AddInPath[0] == '/'
                      ? ZeroAppOption.Instance.AddInPath
-                     : IOHelper.CheckPath(ZeroAppOption.Instance.RootPath, ZeroAppOption.Instance.AddInPath);
+                     : IOHelper.CheckPath(ZeroAppOption.Instance.RootPath, ZeroAppOption.Instance.AddInPath));
             }
 
+            var logger = IocHelper.LoggerFactory.CreateLogger(nameof(AddInImporter));
 
             // 通过容器对象将宿主和部件组装到一起。 
-            DirectoryCatalog directoryCatalog = new DirectoryCatalog(path);
-            var container = new CompositionContainer(directoryCatalog);
-            container.ComposeParts(this);
-            var logger = IocHelper.LoggerFactory.CreateLogger(nameof(AddInImporter));
+            try
+            {
+                new CompositionContainer(directoryCatalog).ComposeParts(this);
+            }
+            catch (System.Exception e2)
+            {
+                logger.Exception(e2);
+            }
             if (Registers == null)
             {
                 return;
@@ -68,7 +75,14 @@ namespace ZeroTeam.MessageMVC.AddIn
             foreach (var reg in Registers)
             {
                 logger.Information(() => reg.GetType().Assembly.FullName);
-                reg.AutoRegist(IocHelper.ServiceCollection);
+                try
+                {
+                    reg.AutoRegist(IocHelper.ServiceCollection);
+                }
+                catch (System.Exception ex)
+                {
+                    logger.Exception(ex);
+                }
             }
 
         }

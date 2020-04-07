@@ -1,4 +1,3 @@
-using Agebull.Common.Configuration;
 using System;
 using System.Runtime.Serialization;
 
@@ -12,47 +11,54 @@ namespace ZeroTeam.MessageMVC
     public class ZeroAppConfig
     {
         /// <summary>
+        ///     当前应用名称
+        /// </summary>
+
+        public string AppName { get; set; }
+
+        /// <summary>
         ///   线程池最大工作线程数
         /// </summary>
-        
+
         public int MaxWorkThreads { get; set; }
 
         /// <summary>
         ///   线程池最大IO线程数
         /// </summary>
-        
+
         public int MaxIOThreads { get; set; }
 
         /// <summary>
         ///     站点数据使用AppName为文件夹
         /// </summary>
-        
+
         public bool IsolateFolder { get; set; }
 
         /// <summary>
         ///     本地数据文件夹
         /// </summary>
-        
+
         public string DataFolder { get; set; }
 
         /// <summary>
         ///     本地配置文件夹
         /// </summary>
-        
+
         public string ConfigFolder { get; set; }
 
         /// <summary>
         ///     插件地址,如为空则与运行目录相同
         /// </summary>
-        
+
         public string AddInPath { get; set; }
 
         /// <summary>
         ///     启用插件自动加载
         /// </summary>
-        
+
         public bool EnableAddIn { get; set; }
 
+        #region 复制
 
         /// <summary>
         /// 如果目标配置存在,则复制之
@@ -63,6 +69,11 @@ namespace ZeroTeam.MessageMVC
             if (option == null)
             {
                 return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(option.AppName))
+            {
+                AppName = option.AppName;
             }
 
             if (option.IsolateFolder)
@@ -79,7 +90,7 @@ namespace ZeroTeam.MessageMVC
             {
                 DataFolder = option.DataFolder;
             }
-            
+
             if (option.EnableAddIn)
             {
                 EnableAddIn = option.EnableAddIn;
@@ -103,6 +114,10 @@ namespace ZeroTeam.MessageMVC
                 return;
             }
 
+            if (string.IsNullOrWhiteSpace(AppName))
+            {
+                AppName = option.AppName;
+            }
             if (IsolateFolder)
             {
                 IsolateFolder = option.IsolateFolder;
@@ -128,5 +143,6 @@ namespace ZeroTeam.MessageMVC
                 AddInPath = option.AddInPath;
             }
         }
+        #endregion
     }
 }

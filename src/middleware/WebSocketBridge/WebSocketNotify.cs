@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.MessageTransfers;
 using ZeroTeam.MessageMVC.Services;
 
 namespace ZeroTeam.MessageMVC.Web
@@ -75,7 +74,7 @@ namespace ZeroTeam.MessageMVC.Web
 
                 try
                 {
-                    var sec = ConfigurationManager.Root.GetSection("WebSocket");
+                    var sec = ConfigurationManager.Root.GetSection("MessageMVC:WebSocket");
                     return _config = sec.Get<WebSocketConfig>() ?? new WebSocketConfig();
                 }
                 catch (Exception e)

@@ -1,0 +1,20 @@
+﻿{
+  "MessageMVC" : {
+    "Tools" : {
+      //启用Monitor模式日志记录
+      "EnableMonitorLog": true,
+      //启用调用链跟踪(使用IZeroContext全局上下文)
+      "EnableLinkTrace": false,
+      //启用异常消息本地重放
+      "EnableMessageReConsumer": false,
+      //启用埋点中间件
+      "EnableMarkPoint": false,
+      //回执服务名称
+      "MarkPointName": "test1",
+      //回执接口方法
+      "ReceiptService": "TrdReceipt",
+      //回执接口方法
+      "ReceiptApi": "receipt/v1/save"
+    }
+  }
+}

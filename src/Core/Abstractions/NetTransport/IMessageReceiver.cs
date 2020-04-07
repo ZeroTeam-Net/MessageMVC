@@ -1,16 +1,13 @@
-﻿using Agebull.Common.Logging;
-using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.Services;
 
-namespace ZeroTeam.MessageMVC.MessageTransfers
+namespace ZeroTeam.MessageMVC.Messages
 {
     /// <summary>
-    /// 表示一个网络传输对象
+    /// 表示一个消息接收对象
     /// </summary>
-    public interface INetTransfer : IMessagePoster
+    public interface IMessageReceiver : IMessagePoster
     {
         /// <summary>
         /// 服务
@@ -77,7 +74,10 @@ namespace ZeroTeam.MessageMVC.MessageTransfers
         async Task<bool> OnMessageResult(MessageProcessor processor, IMessageItem message, object tag)
         {
             if (tag == null)//内部自调用,无需处理
+            {
                 return true;
+            }
+
             return await OnResult(message, tag);
         }
 

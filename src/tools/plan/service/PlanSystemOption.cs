@@ -6,6 +6,16 @@
     internal class PlanSystemOption
     {
         /// <summary>
+        /// 空转时间
+        /// </summary>
+        public const int idleTime = 10000;
+
+        /// <summary>
+        /// 恢复等待时间
+        /// </summary>
+        public const int waitTime = 30000;
+
+        /// <summary>
         /// 系统配置,后期注入
         /// </summary>
         public static PlanSystemOption Option { get; set; }

@@ -878,7 +878,7 @@
              ZeroMQ实现的RPC
             </summary>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcTransport.ZeroTeam#MessageMVC#MessageTransfers#INetTransfer#Prepare">
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcTransport.ZeroTeam#MessageMVC#Messages#IMessageReceiver#Prepare">
             <summary>
             初始化
             </summary>
@@ -975,19 +975,19 @@
             代理地址
             </summary>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcTransport.ZeroTeam#MessageMVC#MessageTransfers#INetTransfer#LoopBegin">
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcTransport.ZeroTeam#MessageMVC#Messages#IMessageReceiver#LoopBegin">
             <summary>
             同步运行状态
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcTransport.ZeroTeam#MessageMVC#MessageTransfers#INetTransfer#LoopComplete">
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcTransport.ZeroTeam#MessageMVC#Messages#IMessageReceiver#LoopComplete">
             <summary>
             同步关闭状态
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcTransport.ZeroTeam#MessageMVC#MessageTransfers#INetTransfer#OnResult(ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcTransport.ZeroTeam#MessageMVC#Messages#IMessageReceiver#OnResult(ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
             <summary>
             发送返回值 
             </summary>

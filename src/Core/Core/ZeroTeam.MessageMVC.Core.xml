@@ -445,12 +445,12 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.TransportDiscover">
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ReceiverDiscory">
             <summary>
-            默认网络传输对象发现
+            默认消息接收对象发现
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.TransportDiscover.ZeroTeam#MessageMVC#ZeroApis#ITransportDiscory#DiscoryNetTransport(System.Type,System.String@)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ReceiverDiscory.ZeroTeam#MessageMVC#ZeroApis#IReceiverDiscory#DiscoryNetTransport(System.Type,System.String@)">
             <summary>
             发现传输对象
             </summary>
@@ -458,7 +458,7 @@
             <param name="name">发现的服务名称</param>
             <returns>传输对象构造器</returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.TransportDiscover.DiscoryNetTransport(System.Type,System.String@)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ReceiverDiscory.DiscoryNetTransport(System.Type,System.String@)">
             <summary>
             发现传输对象
             </summary>
@@ -877,7 +877,7 @@
         </member>
         <member name="P:ZeroTeam.MessageMVC.Services.ZeroService.Transport">
             <summary>
-            网络传输对象
+            消息接收对象
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Services.ZeroService.IsDiscover">
@@ -887,7 +887,7 @@
         </member>
         <member name="P:ZeroTeam.MessageMVC.Services.ZeroService.TransportBuilder">
             <summary>
-            网络传输对象构造器
+            消息接收对象构造器
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.Services.ZeroService._realState">

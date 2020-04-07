@@ -24,7 +24,7 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <summary>
         /// 消息中间件的处理范围
         /// </summary>
-        MessageHandleScope IMessageMiddleware.Scope => MessageHandleScope.Handle;
+        MessageHandleScope IMessageMiddleware.Scope => MessageHandleScope.End;
 
         /// <summary>
         /// 准备
@@ -37,7 +37,10 @@ namespace ZeroTeam.MessageMVC.Tools
         async Task IMessageMiddleware.OnEnd(IMessageItem message)
         {
             if (GlobalContext.CurrentNoLazy?.Option?["Receipt"] != "true")
+            {
                 return;
+            }
+
             var json = JsonHelper.SerializeObject(message);
             var rep = MessagePoster.GetService(ToolsOption.Instance.ReceiptService);
             if (rep == null)

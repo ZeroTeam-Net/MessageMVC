@@ -76,11 +76,6 @@
             <param name="key"></param>
             <returns></returns>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Http.HttpMessage.CacheKey">
-            <summary>
-                缓存键
-            </summary>
-        </member>
         <member name="F:ZeroTeam.MessageMVC.Http.HttpMessage.Files">
             <summary>
                 文件
@@ -209,13 +204,13 @@
                 Http进站出站的处理类
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpTransfer.ZeroTeam#MessageMVC#MessageTransfers#INetTransfer#Close">
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpTransfer.ZeroTeam#MessageMVC#Messages#IMessageReceiver#Close">
             <summary>
             关闭
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpTransfer.ZeroTeam#MessageMVC#MessageTransfers#INetTransfer#OnResult(ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpTransfer.ZeroTeam#MessageMVC#Messages#IMessageReceiver#OnResult(ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
             <summary>
             标明调用结束
             </summary>
@@ -269,12 +264,12 @@
             服务到HttpClientName的查找表.
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpPoster.ZeroTeam#MessageMVC#MessageTransfers#IMessagePoster#Initialize">
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpPoster.ZeroTeam#MessageMVC#Messages#IMessagePoster#Initialize">
             <summary>
                 初始化
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpPoster.ZeroTeam#MessageMVC#MessageTransfers#IMessagePoster#Post(ZeroTeam.MessageMVC.Messages.IMessageItem)">
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpPoster.ZeroTeam#MessageMVC#Messages#IMessagePoster#Post(ZeroTeam.MessageMVC.Messages.IMessageItem)">
             <summary>
             生产消息
             </summary>

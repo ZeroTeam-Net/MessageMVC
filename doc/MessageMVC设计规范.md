@@ -4,7 +4,7 @@
 对于messageMVC来说，保证消息输入输出一致性是最顶层的一致性，从编码角度，是保证controler被正确执行的最终一致性。
 
 ## 向下一致性，即控制反转一致性
-ISercice，IFlowMiddleware，IMessageMiddleware，INetTransfer等关键接口实现，都必须保证接口实现的正确性，保证它的下一层调用时的正确性。
+ISercice，IFlowMiddleware，IMessageMiddleware，IMessageReceiver等关键接口实现，都必须保证接口实现的正确性，保证它的下一层调用时的正确性。
 
 ## 配置根一致性
 即ConfigurationMenager.root一致，aspnetcore使用这个配置对象

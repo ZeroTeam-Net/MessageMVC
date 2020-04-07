@@ -1,5 +1,4 @@
 ﻿using Agebull.Common;
-using Agebull.Common.Configuration;
 using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using CSRedis;
@@ -9,8 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.MessageTransfers;
-using ZeroTeam.MessageMVC.ZeroApis;
 using static CSRedis.CSRedisClient;
 
 namespace ZeroTeam.MessageMVC.RedisMQ
@@ -18,17 +15,9 @@ namespace ZeroTeam.MessageMVC.RedisMQ
     /// <summary>
     /// RedisMQ消费者
     /// </summary>
-    public class CSRedisConsumer : NetTransferBase, IMessageConsumer, INetEvent
+    public class CSRedisConsumer : MessageReceiverBase, IMessageConsumer, INetEvent
     {
         ILogger logger;
-
-        /// <summary>
-        /// 连接字符串
-        /// </summary>
-        /// <example>
-        /// $"{Address}:{Port},password={PassWord},defaultDatabase={db},poolsize=50,ssl=false,writeBuffer=10240";
-        /// </example>
-        private RedisOption Option;
 
         /// <summary>
         /// 本地代理
@@ -49,16 +38,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         public void Initialize()
         {
             logger = IocHelper.LoggerFactory.CreateLogger(nameof(CSRedisConsumer));
-            Option = ConfigurationManager.Get<RedisOption>("Redis");
-            if (Option.GuardCheckTime <= 0)
-            {
-                Option.GuardCheckTime = 3000;
-            }
-
-            if (Option.MessageLockTime <= 0)
-            {
-                Option.MessageLockTime = 1000;
-            }
+            
 
             jobList = $"msg:{Service.ServiceName}";
             bakList = $"bak:{Service.ServiceName}";
@@ -72,11 +52,11 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// 同步运行状态
         /// </summary>
         /// <returns></returns>
-        Task<bool> INetTransfer.LoopBegin()
+        Task<bool> IMessageReceiver.LoopBegin()
         {
             try
             {
-                client = new CSRedisClient(Option.ConnectionString);
+                client = new CSRedisClient(RedisOption.Instance.ConnectionString);
                 var redis = client as IRedisClient;
                 return Task.FromResult(client != null);
             }
@@ -89,7 +69,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
 
         private TaskCompletionSource<bool> loopTask;
         private CancellationToken token;
-        async Task<bool> INetTransfer.Loop(CancellationToken t)
+        async Task<bool> IMessageReceiver.Loop(CancellationToken t)
         {
             token = t;
             try
@@ -112,7 +92,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// 关闭
         /// </summary>
         /// <returns></returns>
-        async Task INetTransfer.Close()
+        async Task IMessageReceiver.Close()
         {
             try
             {
@@ -135,7 +115,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// 同步关闭状态
         /// </summary>
         /// <returns></returns>
-        Task INetTransfer.LoopComplete()
+        Task IMessageReceiver.LoopComplete()
         {
             subscribeObject?.Dispose();
             client?.Dispose();
@@ -149,7 +129,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         private async Task Guard()
         {
             logger.Information("异常消息守卫已启动");
-            using var client = new CSRedisClient(Option.ConnectionString);
+            using var client = new CSRedisClient(RedisOption.Instance.ConnectionString);
             //处理错误重新入列
             while (true)
             {
@@ -165,7 +145,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             //非正常处理还原
             while (ZeroFlowControl.IsAlive)
             {
-                await Task.Delay(Option.GuardCheckTime);
+                await Task.Delay(RedisOption.Instance.GuardCheckTime);
                 try
                 {
                     var key = await client.LPopAsync(bakList);
@@ -177,7 +157,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                     var guard = $"guard:{Service.ServiceName}:{key}";
                     if (await client.SetNxAsync(guard, "Guard"))
                     {
-                        client.Expire(guard, Option.MessageLockTime);
+                        client.Expire(guard, RedisOption.Instance.MessageLockTime);
                         logger.Debug(() => $"超时消息重新入列:{key}");
                         await client.LPushAsync(jobList, key);
                         await client.DelAsync(guard);
@@ -264,10 +244,10 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             var guard = $"guard:{Service.ServiceName}:{id}";
             if (!await client.SetNxAsync(guard, "Guard"))
             {
-                await Task.Delay(Option.MessageLockTime);
+                await Task.Delay(RedisOption.Instance.MessageLockTime);
                 return true;
             }
-            client.Expire(guard, Option.MessageLockTime);
+            client.Expire(guard, RedisOption.Instance.MessageLockTime);
 
             var str = client.Get(key);
             if (string.IsNullOrEmpty(str))
@@ -310,11 +290,11 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                         await client.DelAsync(key);
                         break;
                     case MessageState.Failed:
-                        if (Option.FailedIsError)
+                        if (RedisOption.Instance.FailedIsError)
                             await client.LPushAsync(errList, id);
                         break;
                     case MessageState.NoSupper:
-                        if (Option.NoSupperIsError)
+                        if (RedisOption.Instance.NoSupperIsError)
                             await client.LPushAsync(errList, id);
                         break;
                     default:
@@ -336,7 +316,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// 标明调用结束
         /// </summary>
         /// <returns>是否需要发送回执</returns>
-        async Task<bool> INetTransfer.OnResult(IMessageItem item, object tag)
+        async Task<bool> IMessageReceiver.OnResult(IMessageItem item, object tag)
         {
             var key = $"msg:{Service.ServiceName}:{item.ID}";
             var guard = $"guard:{Service.ServiceName}:{item.ID}";

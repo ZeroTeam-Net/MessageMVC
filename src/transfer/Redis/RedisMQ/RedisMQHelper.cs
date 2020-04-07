@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.MessageTransfers;
-using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.RedisMQ
 {
@@ -19,6 +17,15 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             services.AddSingleton<IMessagePoster>(CsRedisPoster.Instance);//Redis发布
             services.AddTransient<INetEvent, CSRedisConsumer>();//Redis订阅
             services.AddTransient<IMessageConsumer, CSRedisConsumer>();//Redis订阅
+        }
+
+        /// <summary>
+        /// 使用RedisMQ
+        /// </summary>
+        public static void UseRedisPoster(this IServiceCollection services)
+        {
+            services.AddSingleton<IFlowMiddleware>(CsRedisPoster.Instance);//Redis环境准备
+            services.AddSingleton<IMessagePoster>(CsRedisPoster.Instance);//Redis发布
         }
     }
 }

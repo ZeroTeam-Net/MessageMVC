@@ -1,5 +1,4 @@
-﻿using Agebull.Common;
-using Agebull.Common.Configuration;
+﻿using Agebull.Common.Configuration;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
@@ -19,7 +18,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// </summary>
         public PlanProducer()
         {
-            Option = ConfigurationManager.Get<PlanProducerOption>("PlanProducer");
+            Option = ConfigurationManager.Get<PlanProducerOption>("MessageMVC:PlanProducer");
             if (string.IsNullOrEmpty(Option.ServiceName))
             {
                 Option.ServiceName = Option.ServiceName;

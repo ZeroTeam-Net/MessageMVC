@@ -9,13 +9,13 @@ namespace ZeroTeam.MessageMVC.Documents
     ///     Api方法的信息
     /// </summary>
     [DataContract]
-        [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
+    [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class ServiceDocument : DocumentItem
     {
         /// <summary>
         ///     Api方法
         /// </summary>
-        
+
         [JsonProperty("aips", NullValueHandling = NullValueHandling.Ignore)]
         private Dictionary<string, ApiDocument> aips;
 

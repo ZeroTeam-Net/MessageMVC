@@ -47,6 +47,8 @@ namespace ZeroTeam.MessageMVC.ConfigSync
             }
             //第三方回执
             services.AddTransient<IMessageMiddleware, ReceiptMiddleware>();
+            //通过反向代理组件处理计划任务消息发送
+            services.AddSingleton<IMessageMiddleware, ReverseProxyMiddleware>();
         }
 
         /// <summary>

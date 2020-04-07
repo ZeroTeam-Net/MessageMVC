@@ -50,7 +50,10 @@ namespace ZeroTeam.MessageMVC.Context
             {
                 _status = value ?? new OperatorStatus();
                 if (_status.Message == null)
+                {
                     return;
+                }
+
                 _messageBuilder = new StringBuilder();
                 _messageBuilder.Append(_status.Message);
             }

@@ -6,7 +6,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     /// <summary>
     ///     API返回分页信息
     /// </summary>
-        [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
+    [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class ApiPage
     {
         /// <summary>
@@ -54,7 +54,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     /// <summary>
     ///     API返回分布页数据
     /// </summary>
-        [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
+    [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class ApiPageData<TData> : ApiPage
     {
         /// <summary>

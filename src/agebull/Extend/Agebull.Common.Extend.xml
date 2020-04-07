@@ -1394,14 +1394,23 @@
             <param name="space"></param>
             <returns></returns>
         </member>
-        <member name="M:System.Text.StringHelper2.SpaceLine(System.String,System.Int32,System.String)">
+        <member name="M:System.Text.StringHelper2.SpaceLine(System.String,System.Int32,System.Boolean)">
             <summary>
             使每行都缩进相同个数的空格
             </summary>
-            <param name="str"></param>
-            <param name="space"></param>
-            <param name="head"> </param>
-            <returns></returns>
+            <param name="str">原始文本</param>
+            <param name="space">空格数量</param>
+            <param name="first">是否缩进首行</param>
+            <returns>结果文本</returns>
+        </member>
+        <member name="M:System.Text.StringHelper2.SpaceLine(System.String,System.String,System.Boolean)">
+            <summary>
+            使每行都缩进相同个数的空格
+            </summary>
+            <param name="str">原始文本</param>
+            <param name="head">头部文字</param>
+            <param name="first">是否缩进首行</param>
+            <returns>结果文本</returns>
         </member>
         <member name="M:System.Text.StringHelper2.IsNullOrDefault(System.String,System.String)">
             <summary>
@@ -2560,6 +2569,11 @@
             </summary>
         </member>
         <member name="M:Agebull.Common.Configuration.ConfigurationManager.Option``1(System.String)">
+            <summary>
+            强类型取根节点
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Configuration.ConfigurationManager.Option``1(System.String[])">
             <summary>
             强类型取根节点
             </summary>

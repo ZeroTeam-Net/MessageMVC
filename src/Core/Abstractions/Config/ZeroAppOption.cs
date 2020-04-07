@@ -1,5 +1,4 @@
 using Agebull.Common.Configuration;
-using Agebull.Common.Ioc;
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -13,21 +12,15 @@ namespace ZeroTeam.MessageMVC
     public class ZeroAppOption : ZeroAppConfig
     {
         /// <summary>
-        ///     当前应用名称
-        /// </summary>
-        
-        public string AppName { get; set; }
-
-        /// <summary>
         ///     当前应用版本号
         /// </summary>
-        
+
         public string AppVersion { get; set; }
 
         /// <summary>
-        ///     服务名称
+        ///     服务器名称
         /// </summary>
-        
+
         public string ServiceName { get; set; }
 
         /// <summary>
@@ -38,7 +31,7 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         ///     应用所在的顶级目录
         /// </summary>
-        
+
         public string RootPath { get; set; }
 
         /// <summary>
@@ -62,7 +55,7 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 实例
         /// </summary>
-        public static ZeroAppOption Instance { get;}
+        public static ZeroAppOption Instance { get; }
 
         static ZeroAppOption()
         {
@@ -72,11 +65,9 @@ namespace ZeroTeam.MessageMVC
                 AppName = asName.Name,
                 AppVersion = asName.Version?.ToString(),
                 BinPath = Environment.CurrentDirectory,
-                RootPath = Environment.CurrentDirectory,
                 IsLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
             };
-            Instance.CopyByHase(ConfigurationManager.Get<ZeroAppConfig>("ZeroApp"));
-
+            Instance.CopyByHase(ConfigurationManager.Get<ZeroAppConfig>("MessageMVC:Option"));
         }
     }
 }

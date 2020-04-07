@@ -1,7 +1,6 @@
 using Agebull.Common.Ioc;
 using Newtonsoft.Json;
 using System.Threading;
-using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC.Context
 {
@@ -15,7 +14,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         ///     当前线程的调用上下文
         /// </summary>
-        static AsyncLocal<IZeroContext> Local { get; } = new AsyncLocal<IZeroContext>();
+        private static AsyncLocal<IZeroContext> Local { get; } = new AsyncLocal<IZeroContext>();
 
         /// <summary>
         ///     当前线程的调用上下文
@@ -65,6 +64,7 @@ namespace ZeroTeam.MessageMVC.Context
         {
             Local.Value = null;
         }
+
         /// <summary>
         /// 表示一个匿名用户
         /// </summary>

@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\transfer\Http\ZeroTeam.MessageMVC.Http.csproj" />
+    <ProjectReference Include="..\..\..\transfer\redis\RedisMQ\ZeroTeam.MessageMVC.RedisMQ.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using ZeroTeam.ZeroMQ.lib;
+﻿using ZeroTeam.ZeroMQ.lib;
 
 namespace ZeroTeam.ZeroMQ
 {

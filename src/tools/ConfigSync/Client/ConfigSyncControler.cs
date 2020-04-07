@@ -1,9 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
-using ZeroTeam.MessageMVC.MessageTransfers;
+﻿using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.ConfigSync
@@ -18,9 +13,10 @@ namespace ZeroTeam.MessageMVC.ConfigSync
         [Route("v1/changed")]
         public async Task OnChanged(ConfigChangedArgument argument)
         {
-            var file = Path.Combine(ZeroAppOption.Instance.ConfigFolder,"sync", $"{argument.Section}.json");
-            if (!File.Exists(file))//本地不需要
-                return;
+            //var sections = argument.Section.Split(':', '.');
+            //var file = Path.Combine(ZeroAppOption.Instance.ConfigFolder, "sync", $"{string.Join('.', sections)}.json");
+            //if (!File.Exists(file))//本地不需要
+            //    return;
             //string json;
             //if (argument.Type == "section")
             //{
@@ -36,9 +32,7 @@ namespace ZeroTeam.MessageMVC.ConfigSync
             //    json = JsonConvert.SerializeObject(obj);
             //}
 
-            var json = await RedisHelper.HGetAsync(ConfigChangOption.ConfigRedisKey, argument.Section);
-            //写入文件,更新留给Core自己处理
-            File.WriteAllText(file, json ?? "{}", Encoding.UTF8);
+            await ConfigHelper.SaveToFile(argument.Section);
         }
     }
 }

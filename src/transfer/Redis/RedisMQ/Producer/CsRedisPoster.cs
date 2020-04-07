@@ -1,5 +1,4 @@
 using Agebull.Common;
-using Agebull.Common.Configuration;
 using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using CSRedis;
@@ -10,7 +9,6 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.MessageTransfers;
 
 namespace ZeroTeam.MessageMVC.RedisMQ
 {
@@ -68,8 +66,9 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                 if (isFailed)
                 {
                     await Task.Delay(1000);
+                    isFailed = true;
                 }
-                else
+                if (redisQueues.Count == 0)
                 {
                     try
                     {
@@ -83,28 +82,27 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                     catch (Exception ex)
                     {
                         logger.Warning(() => $"Semaphore error.{ex.Message}");
+                        isFailed = true;
                         continue;
                     }
                 }
                 RedisQueueItem item;
-                try
+
+                while (redisQueues.TryPeek(out item))
                 {
-                    if (!redisQueues.TryPeek(out item))
+                    if(!!await DoPost(logger, path, item))
                     {
-                        continue;
+                        isFailed = true;
+                        break;
                     }
                 }
-                catch (Exception ex)
-                {
-                    logger.Warning(() => $"Peek error.{ex.Message}");
-                    continue;
-                }
-                isFailed = !await DoPost(logger, path, item);
+
             }
         }
 
         private async Task<bool> DoPost(ILogger logger, string path, RedisQueueItem item)
         {
+            var state = false;
             try
             {
                 if (item.Step == 0)
@@ -122,18 +120,21 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                     await client.PublishAsync(item.Channel, item.ID);
                     item.Step = 3;
                 }
+                redisQueues.TryDequeue(out item);
+                state = true;
+
                 if (item.FileName != null)
                 {
                     File.Delete(item.FileName);
                 }
-                redisQueues.TryDequeue(out item);
                 logger.Debug(() => $"Post success.{item.ID}");
-                return true;
             }
             catch (Exception ex)
             {
                 logger.Warning(() => $"Post error.{ex.Message}");
             }
+            if (state)
+                return true;
             //写入异常文件
             ++item.Try;
 
@@ -203,16 +204,14 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         {
             logger = IocHelper.LoggerFactory.CreateLogger(nameof(CsRedisPoster));
 
-            var cs = ConfigurationManager.Get("Redis")?.GetStr("ConnectionString", null);
-
-            client = new CSRedisClient(cs);
+            client = new CSRedisClient(RedisOption.Instance.ConnectionString);
             try
             {
                 client.Ping();
             }
-            catch (Exception ex)
+            catch (RedisClientException ex)
             {
-                LogRecorder.Exception(ex);
+                logger.Error(ex.Message);
             }
             State = StationStateType.Run;
             tokenSource = new CancellationTokenSource();

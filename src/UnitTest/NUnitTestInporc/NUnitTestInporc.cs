@@ -3,7 +3,6 @@ using NUnit.Framework;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.MessageTransfers;
 using ZeroTeam.MessageMVC.Sample.Controllers;
 using ZeroTeam.MessageMVC.ZeroApis;
 using ZeroTeam.MessageMVC.ZeroMQ.Inporc;
@@ -18,7 +17,7 @@ namespace NUnitTestInporc
             IocHelper.AddTransient<IFlowMiddleware, ZmqFlowMiddleware>();//ZMQ环境,与ZeroRpcFlow冲突,只用其一
             IocHelper.AddTransient<IMessagePoster, InprocPoster>();//采用ZMQ进程内通讯生产端
             IocHelper.AddTransient<IMessageConsumer, InporcConsumer>();//采用ZMQ进程内通讯生产端
-            IocHelper.AddTransient<ITransportDiscory, TestDiscory>();//网络协议发现
+            IocHelper.AddTransient<IReceiverDiscory, TestDiscory>();//网络协议发现
             IocHelper.ServiceCollection.UseTest(typeof(RpcControler).Assembly);
         }
 

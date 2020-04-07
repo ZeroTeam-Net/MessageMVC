@@ -1,0 +1,10 @@
+﻿{
+  "MessageMVC" : {
+    "Kafka" : {
+      "BootstrapServers": "47.111.0.73:9092",
+      "GroupId": "kaisen",
+      "AutoOffsetReset": "Earliest",
+      "EnableAutoCommit": false
+    }
+  }
+}

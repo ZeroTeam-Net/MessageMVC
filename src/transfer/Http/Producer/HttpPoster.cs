@@ -7,8 +7,6 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.MessageTransfers;
-using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Http
 {
@@ -44,7 +42,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// </summary>
         void IMessagePoster.Initialize()
         {
-            var dirStr = ConfigurationManager.Get<HttpClientOption[]>("HttpClient");
+            var dirStr = ConfigurationManager.Get<HttpClientOption[]>("MessageMVC:HttpClient");
             foreach (var kv in dirStr)
             {
                 IocHelper.ServiceCollection.AddHttpClient(kv.Name, config => config.BaseAddress = new Uri(kv.Url));
@@ -96,7 +94,7 @@ namespace ZeroTeam.MessageMVC.Http
                 catch (HttpRequestException ex)
                 {
                     LogRecorder.MonitorTrace("Error : {0}", ex.Message);
-                    throw new NetTransferException(ex.Message, ex);
+                    throw new MessageReceiveException(ex.Message, ex);
                 }
             }
         }

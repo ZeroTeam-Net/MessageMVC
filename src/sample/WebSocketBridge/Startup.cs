@@ -7,10 +7,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.MessageTransfers;
 using ZeroTeam.MessageMVC.RedisMQ;
 using ZeroTeam.MessageMVC.Web;
-using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace WebNotifyTest
 {

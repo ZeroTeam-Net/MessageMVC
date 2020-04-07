@@ -1,9 +1,6 @@
 using Agebull.Common.Configuration;
-using Agebull.Common.Logging;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.IO;
 
 namespace ZeroTeam.MessageMVC.Http
 {

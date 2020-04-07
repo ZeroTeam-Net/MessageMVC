@@ -24,7 +24,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{78391F4E-D2DF-4373-B40C-28517937E5A5}"
 	ProjectSection(SolutionItems) = preProject
 		doc\flow mind.md = doc\flow mind.md
-		doc\INetTransport.md = doc\INetTransport.md
+		doc\IMessageReceiver.md = doc\IMessageReceiver.md
 		doc\MessageMVC设计规范.md = doc\MessageMVC设计规范.md
 		doc\MessagePoster.md = doc\MessagePoster.md
 		doc\MessageProcessor.md = doc\MessageProcessor.md
@@ -95,20 +95,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.MulitNe
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "viso", "viso", "{92DA5BC7-8FFD-489A-AE7C-40506F081902}"
 	ProjectSection(SolutionItems) = preProject
-		doc\Flow.png = doc\Flow.png
-		doc\IO.png = doc\IO.png
-		doc\Model.png = doc\Model.png
-		doc\ZeroTeam.MessageMVC.RedisMQ\ZeroTeam.MessageMVC.RedisMQ.vsdx = doc\ZeroTeam.MessageMVC.RedisMQ\ZeroTeam.MessageMVC.RedisMQ.vsdx
-		doc\ZeroTeam.MessageMVC.RedisMQ\ZeroTeam.MessageMVC.RedisMQ_consumer.png = doc\ZeroTeam.MessageMVC.RedisMQ\ZeroTeam.MessageMVC.RedisMQ_consumer.png
-		doc\ZeroTeam.MessageMVC.RedisMQ\ZeroTeam.MessageMVC.RedisMQ_guard.vsdx = doc\ZeroTeam.MessageMVC.RedisMQ\ZeroTeam.MessageMVC.RedisMQ_guard.vsdx
-		doc\ZeroTeam.MessageMVC.RedisMQ\ZeroTeam.MessageMVC.RedisMQ_producer.png = doc\ZeroTeam.MessageMVC.RedisMQ\ZeroTeam.MessageMVC.RedisMQ_producer.png
-		doc\流程.vsdx = doc\流程.vsdx
-		doc\绘图1.png = doc\绘图1.png
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "xmind", "xmind", "{848B9173-F7CE-4D38-B4D7-350FDF107CB7}"
-	ProjectSection(SolutionItems) = preProject
-		doc\MessageMVC.xmind = doc\MessageMVC.xmind
+		doc\Flow\ApiDiscove.png = doc\Flow\ApiDiscove.png
+		doc\Flow\CheckOption.png = doc\Flow\CheckOption.png
+		doc\Flow\Flow.png = doc\Flow\Flow.png
+		doc\Flow\Flow.vsdx = doc\Flow\Flow.vsdx
+		doc\Flow\Flow_2.png = doc\Flow\Flow_2.png
+		doc\Flow\Initialize.png = doc\Flow\Initialize.png
+		doc\Flow\IO.png = doc\Flow\IO.png
+		doc\Flow\MessageMVC.xmind = doc\Flow\MessageMVC.xmind
+		doc\Flow\MessageProcess.png = doc\Flow\MessageProcess.png
+		doc\Flow\Model.png = doc\Flow\Model.png
+		doc\Flow\Shutdown.png = doc\Flow\Shutdown.png
+		doc\Flow\Start.png = doc\Flow\Start.png
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{9AB69E07-EE4B-4026-A717-9FEE6CE39808}"
@@ -127,6 +125,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.Tools", "src\tools\Tools\ZeroTeam.MessageMVC.Tools.csproj", "{0551D4D6-4310-4FBA-989A-8BF218C7C9EC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.TrdReceipt", "src\tools\Receipt\TrdReceipt\ZeroTeam.MessageMVC.TrdReceipt.csproj", "{2FA6868A-1EBF-4421-85D3-C6398341AF6C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HttpGateway", "HttpGateway", "{EF6A99F7-D8D5-4C96-96CE-B226B9B726A2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.Gateway", "src\tools\Gateway\ZeroTeam.MessageMVC.Gateway.csproj", "{86BEBD38-397A-48CC-AA31-DFF9063A49F5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -238,6 +240,10 @@ Global
 		{2FA6868A-1EBF-4421-85D3-C6398341AF6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FA6868A-1EBF-4421-85D3-C6398341AF6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2FA6868A-1EBF-4421-85D3-C6398341AF6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86BEBD38-397A-48CC-AA31-DFF9063A49F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86BEBD38-397A-48CC-AA31-DFF9063A49F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86BEBD38-397A-48CC-AA31-DFF9063A49F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86BEBD38-397A-48CC-AA31-DFF9063A49F5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -275,13 +281,14 @@ Global
 		{53C0044E-A6F3-45A6-B03B-2CF65E1B4A73} = {E1BA22EE-D8CB-4C1A-B88F-C14B9FC3C855}
 		{C401BFD3-8CE7-460D-B12C-8C46020BE6EF} = {0474706D-4F72-454C-9E28-C43AC2F2629E}
 		{92DA5BC7-8FFD-489A-AE7C-40506F081902} = {78391F4E-D2DF-4373-B40C-28517937E5A5}
-		{848B9173-F7CE-4D38-B4D7-350FDF107CB7} = {78391F4E-D2DF-4373-B40C-28517937E5A5}
 		{4B8FA2D8-CD14-452A-A627-1A7830241331} = {9AB69E07-EE4B-4026-A717-9FEE6CE39808}
 		{2745E5C7-366C-4981-AC1E-1A53DD3818AB} = {9AB69E07-EE4B-4026-A717-9FEE6CE39808}
 		{B4156FAA-44DB-43FD-B819-7C9F4CDDF7D6} = {4B8FA2D8-CD14-452A-A627-1A7830241331}
 		{B8468B3E-E4AA-4322-A80F-1F5970C87154} = {4B8FA2D8-CD14-452A-A627-1A7830241331}
 		{0551D4D6-4310-4FBA-989A-8BF218C7C9EC} = {85554FA9-20AE-4261-A58E-CD36624FEFEB}
 		{2FA6868A-1EBF-4421-85D3-C6398341AF6C} = {2745E5C7-366C-4981-AC1E-1A53DD3818AB}
+		{EF6A99F7-D8D5-4C96-96CE-B226B9B726A2} = {9AB69E07-EE4B-4026-A717-9FEE6CE39808}
+		{86BEBD38-397A-48CC-AA31-DFF9063A49F5} = {EF6A99F7-D8D5-4C96-96CE-B226B9B726A2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {866CE928-6325-4962-BB28-9A3BAF4BBCD1}

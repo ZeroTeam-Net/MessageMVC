@@ -15,12 +15,15 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         public ApiResult()
         {
             if (GlobalContext.EnableLinkTrace)
+            {
                 Trace = new OperatorTrace
                 {
                     Point = $"{GlobalContext.CurrentNoLazy?.Trace?.LocalMachine}|{GlobalContext.CurrentNoLazy?.Trace?.LocalApp}",
                     Timestamp = GlobalContext.CurrentNoLazy?.Trace?.LocalTimestamp,
                     RequestId = GlobalContext.CurrentNoLazy?.Trace?.TraceId,
                 };
+            }
+
             Success = true;
         }
 

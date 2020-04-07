@@ -39,7 +39,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         ///     应用用户数字标识
         /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate),DefaultValue(-1)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate), DefaultValue(-1)]
         public long UserId { get; set; }
 
         /// <summary>

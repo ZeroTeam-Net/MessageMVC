@@ -1,11 +1,9 @@
-﻿using System;
-
-namespace ZeroTeam.MessageMVC.MessageTransfers
+﻿namespace ZeroTeam.MessageMVC.Messages
 {
     /// <summary>
     /// 表示一个分布式事件对象
     /// </summary>
-    public interface INetEvent : INetTransfer
+    public interface INetEvent : IMessageReceiver
     {
     }
 

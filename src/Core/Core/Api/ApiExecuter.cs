@@ -3,9 +3,8 @@ using Agebull.Common.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ZeroTeam.MessageMVC.Services;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.MessageTransfers;
+using ZeroTeam.MessageMVC.Services;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -76,25 +75,40 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             catch (OperationCanceledException)
             {
                 if (action.IsApiContract)
+                {
                     Message.Result = ApiResultHelper.UnavailableJson;
+                }
+
                 throw;
             }
-            catch (ThreadInterruptedException)
+            catch (ThreadInterruptedException ex)
             {
+                LogRecorder.Exception(ex);
                 if (action.IsApiContract)
+                {
                     Message.Result = ApiResultHelper.TimeOutJson;
+                }
+
                 throw;
             }
-            catch (NetTransferException)
+            catch (MessageReceiveException ex)
             {
+                LogRecorder.Exception(ex);
                 if (action.IsApiContract)
+                {
                     Message.Result = ApiResultHelper.NetworkErrorJson;
+                }
+
                 throw;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                LogRecorder.Exception(ex);
                 if (action.IsApiContract)
+                {
                     Message.Result = ApiResultHelper.LocalExceptionJson;
+                }
+
                 throw;
             }
             if (next != null)
@@ -140,11 +154,14 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
             try
             {
-                if (!action.RestoreArgument(Message.GetArgument(action.ArgumentName,action.IsBaseValue)))
+                if (!action.RestoreArgument(Message.GetArgument(action.ArgumentName, action.IsBaseValue)))
                 {
                     LogRecorder.Trace("Error: argument can't restory.");
                     if (action.IsApiContract)
+                    {
                         Message.Result = ApiResultHelper.ArgumentErrorJson;
+                    }
+
                     Message.State = MessageState.FormalError;
                     return false;
                 }
@@ -154,7 +171,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 LogRecorder.Trace("Error: argument restory {0}.", e.Message);
                 ZeroTrace.WriteException(Service.ServiceName, e, Message.Title, "restory argument", Message.Content);
                 if (action.IsApiContract)
+                {
                     Message.Result = ApiResultHelper.LocalExceptionJson;
+                }
+
                 Message.State = MessageState.FormalError;
                 return false;
             }
@@ -167,7 +187,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 }
                 LogRecorder.Trace("Error: argument validate {0}.", message);
                 if (action.IsApiContract)
+                {
                     Message.Result = JsonHelper.SerializeObject(ApiResultHelper.Ioc.Error(DefaultErrorCode.ArgumentError, message));
+                }
+
                 Message.State = MessageState.FormalError;
                 return false;
             }
@@ -176,7 +199,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 LogRecorder.Trace("Error: argument validate {0}.", e.Message);
                 ZeroTrace.WriteException(Service.ServiceName, e, Message.Title, "invalidate argument", Message.Content);
                 if (action.IsApiContract)
+                {
                     Message.Result = ApiResultHelper.LocalExceptionJson;
+                }
+
                 Message.State = MessageState.FormalError;
                 return false;
             }

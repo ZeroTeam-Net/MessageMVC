@@ -21,14 +21,14 @@
         FormalError = 2,
 
         /// <summary>
-        /// 网络传输错误
-        /// </summary>
-        NetError = 0x20,
-
-        /// <summary>
         /// 已接受
         /// </summary>
-        Accept = 0x30,
+        Accept = 0x20,
+
+        /// <summary>
+        /// 消息接收错误
+        /// </summary>
+        NetError = 0x30,
 
         /// <summary>
         /// 处理成功
@@ -36,7 +36,7 @@
         Success = 0x40,
 
         /// <summary>
-        /// 无处理方法
+        /// 不支持处理
         /// </summary>
         NoSupper = 0x41,
 

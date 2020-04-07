@@ -1,16 +1,15 @@
 ﻿using System.Threading.Tasks;
-using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.Services;
 
-namespace ZeroTeam.MessageMVC.MessageTransfers
+namespace ZeroTeam.MessageMVC.Messages
 {
     /// <summary>
-    /// 网络传输对象基类
+    /// 消息接收对象基类
     /// </summary>
     /// <remarks>
     /// 实现了IMessagePoster自注册,可以做到本进程调用不会提升到网络层面
     /// </remarks>
-    public class NetTransferBase : IMessagePoster
+    public class MessageReceiverBase : IMessagePoster
     {
         /// <summary>
         /// 服务
@@ -27,7 +26,7 @@ namespace ZeroTeam.MessageMVC.MessageTransfers
         /// </summary>
         void IMessagePoster.Initialize()
         {
-           
+
             State = StationStateType.Initialized;
             MessagePoster.RegistPoster(this, Service.ServiceName);
         }

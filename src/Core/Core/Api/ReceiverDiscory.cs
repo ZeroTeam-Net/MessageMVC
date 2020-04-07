@@ -1,18 +1,18 @@
 ﻿using Agebull.Common.Ioc;
 using System;
 using System.Reflection;
-using ZeroTeam.MessageMVC.MessageTransfers;
+using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
     /// <summary>
-    /// 默认网络传输对象发现
+    /// 默认消息接收对象发现
     /// </summary>
-    public class TransportDiscover : ITransportDiscory
+    public class ReceiverDiscory : IReceiverDiscory
     {
-        private static INetTransfer RpcTransportBuilder(string name) => IocHelper.Create<IServiceTransfer>();
-        private static INetTransfer ConsumerTransportBuilder(string name) => IocHelper.Create<IMessageConsumer>();
-        private static INetTransfer NetEventTransportBuilder(string name) => IocHelper.Create<INetEvent>();
+        private static IMessageReceiver RpcTransportBuilder(string name) => IocHelper.Create<IServiceTransfer>();
+        private static IMessageReceiver ConsumerTransportBuilder(string name) => IocHelper.Create<IMessageConsumer>();
+        private static IMessageReceiver NetEventTransportBuilder(string name) => IocHelper.Create<INetEvent>();
 
         /// <summary>
         /// 发现传输对象
@@ -20,7 +20,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <param name="type">控制器类型</param>
         /// <param name="name">发现的服务名称</param>
         /// <returns>传输对象构造器</returns>
-        Func<string, INetTransfer> ITransportDiscory.DiscoryNetTransport(Type type, out string name)
+        Func<string, IMessageReceiver> IReceiverDiscory.DiscoryNetTransport(Type type, out string name)
         {
             return DiscoryNetTransport(type, out name);
         }
@@ -31,7 +31,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <param name="type">控制器类型</param>
         /// <param name="name">发现的服务名称</param>
         /// <returns>传输对象构造器</returns>
-        public static Func<string, INetTransfer> DiscoryNetTransport(Type type, out string name)
+        public static Func<string, IMessageReceiver> DiscoryNetTransport(Type type, out string name)
         {
             #region Api
             var sa = type.GetCustomAttribute<ServiceAttribute>();

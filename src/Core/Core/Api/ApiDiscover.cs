@@ -60,7 +60,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         {
             XmlMember.Load(type.Assembly);
 
-            TransportDiscories ??= IocHelper.RootProvider.GetServices<ITransportDiscory>().ToArray();
+            TransportDiscories ??= IocHelper.RootProvider.GetServices<IReceiverDiscory>().ToArray();
 
             FindApi(type, false);
             RegistToZero();
@@ -78,7 +78,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             //    {
             //        Name = StationName
             //    });
-            TransportDiscories ??= IocHelper.RootProvider.GetServices<ITransportDiscory>().ToArray();
+            TransportDiscories ??= IocHelper.RootProvider.GetServices<IReceiverDiscory>().ToArray();
 
             var types = Assembly.GetTypes().Where(p => p.IsSupperInterface(typeof(IApiControler))).ToArray();
             foreach (var type in types)
@@ -127,7 +127,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             }
         }
 
-        private ITransportDiscory[] TransportDiscories;
+        private IReceiverDiscory[] TransportDiscories;
 
         /// <summary>
         /// 查找API
@@ -261,7 +261,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 api.ArgumentInfo = ReadEntity(argInfo.ParameterType, argInfo.Name ?? "argument") ?? new TypeDocument();
                 api.ArgumentInfo.Name = arg.Name;
-                api.ArgumentName = arg.Name; 
+                api.ArgumentName = arg.Name;
                 api.ArgumentType = arg.ParameterType;
                 if (doc != null)
                 {

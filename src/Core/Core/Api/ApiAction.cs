@@ -232,7 +232,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     {
                         var res = Function(arg) as IApiResult;
                         if (GlobalContext.CurrentNoLazy != null)
+                        {
                             GlobalContext.Current.Status.LastStatus = res;
+                        }
+
                         return res == null
                             ? (MessageState.Failed, null)
                             : (res.Success ? MessageState.Success : MessageState.Failed, JsonHelper.SerializeObject(res));
@@ -284,7 +287,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     dynamic dy = task;
                     var res = dy.Result as IApiResult;
                     if (GlobalContext.CurrentNoLazy != null)
+                    {
                         GlobalContext.Current.Status.LastStatus = res;
+                    }
+
                     return res == null
                         ? (MessageState.Failed, null)
                         : (res.Success ? MessageState.Success : MessageState.Failed,

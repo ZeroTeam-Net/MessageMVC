@@ -1,10 +1,7 @@
 ﻿using Agebull.Common.Ioc;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
-using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.MessageTransfers;
 using ZeroTeam.MessageMVC.ZeroMQ.Inporc;
 
 namespace MicroZero.Kafka.QueueStation

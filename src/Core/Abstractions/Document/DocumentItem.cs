@@ -7,18 +7,18 @@ namespace ZeroTeam.MessageMVC.Documents
     ///     文档节点
     /// </summary>
     [DataContract]
-        [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
+    [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class DocumentItem : AnnotationsConfig
     {
-        
+
         [JsonProperty("example", NullValueHandling = NullValueHandling.Ignore)]
         private string _example;
 
-        
+
         [JsonProperty("seealso", NullValueHandling = NullValueHandling.Ignore)]
         private string _seealso;
 
-        
+
         [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
         private string _value;
 

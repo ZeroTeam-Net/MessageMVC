@@ -1,12 +1,10 @@
-﻿using Agebull.Common.Configuration;
+﻿using CSRedis;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using ZeroTeam.MessageMVC.Http;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.MessageTransfers;
 using ZeroTeam.MessageMVC.RedisMQ;
-using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.ConfigSync
 {
@@ -21,6 +19,7 @@ namespace ZeroTeam.MessageMVC.ConfigSync
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
+            RedisHelper.Initialization(new CSRedisClient(RedisOption.Instance.ConnectionString));
             services.AddSingleton<IFlowMiddleware>(CsRedisPoster.Instance);//Redis环境准备
             services.AddSingleton<IMessagePoster>(CsRedisPoster.Instance);//Redis发布
             services.AddTransient<INetEvent, CSRedisConsumer>();//Redis订阅

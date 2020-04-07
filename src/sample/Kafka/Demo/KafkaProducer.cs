@@ -1,6 +1,5 @@
 ﻿using Confluent.Kafka;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace KafkaTest

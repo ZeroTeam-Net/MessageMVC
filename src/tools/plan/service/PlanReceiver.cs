@@ -1,37 +1,35 @@
 ﻿using Agebull.Common;
 using Agebull.Common.Configuration;
-using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.MessageTransfers;
 using ZeroTeam.MessageMVC.Tools;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.PlanTasks
 {
     /// <summary>
-    /// 计划管理器
+    /// 计划接收器(轮询Redis列表)
     /// </summary>
-    internal class PlanTransfer : NetTransferBase, INetTransfer
+    internal class PlanReceiver : MessageReceiverBase, IMessageReceiver
     {
-        #region INetTransfer
+        #region IMessageReceiver
 
         /// <summary>
         /// 初始化
         /// </summary>
-        bool INetTransfer.Prepare()
+        bool IMessageReceiver.Prepare()
         {
-            PlanSystemOption.Option = ConfigurationManager.Get<PlanSystemOption>("PlanTask");
+            PlanSystemOption.Option = ConfigurationManager.Get<PlanSystemOption>("MessageMVC:PlanTask");
             return PlanSystemOption.Option != null;
         }
 
         /// <summary>
         /// 开启
         /// </summary>
-        async Task<bool> INetTransfer.LoopBegin()
+        async Task<bool> IMessageReceiver.LoopBegin()
         {
             PlanItem.logger.Information("Plan queue loog begin.");
             wait = 0;
@@ -42,7 +40,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <summary>
         /// 开启
         /// </summary>
-        async Task<bool> INetTransfer.Loop(CancellationToken token)
+        async Task<bool> IMessageReceiver.Loop(CancellationToken token)
         {
             CheckReceipt(token);
             bool succes = true;
@@ -76,7 +74,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                         }
                         else if (item != null)
                         {
-                            PlanItem.logger.Debug(() => $"Plan message begin post.{item.Option.plan_id}");
+                            PlanItem.logger.Trace(() => $"Plan message begin post.{item.Option.plan_id}");
 
                             Interlocked.Increment(ref wait);
                             item.Message.Reset();
@@ -97,9 +95,109 @@ namespace ZeroTeam.MessageMVC.PlanTasks
             return true;
         }
 
+        /// <summary>
+        /// 关闭
+        /// </summary>
+        async Task IMessageReceiver.LoopComplete()
+        {
+            while (wait > 0)
+            {
+                await Task.Delay(50);
+            }
+            PlanItem.logger.Information("Plan queue loop complete.");
+        }
+
+        public void Dispose()
+        {
+        }
+        #endregion
+
+        #region 计划执行
+
+        private int wait = 0;
+
+        private static async Task<bool> CheckResult(PlanItem item)
+        {
+            if (!PlanSystemOption.Option.CheckPlanResult)
+            {
+                await item.SaveResult(item.Message.Topic, item.Message.Result);
+                return true;
+            }
+            ApiResult result = JsonHelper.TryDeserializeObject<ApiResult>(item.Message.Result);
+
+            await item.SaveResult(result?.Trace?.Point ?? item.Message.Topic, item.Message.Result);
+            if (result == null || result.Success)
+            {
+                return true;
+            }
+            switch (result.Code)
+            {
+                case DefaultErrorCode.ReTry:
+                case DefaultErrorCode.NoReady:
+                case DefaultErrorCode.Unavailable:
+                    item.RealInfo.exec_state = MessageState.Cancel;
+                    break;
+                case DefaultErrorCode.NoFind:
+                    item.RealInfo.exec_state = MessageState.NoSupper;
+                    break;
+                case DefaultErrorCode.RemoteError:
+                case DefaultErrorCode.LocalException:
+                    item.RealInfo.exec_state = MessageState.Exception;
+                    break;
+                default:
+                    item.RealInfo.exec_state = MessageState.Failed;
+                    break;
+            }
+            item.RealInfo.error_num++;
+            await item.ReTry();
+            return false;
+        }
 
         /// <summary>
-        /// 开启
+        /// 标明调用结束
+        /// </summary>
+        /// <returns>是否发送成功</returns>
+        async Task<bool> IMessageReceiver.OnResult(IMessageItem message, object tag)
+        {
+            Interlocked.Decrement(ref wait);
+            PlanItem.logger.Trace(() => $"Plan post end.state {message.State}");
+
+            PlanItem item = (PlanItem)tag;
+            if (message.State == MessageState.Success)
+            {
+                item.RealInfo.exec_state = item.Message.State;
+                item.RealInfo.exec_end_time = PlanItem.NowTime();
+
+                if (await CheckResult(item))
+                {
+                    item.RealInfo.retry_num = 0;
+                    await item.CheckNextTime();
+                }
+            }
+            else
+            {
+                item.RealInfo.error_num++;
+                item.RealInfo.exec_state = item.Message.State;
+                if (message.State == MessageState.NetError)
+                {
+                    await item.Error();
+                }
+                else
+                {
+                    await item.SaveResult(item.Message.Topic, item.Message.Result);
+                    item.RealInfo.exec_end_time = PlanItem.NowTime();
+                    await item.ReTry();
+                }
+            }
+            return true;
+        }
+        #endregion
+
+
+        #region 回执检测
+
+        /// <summary>
+        /// 回执检测
         /// </summary>
         async void CheckReceipt(CancellationToken token)
         {
@@ -113,8 +211,6 @@ namespace ZeroTeam.MessageMVC.PlanTasks
             try
             {
                 string pre = null;
-                const int idleTime = 10000;
-                const int waitTime = 30000;
                 while (!token.IsCancellationRequested)
                 {
                     try
@@ -122,11 +218,11 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                         var id = await RedisHelper.RPopLPushAsync(PlanItem.planErrorKey, PlanItem.planErrorKey);
                         if (id == null)
                         {
-                            await Task.Delay(idleTime);
+                            await Task.Delay(PlanSystemOption.idleTime);
                             continue;
                         }
                         if (id == pre)
-                            await Task.Delay(waitTime);//相同ID多次处理
+                            await Task.Delay(PlanSystemOption.waitTime);//相同ID多次处理
                         else
                             pre = id;
                         var item = PlanItem.LoadMessage(id, false);
@@ -188,102 +284,6 @@ namespace ZeroTeam.MessageMVC.PlanTasks
             }
         }
 
-        /// <summary>
-        /// 关闭
-        /// </summary>
-        async Task INetTransfer.LoopComplete()
-        {
-            while (wait > 0)
-            {
-                await Task.Delay(50);
-            }
-            PlanItem.logger.Information("Plan queue loop complete.");
-        }
-
-        public void Dispose()
-        {
-        }
-        #endregion
-
-        #region 计划执行
-
-        private int wait = 0;
-
-        private static async Task<bool> CheckResult(PlanItem item)
-        {
-            if (!PlanSystemOption.Option.CheckPlanResult)
-            {
-                await item.SaveResult(item.Message.Topic, item.Message.Result);
-                return true;
-            }
-            ApiResult result = JsonHelper.TryDeserializeObject<ApiResult>(item.Message.Result);
-
-            await item.SaveResult(result?.Trace?.Point ?? item.Message.Topic, item.Message.Result);
-            if (result == null || result.Success)
-            {
-                return true;
-            }
-            switch (result.Code)
-            {
-                case DefaultErrorCode.ReTry:
-                case DefaultErrorCode.NoReady:
-                case DefaultErrorCode.Unavailable:
-                    item.RealInfo.exec_state = MessageState.Cancel;
-                    break;
-                case DefaultErrorCode.NoFind:
-                    item.RealInfo.exec_state = MessageState.NoSupper;
-                    break;
-                case DefaultErrorCode.RemoteError:
-                case DefaultErrorCode.LocalException:
-                    item.RealInfo.exec_state = MessageState.Exception;
-                    break;
-                default:
-                    item.RealInfo.exec_state = MessageState.Failed;
-                    break;
-            }
-            item.RealInfo.error_num++;
-            await item.ReTry();
-            return false;
-        }
-
-        /// <summary>
-        /// 标明调用结束
-        /// </summary>
-        /// <returns>是否发送成功</returns>
-        async Task<bool> INetTransfer.OnResult(IMessageItem message, object tag)
-        {
-            Interlocked.Decrement(ref wait);
-            PlanItem.logger.Debug(() => $"Plan post end.state {message.State}");
-
-            PlanItem item = (PlanItem)tag;
-            if (message.State == MessageState.Success)
-            {
-                item.RealInfo.exec_state = item.Message.State;
-                item.RealInfo.exec_end_time = PlanItem.NowTime();
-
-                if (await CheckResult(item))
-                {
-                    item.RealInfo.retry_num = 0;
-                    await item.CheckNextTime();
-                }
-            }
-            else
-            {
-                item.RealInfo.error_num++;
-                item.RealInfo.exec_state = item.Message.State;
-                if (message.State == MessageState.NetError)
-                {
-                    await item.Error();
-                }
-                else
-                {
-                    await item.SaveResult(item.Message.Topic, item.Message.Result);
-                    item.RealInfo.exec_end_time = PlanItem.NowTime();
-                    await item.ReTry();
-                }
-            }
-            return true;
-        }
         #endregion
     }
 

@@ -1,14 +1,9 @@
-using Agebull.Common;
-using Agebull.Common.Ioc;
-using Agebull.Common.Logging;
 using Microsoft.AspNetCore.Http;
-using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.MessageTransfers;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Http
@@ -16,10 +11,10 @@ namespace ZeroTeam.MessageMVC.Http
     /// <summary>
     ///     Http进站出站的处理类
     /// </summary>
-    public sealed class HttpTransfer : NetTransferBase, IServiceTransfer
+    public sealed class HttpTransfer : MessageReceiverBase, IServiceTransfer
     {
         private TaskCompletionSource<bool> task;
-        Task<bool> INetTransfer.Loop(CancellationToken token)
+        Task<bool> IMessageReceiver.Loop(CancellationToken token)
         {
             task = new TaskCompletionSource<bool>();
             return task.Task;
@@ -29,7 +24,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// 关闭
         /// </summary>
         /// <returns></returns>
-        Task INetTransfer.Close()
+        Task IMessageReceiver.Close()
         {
             task.SetResult(true);
             return Task.CompletedTask;
@@ -39,7 +34,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// 标明调用结束
         /// </summary>
         /// <returns>是否发送成功</returns>
-        async Task<bool> INetTransfer.OnResult(IMessageItem message, object tag)
+        async Task<bool> IMessageReceiver.OnResult(IMessageItem message, object tag)
         {
             var context = (HttpContext)tag;
 

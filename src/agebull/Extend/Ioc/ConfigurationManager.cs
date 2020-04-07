@@ -315,16 +315,27 @@ namespace Agebull.Common.Configuration
         /// 强类型取根节点
         /// </summary>
         public static TConfig Get<TConfig>(string section)
+            where TConfig : class
         {
-            return Root.GetSection(section).Get<TConfig>();
+            return Root.GetSection(section)?.Get<TConfig>();
         }
 
         /// <summary>
         /// 强类型取根节点
         /// </summary>
         public static TConfig Option<TConfig>(string section)
+            where TConfig : class
         {
-            return Root.GetSection(section).Get<TConfig>();
+            return Root.GetSection(section)?.Get<TConfig>();
+        }
+
+        /// <summary>
+        /// 强类型取根节点
+        /// </summary>
+        public static TConfig Option<TConfig>(params string[] sections)
+            where TConfig : class
+        {
+            return Root.GetSection(string.Join(':', sections))?.Get<TConfig>();
         }
         #endregion
 
@@ -407,9 +418,21 @@ namespace Agebull.Common.Configuration
         /// <param name="runNow">是否现在执行一次</param>
         public static void RegistOnChange(Action action, bool runNow = true)
         {
-            ChangeToken.OnChange(() => Root.GetReloadToken(), action);
+            void Do()
+            {
+                try
+                {
+                    action();
+                }
+                catch (Exception ex)//防止异常出错,中断应用
+                {
+                    Console.WriteLine(ex);
+                }
+            }
+
+            ChangeToken.OnChange(() => Root.GetReloadToken(), Do);
             if (runNow)
-                action();
+                Do();
         }
 
         #endregion

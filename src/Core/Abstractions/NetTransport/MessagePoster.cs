@@ -6,10 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.MessageTransfers;
 
 namespace ZeroTeam.MessageMVC
 {
@@ -31,13 +29,12 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 默认的生产者
         /// </summary>
-        static IMessagePoster Default;
+        private static IMessagePoster Default;
 
         private static readonly Dictionary<string, IMessagePoster> ServiceMap = new Dictionary<string, IMessagePoster>(StringComparer.OrdinalIgnoreCase);
 
         private static Dictionary<string, IMessagePoster> posters = new Dictionary<string, IMessagePoster>();
-
-        static ILogger logger;
+        private static ILogger logger;
 
         /// <summary>
         ///     初始化
@@ -45,21 +42,31 @@ namespace ZeroTeam.MessageMVC
         void IFlowMiddleware.Initialize()
         {
             logger = IocHelper.LoggerFactory.CreateLogger(nameof(MessagePoster));
-            posters = IocHelper.RootProvider.GetServices<IMessagePoster>().ToDictionary(p => p.GetTypeName());
-            var sec = ConfigurationManager.Get("MessagePoster");
+            posters = new Dictionary<string, IMessagePoster>();
+            foreach(var poster in IocHelper.RootProvider.GetServices<IMessagePoster>())
+            {
+                posters.TryAdd(poster.GetTypeName(), poster);
+            }
+            var sec = ConfigurationManager.Get("MessageMVC:MessagePoster");
             var def = sec.GetStr("default", "");
             if (posters.TryGetValue(def, out Default))
+            {
                 logger.Information(() => $"Poster {def} is config for default.");
+            }
 
             foreach (var poster in posters)
             {
                 poster.Value.Initialize();
                 var cfgs = sec.GetStr(poster.Key, "");
                 if (string.IsNullOrWhiteSpace(cfgs))
+                {
                     continue;
+                }
+
                 var services = cfgs.Split(',', StringSplitOptions.RemoveEmptyEntries);
                 foreach (var service in services)
                 {
+                    
                     ServiceMap[service] = poster.Value;
                 }
                 logger.Information(() => $"Poster {poster.Key} is config for {cfgs}");
@@ -91,7 +98,10 @@ namespace ZeroTeam.MessageMVC
         public static void RegistPoster(IMessagePoster poster, params string[] services)
         {
             foreach (var service in services)
+            {
                 ServiceMap[service] = poster;
+            }
+
             logger.Information(() => $"Poster {poster.GetTypeName()} is regist for {string.Join(',', services)}");
         }
 
@@ -103,7 +113,10 @@ namespace ZeroTeam.MessageMVC
         public static IMessagePoster GetService(string name)
         {
             if (name == null)
+            {
                 return null;
+            }
+
             return ServiceMap.TryGetValue(name, out var producer)
                 ? producer
                 : Default;

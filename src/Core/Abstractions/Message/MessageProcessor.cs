@@ -1,14 +1,10 @@
-﻿using Agebull.Common;
-using Agebull.Common.Ioc;
+﻿using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ZeroTeam.MessageMVC.Context;
-using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.MessageTransfers;
 using ZeroTeam.MessageMVC.Services;
 
 namespace ZeroTeam.MessageMVC.Messages
@@ -72,41 +68,68 @@ namespace ZeroTeam.MessageMVC.Messages
         {
             using (IocScope.CreateScope($"MessageProcessor : {Message.Topic}/{Message.Title}"))
             {
-                index = 0;
-                Message.State = MessageState.Accept;
-                middlewares = IocHelper.ServiceProvider.GetServices<IMessageMiddleware>().OrderBy(p => p.Level).ToArray();
-
-                foreach (var middleware in middlewares)
-                    middleware.Processor = this;
-                try
-                {
-                    await Handle();
-                }
-                catch (OperationCanceledException ex)
-                {
-                    Message.State = MessageState.Cancel;
-                    Message.Exception = ex;
-                    await OnMessageError();
-                }
-                catch (ThreadInterruptedException ex)
-                {
-                    Message.State = MessageState.Cancel;
-                    Message.Exception = ex;
-                    await OnMessageError();
-                }
-                catch (NetTransferException ex)
-                {
-                    Message.State = MessageState.NetError;
-                    Message.Exception = ex;
-                    await OnMessageError();
-                }
-                catch (Exception ex)
-                {
-                    Message.State = MessageState.Exception;
-                    Message.Exception = ex;
-                    await OnMessageError();
-                }
+                if (await Prepare() && Message.State == MessageState.None)
+                    await DoHandle();
                 await PushResult();
+            }
+        }
+
+        /// <summary>
+        /// 准备处理
+        /// </summary>
+        /// <returns>是否需要正式处理</returns>
+        private async Task<bool> Prepare()
+        {
+            index = 0;
+            Message.State = MessageState.None;
+            middlewares = IocHelper.ServiceProvider.GetServices<IMessageMiddleware>().OrderBy(p => p.Level).ToArray();
+
+            foreach (var middleware in middlewares)
+            {
+                middleware.Processor = this;
+            }
+
+            foreach (var middleware in middlewares.Where(p => p.Scope.HasFlag(MessageHandleScope.Prepare)))
+            {
+                if (!await middleware.Prepare(Service, Message, Tag))
+                    return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// 中间件链式处理
+        /// </summary>
+        /// <returns></returns>
+        private async Task DoHandle()
+        {
+            try
+            {
+                await Handle();
+            }
+            catch (OperationCanceledException ex)
+            {
+                Message.State = MessageState.Cancel;
+                Message.Exception = ex;
+                await OnMessageError();
+            }
+            catch (ThreadInterruptedException ex)
+            {
+                Message.State = MessageState.Cancel;
+                Message.Exception = ex;
+                await OnMessageError();
+            }
+            catch (MessageReceiveException ex)
+            {
+                Message.State = MessageState.NetError;
+                Message.Exception = ex;
+                await OnMessageError();
+            }
+            catch (Exception ex)
+            {
+                Message.State = MessageState.Exception;
+                Message.Exception = ex;
+                await OnMessageError();
             }
         }
 
@@ -114,16 +137,19 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 中间件链式处理
         /// </summary>
         /// <returns></returns>
-        private Task Handle()
+        private async Task Handle()
         {
             while (index < middlewares.Length)
             {
                 var next = middlewares[index++];
                 if (!next.Scope.HasFlag(MessageHandleScope.Handle))
+                {
                     continue;
-                return next.Handle(Service, Message, Tag, Handle);
+                }
+                LogRecorder.Debug("Message handle({0})", next.GetTypeName());
+                await next.Handle(Service, Message, Tag, Handle);
+                return;
             }
-            return Task.CompletedTask;
         }
 
         #endregion
@@ -138,7 +164,9 @@ namespace ZeroTeam.MessageMVC.Messages
         private async Task PushResult()
         {
             if (Tag == null)//内部自调用,无需处理
+            {
                 return;
+            }
             //if (Interlocked.Increment(ref isPushed) == 1)
             {
                 await Service.Transport.OnResult(Message, Tag);
@@ -155,16 +183,19 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <remarks>
         /// 默认实现为保证OnCallEnd可控制且不再抛出异常,无特殊需要不应再次实现
         /// </remarks>
-        async Task OnMessageError()
+        private async Task OnMessageError()
         {
-            if (Message.Exception is NetTransferException ne)
+            if (Message.Exception is MessageReceiveException ne)
             {
                 Message.Result = ne.InnerException.Message;
             }
             else
             {
                 if (Message.State <= MessageState.Accept)
+                {
                     Message.State = MessageState.Exception;
+                }
+
                 Message.Result = Message.Exception.Message;
             }
             foreach (var middleware in middlewares.Where(p => p.Scope.HasFlag(MessageHandleScope.Exception)))

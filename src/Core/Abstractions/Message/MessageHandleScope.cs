@@ -6,23 +6,27 @@ namespace ZeroTeam.MessageMVC.Messages
     /// 消息的处理范围
     /// </summary>
     [Flags]
-    public enum MessageHandleScope : byte
+    public enum MessageHandleScope
     {
         /// <summary>
         /// 什么也不处理
         /// </summary>
         None = 0x0,
         /// <summary>
+        /// 准备
+        /// </summary>
+        Prepare = 0x1,
+        /// <summary>
         /// 处理消息
         /// </summary>
-        Handle = 0x1,
+        Handle = 0x2,
         /// <summary>
         /// 处理全局异常
         /// </summary>
-        Exception = 0x2,
+        Exception = 0x4,
         /// <summary>
         /// 处理最终结果
         /// </summary>
-        End = 0x4
+        End = 0x8
     }
 }

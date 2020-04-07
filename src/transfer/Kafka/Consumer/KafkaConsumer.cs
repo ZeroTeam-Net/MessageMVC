@@ -6,8 +6,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.MessageTransfers;
-using ZeroTeam.MessageMVC.ZeroApis;
 using ConsumeResult = Confluent.Kafka.ConsumeResult<Confluent.Kafka.Ignore, string>;
 
 namespace ZeroTeam.MessageMVC.Kafka
@@ -15,7 +13,7 @@ namespace ZeroTeam.MessageMVC.Kafka
     /// <summary>
     /// Kafka消息队列消费者
     /// </summary>
-    internal class KafkaConsumer : NetTransferBase, IMessageConsumer
+    internal class KafkaConsumer : MessageReceiverBase, IMessageConsumer
     {
         /// <summary>
         /// 调用计数
@@ -26,9 +24,9 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <summary>
         /// 初始化
         /// </summary>
-        bool INetTransfer.Prepare()
+        bool IMessageReceiver.Prepare()
         {
-            config = ConfigurationManager.Get<ConsumerConfig>("Kafka");
+            config = ConfigurationManager.Get<ConsumerConfig>("MessageMVC:Kafka");
             return config != null;
         }
 
@@ -36,7 +34,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         private IConsumer<Ignore, string> consumer;
 
 
-        async Task<bool> INetTransfer.Loop(CancellationToken token)
+        async Task<bool> IMessageReceiver.Loop(CancellationToken token)
         {
             while (!token.IsCancellationRequested)
             {
@@ -102,7 +100,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// 同步运行状态
         /// </summary>
         /// <returns></returns>
-        Task<bool> INetTransfer.LoopBegin()
+        Task<bool> IMessageReceiver.LoopBegin()
         {
             builder = new ConsumerBuilder<Ignore, string>(config);
             consumer = builder.Build();
@@ -114,7 +112,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// 同步关闭状态
         /// </summary>
         /// <returns></returns>
-        Task INetTransfer.LoopComplete()
+        Task IMessageReceiver.LoopComplete()
         {
             consumer.Close();
             consumer.Dispose();
@@ -125,7 +123,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// 标明调用结束
         /// </summary>
         /// <returns>是否发送成功</returns>
-        Task<bool> INetTransfer.OnResult(IMessageItem item, object tag)
+        Task<bool> IMessageReceiver.OnResult(IMessageItem item, object tag)
         {
             var consumeResult = (ConsumeResult)tag;
             try
