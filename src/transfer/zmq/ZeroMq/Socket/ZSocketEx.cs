@@ -271,7 +271,7 @@ namespace ZeroTeam.ZeroMQ
                 return false;
             foreach (var data in array)
             {
-                if (!SendFrame(new ZFrame(data.ToZeroBytes()), FlagsSndmore, out _error))
+                if (!SendFrame(new ZFrame(data.ToBytes()), FlagsSndmore, out _error))
                     return false;
             }
             return SendFrame(new ZFrame(ServiceKey), FlagsDontwait, out _error);
@@ -326,7 +326,7 @@ namespace ZeroTeam.ZeroMQ
             _error = null;
             foreach (var str in strs)
             {
-                if (!SendFrame(new ZFrame(str.ToZeroBytes()), FlagsSndmore, out _error))
+                if (!SendFrame(new ZFrame(str.ToBytes()), FlagsSndmore, out _error))
                     return false;
             }
             return SendFrame(new ZFrame(ServiceKey), FlagsDontwait, out _error);

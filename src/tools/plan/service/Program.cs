@@ -2,6 +2,7 @@ using Agebull.Common.Ioc;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
+using ZeroTeam.MessageMVC.PlanTasks;
 using ZeroTeam.MessageMVC.RedisMQ;
 using ZeroTeam.MessageMVC.Services;
 using ZeroTeam.MessageMVC.Tools;
@@ -18,7 +19,7 @@ namespace ZeroTeam.MessageMVC.Http
             ZeroFlowControl.RegistService(new ZeroService
             {
                 ServiceName = "PlanManager",
-                TransportBuilder = name => new PlanReceiver()
+                Receiver = new PlanReceiver()
             });
             var services = IocHelper.ServiceCollection;
             services.UseCsRedis();

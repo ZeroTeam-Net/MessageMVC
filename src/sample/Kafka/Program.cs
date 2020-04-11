@@ -20,7 +20,7 @@ namespace MicroZero.Kafka.QueueStation
         }
         static async void Test()
         {
-            for (int i = 0; ZeroFlowControl.CanDo && i < 10; i++)
+            for (int i = 0; ZeroFlowControl.IsRuning && i < 10; i++)
             {
                 await Task.Delay(100);
 

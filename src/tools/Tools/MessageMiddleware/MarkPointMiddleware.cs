@@ -28,7 +28,7 @@ namespace ZeroTeam.MessageMVC.Tools
         /// </summary>
         /// <param name="message">当前消息</param>
         /// <returns></returns>
-        Task IMessageMiddleware.OnEnd(IMessageItem message)
+        Task IMessageMiddleware.OnEnd(IInlineMessage message)
         {
             return MessagePoster.PublishAsync(ToolsOption.Instance.MarkPointName, message.Topic, message);
         }

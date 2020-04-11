@@ -5,6 +5,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\tools\Contract\ZeroTeam.MessageMVC.ApiContract.csproj" />
     <ProjectReference Include="..\..\transfer\zmq\Inproc\ZeroTeam.ZeroMQ.Inproc.csproj" />
   </ItemGroup>
   <ItemGroup>

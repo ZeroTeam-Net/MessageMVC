@@ -22,11 +22,19 @@ namespace Agebull.EntityModel.Common
     /// <remarks>
     ///     依赖对象都为IgnoreDataMember属性,即不可网络序列化
     /// </remarks>
-        [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
+    [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public sealed class DependencyObjects
     {
         [JsonIgnore]
         private readonly Dictionary<Type, object> _dictionary = new Dictionary<Type, object>();
+
+        /// <summary>
+        ///     删除一种类型对象
+        /// </summary>
+        public void Remove<T>()
+        {
+            _dictionary.Remove(typeof(T));
+        }
 
         /// <summary>
         ///     附加一种类型对象
@@ -34,7 +42,7 @@ namespace Agebull.EntityModel.Common
         /// <remarks>
         ///     这种方法只存在一个,即多次附加,只存最后一个对象
         /// </remarks>
-        public void Annex<T>(T value)
+        public T Annex<T>(T value)
         {
             var type = typeof(T);
             if (_dictionary.ContainsKey(type))
@@ -52,6 +60,20 @@ namespace Agebull.EntityModel.Common
             {
                 _dictionary.Add(type, value);
             }
+            return value;
+        }
+
+        /// <summary>
+        ///     附加一种类型对象
+        /// </summary>
+        /// <remarks>
+        ///     这种方法只存在一个,即多次附加,只存最后一个对象
+        /// </remarks>
+        public T TryAnnex<T>(T value)
+        {
+            var type = typeof(T);
+            _dictionary.TryAdd(type, value);
+            return value;
         }
 
         /// <summary>
@@ -67,6 +89,19 @@ namespace Agebull.EntityModel.Common
             var value = new T();
             _dictionary.Add(typeof(T), value);
             return value;
+        }
+
+        /// <summary>
+        ///     取得一种类型的扩展属性(需要附加)
+        /// </summary>
+        /// <returns></returns>
+        public T TryGetDependency<T>(Func<T> creater) where T : class
+        {
+            if (_dictionary.TryGetValue(typeof(T), out var value1))
+                return (T)value1;
+            var t = creater();
+            _dictionary.TryAdd(typeof(T), t);
+            return t;
         }
 
         /// <summary>

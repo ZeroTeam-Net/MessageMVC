@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
 using ZeroTeam.MessageMVC.Context;
 
 namespace ZeroTeam.MessageMVC.Messages
@@ -10,6 +9,12 @@ namespace ZeroTeam.MessageMVC.Messages
     [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class MessageItem : IMessageItem
     {
+        /// <summary>
+        ///     是否正常
+        /// </summary>
+
+        public bool IsSucceed => State == MessageState.Success;
+
         /// <summary>
         /// 消息标识
         /// </summary>
@@ -41,17 +46,6 @@ namespace ZeroTeam.MessageMVC.Messages
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public string Content { get; set; }
 
-        /// <summary>
-        /// 其他带外内容
-        /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
-        public string Extend { get; set; }
-
-        /// <summary>
-        /// 扩展的二进制
-        /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
-        public byte[] Binary { get; set; }
 
         /// <summary>
         /// 处理结果,对应状态的解释信息
@@ -68,39 +62,12 @@ namespace ZeroTeam.MessageMVC.Messages
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public string Result { get; set; }
 
-        /// <summary>
-        /// 异常
-        /// </summary>
-        public Exception Exception { get; set; }
 
         /// <summary>
         ///     跟踪信息
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public TraceInfo Trace { get; set; }
-
-        /// <summary>
-        /// 服务名称,即Topic
-        /// </summary>
-        public string ServiceName => Topic;
-
-        /// <summary>
-        /// 接口名称,即Title
-        /// </summary>
-        public string ApiName => Title;
-
-        /// <summary>
-        /// 接口参数,即Content
-        /// </summary>
-        public string Argument => Content;
-
-
-        /// <summary>
-        /// 取参数值
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="isBaseValue"></param>
-        public string GetArgument(string name, bool isBaseValue) => Content;
 
     }
 }

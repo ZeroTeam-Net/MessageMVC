@@ -5,7 +5,7 @@ namespace ZeroTeam.MessageMVC.Messages
     /// <summary>
     /// 消息投递对象
     /// </summary>
-    public interface IMessagePoster
+    public interface IMessagePoster : ISerializeProxy
     {
         /// <summary>
         /// 运行状态
@@ -25,7 +25,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         /// <param name="message">消息</param>
         /// <returns></returns>
-        Task<(MessageState state, string result)> Post(IMessageItem message);
+        Task<IInlineMessage> Post(IMessageItem message);
 
     }
 }

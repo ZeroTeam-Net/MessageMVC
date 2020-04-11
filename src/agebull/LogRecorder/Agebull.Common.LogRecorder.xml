@@ -328,13 +328,6 @@
             <param name="message"> 日志详细信息 </param>
             <param name="formatArgs"> 格式化的参数 </param>
         </member>
-        <member name="M:Agebull.Common.Logging.LogRecorder.Exception(System.Exception,System.Object)">
-            <summary>
-              记录异常日志
-            </summary>
-            <param name="exception"> 异常 </param>
-            <param name="tag"> 当时对象 </param>
-        </member>
         <member name="M:Agebull.Common.Logging.LogRecorder.Exception(System.Exception,System.String)">
             <summary>
               记录异常日志
@@ -396,11 +389,6 @@
               写入调试日志
             </summary>
             <param name="obj"> 记录对象 </param>
-        </member>
-        <member name="F:Agebull.Common.Logging.LogRecorder._monitorItemLocal">
-            <summary>
-            当前上下文数据
-            </summary>
         </member>
         <member name="P:Agebull.Common.Logging.LogRecorder.MonitorItem">
             <summary>

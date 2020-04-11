@@ -1,14 +1,19 @@
 ﻿using ZeroTeam.MessageMVC.ZeroApis;
-using ZeroTeam.MessageMVC.PlanTasks;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using ZeroTeam.MessageMVC.Context;
 using Agebull.Common.Ioc;
+using ZeroTeam.MessageMVC.Messages;
+using System.Threading.Tasks;
+using Agebull.Common.Configuration;
+using ZeroTeam.MessageMVC.Context;
+using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
+using System;
+using Agebull.Common.Logging;
 
 namespace ZeroTeam.MessageMVC.Sample.Controllers
 {
 
-    [Service("api")]
+    [Service("http")]
     public class TestControler : IApiControler
     {
         /// <summary>
@@ -17,16 +22,30 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         ILogger logger;
 
         /// <summary>
-        /// 当前登录用户,自动依赖构造后设置值
+        /// 当前用户
+        /// </summary>
+        public ObjectFactory Factory { get; set; }
+
+        /// <summary>
+        /// 当前用户
+        /// </summary>
+        [FromConfig("MessageMVC:Option")]
+        public ZeroAppConfig Option { get; set; }
+
+        /// <summary>
+        /// 当前用户
         /// </summary>
         [FromServices]
-        public IUser User { get; set; }
+        public IEnumerable<IUser> User { get; set; }
 
         /// <summary>
         /// 构造
         /// </summary>
         /// <param name="log">日志对象,框架自动构造</param>
-        public TestControler([FromServices]ILogger<TestControler> log)
+        public TestControler(ILogger log
+            , IServiceCollection service
+            , IXmlSerializeProxy xml
+            , [FromConfig("MessageMVC:Option")] ZeroAppConfig option)
         {
             logger = log;
         }
@@ -36,32 +55,82 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         /// </summary>
         /// <param name="argument">参数</param>
         /// <returns>ApiResult格式的成功或失败</returns>
-        [Route("v1/call")]
-        public async Task<IApiResult> Call(Argument argument)
+        [Route("v1/message")]
+        public IMessageItem Message()
         {
-            logger.LogDebug($"Call({argument.Value})");
+            return GlobalContext.CurrentNoLazy?.Message.Offline(null);
+        }
+
+        /// <summary>
+        /// 测试接口
+        /// </summary>
+        /// <param name="argument">参数</param>
+        /// <returns>ApiResult格式的成功或失败</returns>
+        [Route("v1/argument")]
+        public async Task<IApiResult> Argument(Argument argument)
+        {
+            logger.LogInformation($"Call {nameof(Argument)}({argument?.Value})");
+            await Task.Delay(100);
+            return ApiResultHelper.Succees(argument?.Value);
+        }
+
+        /// <summary>
+        /// 测试接口
+        /// </summary>
+        /// <param name="argument">参数</param>
+        /// <returns>ApiResult格式的成功或失败</returns>
+        [Route("v1/customSerialize")]
+        [SerializeType(SerializeType.Xml)]
+        public async Task<IApiResult> CustomSerialize(Argument argument)
+        {
+            logger.Information(() => $"Call {nameof(Argument)}({argument?.Value})");
             await Task.Delay(100);
             return ApiResultHelper.Succees();
         }
 
-        [Route("v1/plan")]
-        public async Task<IApiResult> Paln()
+        [Route("v1/empty")]
+        public void Empty()
         {
-            await PlanPoster.PostAsync(new PlanTasks.PlanOption
-            {
-                plan_type = plan_date_type.second,
-                plan_repet = 5,
-                retry_set = -1,
-                plan_value = 10,
-            }, "api", "v1/do", null);
-
-            return ApiResultHelper.Succees("Paln");
+            logger.LogInformation($"Call {nameof(Empty)}");
         }
 
-        [Route("v1/do")]
-        public IApiResult DoPlan()
+        [Route("v1/async")]
+        public async Task<IApiResult> Async()
         {
-            return ApiResultHelper.Succees("DoPlan");
+            throw new Exception("异常测试");
+            await Task.Yield();
+            logger.LogInformation($"Call {nameof(Async)}");
+            return ApiResultHelper.Succees(nameof(Async));
+        }
+
+
+        [Route("v1/task")]
+        public Task<IApiResult<string>> TaskTest()
+        {
+            logger.LogInformation($"Call {nameof(TaskTest)}");
+            var res = ApiResultHelper.Succees(nameof(TaskTest));
+            return Task.FromResult(res);
+        }
+
+        [Route("v1/FromServices")]
+        public IApiResult<string> FromServices([FromServices] ISerializeProxy a)
+        {
+            logger.LogInformation($"Call {nameof(FromServices)},Argument : {a.ToJson()}");
+            return ApiResultHelper.Succees(a.ToJson());
+        }
+
+        [Route("v1/FromConfig")]
+        public IApiResult<string> FromConfig([FromConfig("MessageMVC:Option")] ZeroAppConfig a)
+        {
+            logger.LogInformation($"Call {nameof(FromConfig)},Argument : {a.ToJson()}");
+            return ApiResultHelper.Succees(a.ToJson());
+        }
+
+        [Route("v1/mulitArg")]
+        public IApiResult<SerializeType> MulitArg(string a, int b, decimal c, SerializeType d)//
+        {
+            logger.LogInformation($"Call {nameof(MulitArg)},Argument : a {a}, b {b},c {c},d {d}");
+            return ApiResultHelper.Succees(d);
         }
     }
 }

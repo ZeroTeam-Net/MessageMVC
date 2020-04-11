@@ -40,11 +40,11 @@ namespace ZeroTeam.MessageMVC.Web
         /// </summary>
         /// <param name="message">当前消息</param>
         /// <returns></returns>
-        async Task IMessageMiddleware.OnEnd(IMessageItem message)
+        async Task IMessageMiddleware.OnEnd(IInlineMessage message)
         {
             if (Config.Folders.Contains(message.Topic))
             {
-                await Publish(message.Title, message.Title, message.Content);
+                await Publish(message.Offline(IocHelper.Create<IJsonSerializeProxy>()));//BUG
             }
         }
 
@@ -100,7 +100,7 @@ namespace ZeroTeam.MessageMVC.Web
                 ZeroFlowControl.RegistService(new ZeroService
                 {
                     ServiceName = folder,
-                    TransportBuilder = name => IocHelper.Create<IMessageConsumer>()
+                    Receiver = IocHelper.Create<IMessageConsumer>()
                 });
                 Handlers.Add(folder, new List<WebSocketClient>());
                 app.Map($"/{folder}", Map);
@@ -163,26 +163,25 @@ namespace ZeroTeam.MessageMVC.Web
         /// <summary>
         /// 发出广播
         /// </summary>
-        /// <param name="classify"></param>
-        /// <param name="title"></param>
-        /// <param name="value"></param>
+        /// <param name="message"></param>
         /// <returns></returns>
-        public static async Task Publish(string classify, string title, string value)
+        public static async Task Publish(IMessageItem message)
         {
-            if (string.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(message.Content))
             {
                 return;
             }
 
-            if (!Handlers.TryGetValue(classify, out var list))
+            if (!Handlers.TryGetValue(message.Topic, out var list))
             {
                 return;
             }
 
-            var empty = string.IsNullOrWhiteSpace(title);
-            var tbuffer = Encoding.UTF8.GetBytes(title);
+            var empty = string.IsNullOrWhiteSpace(message.Title);
+            var tbuffer = message.Title.ToUtf8Bytes();
             var title_a = new ArraySegment<byte>(tbuffer, 0, tbuffer.Length);
-            var buffer = Encoding.UTF8.GetBytes(value);
+
+            var buffer = message.Content.ToUtf8Bytes();
             var value_a = new ArraySegment<byte>(buffer, 0, buffer.Length);
             foreach (var handler in list.ToArray())
             {
@@ -194,7 +193,7 @@ namespace ZeroTeam.MessageMVC.Web
 
                 foreach (var sub in handler.Subscriber)
                 {
-                    if (title.IndexOf(sub, StringComparison.Ordinal) != 0)
+                    if (message.Title.IndexOf(sub, StringComparison.Ordinal) != 0)
                     {
                         continue;
                     }

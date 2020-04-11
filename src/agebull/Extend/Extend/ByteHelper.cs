@@ -2,6 +2,8 @@
 // 整理用户：bull2
 // 建立时间：2012-08-13 5:35
 // 整理时间：2012-08-30 3:12
+using System.Text;
+
 namespace Agebull.Common
 {
     /// <summary>
@@ -9,6 +11,21 @@ namespace Agebull.Common
     /// </summary>
     public static class ByteHelper
     {
+        /// <summary>
+        /// 空字节
+        /// </summary>
+        public static readonly byte[] EmptyBytes = new byte[0];
+
+        /// <summary>
+        /// 转为UTF8字节
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns>字节</returns>
+        public static byte[] ToBytes(this string str)
+        {
+            return str == null ? EmptyBytes : Encoding.UTF8.GetBytes(str);
+        }
+
         /// <summary>
         ///   转换为BYTE
         /// </summary>

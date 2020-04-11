@@ -14,7 +14,7 @@ namespace MicroZero.Kafka.QueueStation
         static async Task Main()
         {
             IocHelper.AddTransient<IFlowMiddleware, ZeroRpcFlow>();
-            IocHelper.AddSingleton<IServiceTransfer, ZeroRpcTransport>();
+            IocHelper.AddSingleton<IServiceTransfer, ZeroRpcReceiver>();
 
             IocHelper.ServiceCollection.UseKafka();
             IocHelper.ServiceCollection.UseZeroMQInporc();

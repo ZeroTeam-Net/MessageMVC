@@ -1,5 +1,5 @@
+using Agebull.Common.Logging;
 using System;
-using ZeroTeam.MessageMVC;
 
 namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
@@ -49,7 +49,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
             catch (Exception e)
             {
-                ZeroTrace.WriteException("Receive", e, socket.Endpoint, "Exception");
+                LogRecorder.Trace(() => $"ZeroCommandExtend receive err({e.Message })");
                 return new TZeroResultData
                 {
                     State = ZeroOperatorStateType.LocalException,
@@ -62,7 +62,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
             catch (Exception e)
             {
-                ZeroTrace.WriteException("Receive", e, socket.Endpoint);
+                LogRecorder.Trace(() => $"ZMessage unpack err({e.Message })");
                 return new TZeroResultData
                 {
                     State = ZeroOperatorStateType.LocalException,

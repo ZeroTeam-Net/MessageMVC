@@ -6,7 +6,7 @@ namespace MicroZero.Http.Gateway
     ///     缓存特征
     /// </summary>
     [Flags]
-    public enum CacheFeature : uint
+    public enum CacheFeature
     {
         /// <summary>
         ///     无
@@ -34,8 +34,13 @@ namespace MicroZero.Http.Gateway
         Form = 0x8,
 
         /// <summary>
+        ///     内容相同(POST请求）
+        /// </summary>
+        Content = 0x8,
+
+        /// <summary>
         /// 使用键设置,忽略其它特性
         /// </summary>
-        Keys = 0x10
+        Keys = 0x20
     }
 }

@@ -856,7 +856,7 @@ namespace Agebull.Common.Reflection
         /// <returns> </returns>
         public static string GetTypeFullName(Type type)
         {
-            return GetTypeName2(type, true);
+            return GetTypeName(type, true);
         }
 
         /// <summary>
@@ -868,7 +868,7 @@ namespace Agebull.Common.Reflection
         {
             return value == null
                     ? null
-                    : GetTypeName2(value is Type type ? type : value.GetType(), false);
+                    : GetTypeName(value is Type type ? type : value.GetType(), false);
         }
 
         /// <summary>
@@ -878,7 +878,7 @@ namespace Agebull.Common.Reflection
         /// <returns> </returns>
         public static string GetTypeName(Type type)
         {
-            var name = GetTypeName2(type, false);
+            var name = GetTypeName(type, false);
             return GetTypeShowName(name);
         }
 
@@ -888,7 +888,7 @@ namespace Agebull.Common.Reflection
         /// <param name="type"> </param>
         /// <param name="isFull"></param>
         /// <returns> </returns>
-        private static string GetTypeName2(Type type, bool isFull)
+        public static string GetTypeName(Type type, bool isFull)
         {
             var sb = new StringBuilder();
             if (isFull && type.Namespace != null)
@@ -1041,7 +1041,7 @@ namespace Agebull.Common.Reflection
                 {
                     sb.Append(',');
                 }
-                sb.Append(GetTypeName2(tParam, isFull));
+                sb.Append(GetTypeName(tParam, isFull));
             }
             if (!isFirst)
             {

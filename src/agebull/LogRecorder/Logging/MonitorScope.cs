@@ -1,5 +1,6 @@
 ﻿using Agebull.Common.Base;
 using System;
+using System.Diagnostics;
 
 namespace Agebull.Common.Logging
 {
@@ -9,7 +10,6 @@ namespace Agebull.Common.Logging
     /// </summary>
     public class MonitorScope : ScopeBase
     {
-        private bool _isStep;
         /// <summary>
         /// 生成范围
         /// </summary>
@@ -22,19 +22,10 @@ namespace Agebull.Common.Logging
                 return new EmptyScope();
             }
 
-            var scope = new MonitorScope
-            {
-                _isStep = LogRecorder.MonitorItem?.InMonitor == true
-            };
-            if (scope._isStep)
-            {
-                LogRecorder.BeginStepMonitor(name);
-            }
-            else
-            {
-                //IocScope.Logger = IocHelper.LoggerFactory.CreateLogger(name);
-                LogRecorder.BeginMonitor(name);
-            }
+            if ((LogRecorder.MonitorItem?.InMonitor ?? false))
+                throw new Exception();
+            var scope = new MonitorScope();
+            LogRecorder.BeginMonitor(name);
             return scope;
         }
 
@@ -43,14 +34,7 @@ namespace Agebull.Common.Logging
         /// </summary>
         protected override void OnDispose()
         {
-            if (_isStep)
-            {
-                LogRecorder.EndStepMonitor();
-            }
-            else
-            {
-                LogRecorder.EndMonitor();
-            }
+            LogRecorder.EndMonitor();
         }
     }
 

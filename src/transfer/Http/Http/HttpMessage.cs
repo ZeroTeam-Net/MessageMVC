@@ -1,14 +1,15 @@
 using Agebull.Common;
+using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Agebull.EntityModel.Common;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
@@ -20,50 +21,77 @@ namespace ZeroTeam.MessageMVC.Http
     /// </summary>
     [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     [DataContract]
-    public class HttpMessage : IMessageItem
+    public class HttpMessage : MessageItem, IInlineMessage
     {
 
         #region IMessageItem
 
         /// <summary>
-        /// 唯一标识
+        /// 参数
         /// </summary>
-        [JsonIgnore]
-        public string ID { get; set; }
+        public object ArgumentData { get; set; }
 
         /// <summary>
         /// 其他带外内容
         /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Extend
+        public Dictionary<string, object> Extend { get; set; }
+
+        /// <summary>
+        /// 是否已在线
+        /// </summary>
+        public bool IsInline { get; set; }
+
+        /// <summary>
+        /// 是否已离线
+        /// </summary>
+        public bool ArgumentOutdated { get; set; }
+
+
+        /// <summary>
+        /// 返回值已过时
+        /// </summary>
+        public bool ResultOutdated { get; set; }
+
+        private object resultData;
+
+        /// <summary>
+        /// 处理结果,对应状态的解释信息
+        /// </summary>
+        /// <remarks>
+        /// 未消费:无内容
+        /// 已接受:无内容
+        /// 格式错误 : 无内容
+        /// 无处理方法 : 无内容
+        /// 处理异常 : 异常信息
+        /// 处理失败 : 失败内容或原因
+        /// 处理成功 : 结果信息或无
+        /// </remarks>
+        public object ResultData
         {
-            get => HttpContent == null ? null : JsonHelper.SerializeObject(Arguments);
-            set => HttpContent = value;
+            get => resultData;
+            set
+            {
+                resultData = value;
+                ResultOutdated = true;
+            }
         }
 
         /// <summary>
-        /// 其他带外内容
+        /// 执行状态
         /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Content => HttpContent ?? JsonHelper.SerializeObject(Arguments);
-
-        string IMessageItem.Topic { get => ApiHost; set => ApiHost = value; }
-
-        string IMessageItem.Title { get => ApiName; set => ApiName = value; }
-
-        string IMessageItem.Content { get => Content; set => HttpContent = value; }
+        public IOperatorStatus RuntimeStatus { get; set; }
 
         /// <summary>
-        ///     跟踪信息
+        ///     返回值序列化对象
         /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public TraceInfo Trace { get; set; }
+        public ISerializeProxy ResultSerializer { get; set; }
+
 
         /// <summary>
-        /// 扩展的二进制
+        ///     返回值构造对象
         /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
-        public byte[] Binary { get; set; }
+        public Func<int, string, object> ResultCreater { get; set; }
+
 
         #endregion
 
@@ -75,16 +103,34 @@ namespace ZeroTeam.MessageMVC.Http
         public HttpContext HttpContext { get; set; }
 
         /// <summary>
+        /// 服务名称,即Topic
+        /// </summary>
+        public string ServiceName { get => Topic; set => Topic = value; }
+
+        /// <summary>
         ///     当前请求调用的主机名称
         /// </summary>
-        [JsonProperty("Topic", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public string ApiHost { get; internal set; }
+        public string ApiHost { get => Topic; internal set => Topic = value; }
 
         /// <summary>
         ///     当前请求调用的API名称
         /// </summary>
-        [JsonProperty("Title", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public string ApiName { get; internal set; }
+        public string ApiName { get => Title; internal set => Title = value; }
+
+        /// <summary>
+        ///     请求地址
+        /// </summary>
+        public string Uri { get; private set; }
+
+        /// <summary>
+        ///     HTTP method
+        /// </summary>
+        public string HttpMethod { get; private set; }
+
+        /// <summary>
+        /// 接口参数,即Content
+        /// </summary>
+        public string Argument { get => Content; set => Content = value; }
 
         /// <summary>
         ///     请求的内容
@@ -92,154 +138,48 @@ namespace ZeroTeam.MessageMVC.Http
         public string HttpContent { get; set; }
 
         /// <summary>
-        ///     请求地址
+        ///     请求的表单
         /// </summary>
-        [JsonProperty("uri", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public string Uri { get; private set; }
-
-        /// <summary>
-        ///     HTTP method
-        /// </summary>
-        [JsonProperty("method", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public string HttpMethod { get; private set; }
+        public Dictionary<string, string> HttpArguments { get; set; }
 
         /// <summary>
         ///     请求的表单
         /// </summary>
-        public Dictionary<string, string> Arguments { get; set; }
+        public Dictionary<string, object> HttpForms { get => Extend; set => Extend = value; }
 
         /// <summary>
-        /// 取参数
+        ///     请求的内容字典
         /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public string this[string key] => Arguments == null ? null : Arguments.TryGetValue(key, out var vl) ? vl : null;
-
-        #endregion
-
-        #region Response
-
-        /// <summary>
-        ///     文件
-        /// </summary>
-        [JsonProperty("files", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public Dictionary<string, byte[]> Files;
-
-        /// <summary>
-        ///     执行HTTP重写向吗
-        /// </summary>
-        [JsonProperty("redirect", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public bool Redirect;
-
-        /// <summary>
-        ///     返回文本值
-        /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public string Result { get; set; }
-
-        /// <summary>
-        /// 异常
-        /// </summary>
-        public Exception Exception { get; set; }
-
-        /// <summary>
-        ///     返回二进制值
-        /// </summary>
-        [JsonProperty("binary", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public byte[] ResultBinary;
-
-        /// <summary>
-        ///     返回值是否文件
-        /// </summary>
-        [JsonProperty("isFile", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public bool IsFile;
+        public JObject ContentObject { get; set; }
 
         #endregion
 
         #region State
 
         /// <summary>
-        /// 处理状态
-        /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public MessageState State { get; set; }
-
-        /// <summary>
-        ///     是否正常
-        /// </summary>
-        
-        [JsonProperty("succeed", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public bool IsSucceed => State == MessageState.Success;
-
-        /// <summary>
         ///     开始时间
         /// </summary>
-        
-        [JsonProperty("start", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public DateTime Start { get; set; } = DateTime.Now;
+
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+        public DateTime? Start { get; set; }
 
         /// <summary>
         ///     结束时间
         /// </summary>
-        
-        [JsonProperty("end", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public DateTime End { get; set; }
 
-        /// <summary>
-        /// 刷新操作
-        /// </summary>
-        public void Reset()
-        {
-            End = DateTime.Now;
-        }
-        /*// <summary>
-        ///     执行状态
-        /// </summary>
-        [JsonProperty("status")] public UserOperatorStateType UserState;
-
-        /// <summary>
-        ///     当前请求调用的API配置
-        /// </summary>
-        public ApiItem ApiItem;
-
-        /// <summary>
-        ///     路由主机信息
-        /// </summary>
-        public RouteHost RouteHost;
-
-        /// <summary>
-        ///     结果状态
-        /// </summary>
-        public ZeroOperatorStateType ZeroState { get; set; }
-
-        /// <summary>
-        ///     当前适用的缓存设置对象
-        /// </summary>
-        public ApiCacheOption CacheSetting;*/
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+        public DateTime? End { get; set; }
 
         #endregion
 
         #region 参数解析
 
         /// <summary>
-        /// 取参数值
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="isBaseValue"></param>
-        public string GetArgument(string name, bool isBaseValue)
-        {
-            if (isBaseValue && Arguments != null && Arguments.TryGetValue(name, out var value))
-                return value;
-            return HttpContent ?? JsonHelper.SerializeObject(Arguments);
-        }
-
-        /// <summary>
         ///     调用检查
         /// </summary>
         /// <param name="context"></param>
-        public async Task<bool> CheckRequest(HttpContext context)
+        public bool CheckRequest(HttpContext context)
         {
-            ID = Guid.NewGuid().ToString("N").ToUpper();
             HttpContext = context;
             var request = context.Request;
             Uri = request.Path.Value;
@@ -247,16 +187,15 @@ namespace ZeroTeam.MessageMVC.Http
             {
                 return false;
             }
+            ID = Guid.NewGuid().ToString("N").ToUpper();
             Trace = TraceInfo.New(ID);
             Trace.CallId = HttpContext.Connection.Id;
-            Trace.Ip = HttpContext.Connection.RemoteIpAddress.ToString();
-            Trace.Port = HttpContext.Connection.RemotePort;
+            Trace.CallApp = "Client";
+            Trace.CallMachine = $"{HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.RemotePort}";
 
             HttpMethod = request.Method.ToUpper();
             CheckHeaders(context, request);
-            if (!await ReadArgument(context))
-                return false;
-            Trace.TraceId = $"{Trace.Token ?? HttpContext.Connection.Id}:{RandomCode.Generate(6)}";
+            //Trace.TraceId = $"{Trace.Token ?? HttpContext.Connection.Id}:{RandomCode.Generate(6)}";
             return true;
         }
 
@@ -315,10 +254,174 @@ namespace ZeroTeam.MessageMVC.Http
             return true;
         }
 
-        private async Task<bool> ReadArgument(HttpContext context)
+        #endregion
+        #region Inline
+
+        /// <summary>
+        /// 取参数值
+        /// </summary>
+        /// <param name="scope">参数范围</param>
+        /// <param name="serializeType">序列化类型</param>
+        /// <param name="serialize">序列化器</param>
+        /// <param name="type">序列化对象</param>
+        /// <returns>值</returns>
+        public object GetArgument(int scope, int serializeType, ISerializeProxy serialize, Type type)
+        {
+            var str = GetContent((ArgumentScope)scope, ref serialize);
+            if (string.IsNullOrEmpty(str))
+                return null;
+            if (HttpForms.Count > 0)
+                return JsonHelper.SerializeObject(HttpForms);
+            if (HttpArguments.Count > 0)
+                return JsonHelper.SerializeObject(HttpArguments);
+            return serialize.ToObject(str, type);
+        }
+
+        /// <summary>
+        /// 取参数值
+        /// </summary>
+        /// <param name="scope">范围</param>
+        /// <param name="serialize">序列化类型</param>
+        /// <returns>值</returns>
+        string GetContent(ArgumentScope scope, ref ISerializeProxy serialize)
+        {
+            serialize ??= ResultSerializer;
+            switch (scope)
+            {
+                case ArgumentScope.HttpArgument:
+                    if (HttpArguments.Count > 0)
+                        return serialize.ToString(HttpArguments);
+                    return null;
+                case ArgumentScope.HttpForm:
+                    if (HttpForms.Count > 0)
+                        return serialize.ToString(HttpForms);
+                    return null;
+            }
+            if (!string.IsNullOrEmpty(HttpContent))
+                return HttpContent;
+            if (HttpForms.Count > 0)
+            {
+                return serialize.ToString(HttpForms);
+            }
+            if (HttpArguments.Count > 0)
+            {
+                return serialize.ToString(HttpArguments);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 取参数值(动态IL代码调用)  BUG
+        /// </summary>
+        /// <param name="name">名称</param>
+        /// <param name="scope">参数范围</param>
+        /// <param name="serializeType">序列化类型</param>
+        /// <param name="serialize">序列化器</param>
+        /// <param name="type">序列化对象</param>
+        /// <returns>值</returns>
+        public object GetValueArgument(string name, int scope, int serializeType, ISerializeProxy serialize, Type type)
+        {
+            var vl = GetValueArgument(name, scope);
+            //return serialize.ToObject(arg, type);
+            return vl;
+        }
+
+        /// <summary>
+        /// 取参数值(动态IL代码调用)
+        /// </summary>
+        /// <param name="name">名称</param>
+        /// <param name="scope">参数范围</param>
+        /// <returns>值</returns>
+        public string GetValueArgument(string name, int scope = 0)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return null;
+            switch ((ArgumentScope)scope)
+            {
+                case ArgumentScope.HttpArgument:
+                    if (HttpArguments.TryGetValue(name, out var ha))
+                        return ha;
+                    return null;
+                case ArgumentScope.HttpForm:
+                    if (HttpForms.TryGetValue(name, out var af))
+                        return af?.ToString();
+                    return null;
+            }
+            if (ContentObject == null)
+            {
+                ContentObject = string.IsNullOrWhiteSpace(HttpContent)
+                    ? new JObject()
+                    : (JObject)JsonConvert.DeserializeObject(HttpContent);
+            }
+            if (ContentObject.TryGetValue(name, out var vl))
+                return vl?.ToString();
+            if (HttpForms.TryGetValue(name, out var fm))
+                return fm?.ToString();
+            if (HttpArguments.TryGetValue(name, out var ar))
+                return ar;
+            return null;
+        }
+
+        private void ReadFiles(Dictionary<string, object> ext)
+        {
+            if (!HttpRoute.Option.EnableFormFile)
+            {
+                return;
+            }
+            var request = HttpContext.Request;
+            var files = request.Form?.Files;
+            if (files == null || files.Count <= 0)
+            {
+                return;
+            }
+            foreach (var file in files)
+            {
+                var bytes = new byte[file.Length];
+                using (var stream = file.OpenReadStream())
+                {
+                    stream.Read(bytes, 0, (int)file.Length);
+                }
+                ext.TryAdd(file.Name, bytes);
+            }
+        }
+
+
+
+        string PrepareContent()
+        {
+            var request = HttpContext.Request;
+            if (request.ContentLength != null && request.ContentLength > 0)
+            {
+                using var texter = new StreamReader(request.Body);
+                return texter.ReadToEnd() ?? string.Empty;
+            }
+            return string.Empty;
+        }
+
+        private Dictionary<string, object> PrepareHttpForm()
+        {
+            var arguments = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            var request = HttpContext.Request;
+            try
+            {
+                if (request.HasFormContentType)
+                {
+                    foreach (var key in request.Form.Keys)
+                    {
+                        arguments.TryAdd(key, request.Form[key]);
+                    }
+                }
+                ReadFiles(arguments);
+            }
+            catch
+            {
+            }
+            return arguments;
+        }
+        private Dictionary<string, string> PrepareHttpArgument()
         {
             var arguments = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            var request = context.Request;
+            var request = HttpContext.Request;
             try
             {
                 if (request.QueryString.HasValue)
@@ -328,73 +431,90 @@ namespace ZeroTeam.MessageMVC.Http
                         arguments.TryAdd(key, request.Query[key]);
                     }
                 }
-                if (request.HasFormContentType)
-                {
-                    foreach (var key in request.Form.Keys)
-                    {
-                        arguments.TryAdd(key, request.Form[key]);
-                    }
+            }
+            catch
+            {
+            }
+            return arguments;
+        }
+        #endregion
 
-                    if (!await ReadFiles(request))
+        #region 状态
+
+        /// <summary>
+        /// 转为离线序列化文本
+        /// </summary>
+        /// <returns></returns>
+        public IMessageItem Offline(ISerializeProxy serialize)
+        {
+            if (ArgumentOutdated)
+            {
+                ArgumentOutdated = false;
+                Content = ArgumentData == null
+                    ? GetContent(ArgumentScope.Content, ref serialize)
+                    : (ResultSerializer ?? serialize).ToString(ArgumentData ?? Extend);
+            }
+            ((IInlineMessage)this).GetResult(serialize);
+            return this;
+        }
+
+        /// <summary>
+        /// 如果未上线且还原参数为字典,否则什么也不做
+        /// </summary>
+        internal void Inline()
+        {
+            if (IsInline)
+                return;
+            IsInline = true;
+            ArgumentOutdated = true;
+            try
+            {
+                HttpArguments ??= PrepareHttpArgument();
+                if(Extend == null)
+                {
+                    Extend = PrepareHttpForm();
+                    foreach(var kv in HttpArguments)
                     {
-                        return false;
+                        Extend.TryAdd(kv.Key, kv.Value);
                     }
                 }
-
-                if (request.ContentLength != null && request.ContentLength > 0)
-                {
-                    using var texter = new StreamReader(request.Body);
-                    HttpContent = await texter.ReadToEndAsync();
-                    if (string.IsNullOrEmpty(HttpContent))
-                    {
-                        HttpContent = null;
-                    }
-                    texter.Close();
-                }
-                if (arguments.Count > 0)
-                    Arguments = arguments;
-                return true;
+                HttpContent ??= PrepareContent();
             }
             catch (Exception e)
             {
-                LogRecorder.Exception(e, "读取远程参数");
-                //UserState = UserOperatorStateType.FormalError;
-                //ZeroState = ZeroOperatorStateType.ArgumentInvalid;
+                LogRecorder.Exception(e);
+                State = MessageState.FormalError;
                 Result = ApiResultHelper.ArgumentErrorJson;
-                return false;
             }
         }
-
-        private async Task<bool> ReadFiles(HttpRequest request)
+        /// <summary>
+        /// 如果未上线且还原参数为字典,否则什么也不做
+        /// </summary>
+        public void Inline(ISerializeProxy serialize, Type type, ISerializeProxy resultSerializer, Func<int, string, object> errResultCreater)
         {
-            if (!HttpRoute.Option.EnableFormFile)
+            if (resultSerializer != null)
+                ResultSerializer = resultSerializer;
+            if (errResultCreater != null)
+                ResultCreater = errResultCreater;
+            if (IsInline)
+                return;
+            Inline();
+            try
             {
-                return true;
-            }
-            var files = request.Form?.Files;
-            if (files == null || files.Count <= 0)
-            {
-                return true;
-            }
-            Files = new Dictionary<string, byte[]>();
-            foreach (var file in files)
-            {
-                if (Files.ContainsKey(file.Name))
+                if (type != null && !type.IsBaseType())
                 {
-                    //UserState = UserOperatorStateType.FormalError;
-                    //ZeroState = ZeroOperatorStateType.ArgumentInvalid;
-                    Result = ApiResultHelper.ArgumentErrorJson;
-                    return false;
+                    if (!string.IsNullOrEmpty(HttpContent))
+                        ArgumentData = serialize.ToObject(HttpContent, type);
+                    else
+                        ArgumentData = JsonHelper.DeserializeObject(JsonHelper.SerializeObject(Extend), type);
                 }
-
-                var bytes = new byte[file.Length];
-                await using (var stream = file.OpenReadStream())
-                {
-                    await stream.ReadAsync(bytes, 0, (int)file.Length);
-                }
-                Files.Add(file.Name, bytes);
             }
-            return true;
+            catch (Exception e)
+            {
+                LogRecorder.Exception(e);
+                State = MessageState.FormalError;
+                Result = ApiResultHelper.ArgumentErrorJson;
+            }
         }
         #endregion
     }

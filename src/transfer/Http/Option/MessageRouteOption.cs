@@ -8,6 +8,11 @@ namespace ZeroTeam.MessageMVC.Http
     public class MessageRouteOption
     {
         /// <summary>
+        /// 标识内部调用的代理名称
+        /// </summary>
+        public const string AgentName = "MessageMVC Gateway";
+
+        /// <summary>
         /// 启用文件上传
         /// </summary>
         public bool EnableFormFile { get; set; }

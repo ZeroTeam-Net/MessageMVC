@@ -34,11 +34,10 @@
             初始化
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.OnMessagePush(ZeroTeam.MessageMVC.Messages.IMessageItem,Confluent.Kafka.ConsumeResult{Confluent.Kafka.Ignore,System.String})">
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.OnMessagePush(Confluent.Kafka.ConsumeResult{Confluent.Kafka.Ignore,System.String})">
             <summary>
             消息处理
             </summary>
-            <param name="message"></param>
             <param name="consumeResult"></param>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.ZeroTeam#MessageMVC#Messages#IMessageReceiver#LoopBegin">
@@ -53,7 +52,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.ZeroTeam#MessageMVC#Messages#IMessageReceiver#OnResult(ZeroTeam.MessageMVC.Messages.IMessageItem,System.Object)">
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.ZeroTeam#MessageMVC#Messages#IMessageReceiver#OnResult(ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
             <summary>
             标明调用结束
             </summary>

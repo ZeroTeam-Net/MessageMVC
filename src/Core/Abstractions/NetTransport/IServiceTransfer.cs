@@ -6,5 +6,4 @@
     public interface IServiceTransfer : IMessageReceiver
     {
     }
-
 }

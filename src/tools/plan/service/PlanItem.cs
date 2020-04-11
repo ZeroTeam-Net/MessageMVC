@@ -17,7 +17,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
 
         internal static ILogger<PlanItem> logger = IocHelper.LoggerFactory.CreateLogger<PlanItem>();
 
-        private int plan_auto_remove => PlanSystemOption.Option.CloseTimeout;
+        private int planAutoRemoveTime => PlanSystemOption.Option.CloseTimeout;
 
         internal const string OptionKey = "opt";
         internal const string RealKey = "rea";
@@ -78,7 +78,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <summary>
         /// 计划对象
         /// </summary>
-        public IMessageItem Message { get; set; }
+        public IInlineMessage Message { get; set; }
 
         #endregion
 
@@ -199,7 +199,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
 
             var timeout = PlanSystemOption.Option.RetryDelay.Length < RealInfo.retry_num
                 ? PlanSystemOption.Option.RetryDelay[RealInfo.retry_num]
-                : PlanSystemOption.Option.RetryDelay[PlanSystemOption.Option.RetryDelay.Length - 1];
+                : PlanSystemOption.Option.RetryDelay[^1];
 
             await JoinQueue(NowTime() + timeout);
 
@@ -270,14 +270,14 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         public async Task<bool> Close()
         {
 #if !UNIT_TEST
-            if (plan_auto_remove > 0)
+            if (planAutoRemoveTime > 0)
 #endif
             {
-                logger.Trace(() => $"Plan is close.{Option.plan_id},remove by {DateTime.Now.AddSeconds(plan_auto_remove)}");
+                logger.Trace(() => $"Plan is close.{Option.plan_id},remove by {DateTime.Now.AddSeconds(planAutoRemoveTime)}");
                 RealInfo.plan_state = Plan_message_state.close;
 #if !UNIT_TEST
                 await SaveRealInfo();
-                await RedisHelper.ExpireAsync(Key, plan_auto_remove);
+                await RedisHelper.ExpireAsync(Key, planAutoRemoveTime);
 
                 await RedisHelper.ZRemAsync(planSetKey, Option.plan_id);
 
@@ -368,7 +368,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                 await message.CheckNextTime();
                 return (true, null);
             }
-            message.Message = RedisHelper.HGet<MessageItem>(message.Key, MessageKey);
+            message.Message = RedisHelper.HGet<InlineMessage>(message.Key, MessageKey);
             if (message.Message == null)
             {
                 logger.Trace(() => $"Read message bad.{member}");
@@ -645,7 +645,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
             };
             if (loadMsg)
             {
-                msg.Message = RedisHelper.HGet<MessageItem>(key, MessageKey);
+                msg.Message = RedisHelper.HGet<InlineMessage>(key, MessageKey);
             }
 
             return msg;

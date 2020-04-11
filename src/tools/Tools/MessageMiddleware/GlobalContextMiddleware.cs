@@ -36,11 +36,11 @@ namespace ZeroTeam.MessageMVC.Context
         /// <param name="tag">扩展信息</param>
         /// <param name="next">下一个处理方法</param>
         /// <returns></returns>
-        Task IMessageMiddleware.Handle(IService service, IMessageItem message, object tag, Func<Task> next)
+        async Task IMessageMiddleware.Handle(IService service, IInlineMessage message, object tag, Func<Task> next)
         {
-            if (JsonHelper.TryDeserializeObject<ZeroContext>(message.Trace?.ContextJson, out var ctx))
+            if (message.Trace?.Context != null)
             {
-                GlobalContext.SetContext(ctx);
+                GlobalContext.SetContext(message.Trace.Context);
             }
             else
             {
@@ -69,9 +69,11 @@ namespace ZeroTeam.MessageMVC.Context
             if (GlobalContext.Current.Trace == null)
             {
                 GlobalContext.Current.Trace = message.Trace ?? TraceInfo.New(message.ID);
+                GlobalContext.Current.Trace.Context = null;
             }
 
-            return next();
+            await next();
+
         }
     }
 }

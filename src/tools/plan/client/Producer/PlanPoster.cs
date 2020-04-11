@@ -23,7 +23,33 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <param name="title">消息标题</param>
         /// <param name="content">消息内容</param>
         /// <returns></returns>
-        public static ApiResult Post<TArg>(PlanOption option, string topic, string title, TArg content)
+        public static IOperatorStatus Post<TArg>(PlanOption option, string topic, string title, TArg content)
+        {
+            return PlanProducer.Post(option, topic, title, content).Result;
+        }
+
+        /// <summary>
+        /// 生产消息
+        /// </summary>
+        /// <param name="option">计划配置</param>
+        /// <param name="topic">消息分类</param>
+        /// <param name="title">消息标题</param>
+        /// <param name="content">消息内容</param>
+        /// <returns></returns>
+        public static IOperatorStatus Post(PlanOption option, string topic, string title, string content)
+        {
+            return PlanProducer.Post(option, topic, title, content).Result;
+        }
+
+        /// <summary>
+        /// 生产消息
+        /// </summary>
+        /// <param name="option">计划配置</param>
+        /// <param name="topic">消息分类</param>
+        /// <param name="title">消息标题</param>
+        /// <param name="content">消息内容</param>
+        /// <returns></returns>
+        public static Task<IOperatorStatus> PostAsync<TArg>(PlanOption option, string topic, string title, TArg content)
         {
             return PlanProducer.Post(option, topic, title, content);
         }
@@ -36,35 +62,9 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <param name="title">消息标题</param>
         /// <param name="content">消息内容</param>
         /// <returns></returns>
-        public static ApiResult Post(PlanOption option, string topic, string title, string content)
+        public static Task<IOperatorStatus> PostAsync(PlanOption option, string topic, string title, string content)
         {
             return PlanProducer.Post(option, topic, title, content);
-        }
-
-        /// <summary>
-        /// 生产消息
-        /// </summary>
-        /// <param name="option">计划配置</param>
-        /// <param name="topic">消息分类</param>
-        /// <param name="title">消息标题</param>
-        /// <param name="content">消息内容</param>
-        /// <returns></returns>
-        public static Task<ApiResult> PostAsync<TArg>(PlanOption option, string topic, string title, TArg content)
-        {
-            return PlanProducer.PostAsync(option, topic, title, content);
-        }
-
-        /// <summary>
-        /// 生产消息
-        /// </summary>
-        /// <param name="option">计划配置</param>
-        /// <param name="topic">消息分类</param>
-        /// <param name="title">消息标题</param>
-        /// <param name="content">消息内容</param>
-        /// <returns></returns>
-        public static Task<ApiResult> PostAsync(PlanOption option, string topic, string title, string content)
-        {
-            return PlanProducer.PostAsync(option, topic, title, content);
         }
 
         #endregion

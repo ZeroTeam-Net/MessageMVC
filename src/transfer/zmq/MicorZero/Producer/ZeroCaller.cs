@@ -1,5 +1,6 @@
 using Agebull.Common;
 using Agebull.Common.Logging;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
@@ -15,80 +16,23 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
     {
         #region Properties
 
-        private static long id;
-
-        /// <summary>
-        /// 取得Id
-        /// </summary>
-        /// <returns></returns>
-        private static long GetId()
-        {
-            return Interlocked.Increment(ref id);
-        }
-        /// <summary>
-        ///     调用时使用的名称
-        /// </summary>
-        internal long Name = GetId();
+        static ulong nextId;
 
         /// <summary>
         ///     返回值
         /// </summary>
-        internal byte ResultType;
+        internal ulong ID = ++nextId;
+
 
         /// <summary>
-        ///     返回值
+        /// 当前消息
         /// </summary>
-        internal string Result;
-
-        /// <summary>
-        ///     返回值
-        /// </summary>
-        internal byte[] Binary;
-
-        /// <summary>
-        ///     请求站点
-        /// </summary>
-        internal string Station;
+        internal IInlineMessage Message;
 
         /// <summary>
         ///     请求站点
         /// </summary>
         internal StationConfig Config;
-
-        /// <summary>
-        ///     上下文内容（透传方式）
-        /// </summary>
-        internal string ContextJson;
-
-        /// <summary>
-        ///     标题
-        /// </summary>
-        internal string Title;
-
-        /// <summary>
-        ///     调用命令
-        /// </summary>
-        internal string Commmand;
-
-        /// <summary>
-        ///     参数
-        /// </summary>
-        internal string Argument;
-
-        /// <summary>
-        ///     扩展参数
-        /// </summary>
-        internal string ExtendArgument;
-
-        /// <summary>
-        ///     结果状态
-        /// </summary>
-        internal ZeroOperatorStateType State;
-
-        /// <summary>
-        /// 最后一个返回值
-        /// </summary>
-        internal ZeroResult LastResult;
 
         #endregion
 
@@ -98,49 +42,49 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         ///     远程调用
         /// </summary>
         /// <returns></returns>
-        internal bool Call()
+        internal async Task<bool> CallAsync()
         {
-            var task = CallApi();
-            task.Wait();
-            return task.Result;
-        }
+            var req = GlobalContext.CurrentNoLazy?.Trace;
+            var result = await ZeroPostProxy.Instance.CallZero(this,
+                 CallDescription,
+                 Message.ApiName.ToBytes(),
+                 Message.Argument.ToBytes(),
+                 req == null ? ByteHelper.EmptyBytes : req.TraceId.ToBytes(),
+                 ID.ToString().ToBytes(),
+                 req == null ? ByteHelper.EmptyBytes : req.LocalId.ToBytes(),
+                 GlobalContext.CurrentNoLazy.ToJsonBytes());
 
-
-        /// <summary>
-        ///     远程调用
-        /// </summary>
-        /// <returns></returns>
-        internal Task<bool> CallAsync()
-        {
-            return CallApi();
+            return result == ZeroOperatorStateType.Ok;
         }
 
         /// <summary>
         ///     检查在非成功状态下的返回值
         /// </summary>
-        internal void CheckStateResult()
+        internal void CheckResult(string json, ZeroOperatorStateType state)
         {
-            if (Result != null)
+            LogRecorder.Trace(() => $"OnRemoteResult : {state}\n{state}");
+            if (json != null)
             {
+                Message.Result = json;
                 return;
             }
 
             IApiResult apiResult;
-            switch (State)
+            switch (state)
             {
                 case ZeroOperatorStateType.Ok:
-                    apiResult = ApiResultHelper.Ioc.Ok;
+                    apiResult = ApiResultHelper.Helper.Ok;
                     break;
                 case ZeroOperatorStateType.LocalNoReady:
                 case ZeroOperatorStateType.LocalZmqError:
-                    apiResult = ApiResultHelper.Ioc.NoReady;
+                    apiResult = ApiResultHelper.Helper.NoReady;
                     break;
                 case ZeroOperatorStateType.LocalSendError:
                 case ZeroOperatorStateType.LocalRecvError:
-                    apiResult = ApiResultHelper.Ioc.NetworkError;
+                    apiResult = ApiResultHelper.Helper.NetworkError;
                     break;
                 case ZeroOperatorStateType.LocalException:
-                    apiResult = ApiResultHelper.Ioc.LocalException;
+                    apiResult = ApiResultHelper.Helper.BusinessException;
                     break;
                 case ZeroOperatorStateType.Plan:
                 case ZeroOperatorStateType.Runing:
@@ -150,47 +94,46 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 case ZeroOperatorStateType.VoteWaiting:
                 case ZeroOperatorStateType.VoteStart:
                 case ZeroOperatorStateType.VoteEnd:
-                    apiResult = ApiResultHelper.Ioc.Error(DefaultErrorCode.Success, State.Text());
+                    apiResult = ApiResultHelper.Helper.Error(DefaultErrorCode.Success, state.Text());
                     break;
                 case ZeroOperatorStateType.Error:
-                    apiResult = ApiResultHelper.Ioc.InnerError;
+                    apiResult = ApiResultHelper.Helper.BusinessException;
                     break;
                 case ZeroOperatorStateType.Unavailable:
-                    apiResult = ApiResultHelper.Ioc.Unavailable;
+                    apiResult = ApiResultHelper.Helper.Unavailable;
                     break;
-                case ZeroOperatorStateType.NotSupport:
                 case ZeroOperatorStateType.NotFind:
                 case ZeroOperatorStateType.NoWorker:
-                    apiResult = ApiResultHelper.Ioc.NoFind;
+                    apiResult = ApiResultHelper.Helper.NoFind;
                     break;
                 case ZeroOperatorStateType.ArgumentInvalid:
-                    apiResult = ApiResultHelper.Ioc.ArgumentError;
+                    apiResult = ApiResultHelper.Helper.ArgumentError;
                     break;
                 case ZeroOperatorStateType.NetTimeOut:
-                    apiResult = ApiResultHelper.Ioc.NetTimeOut;
+                    apiResult = ApiResultHelper.Helper.NetTimeOut;
                     break;
                 case ZeroOperatorStateType.ExecTimeOut:
-                    apiResult = ApiResultHelper.Ioc.ExecTimeOut;
+                    apiResult = ApiResultHelper.Helper.ExecTimeOut;
                     break;
                 case ZeroOperatorStateType.FrameInvalid:
-                    apiResult = ApiResultHelper.Ioc.NetworkError;
+                    apiResult = ApiResultHelper.Helper.NetworkError;
                     break;
                 case ZeroOperatorStateType.NetError:
 
-                    apiResult = ApiResultHelper.Ioc.NetworkError;
+                    apiResult = ApiResultHelper.Helper.NetworkError;
                     break;
                 case ZeroOperatorStateType.Failed:
                 case ZeroOperatorStateType.Bug:
-                    apiResult = ApiResultHelper.Ioc.LogicalError;
+                    apiResult = ApiResultHelper.Helper.BusinessError;
                     break;
                 case ZeroOperatorStateType.Pause:
-                    apiResult = ApiResultHelper.Ioc.Pause;
+                    apiResult = ApiResultHelper.Helper.Pause;
                     break;
                 case ZeroOperatorStateType.DenyAccess:
-                    apiResult = ApiResultHelper.Ioc.DenyAccess;
+                    apiResult = ApiResultHelper.Helper.DenyAccess;
                     break;
                 default:
-                    apiResult = ApiResultHelper.Ioc.RemoteEmptyError;
+                    apiResult = ApiResultHelper.Helper.NotSupport;
                     break;
             }
             //if (LastResult != null && LastResult.InteractiveSuccess)
@@ -199,63 +142,64 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             //        point = "zero_center";
             //    apiResult.Status.Point = point;
             //}
-            Result = JsonHelper.SerializeObject(apiResult);
+            Message.Result = JsonHelper.SerializeObject(apiResult);
         }
 
         /// <summary>
         ///     消息状态
         /// </summary>
-        internal MessageState MessageState
+        internal void CheckState(ZeroOperatorStateType state)
         {
-            get
+            switch (state)
             {
-                if (Result != null)
-                {
-                    return MessageState.Success;
-                }
-                switch (State)
-                {
-                    case ZeroOperatorStateType.Ok:
-                        return MessageState.Success;
-                    case ZeroOperatorStateType.Plan:
-                    case ZeroOperatorStateType.Runing:
-                    case ZeroOperatorStateType.VoteBye:
-                    case ZeroOperatorStateType.Wecome:
-                    case ZeroOperatorStateType.VoteSend:
-                    case ZeroOperatorStateType.VoteWaiting:
-                    case ZeroOperatorStateType.VoteStart:
-                    case ZeroOperatorStateType.VoteEnd:
-                        return MessageState.Accept;
-                    case ZeroOperatorStateType.NetTimeOut:
-                    case ZeroOperatorStateType.ExecTimeOut:
-                        return MessageState.Cancel;
-                    case ZeroOperatorStateType.NotFind:
-                    case ZeroOperatorStateType.NoWorker:
-                    case ZeroOperatorStateType.NotSupport:
-                        return MessageState.NoSupper;
-                    case ZeroOperatorStateType.FrameInvalid:
-                    case ZeroOperatorStateType.ArgumentInvalid:
-                        return MessageState.FormalError;
-                    case ZeroOperatorStateType.Bug:
-                    case ZeroOperatorStateType.Error:
-                    case ZeroOperatorStateType.Failed:
-                        return MessageState.Failed;
-                    //case ZeroOperatorStateType.Pause:
-                    //case ZeroOperatorStateType.DenyAccess:
-                    //case ZeroOperatorStateType.LocalNoReady:
-                    //case ZeroOperatorStateType.LocalZmqError:
-                    //case ZeroOperatorStateType.LocalException:
-                    //case ZeroOperatorStateType.LocalSendError:
-                    //case ZeroOperatorStateType.LocalRecvError:
-                    //    return MessageState.SendError;
-                    //case ZeroOperatorStateType.NetError:
-                    //case ZeroOperatorStateType.Unavailable:
-                    //    return MessageState.NetError;
-                    default:
-                        return MessageState.NetError;
-                }
+                case ZeroOperatorStateType.Ok:
+                    Message.State = MessageState.Success;
+                    break;
+                case ZeroOperatorStateType.Plan:
+                case ZeroOperatorStateType.Runing:
+                case ZeroOperatorStateType.VoteBye:
+                case ZeroOperatorStateType.Wecome:
+                case ZeroOperatorStateType.VoteSend:
+                case ZeroOperatorStateType.VoteWaiting:
+                case ZeroOperatorStateType.VoteStart:
+                case ZeroOperatorStateType.VoteEnd:
+                    Message.State = MessageState.Accept;
+                    break;
+                case ZeroOperatorStateType.NetTimeOut:
+                case ZeroOperatorStateType.ExecTimeOut:
+                    Message.State = MessageState.Cancel;
+                    break;
+                case ZeroOperatorStateType.NotFind:
+                case ZeroOperatorStateType.NoWorker:
+                case ZeroOperatorStateType.NotSupport:
+                    Message.State = MessageState.NoSupper;
+                    break;
+                case ZeroOperatorStateType.FrameInvalid:
+                case ZeroOperatorStateType.ArgumentInvalid:
+                    Message.State = MessageState.FormalError;
+                    break;
+                case ZeroOperatorStateType.Bug:
+                case ZeroOperatorStateType.Error:
+                case ZeroOperatorStateType.Failed:
+                    Message.State = MessageState.Failed;
+                    break;
+                //case ZeroOperatorStateType.Pause:
+                //case ZeroOperatorStateType.DenyAccess:
+                //case ZeroOperatorStateType.LocalNoReady:
+                //case ZeroOperatorStateType.LocalZmqError:
+                //case ZeroOperatorStateType.LocalException:
+                //case ZeroOperatorStateType.LocalSendError:
+                //case ZeroOperatorStateType.LocalRecvError:
+                //    Message.State =  MessageState.SendError;
+                //case ZeroOperatorStateType.NetError:
+                //case ZeroOperatorStateType.Unavailable:
+                //    Message.State =  MessageState.NetError;
+                default:
+                    Message.State = MessageState.NetError;
+                    break;
             }
         }
+
         #endregion
 
         #region Socket
@@ -265,14 +209,12 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// </summary>
         private static readonly byte[] CallDescription =
         {
-            9,
+            8,
             (byte)ZeroByteCommand.General,
             ZeroFrameType.Command,
             ZeroFrameType.Argument,
-            ZeroFrameType.TextContent,
             ZeroFrameType.RequestId,
             ZeroFrameType.Requester,
-            ZeroFrameType.Responser,
             ZeroFrameType.CallId,
             ZeroFrameType.Context,
             ZeroFrameType.SerivceKey,
@@ -280,27 +222,6 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         };
 
 
-        private async Task<bool> CallApi()
-        {
-            var req = GlobalContext.CurrentNoLazy?.Trace;
-            LastResult = await ZeroPostProxy.Instance.CallZero(this,
-                 CallDescription,
-                 Commmand.ToZeroBytes(),
-                 Argument.ToZeroBytes(),
-                 ExtendArgument.ToZeroBytes(),
-                 req == null ? JsonHelper.EmptyBytes : req.TraceId.ToZeroBytes(),
-                 Name.ToString().ToZeroBytes(),
-                 JsonHelper.EmptyBytes,// GlobalContext.Current.Organizational.RouteName.ToZeroBytes(),
-                 req == null ? JsonHelper.EmptyBytes : req.LocalId.ToZeroBytes(),
-                 ContextJson.ToZeroBytes() ?? GlobalContext.CurrentNoLazy.ToZeroBytes());
-
-            State = LastResult.State;
-            Result = LastResult.Result;
-            Binary = LastResult.Binary;
-            ResultType = LastResult.ResultType;
-            LogRecorder.MonitorTrace(() => $"result:{Result}");
-            return LastResult.InteractiveSuccess;
-        }
         #endregion
 
     }

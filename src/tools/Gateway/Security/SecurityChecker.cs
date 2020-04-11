@@ -1,8 +1,7 @@
 using Agebull.Common;
-using Agebull.Common.Configuration;
+using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using System;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
@@ -43,36 +42,10 @@ namespace ZeroTeam.MessageMVC.Http
         /// <param name="tag">扩展信息</param>
         /// <param name="next">下一个处理方法</param>
         /// <returns></returns>
-        Task<bool> IMessageMiddleware.Prepare(IService service, IMessageItem message, object tag)
+        Task<bool> IMessageMiddleware.Prepare(IService service, IInlineMessage message, object tag)
         {
             return CheckToken2(message);
         }
-        #endregion
-
-        #region 变量
-
-        static SecurityChecker()
-        {
-            ConfigurationManager.RegistOnChange(LoadOption, true);
-            
-        }
-        static void LoadOption()
-        {
-            Option = ConfigurationManager.Option<SecurityConfig>("Gateway:Security") ?? new SecurityConfig();
-
-            Option.DenyTokens = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            if (Option.denyTokens != null)
-            {
-                foreach (var apiItem in Option.denyTokens)
-                    Option.DenyTokens.Add(apiItem, apiItem);
-            }
-        }
-
-        /// <summary>
-        /// 配置
-        /// </summary>
-        public static SecurityConfig Option = new SecurityConfig();
-
         #endregion
 
         #region 预检
@@ -88,7 +61,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// <returns></returns>
         public bool PreCheck()
         {
-            if (CheckSign() && KillDenyHttpHeaders())
+            if (CheckSign() && CheckHttpHeaders())
             {
                 return true;
             }
@@ -107,7 +80,7 @@ namespace ZeroTeam.MessageMVC.Http
             //var header = Request.Headers.Values.LinkToString(" ");
             //if (string.IsNullOrWhiteSpace(header) || header.Contains("iToolsVM"))
             //    return false;
-            if (!Option.CheckApiItem)//|| Data.ApiItem == null
+            if (!SecurityOption.Instance.CheckApiAccess)//|| Data.ApiItem == null
             {
                 return true;
             }
@@ -133,52 +106,52 @@ namespace ZeroTeam.MessageMVC.Http
         ///     针对HttpHeader特征阻止不安全访问
         /// </summary>
         /// <returns></returns>
-        internal bool KillDenyHttpHeaders()
+        internal bool CheckHttpHeaders()
         {
             try
             {
-                foreach (var head in Option.DenyHttpHeaders)
+                foreach (var head in SecurityOption.Instance.DenyHttpHeaders)
                 {
-                    if (!Message.Trace.Headers.ContainsKey(head.Head))
+                    if (!Message.Trace.Headers.ContainsKey(head.Key))
                     {
                         continue;
                     }
 
-                    switch (head.DenyType)
+                    switch (head.Value.DenyType)
                     {
                         case DenyType.Hase:
-                            if (Message.Trace.Headers.ContainsKey(head.Head))
+                            if (Message.Trace.Headers.ContainsKey(head.Key))
                             {
                                 return false;
                             }
 
                             break;
                         case DenyType.NonHase:
-                            if (!Message.Trace.Headers.ContainsKey(head.Head))
+                            if (!Message.Trace.Headers.ContainsKey(head.Key))
                             {
                                 return false;
                             }
 
                             break;
                         case DenyType.Count:
-                            if (!Message.Trace.Headers.ContainsKey(head.Head))
+                            if (!Message.Trace.Headers.ContainsKey(head.Key))
                             {
                                 break;
                             }
 
-                            if (Message.Trace.Headers[head.Head].Count == int.Parse(head.Value))
+                            if (Message.Trace.Headers[head.Key].Count == int.Parse(head.Value.Value))
                             {
                                 return false;
                             }
 
                             break;
                         case DenyType.Equals:
-                            if (!Message.Trace.Headers.ContainsKey(head.Head))
+                            if (!Message.Trace.Headers.ContainsKey(head.Key))
                             {
                                 break;
                             }
 
-                            if (string.Equals(Message.Trace.Headers[head.Head].ToString(), head.Value,
+                            if (string.Equals(Message.Trace.Headers[head.Key].ToString(), head.Value.Value,
                                 StringComparison.OrdinalIgnoreCase))
                             {
                                 return false;
@@ -186,26 +159,26 @@ namespace ZeroTeam.MessageMVC.Http
 
                             break;
                         case DenyType.Like:
-                            if (!Message.Trace.Headers.ContainsKey(head.Head))
+                            if (!Message.Trace.Headers.ContainsKey(head.Key))
                             {
                                 break;
                             }
 
-                            if (Message.Trace.Headers[head.Head].ToString().Contains(head.Value))
+                            if (Message.Trace.Headers[head.Key].ToString().Contains(head.Value.Value))
                             {
                                 return false;
                             }
 
                             break;
                         case DenyType.Regex:
-                            if (!Message.Trace.Headers.ContainsKey(head.Head))
+                            if (!Message.Trace.Headers.ContainsKey(head.Key))
                             {
                                 break;
                             }
 
-                            var regx = new Regex(head.Value,
+                            var regx = new Regex(head.Value.Value,
                                 RegexOptions.IgnoreCase | RegexOptions.ECMAScript | RegexOptions.Multiline);
-                            if (regx.IsMatch(Message.Trace.Headers[head.Head].ToString()))
+                            if (regx.IsMatch(Message.Trace.Headers[head.Key].ToString()))
                             {
                                 return false;
                             }
@@ -231,28 +204,28 @@ namespace ZeroTeam.MessageMVC.Http
         ///     1：令牌为空或不合格
         ///     2：令牌是伪造的
         /// </returns>
-        private async Task<bool> CheckToken2(IMessageItem message)
+        private async Task<bool> CheckToken2(IInlineMessage msg)
         {
-            Message = message as HttpMessage;
+            if (!SecurityOption.Instance.EnableAuth)
+            {
+                return true;
+            }
+            var message = msg as HttpMessage;
             try
             {
-                if (!Option.FireBearer)
+                if (message.HttpArguments.ContainsKey("token"))
                 {
-                    return true;
-                }
-                if (Message.Arguments.ContainsKey("token"))
-                {
-                    Message.Arguments.Remove("token");
+                    message.HttpArguments.Remove("token");
                 }
 
                 if (!CheckApisInner())
                 {
-                    Message.State = MessageState.NoSupper;
-                    Message.Result = ApiResultHelper.DenyAccessJson;
+                    message.State = MessageState.NoSupper;
+                    message.Result = ApiResultHelper.DenyAccessJson;
                     return false;
                 }
 
-                if (string.IsNullOrWhiteSpace(Message.Trace.Token))
+                if (string.IsNullOrWhiteSpace(message.Trace.Token))
                 {
                     //if (Data.ApiItem != null && Data.ApiItem.NeedLogin)
                     //{
@@ -267,28 +240,33 @@ namespace ZeroTeam.MessageMVC.Http
                     return false;
                 }
 
-                var (state, json) = await CheckToken();
+                var (state, json, result) = await CheckToken();
                 if (state != MessageState.Success)
                 {
-                    Message.State = MessageState.NetError;
-                    Message.Result = ApiResultHelper.UnavailableJson;
+                    message.State = MessageState.NetError;
+                    message.Result = ApiResultHelper.UnavailableJson;
                     return false;
                 }
-                var result = JsonHelper.DeserializeObject<ApiResult<UserInfo>>(json);
 
                 if (result == null || !result.Success)
                 {
-                    Message.State = MessageState.NoSupper;
-                    Message.Result = json;
+                    message.State = MessageState.NoSupper;
+                    message.Result = json;
                     return false;
                 }
                 return true;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LogRecorder.Exception(e);
-                Message.Exception = e;
-                Message.State = MessageState.NetError;
+                message.RuntimeStatus = IocHelper.Create<IOperatorStatus>();
+                message.RuntimeStatus.Exception = ex;
+                if (message.ResultCreater != null)
+                    message.ResultData = message.ResultCreater(DefaultErrorCode.UnhandleException, null);
+                else
+                    message.Result ??= ex.Message;
+
+                message.State = MessageState.NetError;
+                LogRecorder.Exception(ex);
                 return false;
             }
         }
@@ -318,7 +296,7 @@ namespace ZeroTeam.MessageMVC.Http
                     isAccessToken = true;
                     break;
             }
-            if (Option.DenyTokens.ContainsKey(Message.Trace.Token))
+            if (SecurityOption.Instance.DenyTokens.Contains(Message.Trace.Token))
             {
                 Message.State = MessageState.NoSupper;
                 Message.Result = ApiResultHelper.DenyAccessJson;
@@ -340,22 +318,24 @@ namespace ZeroTeam.MessageMVC.Http
             return isAccessToken;
         }
 
-        private Task<(MessageState state, string result)> CheckToken()
+        private async Task<(MessageState state, string json, IApiResult<IUser> result)> CheckToken()
         {
             var message = new MessageItem
             {
                 ID = Guid.NewGuid().ToString("N").ToUpper(),
-                Topic = Option.AuthStation,
-                Title = Option.TokenCheckApi,
+                Topic = SecurityOption.Instance.AuthService,
+                Title = SecurityOption.Instance.TokenCheckApi,
                 Content = JsonHelper.SerializeObject(new
                 {
                     AuthToken = Message.Trace.Token,
-                    SceneToken = Message["__scene"],
-                    Page = Message["__page"],
+                    SceneToken = Message.GetValueArgument("__scene"),
+                    Page = Message.GetValueArgument("__page"),
                     API = $"{Message.ApiHost}/{Message.ApiName}"
                 })
             };
-            return MessagePoster.Post(message);
+            var (msg, sec) = await MessagePoster.Post(message);
+
+            return (msg.State, msg.Result, ApiResultHelper.Helper.DeserializeInterface<IUser>(msg.Result));
         }
 
         #endregion

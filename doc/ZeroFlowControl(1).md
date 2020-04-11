@@ -21,7 +21,7 @@
 > Config : ZeroAppConfigRuntime
 
 3. 获取注入的所有IFlowMiddleware中间件
-> IService正常不通过依赖注入,而是在ApiDiscory发现完成后,通过RegistZeroObject注册到Services属性中,控制器会对IService对象进行更深度的管理与控制
+> IService正常不通过依赖注入,而是在ApiDiscover发现完成后,通过RegistZeroObject注册到Services属性中,控制器会对IService对象进行更深度的管理与控制
 
 4. 对Middlewares按Level排序,以保证正确的处理顺序
 

@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DiscoryTest</name>
+    </assembly>
+    <members>
+        <member name="M:ZeroTeam.MessageMVC.Sample.Controllers.UnitTest.TestControlerUnitTest.Argument">
+            <summary>
+            测试接口
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Sample.Controllers.UnitTest.TestControlerUnitTest.CustomSerialize">
+            <summary>
+            测试接口
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Sample.Controllers.UnitTest.TestControlerUnitTest.Empty">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Sample.Controllers.UnitTest.TestControlerUnitTest.Async">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Sample.Controllers.UnitTest.TestControlerUnitTest.TaskTest">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Sample.Controllers.UnitTest.TestControlerUnitTest.FromServices">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Sample.Controllers.UnitTest.TestControlerUnitTest.FromConfig">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Sample.Controllers.UnitTest.TestControlerUnitTest.MulitArg">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Sample.Controllers.TestControler.logger">
+            <summary>
+            日志对象
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Sample.Controllers.TestControler.Factory">
+            <summary>
+            当前用户
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Sample.Controllers.TestControler.Option">
+            <summary>
+            当前用户
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Sample.Controllers.TestControler.User">
+            <summary>
+            当前用户
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Sample.Controllers.TestControler.#ctor(Microsoft.Extensions.Logging.ILogger,Microsoft.Extensions.DependencyInjection.IServiceCollection,ZeroTeam.MessageMVC.Messages.IXmlSerializeProxy,ZeroTeam.MessageMVC.ZeroAppConfig)">
+            <summary>
+            构造
+            </summary>
+            <param name="log">日志对象,框架自动构造</param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Sample.Controllers.TestControler.Argument(ZeroTeam.MessageMVC.ZeroApis.Argument)">
+            <summary>
+            测试接口
+            </summary>
+            <param name="argument">参数</param>
+            <returns>ApiResult格式的成功或失败</returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Sample.Controllers.TestControler.CustomSerialize(ZeroTeam.MessageMVC.ZeroApis.Argument)">
+            <summary>
+            测试接口
+            </summary>
+            <param name="argument">参数</param>
+            <returns>ApiResult格式的成功或失败</returns>
+        </member>
+    </members>
+</doc>

@@ -1,9 +1,9 @@
 ﻿using Agebull.Common.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.ZeroApis;
 using ZeroTeam.ZeroMQ;
 using ZeroTeam.ZeroMQ.ZeroRPC;
 
@@ -22,7 +22,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// <returns></returns>
         Task<bool> IMessageReceiver.LoopBegin()
         {
-            socket = ZSocketEx.CreateServiceSocket(ZmqFlowMiddleware.InprocAddress, null, ZSocketType.ROUTER);
+            socket = ZSocketEx.CreateServiceSocket(InporcFlow.InprocAddress, null, ZSocketType.ROUTER);
             if (socket == null)
             {
                 return Task.FromResult(false);
@@ -70,13 +70,16 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// 发送返回值 
         /// </summary>
         /// <returns></returns>
-        Task<bool> IMessageReceiver.OnResult(IMessageItem message, object tag)
+        Task<bool> IMessageReceiver.OnResult(IInlineMessage message, object tag)
         {
-            if (tag is ApiCallItem item)
-                OnResult(message.Result, item,
-                    (byte)(message.State == MessageState.Success
-                            ? ZeroOperatorStateType.Ok : ZeroOperatorStateType.Bug));
-            return Task.FromResult(true);
+            var callItem = tag as ZmqCaller;
+            if (!InporcFlow.Tasks.TryGetValue(callItem.ID, out var task))
+            {
+                return Task.FromResult(false);
+            }
+            InporcFlow.Tasks.TryRemove(callItem.ID, out _);
+            var res = task.TaskSource.TrySetResult(message);
+            return Task.FromResult(res);
         }
 
         #endregion
@@ -100,81 +103,92 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
                 return;
             }
 
-            if (!ApiCallItem.Unpack(zMessage, out var callItem) || string.IsNullOrWhiteSpace(callItem.ApiName))
-            {
-                SendLayoutErrorResult(callItem);
-                return;
-            }
+            ApiCallItem.Unpack(zMessage, out var callItem);
 
-            var messageItem = MessageHelper.Restore(callItem.ApiName, callItem.Station, callItem.Argument, callItem.RequestId, callItem.Context);
-            messageItem.Trace.CallId = callItem.GlobalId;
-            messageItem.Trace.LocalId = callItem.LocalId;
-            messageItem.Extend = callItem.Extend;
-            messageItem.Binary = callItem.Binary;
-
-            try
-            {
-                _ = MessageProcessor.OnMessagePush(Service, messageItem, callItem);
-            }
-            catch (Exception e)
-            {
-                LogRecorder.Exception(e);
-                OnResult(ApiResultHelper.LocalExceptionJson, callItem, (byte)ZeroOperatorStateType.LocalException);
-            }
-        }
-
-
-        #endregion
-
-        #region Task
-
-        /// <summary>
-        /// 发送返回值 
-        /// </summary>
-        /// <param name="item"></param>
-        /// <returns></returns>
-        private void SendLayoutErrorResult(ApiCallItem item)
-        {
-            try
-            {
-                var id = long.Parse(item.Caller.FromUtf8Bytes().Trim('"'));
-                if (item == null || !ZmqFlowMiddleware.Instance.Tasks.TryGetValue(id, out var task))
-                {
-                    return;
-                }
-                ZmqFlowMiddleware.Instance.Tasks.TryRemove(id, out _);
-                task.TaskSource.TrySetResult(new ZeroResult
-                {
-                    State = ZeroOperatorStateType.FrameInvalid,
-                    Result = ApiResultHelper.ArgumentErrorJson
-                });
-            }
-            catch (Exception ex)
-            {
-                LogRecorder.Exception(ex);
-            }
-        }
-
-        /// <summary>
-        /// 发送返回值 
-        /// </summary>
-        /// <returns></returns>
-        private void OnResult(string result, ApiCallItem item, byte state)
-        {
-            var id = long.Parse(item.Caller.FromUtf8Bytes().Trim('"'));
-            if (item == null || !ZmqFlowMiddleware.Instance.Tasks.TryGetValue(id, out var task))
-            {
-                return;
-            }
-            ZmqFlowMiddleware.Instance.Tasks.TryRemove(id, out _);
-            task.TaskSource.TrySetResult(new ZeroResult
-            {
-                State = (ZeroOperatorStateType)state,
-                Result = result
-            });
+            var id = ulong.Parse(callItem.Caller.FromUtf8Bytes());
+            InporcFlow.Tasks.TryGetValue(id, out var task);
+            _ = MessageProcessor.OnMessagePush(Service, task.Caller.Message, task);
         }
 
         #endregion
 
     }
 }
+
+/*
+
+        /// <summary>
+        ///     检查在非成功状态下的返回值
+        /// </summary>
+        internal void CheckStateResult()
+        {
+            IApiResult apiResult;
+            switch (LastResult.State)
+            {
+                case ZeroOperatorStateType.Ok:
+                    Message.Result = LastResult.Result;
+                    return;
+                case ZeroOperatorStateType.NotFind:
+                case ZeroOperatorStateType.NoWorker:
+                case ZeroOperatorStateType.NotSupport:
+                    apiResult = ApiResultHelper.Ioc.NoFind;
+                    break;
+                case ZeroOperatorStateType.LocalNoReady:
+                case ZeroOperatorStateType.LocalZmqError:
+                    apiResult = ApiResultHelper.Ioc.NoReady;
+                    break;
+                case ZeroOperatorStateType.LocalSendError:
+                case ZeroOperatorStateType.LocalRecvError:
+                    apiResult = ApiResultHelper.Ioc.NetworkError;
+                    break;
+                case ZeroOperatorStateType.LocalException:
+                    apiResult = ApiResultHelper.Ioc.LocalException;
+                    break;
+                case ZeroOperatorStateType.Plan:
+                case ZeroOperatorStateType.Runing:
+                case ZeroOperatorStateType.VoteBye:
+                case ZeroOperatorStateType.Wecome:
+                case ZeroOperatorStateType.VoteSend:
+                case ZeroOperatorStateType.VoteWaiting:
+                case ZeroOperatorStateType.VoteStart:
+                case ZeroOperatorStateType.VoteEnd:
+                    apiResult = ApiResultHelper.Ioc.Error(DefaultErrorCode.Success, LastResult.State.ToString());
+                    break;
+                case ZeroOperatorStateType.Error:
+                    apiResult = ApiResultHelper.Ioc.InnerError;
+                    break;
+                case ZeroOperatorStateType.Unavailable:
+                    apiResult = ApiResultHelper.Ioc.Unavailable;
+                    break;
+                case ZeroOperatorStateType.NetTimeOut:
+                    apiResult = ApiResultHelper.Ioc.NetTimeOut;
+                    break;
+                case ZeroOperatorStateType.ExecTimeOut:
+                    apiResult = ApiResultHelper.Ioc.ExecTimeOut;
+                    break;
+                case ZeroOperatorStateType.ArgumentInvalid:
+                    apiResult = ApiResultHelper.Ioc.ArgumentError;
+                    break;
+                case ZeroOperatorStateType.FrameInvalid:
+                case ZeroOperatorStateType.NetError:
+                    apiResult = ApiResultHelper.Ioc.NetworkError;
+                    break;
+                case ZeroOperatorStateType.Bug:
+                case ZeroOperatorStateType.Failed:
+                    apiResult = ApiResultHelper.Ioc.LogicalError;
+                    break;
+                case ZeroOperatorStateType.Pause:
+                    apiResult = ApiResultHelper.Ioc.Pause;
+                    break;
+                case ZeroOperatorStateType.DenyAccess:
+                    apiResult = ApiResultHelper.Ioc.DenyAccess;
+                    break;
+                default:
+                    apiResult = ApiResultHelper.Ioc.RemoteEmptyError;
+                    break;
+            }
+
+            Message.Result ??= JsonHelper.SerializeObject(apiResult);
+
+        }
+*/

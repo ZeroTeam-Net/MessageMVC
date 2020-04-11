@@ -3,6 +3,7 @@ using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using CSRedis;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,10 +36,11 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <summary>
         /// 初始化
         /// </summary>
-        public void Initialize()
+        void IMessagePoster.Initialize()
         {
+            this.Initialize();
             logger = IocHelper.LoggerFactory.CreateLogger(nameof(CSRedisConsumer));
-            
+
 
             jobList = $"msg:{Service.ServiceName}";
             bakList = $"bak:{Service.ServiceName}";
@@ -258,10 +260,10 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                 await client.DelAsync(guard);
                 return true;
             }
-            MessageItem item;
+            InlineMessage item;
             try
             {
-                item = JsonHelper.DeserializeObject<MessageItem>(str);
+                item = JsonHelper.DeserializeObject<InlineMessage>(str);
             }
             catch (Exception ex)
             {
@@ -275,7 +277,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                 item.Trace = new TraceInfo();
             item.Trace.TraceId = id;
             item.Topic = Service.ServiceName;
-            await MessageProcessor.OnMessagePush(Service, item);//BUG:应该配置化同步或异步
+            await MessageProcessor.OnMessagePush(Service, item, null);//BUG:应该配置化同步或异步
 
             return true;
         }
@@ -316,7 +318,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// 标明调用结束
         /// </summary>
         /// <returns>是否需要发送回执</returns>
-        async Task<bool> IMessageReceiver.OnResult(IMessageItem item, object tag)
+        async Task<bool> IMessageReceiver.OnResult(IInlineMessage item, object tag)
         {
             var key = $"msg:{Service.ServiceName}:{item.ID}";
             var guard = $"guard:{Service.ServiceName}:{item.ID}";

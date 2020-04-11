@@ -2,6 +2,7 @@
 using Agebull.Common.Configuration;
 using Agebull.Common.Logging;
 using Confluent.Kafka;
+using Newtonsoft.Json;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -47,11 +48,9 @@ namespace ZeroTeam.MessageMVC.Kafka
                     }
                     Interlocked.Increment(ref CallCount);
                     Interlocked.Increment(ref WaitCount);
-                    MessageItem item;
                     try
                     {
-                        item = JsonHelper.DeserializeObject<MessageItem>(cr.Value);
-                        await OnMessagePush(item, cr);
+                        await OnMessagePush(cr);
 
                     }
                     catch (Exception e)
@@ -77,10 +76,10 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <summary>
         /// 消息处理
         /// </summary>
-        /// <param name="message"></param>
         /// <param name="consumeResult"></param>
-        private async Task OnMessagePush(IMessageItem message, ConsumeResult consumeResult)
+        private async Task OnMessagePush(ConsumeResult consumeResult)
         {
+            var message = ToObject<InlineMessage>(consumeResult.Value); 
             await MessageProcessor.OnMessagePush(Service, message, consumeResult);//BUG:应该配置化同步或异步
             if (message.State == MessageState.Success)
             {
@@ -123,7 +122,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// 标明调用结束
         /// </summary>
         /// <returns>是否发送成功</returns>
-        Task<bool> IMessageReceiver.OnResult(IMessageItem item, object tag)
+        Task<bool> IMessageReceiver.OnResult(IInlineMessage item, object tag)
         {
             var consumeResult = (ConsumeResult)tag;
             try
@@ -137,5 +136,6 @@ namespace ZeroTeam.MessageMVC.Kafka
                 return Task.FromResult(false);
             }
         }
+
     }
 }

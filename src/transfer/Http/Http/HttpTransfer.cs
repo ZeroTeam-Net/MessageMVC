@@ -34,28 +34,18 @@ namespace ZeroTeam.MessageMVC.Http
         /// 标明调用结束
         /// </summary>
         /// <returns>是否发送成功</returns>
-        async Task<bool> IMessageReceiver.OnResult(IMessageItem message, object tag)
+        async Task<bool> IMessageReceiver.OnResult(IInlineMessage message, object tag)
         {
             var context = (HttpContext)tag;
+            var status = message.RuntimeStatus ?? (message.ResultData as IApiResult);
 
-            if (GlobalContext.CurrentNoLazy?.Status.LastStatus is ApiResult apiResult)
+            // 写入返回
+            message.OfflineResult(this);
+            if (status != null)
             {
-                message.Result ??= apiResult.Code.ToString();
-                switch (apiResult.Code)
+                switch (status.Code)
                 {
-                    case DefaultErrorCode.LocalException:
-                    case DefaultErrorCode.LogicalError:
-                    case DefaultErrorCode.LocalError:
-                    case DefaultErrorCode.ArgumentError:
-                    case DefaultErrorCode.Success:
-                    case DefaultErrorCode.TokenTimeOut:
-                        context.Response.StatusCode = 200;
-                        break;
                     case DefaultErrorCode.NoFind:
-                        context.Response.StatusCode = 404;
-                        break;
-                    case DefaultErrorCode.Ignore:
-                    case DefaultErrorCode.ReTry:
                         context.Response.StatusCode = 404;
                         break;
                     case DefaultErrorCode.DenyAccess:
@@ -66,15 +56,16 @@ namespace ZeroTeam.MessageMVC.Http
                     case DefaultErrorCode.Unavailable:
                         context.Response.StatusCode = 503;
                         break;
-                    case DefaultErrorCode.RemoteError:
                     case DefaultErrorCode.NetworkError:
                         context.Response.StatusCode = 504;
+                        break;
+                    default:
+                        context.Response.StatusCode = 200;
                         break;
                 }
             }
             else
             {
-                message.Result ??= message.State.ToString(); 
                 switch (message.State)
                 {
                     case MessageState.Failed:
@@ -86,7 +77,7 @@ namespace ZeroTeam.MessageMVC.Http
                         context.Response.StatusCode = 404;
                         break;
                     case MessageState.NetError:
-                    case MessageState.Exception:
+                    case MessageState.Error:
                         context.Response.StatusCode = 503;
                         break;
                     case MessageState.Cancel:
@@ -97,9 +88,10 @@ namespace ZeroTeam.MessageMVC.Http
                         break;
                 }
             }
-            // 写入返回
+
             await context.Response.WriteAsync(message.Result, Encoding.UTF8);
             return true;
         }
+
     }
 }

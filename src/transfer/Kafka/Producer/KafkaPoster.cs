@@ -11,7 +11,7 @@ namespace ZeroTeam.MessageMVC.Kafka
     /// <summary>
     ///     Kafka消息发布
     /// </summary>
-    public class KafkaPoster : IMessagePoster, IFlowMiddleware
+    public class KafkaPoster : NewtonJsonSerializeProxy, IMessagePoster, IFlowMiddleware
     {
 
         #region IFlowMiddleware 
@@ -64,28 +64,37 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// </summary>
         /// <param name="message">消息</param>
         /// <returns></returns>
-        public async Task<(MessageState state, string result)> Post(IMessageItem message)
+        public async Task<IInlineMessage> Post(IMessageItem message)
         {
+            if (message is IInlineMessage inline)
+            {
+                inline.Offline(this);
+            }
+            else
+            {
+                inline = message.ToInline();
+            }
+            if (producer == null)
+            {
+                message.State = MessageState.NoSupper;
+                return inline;
+            }
             try
             {
-                if (producer == null)
+                var ret = await producer.ProduceAsync(message.Topic, new Message<Null, string>
                 {
-                    return (MessageState.NoSupper, null);
-                }
-                var msg = new Message<Null, string>
-                {
-                    Value = JsonHelper.SerializeObject(message)
-                };
-                var ret = await producer.ProduceAsync(message.Topic, msg);
-                return ret.Status == PersistenceStatus.Persisted
-                    ? (MessageState.Success, ret.Value)
-                    : (MessageState.NetError, null);
+                    Value = ToString(inline, true)
+                });
+                inline.State = ret.Status == PersistenceStatus.Persisted
+                    ? MessageState.Success
+                    : MessageState.NetError;
+
             }
             catch (Exception e)
             {
-                LogRecorder.Exception(e, "Kafka Production<Error>");
-                return (MessageState.NetError, null);
+                throw new MessageReceiveException("Kafka Production<Error>", e);
             }
+            return inline;
         }
         #endregion
     }

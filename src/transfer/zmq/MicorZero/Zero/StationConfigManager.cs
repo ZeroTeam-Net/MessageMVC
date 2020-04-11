@@ -1,8 +1,11 @@
 ﻿using Agebull.Common;
+using Agebull.Common.Logging;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Documents;
+using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
@@ -20,7 +23,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         {
             Center = center;
             ManageAddress = center.ManageAddress;
-            ServiceKey = center.ServiceKey.ToZeroBytes();
+            ServiceKey = center.ServiceKey.ToBytes();
         }
 
         /// <summary>
@@ -36,60 +39,34 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         /// 尝试安装站点
         /// </summary>
-        /// <param name="station"></param>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public bool TryInstall(string station, string type)
+        internal bool TryInstall(ILogger logger, string station, string type)
         {
             if (ZeroRpcFlow.Config.TryGetConfig(station, out _))
             {
                 return true;
             }
 
-            ZeroTrace.SystemLog(station, "No find,try install ...");
+            logger.LogInformation("No find,try install ...");
             var r = CallCommand("install", type, station, station, station);
             if (!r.InteractiveSuccess)
             {
-                ZeroTrace.WriteError(station, "Install failed.");
+                logger.LogInformation("Install failed.");
                 return false;
             }
 
             if (r.State != ZeroOperatorStateType.Ok && r.State != ZeroOperatorStateType.Failed)
             {
-                ZeroTrace.WriteError(station, "Install failed.please check name or type.");
+                logger.LogInformation("Install failed.please check name or type.");
                 return false;
             }
-            ZeroTrace.SystemLog(station, "Install successfully,try start it ...");
+            logger.LogInformation("Install successfully,try start it ...");
             r = CallCommand("start", station);
             if (!r.InteractiveSuccess && r.State != ZeroOperatorStateType.Ok && r.State != ZeroOperatorStateType.Runing)
             {
-                ZeroTrace.WriteError(station, "Can't start station");
+                logger.LogInformation("Can't start station");
                 return false;
             }
-            ZeroTrace.SystemLog(station, "Station runing");
-            return true;
-        }
-
-        /// <summary>
-        /// 尝试安装站点
-        /// </summary>
-        /// <param name="station"></param>
-        /// <returns></returns>
-        public bool TryStart(string station)
-        {
-            if (!ZeroRpcFlow.Config.TryGetConfig(station, out _))
-            {
-                return false;
-            }
-
-            ZeroTrace.SystemLog(station, "Try start it ...");
-            var r = CallCommand("start", station);
-            if (!r.InteractiveSuccess && r.State != ZeroOperatorStateType.Ok && r.State != ZeroOperatorStateType.Runing)
-            {
-                ZeroTrace.WriteError(station, "Can't start station");
-                return false;
-            }
-            ZeroTrace.SystemLog(station, "Station runing");
+            logger.LogInformation("Station runing");
             return true;
         }
 
@@ -113,7 +90,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     continue;
                 }
 
-                ZeroTrace.WriteError("UploadDocument", result);
+                ZeroRpcFlow.Logger.Error($"UploadDocument error.{result.State}");
                 success = false;
             }
             return success;
@@ -132,27 +109,26 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
             catch (Exception e)
             {
-                ZeroTrace.WriteException("LoadDocument", e, name);
+                ZeroRpcFlow.Logger.Error($"LoadDocument({name}) exception.{e.Message}");
                 return null;
             }
             if (!result.InteractiveSuccess || result.State != ZeroOperatorStateType.Ok)
             {
-                ZeroTrace.WriteError("LoadDocument", name, result.State);
+                ZeroRpcFlow.Logger.Error($"LoadDocument({name}) err.{result.State}");
                 return null;
             }
             if (!result.TryGetString(ZeroFrameType.Status, out var json))
             {
-                ZeroTrace.WriteError("LoadDocument", name, "Empty");
+                ZeroRpcFlow.Logger.Error($"LoadDocument({name}) err.empty value");
                 return null;
             }
             try
             {
                 return JsonConvert.DeserializeObject<ServiceDocument>(json);
-                //ZeroTrace.SystemLog("LoadDocument", name,"success");
             }
-            catch (Exception e)
+            catch
             {
-                ZeroTrace.WriteException("LoadDocument", e, name, json);
+                ZeroRpcFlow.Logger.Error($"LoadDocument({name}) err.Deserialize error");
                 return null;
             }
         }
@@ -196,15 +172,15 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             var result = CallCommand("host", "*");
             if (!result.InteractiveSuccess || result.State != ZeroOperatorStateType.Ok)
             {
-                ZeroTrace.WriteError("LoadConfig", result);
+                ZeroRpcFlow.Logger.Error($"Load master config error.{result.State}");
                 return null;
             }
             if (!result.TryGetString(ZeroFrameType.Status, out var json))
             {
-                ZeroTrace.WriteError("LoadAllConfig", "Empty");
+                ZeroRpcFlow.Logger.Error("Load master config error. empty");
                 return null;
             }
-            ZeroTrace.SystemLog("LoadAllConfig", ManageAddress, json);
+            ZeroRpcFlow.Logger.Information($"Load master{ManageAddress} config.\r\n{json}");
             return json;
         }
 
@@ -217,19 +193,19 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         {
             if (!ZeroRpcFlow.ZerCenterIsRun)
             {
-                ZeroTrace.WriteError("LoadConfig", "No ready");
+                ZeroRpcFlow.Logger.Error("LoadConfig : No ready");
                 return null;
             }
             var result = CallCommand("host", stationName);
             if (!result.InteractiveSuccess || result.State != ZeroOperatorStateType.Ok)
             {
-                ZeroTrace.WriteError("LoadConfig", result);
+                ZeroRpcFlow.Logger.Error($"LoadConfig error. {result.State}");
                 return null;
             }
 
             if (result.TryGetString(ZeroFrameType.Status, out var json) || json[0] != '{')
             {
-                ZeroTrace.WriteError("LoadConfig", stationName, "not a json", json);
+                ZeroRpcFlow.Logger.Error($"LoadConfig error. json empty or faid.");
                 return null;
             }
 

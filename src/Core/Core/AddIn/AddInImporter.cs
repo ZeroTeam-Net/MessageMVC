@@ -47,7 +47,7 @@ namespace ZeroTeam.MessageMVC.AddIn
             DirectoryCatalog directoryCatalog;
             if (string.IsNullOrEmpty(ZeroAppOption.Instance.AddInPath))
             {
-                directoryCatalog = new DirectoryCatalog(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
+                directoryCatalog = new DirectoryCatalog(Path.GetDirectoryName(this.GetType().Assembly.Location),
                     "ZeroTeam.MessageMVC.*.dll");
             }
             else

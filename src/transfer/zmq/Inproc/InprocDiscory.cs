@@ -9,7 +9,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     /// <summary>
     /// 默认消息接收对象发现
     /// </summary>
-    public class InprocDiscory : IReceiverDiscory
+    public class InprocDiscover : IReceiverDiscover
     {
         private IMessageReceiver InprocTransportBuilder(string name) => new InporcConsumer();
 
@@ -19,7 +19,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <param name="type">控制器类型</param>
         /// <param name="name">发现的服务名称</param>
         /// <returns>传输对象构造器</returns>
-        Func<string, IMessageReceiver> IReceiverDiscory.DiscoryNetTransport(Type type, out string name)
+        Func<string, IMessageReceiver> IReceiverDiscover.DiscoverNetTransport(Type type, out string name)
         {
             var sa = type.GetCustomAttribute<InprocAttribute>();
             if (sa != null)
@@ -28,7 +28,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 name = sa.Name;
                 return InprocTransportBuilder;
             }
-            return ReceiverDiscory.DiscoryNetTransport(type, out name);
+            return ReceiverDiscover.DiscoverNetTransport(type, out name);
         }
     }
 }

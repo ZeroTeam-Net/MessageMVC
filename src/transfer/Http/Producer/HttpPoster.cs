@@ -4,6 +4,7 @@ using Agebull.Common.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
@@ -13,7 +14,7 @@ namespace ZeroTeam.MessageMVC.Http
     /// <summary>
     ///     Http生产者
     /// </summary>
-    public class HttpPoster : IMessagePoster
+    public class HttpPoster : NewtonJsonSerializeProxy, IMessagePoster
     {
         #region IMessagePoster
 
@@ -29,13 +30,7 @@ namespace ZeroTeam.MessageMVC.Http
         private IHttpClientFactory httpClientFactory;
         private string defName;
 
-        private class HttpClientOption
-        {
-            public string Name { get; set; }
 
-            public string Url { get; set; }
-            public string Services { get; set; }
-        }
 
         /// <summary>
         ///     初始化
@@ -45,7 +40,11 @@ namespace ZeroTeam.MessageMVC.Http
             var dirStr = ConfigurationManager.Get<HttpClientOption[]>("MessageMVC:HttpClient");
             foreach (var kv in dirStr)
             {
-                IocHelper.ServiceCollection.AddHttpClient(kv.Name, config => config.BaseAddress = new Uri(kv.Url));
+                IocHelper.ServiceCollection.AddHttpClient(kv.Name, config =>
+                {
+                    config.BaseAddress = new Uri(kv.Url);
+                    config.DefaultRequestHeaders.Add("User-Agent", MessageRouteOption.AgentName);
+                });
                 if (string.IsNullOrEmpty(kv.Services))
                 {
                     defName = kv.Name;
@@ -66,37 +65,63 @@ namespace ZeroTeam.MessageMVC.Http
         /// <summary>
         /// 生产消息
         /// </summary>
-        /// <param name="item">消息</param>
+        /// <param name="message">消息</param>
         /// <returns></returns>
-        async Task<(MessageState state, string result)> IMessagePoster.Post(IMessageItem item)
+        async Task<IInlineMessage> IMessagePoster.Post(IMessageItem message)
         {
-            if (!ServiceMap.TryGetValue(item.Topic, out var name))
+            if (!ServiceMap.TryGetValue(message.Topic, out var name))
             {
                 name = defName;
             }
-
-            using (MonitorStepScope.CreateScope("[HttpPoster] {0}/{1}/{2}", defName, item.Topic, item.Title))
+            if (message is IInlineMessage inline)
+            {
+                inline.Offline(this);
+            }
+            else
+            {
+                inline = message.ToInline();
+            }
+            using (MonitorStepScope.CreateScope("[HttpPoster] {0}/{1}/{2}", defName, inline.Topic, inline.Title))
             {
                 try
                 {
                     var client = httpClientFactory.CreateClient(name);
-                    var response = await client.PostAsync($"/{item.Topic}/{item.Title}", new StringContent(item.Content ?? ""));
+                    using var response = await client.PostAsync($"/{inline.Topic}/{inline.Title}", new StringContent(inline.ToJson()));
 
-                    if (!response.IsSuccessStatusCode)
+                    inline.Result = await response.Content.ReadAsStringAsync();
+
+                    if (response.IsSuccessStatusCode)
                     {
-                        LogRecorder.MonitorTrace("Error:{0}", response.StatusCode);
-                        return (MessageState.NetError, null);
+                        inline.State = MessageState.Success;
                     }
-                    var result = await response.Content.ReadAsStringAsync();
-                    LogRecorder.MonitorTrace(result);
-                    return (MessageState.Success, result);
+                    else
+                    {
+                        //BUG:太粗
+                        switch (response.StatusCode)
+                        {
+                            case HttpStatusCode.NotFound:
+                            case HttpStatusCode.NetworkAuthenticationRequired:
+                            case HttpStatusCode.NonAuthoritativeInformation:
+                            case HttpStatusCode.ProxyAuthenticationRequired:
+                                inline.State = MessageState.NoSupper;
+                                break;
+                            default:
+                                inline.State = MessageState.NetError;
+                                break;
+                        }
+                        LogRecorder.MonitorTrace("Error:{0}", response.StatusCode);
+                        return inline;
+                    }
+                    LogRecorder.MonitorTrace(inline.Result);
                 }
                 catch (HttpRequestException ex)
                 {
                     LogRecorder.MonitorTrace("Error : {0}", ex.Message);
-                    throw new MessageReceiveException(ex.Message, ex);
+                    inline.State = MessageState.NetError;
+                    throw new MessageReceiveException("[HttpPoster] ", ex);
                 }
             }
+            return inline;
         }
 
         #endregion

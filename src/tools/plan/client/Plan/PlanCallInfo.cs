@@ -15,7 +15,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <summary>
         /// 计划对象
         /// </summary>
-        public MessageItem Message { get; set; }
+        public InlineMessage Message { get; set; }
 
     }
 }

@@ -123,7 +123,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                 await item.SaveResult(item.Message.Topic, item.Message.Result);
                 return true;
             }
-            ApiResult result = JsonHelper.TryDeserializeObject<ApiResult>(item.Message.Result);
+            var result = ApiResultHelper.Helper.Deserialize(item.Message.Result);
 
             await item.SaveResult(result?.Trace?.Point ?? item.Message.Topic, item.Message.Result);
             if (result == null || result.Success)
@@ -140,9 +140,12 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                 case DefaultErrorCode.NoFind:
                     item.RealInfo.exec_state = MessageState.NoSupper;
                     break;
-                case DefaultErrorCode.RemoteError:
-                case DefaultErrorCode.LocalException:
-                    item.RealInfo.exec_state = MessageState.Exception;
+                case DefaultErrorCode.NetworkError:
+                    item.RealInfo.exec_state = MessageState.NetError;
+                    break;
+                case DefaultErrorCode.BusinessException:
+                case DefaultErrorCode.UnhandleException:
+                    item.RealInfo.exec_state = MessageState.Error;
                     break;
                 default:
                     item.RealInfo.exec_state = MessageState.Failed;
@@ -157,12 +160,14 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// 标明调用结束
         /// </summary>
         /// <returns>是否发送成功</returns>
-        async Task<bool> IMessageReceiver.OnResult(IMessageItem message, object tag)
+        async Task<bool> IMessageReceiver.OnResult(IInlineMessage message, object tag)
         {
+            PlanItem item = (PlanItem)tag;
             Interlocked.Decrement(ref wait);
             PlanItem.logger.Trace(() => $"Plan post end.state {message.State}");
 
-            PlanItem item = (PlanItem)tag;
+            message.OfflineResult(Service.Serialize);
+            item.Message.CopyResult(message);
             if (message.State == MessageState.Success)
             {
                 item.RealInfo.exec_state = item.Message.State;
@@ -192,7 +197,6 @@ namespace ZeroTeam.MessageMVC.PlanTasks
             return true;
         }
         #endregion
-
 
         #region 回执检测
 
@@ -232,10 +236,10 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                             continue;
                         }
 
-                        var (state, json) =
+                        var msg =
                             await rep.Post(MessageHelper.Simple(id, ToolsOption.Instance.ReceiptService, "receipt/v1/load", id));
 
-                        if (state != MessageState.Success || string.IsNullOrEmpty(json))
+                        if (msg.State != MessageState.Success || msg.State != MessageState.Failed)
                         {
                             //取不到,在30分钟后认为失败
                             if ((DateTime.Now - PlanItem.FromTime(item.RealInfo.exec_start_time)).TotalMinutes > 10)
@@ -246,7 +250,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                             continue;
                         }
 
-                        var message = JsonHelper.DeserializeObject<MessageItem>(json);
+                        var message = JsonHelper.DeserializeObject<MessageItem>((string)msg.Result);
                         if (message == null)
                         {
                             await RedisHelper.LRemAsync(PlanItem.planErrorKey, 0, id);
@@ -285,6 +289,6 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         }
 
         #endregion
-    }
 
+    }
 }

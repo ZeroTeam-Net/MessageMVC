@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Agebull.Common.Logging;
 using Agebull.EntityModel.Common;
 using Newtonsoft.Json;
 using ZeroTeam.MessageMVC;
@@ -115,7 +116,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
             catch (Exception e)
             {
-                ZeroTrace.WriteException("Unpack", e, $"FrameSize:{buffers.Length}");
+                LogRecorder.Trace(() => $"ZMessage unpack err({e.Message }).FrameSize:{buffers.Length}");
                 callItem = new ApiCallItem
                 {
                     ZeroState = (byte)ZeroOperatorStateType.FrameInvalid
@@ -123,7 +124,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 return false;
             }
         }
-        
+
 
         static bool OnFrameRead(ApiCallItem item, byte type, byte[] bytes)
         {
@@ -160,7 +161,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     if (item.Files.Count > 0)
                         item.Files.Last().Value = bytes;
                     else
-                        item.ZeroState = (byte) ZeroOperatorStateType.FrameInvalid;
+                        item.ZeroState = (byte)ZeroOperatorStateType.FrameInvalid;
                     return true;
             }
 

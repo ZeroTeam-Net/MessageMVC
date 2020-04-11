@@ -21,6 +21,16 @@ namespace System
         }
 
         /// <summary>
+        ///     得到类型的可读名字
+        /// </summary>
+        /// <param name="type"> </param>
+        /// <returns> </returns>
+        public static string GetFullTypeName(this Type type)
+        {
+            return type == null ? null : ReflectionHelper.GetTypeName(type, true);
+        }
+
+        /// <summary>
         ///   得到对象的可读类型名字
         /// </summary>
         /// <param name="value"> </param>

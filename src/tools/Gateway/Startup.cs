@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MicroZero.Http.Gateway;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.RedisMQ;
+using ZeroTeam.MessageMVC.Wechart;
 
 namespace ZeroTeam.MessageMVC.Http
 {
@@ -21,6 +22,7 @@ namespace ZeroTeam.MessageMVC.Http
             services.UseRedisPoster();
             services.AddTransient<IMessageMiddleware, SecurityChecker>();
             services.AddTransient<IMessageMiddleware, RouteCache>();
+            services.AddTransient<IMessageMiddleware, WxPayRouter>();
 
             HttpRoute.Initialize(services);
         }
@@ -31,6 +33,10 @@ namespace ZeroTeam.MessageMVC.Http
         /// <param name="app"></param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment _)
         {
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+            app.UseFileServer();
+
             app.Run(HttpRoute.Call);
         }
     }

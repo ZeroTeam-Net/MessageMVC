@@ -431,18 +431,6 @@ namespace Agebull.Common.Logging
         ///   记录异常日志
         /// </summary>
         /// <param name="exception"> 异常 </param>
-        /// <param name="tag"> 当时对象 </param>
-        public static string Exception(Exception exception, object tag)
-        {
-            var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Exception");
-            Logger.LogError(eventId, exception, JsonHelper.SerializeObject(tag));
-            return exception.Message;
-        }
-
-        /// <summary>
-        ///   记录异常日志
-        /// </summary>
-        /// <param name="exception"> 异常 </param>
         /// <param name="message"> 日志详细信息 </param>
         public static string Exception(Exception exception, string message = null)
         {

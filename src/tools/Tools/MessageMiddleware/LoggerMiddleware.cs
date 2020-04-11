@@ -20,13 +20,14 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <summary>
         /// 层级
         /// </summary>
-        int IMessageMiddleware.Level => -1;
+        int IMessageMiddleware.Level => int.MinValue;
 
         /// <summary>
         /// 消息中间件的处理范围
         /// </summary>
-        MessageHandleScope IMessageMiddleware.Scope => MessageHandleScope.Handle;
+        MessageHandleScope IMessageMiddleware.Scope => MessageHandleScope.Prepare | MessageHandleScope.End;
 
+        IDisposable scope;
         /// <summary>
         /// 准备
         /// </summary>
@@ -35,23 +36,31 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <param name="tag">扩展信息</param>
         /// <param name="next">下一个处理方法</param>
         /// <returns></returns>
-        async Task IMessageMiddleware.Handle(IService service, IMessageItem message, object tag, Func<Task> next)
+        Task<bool> IMessageMiddleware.Prepare(IService service, IInlineMessage message, object tag)
         {
-            if (!LogRecorder.LogMonitor)
+            if (LogRecorder.LogMonitor)
             {
-                await next();
-                return;
-            }
-
-            using (MonitorScope.CreateScope($"{service.ServiceName}/{message.Title}"))
-            {
+                scope = MonitorScope.CreateScope($"{service.ServiceName}/{message.Title}");
                 LogRecorder.MonitorTrace(() => JsonConvert.SerializeObject(message, Formatting.Indented));
-
-                await next();
-
-                LogRecorder.MonitorTrace("{0} {1}", message.State, message.Result);
-
             }
+            return Task.FromResult(true);
+        }
+
+        /// <summary>
+        /// 准备
+        /// </summary>
+        /// <param name="message">当前消息</param>
+        /// <returns></returns>
+        Task IMessageMiddleware.OnEnd(IInlineMessage message)
+        {
+            if (scope != null)
+            {
+                LogRecorder.MonitorTrace("[State] {0} [Result]{1}", message.State, message.Result);
+                if (message.Trace != null)
+                    LogRecorder.MonitorTrace(()=>$"[Trace] {message.Trace.ToJson()}");
+                scope.Dispose();
+            }
+            return Task.CompletedTask;
         }
     }
 }

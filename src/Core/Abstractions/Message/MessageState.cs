@@ -46,9 +46,9 @@
         Failed = 0x42,
 
         /// <summary>
-        /// 处理异常
+        /// 处理错误
         /// </summary>
-        Exception = 0x43
+        Error = 0x43
 
     }
 }

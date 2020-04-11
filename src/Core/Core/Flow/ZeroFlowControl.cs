@@ -35,7 +35,7 @@ namespace ZeroTeam.MessageMVC
         public static int ApplicationState
         {
             get => _appState;
-            set
+            private set
             {
                 Interlocked.Exchange(ref _appState, value);
             }
@@ -52,12 +52,7 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         ///     本地应用是否正在运行
         /// </summary>
-        public static bool ApplicationIsRun => ApplicationState == StationState.BeginRun || ApplicationState == StationState.Run;
-
-        /// <summary>
-        ///     运行状态（本地与服务器均正常）
-        /// </summary>
-        public static bool CanDo => ApplicationIsRun;
+        public static bool IsRuning => ApplicationState == StationState.BeginRun || ApplicationState == StationState.Run;
 
         /// <summary>
         ///     运行状态（本地未关闭）
@@ -86,6 +81,9 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public static void CheckOption()
         {
+            if (ApplicationState >= StationState.CheckOption)
+                return;
+            ApplicationState = StationState.CheckOption;
             if (LogRecorder.NoRegist)
                 LogRecorder.DoInitialize();
             logger = IocHelper.LoggerFactory.CreateLogger(nameof(ZeroFlowControl));
@@ -195,6 +193,9 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public static void Initialize()
         {
+            if (ApplicationState >= StationState.Initialized)
+                return;
+            ApplicationState = StationState.Initialized;
             IocHelper.Update();
             Middlewares = IocHelper.RootProvider.GetServices<IFlowMiddleware>().OrderBy(p => p.Level).ToArray();
             var servcies = IocHelper.RootProvider.GetServices<IService>();
@@ -206,7 +207,6 @@ namespace ZeroTeam.MessageMVC
                 }
             }
             OnZeroInitialize();
-            ApplicationState = StationState.Initialized;
             IocHelper.Update();
         }
 
@@ -413,12 +413,12 @@ namespace ZeroTeam.MessageMVC
             {
                 try
                 {
-                    logger.Information("[Initialize]", service.ServiceName);
+                    logger.Information("[Initialize] {0}", service.ServiceName);
                     service.Initialize();
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[Initialize]", service.ServiceName);
+                    logger.Exception(e, "[Initialize] {0}", service.ServiceName);
                 }
             }
 
@@ -439,12 +439,12 @@ namespace ZeroTeam.MessageMVC
 
             try
             {
-                logger.Information("[Start]", service.ServiceName);
+                logger.Information("[Start] {0}", service.ServiceName);
                 service.Start();
             }
             catch (Exception e)
             {
-                logger.Exception(e, "[Start]", service.ServiceName);
+                logger.Exception(e, "[Start] {0}", service.ServiceName);
             }
             return true;
         }
@@ -459,12 +459,12 @@ namespace ZeroTeam.MessageMVC
             {
                 try
                 {
-                    logger.Information("[Initialize]", mid.Name);
+                    logger.Information("[Initialize] {0}", mid.Name);
                     mid.Initialize();
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[Initialize]", mid.Name);
+                    logger.Exception(e, "[Initialize] {0}", mid.Name);
                 }
             }
 
@@ -472,12 +472,12 @@ namespace ZeroTeam.MessageMVC
             {
                 try
                 {
-                    logger.Information("[Initialize]", service.ServiceName);
+                    logger.Information("[Initialize] {0}", service.ServiceName);
                     service.Initialize();
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[Initialize]", service.ServiceName);
+                    logger.Exception(e, "[Initialize] {0}", service.ServiceName);
                 }
             }
             logger.Information("<<OnZeroInitialize]");
@@ -488,18 +488,20 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         internal static async Task<bool> OnZeroStart()
         {
+            if (ApplicationState >= StationState.BeginRun)
+                return false;
             ApplicationState = StationState.BeginRun;
             logger.Information("[OnZeroStart>>");
             foreach (var mid in Middlewares)
             {
                 try
                 {
-                    logger.Information("[Start]", mid.Name);
+                    logger.Information("[Start] {0}", mid.Name);
                     mid.Start();
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[Start]", mid.Name);
+                    logger.Exception(e, "[Start] {0}", mid.Name);
                 }
             }
 
@@ -507,17 +509,17 @@ namespace ZeroTeam.MessageMVC
             {
                 try
                 {
-                    logger.Information("[Start]", service.ServiceName);
+                    logger.Information("[Start] {0}", service.ServiceName);
                     _ = Task.Run(service.Start);
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[Start]", service.ServiceName);
+                    logger.Exception(e, "[Start] {0}", service.ServiceName);
                 }
             }
-
             //等待所有对象信号(Active or Failed)
-            await ActiveSemaphore.WaitAsync();
+            if (Services.Count > 0)
+                await ActiveSemaphore.WaitAsync();
 
             ApplicationState = StationState.Run;
             logger.Information("<<OnZeroStart]");
@@ -550,12 +552,12 @@ namespace ZeroTeam.MessageMVC
             {
                 try
                 {
-                    logger.Information("[StartFailed]", service.ServiceName);
+                    logger.Information("[StartFailed] {0}", service.ServiceName);
                     service.Start();
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[StartFailed]", service.ServiceName);
+                    logger.Exception(e, "[StartFailed] {0}", service.ServiceName);
                 }
             }
 
@@ -574,12 +576,12 @@ namespace ZeroTeam.MessageMVC
             {
                 try
                 {
-                    logger.Information("[OnZeroClose]", mid.Name);
+                    logger.Information("[OnZeroClose] {0}", mid.Name);
                     mid.Close();
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[OnZeroClose]", mid.Name);
+                    logger.Exception(e, "[OnZeroClose] {0}", mid.Name);
                 }
             }
 
@@ -587,12 +589,12 @@ namespace ZeroTeam.MessageMVC
             {
                 try
                 {
-                    logger.Information("[OnZeroClose]", service.ServiceName);
+                    logger.Information("[OnZeroClose] {0}", service.ServiceName);
                     service.Close();
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[OnZeroClose]", service.ServiceName);
+                    logger.Exception(e, "[OnZeroClose] {0}", service.ServiceName);
                 }
             }
             logger.Information("<<OnZeroClose]");
@@ -610,12 +612,12 @@ namespace ZeroTeam.MessageMVC
             {
                 try
                 {
-                    logger.Information("[OnZeroEnd]", mid.Name);
+                    logger.Information("[OnZeroEnd]  {0}", mid.Name);
                     mid.End();
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[OnZeroEnd]", mid.Name);
+                    logger.Exception(e, "[OnZeroEnd]  {0}", mid.Name);
                 }
             }
 
@@ -623,12 +625,12 @@ namespace ZeroTeam.MessageMVC
             {
                 try
                 {
-                    logger.Information("[OnZeroEnd]", service.ServiceName);
+                    logger.Information("[OnZeroEnd]  {0}", service.ServiceName);
                     service.End();
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[OnZeroEnd]", service.ServiceName);
+                    logger.Exception(e, "[OnZeroEnd]  {0}", service.ServiceName);
                 }
             }
             logger.Information("<<OnZeroEnd]");

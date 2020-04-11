@@ -30,6 +30,7 @@ namespace ZeroTeam.MessageMVC.ConfigSync
             //启用调用链跟踪(使用IZeroContext全局上下文)
             if (ToolsOption.Instance.EnableLinkTrace)
             {
+                GlobalContext.EnableLinkTrace = true;
                 services.AddTransient<IMessageMiddleware, GlobalContextMiddleware>();
                 LogRecorder.GetUserNameFunc = () => GlobalContext.CurrentNoLazy?.User?.UserId.ToString() ?? "-1";
                 LogRecorder.GetRequestIdFunc = () => GlobalContext.CurrentNoLazy?.Trace?.TraceId ?? RandomCode.Generate(10);
@@ -57,7 +58,7 @@ namespace ZeroTeam.MessageMVC.ConfigSync
         void IAutoRegister.Initialize()
         {
             //显示
-            Console.WriteLine($@"Tool infomation
+            Console.WriteLine($@"-----[Tools infomation]-----
     LinkTrace : {(ToolsOption.Instance.EnableLinkTrace ? "Enable" : "Disable")}
    MonitorLog : {(ToolsOption.Instance.EnableMonitorLog ? "Enable" : "Disable")}
  ReceiptSvice : {ToolsOption.Instance.ReceiptService}

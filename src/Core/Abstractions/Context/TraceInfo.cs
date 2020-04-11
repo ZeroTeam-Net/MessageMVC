@@ -1,8 +1,10 @@
+using Agebull.Common.Ioc;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.Serialization;
+using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC.Context
 {
@@ -15,63 +17,68 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         /// 全局请求标识（源头为用户请求）
         /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string TraceId { get; set; }
 
         /// <summary>
-        /// 生产时间戳,UNIX时间戳,自1970起秒数
+        ///     开始时间
         /// </summary>
-        public int LocalTimestamp { get; set; }
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public DateTime? Start { get; set; }
+
+        /// <summary>
+        ///     结束时间
+        /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public DateTime? End { get; set; }
+
 
         /// <summary>
         /// 本地的全局标识
         /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string LocalId { get; set; }
 
         /// <summary>
         /// 本地的应用
         /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string LocalApp { get; set; }
 
         /// <summary>
         /// 本地的机器
         /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string LocalMachine { get; set; }
-
-        /// <summary>
-        /// 生产时间戳,UNIX时间戳,自1970起秒数
-        /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
-        public int CallTimestamp { get; set; }
 
         /// <summary>
         /// 请求的全局标识(传递)
         /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string CallId { get; set; }
 
         /// <summary>
         /// 请求应用
         /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string CallApp { get; set; }
 
         /// <summary>
         /// 请求机器
         /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string CallMachine { get; set; }
 
         /// <summary>
         /// 上下文信息
         /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
-        public string ContextJson { get; set; }
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public IZeroContext Context { get; set; }
 
         /// <summary>
         /// 身份令牌
         /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string Token { get; set; }
 
 
@@ -82,17 +89,12 @@ namespace ZeroTeam.MessageMVC.Context
         public Dictionary<string, List<string>> Headers { get; set; }
 
         /// <summary>
-        /// 请求IP
+        /// 构造
         /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
-        public string Ip { get; set; }
-
-        /// <summary>
-        /// 请求端口号
-        /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
-        public int Port { get; set; }
-
+        public TraceInfo()
+        {
+            Context = IocHelper.Create<IZeroContext>();//防止反序列化失败
+        }
         /// <summary>
         /// 构造
         /// </summary>
@@ -101,11 +103,31 @@ namespace ZeroTeam.MessageMVC.Context
             return new TraceInfo
             {
                 TraceId = id,
+                Start = DateTime.Now,
                 LocalId = id,
-                LocalTimestamp = DateTime.Now.ToTimestamp(),
                 LocalApp = $"{ZeroAppOption.Instance.AppName}({ZeroAppOption.Instance.AppVersion})",
                 LocalMachine = $"{ZeroAppOption.Instance.ServiceName}({ZeroAppOption.Instance.LocalIpAddress})"
             };
+        }
+
+        /// <summary>
+        /// 复制上下文信息
+        /// </summary>
+        public void CopyFromContext()
+        {
+            var ctx = GlobalContext.CurrentNoLazy;
+            if (ctx != null)
+            {
+                //远程机器使用,所以Call是本机信息
+                CallId = ctx.Trace.LocalId;
+                CallApp = ctx.Trace.LocalApp;
+                CallMachine = ctx.Trace.LocalMachine;
+                //正常复制
+                TraceId = ctx.Trace.TraceId;
+                Token = ctx.Trace.Token;
+                Headers = ctx.Trace.Headers;
+            }
+            Context = ctx;
         }
     }
 }

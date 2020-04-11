@@ -1,8 +1,8 @@
-﻿using System;
-using ZeroTeam.MessageMVC.Context;
+﻿using ZeroTeam.MessageMVC.Context;
 
 namespace ZeroTeam.MessageMVC.Messages
 {
+
     /// <summary>
     /// 消息交互格式
     /// </summary>
@@ -29,15 +29,6 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         string Content { get; set; }
 
-        /// <summary>
-        /// 其他带外内容
-        /// </summary>
-        string Extend { get; set; }
-
-        /// <summary>
-        /// 扩展的二进制
-        /// </summary>
-        byte[] Binary { get; set; }
 
         /// <summary>
         /// 处理结果,对应状态的解释信息
@@ -53,10 +44,6 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </remarks>
         string Result { get; set; }
 
-        /// <summary>
-        /// 异常
-        /// </summary>
-        Exception Exception { get; set; }
 
         /// <summary>
         /// 处理状态
@@ -68,23 +55,28 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         TraceInfo Trace { get; set; }
 
+
         /// <summary>
-        /// 重置
+        /// 转为在线对象
         /// </summary>
-        void Reset()
+        /// <returns></returns>
+        IInlineMessage ToInline()
         {
-            State = MessageState.None;
-            Result = null;
+            if (this is IInlineMessage inline)
+            {
+                return inline;
+            }
+            return new InlineMessage
+            {
+                ID = ID,
+                State = State,
+                Topic = Topic,
+                Title = Title,
+                Result = Result,
+                Content = Content,
+                Trace = Trace
+            }; 
         }
-
-        /// <summary>
-        /// 取参数值
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="isBaseValue"></param>
-        /// <returns>值</returns>
-        string GetArgument(string name, bool isBaseValue);
-
 
         /*// <summary>
         /// 生产者信息

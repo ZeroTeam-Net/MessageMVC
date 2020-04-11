@@ -34,14 +34,14 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <param name="tag">扩展信息</param>
         /// <param name="next">下一个处理方法</param>
         /// <returns></returns>
-        async Task IMessageMiddleware.Handle(IService service, IMessageItem message, object tag, Func<Task> next)
+        async Task IMessageMiddleware.Handle(IService service, IInlineMessage message, object tag, Func<Task> next)
         {
             Save(message);
             await next();
             State(message);
         }
 
-        private void Save(IMessageItem message)
+        private void Save(IInlineMessage message)
         {
             try
             {
@@ -58,7 +58,7 @@ namespace ZeroTeam.MessageMVC.Messages
             }
         }
 
-        private void State(IMessageItem message)
+        private void State(IInlineMessage message)
         {
             if (message.State != MessageState.Success)
             {

@@ -1,4 +1,4 @@
-﻿using Agebull.EntityModel.Common;
+﻿using Agebull.Common.Ioc;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using ZeroTeam.MessageMVC.Messages;
@@ -11,6 +11,14 @@ namespace ZeroTeam.MessageMVC.Context
     [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class ZeroContext : IZeroContext
     {
+        /// <summary>
+        /// 构造
+        /// </summary>
+        public ZeroContext()
+        {
+            User = IocHelper.Create<IUser>();//防止反序列化失败
+        }
+
         /// <summary>
         ///     当前调用的客户信息
         /// </summary>
@@ -26,7 +34,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         /// 当前消息
         /// </summary>
-        public IMessageItem Message { get; set; }
+        public IInlineMessage Message { get; set; }
 
         /// <summary>
         ///     跟踪信息
@@ -37,11 +45,6 @@ namespace ZeroTeam.MessageMVC.Context
         /// 全局状态
         /// </summary>
         public ContextStatus Status { get; set; }
-
-        /// <summary>
-        ///     依赖对象字典
-        /// </summary>
-        public DependencyObjects DependencyObjects { get; } = new DependencyObjects();
 
     }
 }

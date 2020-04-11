@@ -18,18 +18,22 @@ namespace Agebull.Common.Ioc
         /// 生成一个范围
         /// </summary>
         /// <returns></returns>
+        private IocScope(string name = null)
+        {
+            _scope = IocHelper.CreateScope();
+            Local.Value = new ScopeData
+            {
+                Name = name ?? "Scope"
+            };
+        }
+
+        /// <summary>
+        /// 生成一个范围
+        /// </summary>
+        /// <returns></returns>
         public static IDisposable CreateScope(string name = null)
         {
-            Local.Value = new LocalValueType(
-                name ?? "Scope", 
-                new DependencyObjects(), 
-                new List<Action>(), 
-                IocHelper.LoggerFactory.CreateLogger(name ?? "Log"));
-
-            return new IocScope
-            {
-                _scope = IocHelper.CreateScope()
-            };
+            return new IocScope(name);
         }
 
         /// <summary>
@@ -67,20 +71,20 @@ namespace Agebull.Common.Ioc
         /// <summary>
         /// 活动实例
         /// </summary>
-        internal static readonly AsyncLocal<LocalValueType> Local = new AsyncLocal<LocalValueType>();
+        internal static readonly AsyncLocal<ScopeData> Local = new AsyncLocal<ScopeData>();
 
         /// <summary>
         /// 析构方法
         /// </summary>
-        static LocalValueType LocalValue => Local.Value ?? (Local.Value = new LocalValueType("Scope", new DependencyObjects(), new List<Action>(), IocHelper.LoggerFactory.CreateLogger("Log")));
+        static ScopeData LocalValue => Local.Value ??= new ScopeData { Name = "Scope" };
 
         /// <summary>
         /// 范围名称
         /// </summary>
         public static string Name
         {
-            get => LocalValue.Item1;
-            set => Local.Value = new LocalValueType(value, LocalValue.Item2, LocalValue.Item3, Logger);
+            get => LocalValue.Name;
+            set => LocalValue.Name = value;
         }
 
         /// <summary>
@@ -88,18 +92,56 @@ namespace Agebull.Common.Ioc
         /// </summary>
         public static ILogger Logger
         {
-            get => LocalValue.Item4;
-            set => Local.Value = new LocalValueType(Name, LocalValue.Item2, LocalValue.Item3, value);
+            get => LocalValue.Logger;
+            set => LocalValue.Logger = value;
         }
 
         /// <summary>
         /// 析构方法
         /// </summary>
-        public static List<Action> DisposeFunc => LocalValue.Item3;
+        public static List<Action> DisposeFunc => LocalValue.DisposeFunc;
 
         /// <summary>
         /// 附件内容
         /// </summary>
-        public static DependencyObjects Dependency => LocalValue.Item2;
+        public static DependencyObjects Dependency => LocalValue.Dependency;
+    }
+    /// <summary>
+    /// 范围数据
+    /// </summary>
+    public class ScopeData
+    {
+        string name;
+        /// <summary>
+        /// 范围名称
+        /// </summary>
+        public string Name
+        {
+            set
+            {
+                name = value;
+                Logger = IocHelper.LoggerFactory.CreateLogger(Name);
+            }
+            get => name;
+        }
+
+        /// <summary>
+        /// 日志记录器
+        /// </summary>
+        public ILogger Logger
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// 析构方法
+        /// </summary>
+        public List<Action> DisposeFunc = new List<Action>();
+
+        /// <summary>
+        /// 附件内容
+        /// </summary>
+        public DependencyObjects Dependency = new DependencyObjects();
     }
 }

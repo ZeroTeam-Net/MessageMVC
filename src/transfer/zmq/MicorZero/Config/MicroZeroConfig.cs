@@ -1,4 +1,5 @@
 using Agebull.Common;
+using Agebull.Common.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -19,30 +20,30 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         ///   服务中心组，第一个为主
         /// </summary>
-        
+
         public List<ZeroItem> ZeroGroup { get; set; }
 
 
         /// <summary>
         ///   线程池最大工作线程数
         /// </summary>
-         public int MaxWorkThreads;
+        public int MaxWorkThreads;
 
         /// <summary>
         ///   线程池最大IO线程数
         /// </summary>
-         public int MaxIOThreads;
+        public int MaxIOThreads;
 
         /// <summary>
         ///   是否需要发出事件
         /// </summary>
-        
+
         public bool? CanRaiseEvent { get; set; }
 
         /// <summary>
         ///     站点数据使用AppName为文件夹
         /// </summary>
-        
+
         public bool? IsolateFolder { get; set; }
 
         /// <summary>
@@ -398,7 +399,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         {
             if (stationName == null || string.IsNullOrEmpty(json) || json[0] != '{')
             {
-                ZeroTrace.WriteError("UpdateConfig", "argument error", stationName, json);
+                LogRecorder.Error($"Update station({stationName}) config argument error.");
                 config = null;
                 return false;
             }
@@ -408,13 +409,13 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 config = JsonConvert.DeserializeObject<StationConfig>(json);
                 config.Group = item.Name;
                 config.Address = item.Address;
-                config.ServiceKey = item.ServiceKey.ToZeroBytes();
+                config.ServiceKey = item.ServiceKey.ToBytes();
                 AddStation(config);
                 return true;
             }
             catch (Exception e)
             {
-                ZeroTrace.WriteException("UpdateConfig", e, stationName, json);
+                LogRecorder.Error($"Update station({stationName}) config exception({e.Message}).");
                 config = null;
                 return false;
             }
@@ -457,7 +458,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
 
                         config.Group = item.Name;
                         config.Address = item.Address;
-                        config.ServiceKey = item.ServiceKey.ToZeroBytes();
+                        config.ServiceKey = item.ServiceKey.ToBytes();
                         AddStation(config, raiseEvent);
                     }
                 }
@@ -465,7 +466,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
             catch (Exception e)
             {
-                ZeroTrace.WriteException("LoadAllConfig", e, json);
+                LogRecorder.Error($"Flush configs exception({e.Message}).");
                 return false;
             }
         }

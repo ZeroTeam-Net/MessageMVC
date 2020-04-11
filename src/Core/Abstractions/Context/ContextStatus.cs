@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Agebull.Common.Ioc;
+using Newtonsoft.Json;
 using System.Text;
 using ZeroTeam.MessageMVC.ZeroApis;
 
@@ -30,7 +31,7 @@ namespace ZeroTeam.MessageMVC.Context
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public int Feature { get; set; }
 
-        private IOperatorStatus _status = new OperatorStatus();
+        private IOperatorStatus _status = IocHelper.Create<IOperatorStatus>();
 
         /// <summary>
         ///     最后状态(当前时间)
@@ -48,7 +49,7 @@ namespace ZeroTeam.MessageMVC.Context
             }
             set
             {
-                _status = value ?? new OperatorStatus();
+                _status = value ?? IocHelper.Create<IOperatorStatus>();
                 if (_status.Message == null)
                 {
                     return;

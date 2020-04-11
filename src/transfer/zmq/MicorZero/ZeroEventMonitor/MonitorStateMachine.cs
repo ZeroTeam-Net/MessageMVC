@@ -1,4 +1,6 @@
-﻿using Agebull.Common.Logging;
+﻿using Agebull.Common.Ioc;
+using Agebull.Common.Logging;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
@@ -15,6 +17,8 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
     internal partial class MonitorStateMachine// : IDisposable
     {
         #region 状态变更
+
+        internal static ILogger Logger = IocHelper.LoggerFactory.CreateLogger("ZeroManagemant");
 
         private static IMonitorStateMachine _stateMachine = new EmptyStateMachine();
 
@@ -74,8 +78,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
             }
 
             ZeroMachineState = 1;
-            ZeroTrace.SystemLog("ZeroCenter", "center_start",
-                $"{identity}:{ZeroRpcFlow.ZeroCenterState}:{ZeroMachineState}");
+            Logger.Information("ZeroCenter event: center_start.");
             if (ZeroRpcFlow.ZeroCenterState >= ZeroCenterState.Failed ||
                 ZeroRpcFlow.ZeroCenterState < ZeroCenterState.Start)
             {
@@ -97,7 +100,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
             }
 
             ZeroMachineState = 2;
-            ZeroTrace.SystemLog("ZeroCenter", "center_closing", $"{identity}:{ZeroRpcFlow.ZeroCenterState}:{ZeroMachineState}");
+            Logger.Information("ZeroCenter event: center_closing");
             if (ZeroRpcFlow.ZeroCenterState < ZeroCenterState.Closing)
             {
                 await center_closing();
@@ -112,7 +115,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
             }
 
             ZeroMachineState = 3;
-            ZeroTrace.SystemLog("ZeroCenter", "center_stop", $"{identity}:{ZeroRpcFlow.ZeroCenterState}:{ZeroMachineState}");
+            Logger.Information("ZeroCenter event: center_stop");
             if (ZeroRpcFlow.ZeroCenterState < ZeroCenterState.Closing)
             {
                 await center_stop();
@@ -160,12 +163,12 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
             catch (Exception e)
             {
                 LogRecorder.Exception(e);
-                ZeroTrace.WriteException(name, e, "station_state", content);
             }
         }
         internal static void station_update(string name, string content)
         {
-            ZeroTrace.SystemLog(name, "station_update", content);
+            Logger.Information("ZeroCenter event: station_update({0})", name);
+
             if (ZeroRpcFlow.Config.UpdateConfig(ZeroRpcFlow.Config.Master, name, content, out var config))
             {
                 ZeroRpcFlow.InvokeEvent(ZeroNetEventType.CenterStationUpdate, name, content, config);
@@ -173,7 +176,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         }
         internal static void station_install(string name, string content)
         {
-            ZeroTrace.SystemLog(name, "station_install", content);
+            Logger.Information("ZeroCenter event: station_install({0})", name);
             if (ZeroRpcFlow.Config.UpdateConfig(ZeroRpcFlow.Config.Master, name, content, out var config))
             {
                 ZeroRpcFlow.InvokeEvent(ZeroNetEventType.CenterStationInstall, name, content, config);
@@ -182,7 +185,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
 
         internal static void station_join(string name, string content)
         {
-            ZeroTrace.SystemLog(name, "station_join", content);
+            Logger.Information("ZeroCenter event: station_join({0})", name);
             if (ZeroRpcFlow.Config.UpdateConfig(ZeroRpcFlow.Config.Master, name, content, out var config))
             {
                 ZeroRpcFlow.InvokeEvent(ZeroNetEventType.CenterStationJoin, name, content, config);
@@ -206,39 +209,39 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
 
         internal static void station_uninstall(string name)
         {
-            ZeroTrace.SystemLog(name, "station_uninstall");
+            Logger.Information("ZeroCenter event: station_uninstall({0})", name);
             ChangeStationState(name, ZeroCenterState.Remove, ZeroNetEventType.CenterStationRemove);
         }
 
 
         internal static void station_closing(string name)
         {
-            ZeroTrace.SystemLog(name, "station_closing");
+            Logger.Information("ZeroCenter event: station_closing({0})", name);
             ChangeStationState(name, ZeroCenterState.Closed, ZeroNetEventType.CenterStationClosing);
         }
 
 
         internal static void station_resume(string name)
         {
-            ZeroTrace.SystemLog(name, "station_resume");
+            Logger.Information("ZeroCenter event: station_resume({0})", name);
             ChangeStationState(name, ZeroCenterState.Run, ZeroNetEventType.CenterStationResume);
         }
 
         internal static void station_pause(string name)
         {
-            ZeroTrace.SystemLog(name, "station_pause");
+            Logger.Information("ZeroCenter event: station_pause({0})", name);
             ChangeStationState(name, ZeroCenterState.Pause, ZeroNetEventType.CenterStationPause);
         }
 
         internal static void station_left(string name)
         {
-            ZeroTrace.SystemLog(name, "station_left");
+            Logger.Information("ZeroCenter event: station_left({0})", name);
             ChangeStationState(name, ZeroCenterState.Closed, ZeroNetEventType.CenterStationLeft);
         }
 
         internal static void station_stop(string name)
         {
-            ZeroTrace.SystemLog(name, "station_stop");
+            Logger.Information("ZeroCenter event: station_stop({0})", name);
             ChangeStationState(name, ZeroCenterState.Stop, ZeroNetEventType.CenterStationStop);
         }
 
@@ -251,7 +254,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
                 return;
             }
 
-            ZeroTrace.SystemLog(name, "station_document");
+            Logger.Information("ZeroCenter event: station_document({0})", name);
             var doc = JsonConvert.DeserializeObject<ServiceDocument>(content);
             if (ZeroRpcFlow.Config.Documents.ContainsKey(name))
             {
@@ -281,8 +284,6 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
             {
                 return;
             }
-
-            ZeroTrace.SystemLog(name, "client_join", content);
             ZeroRpcFlow.InvokeEvent(ZeroNetEventType.CenterClientJoin, name, content, config);
         }
 
@@ -292,8 +293,6 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
             {
                 return;
             }
-
-            ZeroTrace.SystemLog(name, "client_left", content);
             ZeroRpcFlow.InvokeEvent(ZeroNetEventType.CenterClientLeft, name, content, config);
         }
 

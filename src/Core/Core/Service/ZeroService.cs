@@ -35,12 +35,12 @@ namespace ZeroTeam.MessageMVC.Services
         /// <summary>
         /// 消息接收对象
         /// </summary>
-        public IMessageReceiver Transport { get; set; }
+        public IMessageReceiver Receiver { get; set; }
 
         /// <summary>
         /// 是否自动发现对象
         /// </summary>
-        public bool IsDiscover { get; internal set; }
+        public bool IsAutoService { get; set; }
 
         /// <summary>
         /// 消息接收对象构造器
@@ -119,7 +119,7 @@ namespace ZeroTeam.MessageMVC.Services
         /// <summary>
         /// 能不能循环处理
         /// </summary>
-        protected internal bool CanLoop => ZeroFlowControl.CanDo &&
+        protected internal bool CanLoop => ZeroFlowControl.IsRuning &&
                                   ConfigState == StationStateType.Run &&
                                   (RealState == StationState.BeginRun || RealState == StationState.Run) &&
                                   CancelToken != null && !CancelToken.IsCancellationRequested;
@@ -149,10 +149,10 @@ namespace ZeroTeam.MessageMVC.Services
             else
             {
                 RealState = StationState.Initialized;
-                Transport = TransportBuilder(ServiceName);
-                Transport.Service = this;
-                Transport.Initialize();
-                if (!Transport.Prepare())
+                Receiver.Service = this;
+                Receiver.Logger = logger;
+                Receiver.Initialize();
+                if (!Receiver.Prepare())
                 {
                     ConfigState = StationStateType.ConfigError;
                 }
@@ -173,9 +173,9 @@ namespace ZeroTeam.MessageMVC.Services
             logger.Information(() => $"Try start by {StationState.Text(RealState)}");
             try
             {
-                if (ConfigState == StationStateType.None || ConfigState >= StationStateType.Stop || !ZeroFlowControl.CanDo)
+                if (ConfigState == StationStateType.None || ConfigState >= StationStateType.Stop || !ZeroFlowControl.IsRuning)
                 {
-                    logger.Warning(() => $"Start failed. ConfigState :{ConfigState} ,ZeroFlowControl.CanDo {ZeroFlowControl.CanDo}");
+                    logger.Warning(() => $"Start failed. ConfigState :{ConfigState} ,ZeroFlowControl.CanDo {ZeroFlowControl.IsRuning}");
                     return false;
                 }
                 RealState = StationState.Start;
@@ -215,7 +215,7 @@ namespace ZeroTeam.MessageMVC.Services
             {
                 try
                 {
-                    success = await Transport.Loop(CancelToken.Token);
+                    success = await Receiver.Loop(CancelToken.Token);
                 }
                 catch (TaskCanceledException)
                 {
@@ -234,7 +234,7 @@ namespace ZeroTeam.MessageMVC.Services
 
                 if (ConfigState < StationStateType.Stop)
                 {
-                    if (!ZeroFlowControl.CanDo)
+                    if (!ZeroFlowControl.IsRuning)
                     {
                         ConfigState = StationStateType.Stop;
                     }
@@ -272,7 +272,7 @@ namespace ZeroTeam.MessageMVC.Services
                 ZeroFlowControl.OnObjectFailed(this);
                 return false;
             }
-            if (!await Transport.LoopBegin())
+            if (!await Receiver.LoopBegin())
             {
                 RealState = StationState.Failed;
                 ConfigState = StationStateType.Failed;
@@ -289,7 +289,7 @@ namespace ZeroTeam.MessageMVC.Services
         /// <returns></returns>
         private async Task LoopComplete()
         {
-            await Transport.LoopComplete();
+            await Receiver.LoopComplete();
             CancelToken.Dispose();
             CancelToken = null;
             if (ConfigState == StationStateType.Failed)
@@ -317,7 +317,7 @@ namespace ZeroTeam.MessageMVC.Services
         /// </summary>
         private void DoEnd()
         {
-            Transport.End();
+            Receiver.End();
             eventSlim.Dispose();
         }
         #endregion
@@ -397,7 +397,7 @@ namespace ZeroTeam.MessageMVC.Services
             }
             RealState = StationState.Closing;
             CancelToken.Cancel();
-            await Transport.Close();
+            await Receiver.Close();
             logger.Information("[Close] cancel,waiting loop end... ");
             return true;
         }
@@ -416,32 +416,51 @@ namespace ZeroTeam.MessageMVC.Services
 
         #region 方法注册
 
+        ISerializeProxy serialize;
+
+        /// <summary>
+        /// 序列化对象
+        /// </summary>
+        public ISerializeProxy Serialize
+        {
+            get => serialize ??= IocHelper.Create<ISerializeProxy>();
+            set => serialize = value;
+        }
 
         /// <summary>
         /// 注册的方法
         /// </summary>
-        Dictionary<string, IApiAction> IService.Actions => ApiActions;
+        readonly Dictionary<string, IApiAction> ApiActions = new Dictionary<string, IApiAction>(StringComparer.OrdinalIgnoreCase);
 
-        internal readonly Dictionary<string, IApiAction> ApiActions = new Dictionary<string, IApiAction>(StringComparer.OrdinalIgnoreCase);
-
+        /// <summary>
+        ///  取得API信息
+        /// </summary>
+        /// <param name="api"></param>
+        /// <returns></returns>
+        public IApiAction GetApiAction(string api)
+        {
+            return api != null && ApiActions.TryGetValue(api, out var info) ? info : null;
+        }
 
         /// <summary>
         ///     注册方法
         /// </summary>
         /// <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
-        /// <param name="action">动作</param>
         /// <param name="info">反射信息</param>
-        public void RegistAction(string name, ApiAction action, ApiActionInfo info = null)
+        public void RegistAction(string name, ApiActionInfo info)
         {
-            if (info != null && info.HaseArgument && action.ArgumentType != null)
+            var action = new ApiAction
             {
-                action.ArgumentType = info.ArgumentType;
-            }
-
-            if (info != null && action.ResultType != null)
-            {
-                action.ResultType = info.ResultType;
-            }
+                Name = name,
+                Function = info.Action,
+                Access = info.AccessOption,
+                ArgumentName = info.ArgumentName,
+                ArgumentType = info.ArgumentType,
+                ResultType = info.ResultType,
+                IsAsync = info.IsAsync,
+                ResultSerializeType = info.ResultSerializeType,
+                ArgumentSerializeType = info.ArgumentSerializeType
+            };
 
             action.Initialize();
             if (!ApiActions.ContainsKey(name))

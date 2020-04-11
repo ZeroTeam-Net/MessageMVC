@@ -14,10 +14,10 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// </summary>
         public static void UseZeroMQInporc(this IServiceCollection services)
         {
-            services.AddTransient<IFlowMiddleware, ZmqFlowMiddleware>();//ZMQ环境,与ZeroRpcFlow冲突,只用其一
-            services.AddTransient<IMessagePoster, InprocPoster>();//采用ZMQ进程内通讯生产端
+            services.AddSingleton<IFlowMiddleware>(InporcFlow.Instance);//ZMQ环境
+            services.AddSingleton<IMessagePoster>(InprocPoster.Instance);//采用ZMQ进程内通讯生产端
             services.AddTransient<IMessageConsumer, InporcConsumer>();//采用ZMQ进程内通讯生产端
-            services.AddTransient<IReceiverDiscory, InprocDiscory>();//网络协议发现
+            services.AddTransient<IReceiverDiscover, InprocDiscover>();//网络协议发现
         }
     }
 }

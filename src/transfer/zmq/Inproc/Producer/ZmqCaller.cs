@@ -1,10 +1,11 @@
 using Agebull.Common;
 using Agebull.Common.Logging;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.ZeroApis;
+using ZeroTeam.ZeroMQ;
 using ZeroTeam.ZeroMQ.ZeroRPC;
 
 namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
@@ -16,70 +17,26 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
     {
         #region Properties
 
-        private static long id;
+        static ulong nextId;
 
         /// <summary>
-        /// 取得Id
+        ///     返回值
         /// </summary>
-        /// <returns></returns>
-        private static long GetId()
+        internal ulong ID = ++nextId;
+
+        /// <summary>
+        ///     请求格式说明
+        /// </summary>
+        internal static readonly byte[] CallDescription =
         {
-            return Interlocked.Increment(ref id);
-        }
-        /// <summary>
-        ///     调用时使用的名称
-        /// </summary>
-        internal long Name = GetId();
+            0,(byte)ZeroByteCommand.General
+        };
+
 
         /// <summary>
-        ///     返回值
+        /// 当前消息
         /// </summary>
-        internal byte ResultType;
-
-        /// <summary>
-        ///     返回值
-        /// </summary>
-        internal string Result;
-
-        /// <summary>
-        ///     返回值
-        /// </summary>
-        internal byte[] Binary;
-
-        /// <summary>
-        ///     请求站点
-        /// </summary>
-        internal string Station;
-
-        /// <summary>
-        ///     上下文内容（透传方式）
-        /// </summary>
-        internal string ContextJson;
-
-        /// <summary>
-        ///     标题
-        /// </summary>
-        internal string Title;
-
-        /// <summary>
-        ///     调用命令
-        /// </summary>
-        internal string Commmand;
-
-        /// <summary>
-        ///     参数
-        /// </summary>
-        internal string Argument;
-
-        /// <summary>
-        ///     扩展参数
-        /// </summary>
-        internal string ExtendArgument;
-
-        /// <summary>
-        ///     结果状态
-        /// </summary>
-        internal ZeroOperatorStateType State;
+        internal IInlineMessage Message;
 
         /// <summary>
         /// 最后一个返回值
@@ -94,101 +51,55 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         ///     远程调用
         /// </summary>
         /// <returns></returns>
-        internal bool Call()
+        internal async Task<IInlineMessage> CallAsync()
         {
-            var task = CallApi();
-            task.Wait();
-            return task.Result;
+            var req = GlobalContext.CurrentNoLazy?.Trace;
+            var res = await CallZero();
+            LogRecorder.MonitorTrace(() => $"result:{res.Result}");
+            return res;
         }
 
-
         /// <summary>
-        ///     远程调用
+        ///     一次请求
         /// </summary>
         /// <returns></returns>
-        internal Task<bool> CallAsync()
+        internal Task<IInlineMessage> CallZero()
         {
-            return CallApi();
+            var info = new TaskInfo
+            {
+                Caller = this,
+                Start = DateTime.Now
+            };
+            if (!InporcFlow.Tasks.TryAdd(ID, info))
+            {
+                Message.State = MessageState.NetError;
+                return Task.FromResult(Message);
+            }
+            using var message = new ZMessage
+                {
+                    new ZFrame(CallDescription)
+                };
+            bool res;
+            ZError error;
+            using (var socket = ZSocketEx.CreateOnceSocket(InporcFlow.InprocAddress, null, Message.ID.ToBytes(), ZSocketType.PAIR))
+            {
+                res = socket.Send(message, out error);
+            }
+            if (!res)
+            {
+                Message.State = MessageState.NetError;
+                return Task.FromResult(Message);
+            }
+            info.TaskSource = new TaskCompletionSource<IInlineMessage>();
+            return info.TaskSource.Task;
         }
 
-        /// <summary>
-        ///     检查在非成功状态下的返回值
-        /// </summary>
-        internal void CheckStateResult()
-        {
-            if (Result != null)
-            {
-                return;
-            }
-            IApiResult apiResult;
-            switch (State)
-            {
-                case ZeroOperatorStateType.Ok:
-                    apiResult = ApiResultHelper.Ioc.Ok;
-                    break;
-                case ZeroOperatorStateType.NotFind:
-                case ZeroOperatorStateType.NoWorker:
-                case ZeroOperatorStateType.NotSupport:
-                    apiResult = ApiResultHelper.Ioc.NoFind;
-                    break;
-                case ZeroOperatorStateType.LocalNoReady:
-                case ZeroOperatorStateType.LocalZmqError:
-                    apiResult = ApiResultHelper.Ioc.NoReady;
-                    break;
-                case ZeroOperatorStateType.LocalSendError:
-                case ZeroOperatorStateType.LocalRecvError:
-                    apiResult = ApiResultHelper.Ioc.NetworkError;
-                    break;
-                case ZeroOperatorStateType.LocalException:
-                    apiResult = ApiResultHelper.Ioc.LocalException;
-                    break;
-                case ZeroOperatorStateType.Plan:
-                case ZeroOperatorStateType.Runing:
-                case ZeroOperatorStateType.VoteBye:
-                case ZeroOperatorStateType.Wecome:
-                case ZeroOperatorStateType.VoteSend:
-                case ZeroOperatorStateType.VoteWaiting:
-                case ZeroOperatorStateType.VoteStart:
-                case ZeroOperatorStateType.VoteEnd:
-                    apiResult = ApiResultHelper.Ioc.Error(DefaultErrorCode.Success, State.Text());
-                    break;
-                case ZeroOperatorStateType.Error:
-                    apiResult = ApiResultHelper.Ioc.InnerError;
-                    break;
-                case ZeroOperatorStateType.Unavailable:
-                    apiResult = ApiResultHelper.Ioc.Unavailable;
-                    break;
-                case ZeroOperatorStateType.NetTimeOut:
-                    apiResult = ApiResultHelper.Ioc.NetTimeOut;
-                    break;
-                case ZeroOperatorStateType.ExecTimeOut:
-                    apiResult = ApiResultHelper.Ioc.ExecTimeOut;
-                    break;
-                case ZeroOperatorStateType.ArgumentInvalid:
-                    apiResult = ApiResultHelper.Ioc.ArgumentError;
-                    break;
-                case ZeroOperatorStateType.FrameInvalid:
-                case ZeroOperatorStateType.NetError:
-                    apiResult = ApiResultHelper.Ioc.NetworkError;
-                    break;
-                case ZeroOperatorStateType.Bug:
-                case ZeroOperatorStateType.Failed:
-                    apiResult = ApiResultHelper.Ioc.LogicalError;
-                    break;
-                case ZeroOperatorStateType.Pause:
-                    apiResult = ApiResultHelper.Ioc.Pause;
-                    break;
-                case ZeroOperatorStateType.DenyAccess:
-                    apiResult = ApiResultHelper.Ioc.DenyAccess;
-                    break;
-                default:
-                    apiResult = ApiResultHelper.Ioc.RemoteEmptyError;
-                    break;
-            }
+        #endregion
 
-            Result = JsonHelper.SerializeObject(apiResult);
+    }
+}
 
-        }
+/*
 
         /// <summary>
         ///     消息状态
@@ -197,11 +108,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         {
             get
             {
-                if (Result != null)
-                {
-                    return MessageState.Success;
-                }
-                switch (State)
+                switch (LastResult.State)
                 {
                     case ZeroOperatorStateType.Ok:
                         return MessageState.Success;
@@ -244,52 +151,4 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
                 }
             }
         }
-        #endregion
-
-        #region Socket
-
-        /// <summary>
-        ///     请求格式说明
-        /// </summary>
-        private static readonly byte[] CallDescription =
-        {
-            9,
-            (byte)ZeroByteCommand.General,
-            ZeroFrameType.Command,
-            ZeroFrameType.Argument,
-            ZeroFrameType.TextContent,
-            ZeroFrameType.RequestId,
-            ZeroFrameType.Requester,
-            ZeroFrameType.Responser,
-            ZeroFrameType.CallId,
-            ZeroFrameType.Context,
-            ZeroFrameType.SerivceKey,
-            ZeroFrameType.End
-        };
-
-
-        private async Task<bool> CallApi()
-        {
-            var req = GlobalContext.CurrentNoLazy?.Trace;
-            LastResult = await ZmqFlowMiddleware.Instance.CallZero(this,
-                 CallDescription,
-                 Commmand.ToZeroBytes(),
-                 Argument.ToZeroBytes(),
-                 ExtendArgument.ToZeroBytes(),
-                 req == null ? JsonHelper.EmptyBytes : req.TraceId.ToZeroBytes(),
-                 Name.ToString().ToZeroBytes(),
-                 JsonHelper.EmptyBytes,// GlobalContext.Current.Organizational.RouteName.ToZeroBytes(),
-                 req == null ? JsonHelper.EmptyBytes : req.LocalId.ToZeroBytes(),
-                 ContextJson.ToZeroBytes() ?? GlobalContext.CurrentNoLazy.ToZeroBytes());
-
-            State = LastResult.State;
-            Result = LastResult.Result;
-            Binary = LastResult.Binary;
-            ResultType = LastResult.ResultType;
-            LogRecorder.MonitorTrace(() => $"result:{Result}");
-            return LastResult.InteractiveSuccess;
-        }
-        #endregion
-
-    }
-}
+*/

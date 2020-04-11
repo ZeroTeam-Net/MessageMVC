@@ -1,5 +1,8 @@
 using Agebull.Common;
 using Agebull.Common.Configuration;
+using Agebull.Common.Ioc;
+using Agebull.Common.Logging;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -32,11 +35,13 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// </summary>
         public static ZeroWorkModel WorkModel { get; set; }
 
+        internal static ILogger Logger;
         /// <summary>
         ///     配置校验,作为第一步
         /// </summary>
         void IFlowMiddleware.CheckOption(ZeroAppOption config)
         {
+            Logger = IocHelper.LoggerFactory.CreateLogger(nameof(ZeroRpcFlow));
             ZContext.Initialize();
 
             #region 配置组合
@@ -90,7 +95,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
 
             #region ZeroCenter
 
-            ZeroCommandExtend.AppNameBytes = ZeroAppOption.Instance.AppName.ToZeroBytes();
+            ZeroCommandExtend.AppNameBytes = ZeroAppOption.Instance.AppName.ToBytes();
 
             Config.Master = Config.ZeroGroup[0];
             if (Config.ApiTimeout <= 1)
@@ -170,12 +175,10 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             internal set
             {
                 _state = value;
+                Logger.Information(_state.ToString);
                 if (IsAlive)
                 {
                     MonitorStateMachine.SyncAppState();
-                    ZeroTrace.SystemLog("ZeroApplication",
-                        _state.ToString(),
-                        MonitorStateMachine.StateMachine.GetTypeName());
                 }
             }
         }
@@ -197,7 +200,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         ///     运行状态（本地与服务器均正常）
         /// </summary>
-        public static bool CanDo => ZeroFlowControl.ApplicationIsRun && ZerCenterIsRun;
+        public static bool CanDo => ZeroFlowControl.IsRuning && ZerCenterIsRun;
 
         /// <summary>
         ///     运行状态（本地未关闭）
@@ -218,20 +221,21 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             {
                 return false;
             }
+            Logger.Information(_state.ToString);
 
             ZeroCenterState = ZeroCenterState.Start;
-            ZeroTrace.SystemLog("ZeroCenter", "JoinCenter", $"try connect zero center ({Config.Master.ManageAddress})...");
+            Logger.Information(() => $"Try connect zero center ({Config.Master.ManageAddress})...");
             if (!ZeroCenterProxy.Master.PingCenter())
             {
                 SetFailed();
-                ZeroTrace.WriteError("ZeroCenter", "JoinCenter", "zero center can`t connection.");
+                Logger.Information("zero center can`t connection.");
                 return false;
             }
             ZeroCenterState = ZeroCenterState.Run;
             if (!ZeroCenterProxy.Master.HeartJoin())
             {
                 SetFailed();
-                ZeroTrace.WriteError("ZeroCenter", "JoinCenter", "zero center can`t join.");
+                Logger.Information("zero center can`t join.");
                 return false;
             }
 
@@ -239,10 +243,10 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             if (!StationConfigManager.LoadAllConfig())
             {
                 SetFailed();
-                ZeroTrace.WriteError("ZeroCenter", "JoinCenter", "station configs can`t loaded.");
+                Logger.Information("station configs can`t loaded.");
                 return false;
             }
-            ZeroTrace.SystemLog("ZeroCenter", "JoinCenter", "be connected successfully,start local stations.");
+            Logger.Information("be connected successfully,start local stations.");
 
             if (ZeroFlowControl.ApplicationState == StationRealState.Run)
             {
@@ -346,7 +350,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 }
                 catch (Exception e)
                 {
-                    ZeroTrace.WriteException("ZeroNetEvent", e, arg.Event);
+                    Logger.Exception(e, arg.Event.ToString());
                 }
             }
 

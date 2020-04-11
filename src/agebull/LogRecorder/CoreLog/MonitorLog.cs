@@ -1,3 +1,4 @@
+using Agebull.Common.Ioc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
@@ -9,15 +10,11 @@ namespace Agebull.Common.Logging
     /// </summary>
     public partial class LogRecorder
     {
-        /// <summary>
-        /// 当前上下文数据
-        /// </summary>
-        private static readonly AsyncLocal<MonitorItem> _monitorItemLocal = new AsyncLocal<MonitorItem>();
 
         /// <summary>
         /// 当前范围数据
         /// </summary>
-        internal static MonitorItem MonitorItem => _monitorItemLocal.Value;
+        internal static MonitorItem MonitorItem => IocScope.Dependency.Dependency<MonitorItem>();
 
         /// <summary>
         /// 开始检测资源
@@ -28,8 +25,9 @@ namespace Agebull.Common.Logging
             {
                 return;
             }
-            _monitorItemLocal.Value = new MonitorItem();
-            MonitorItem.BeginMonitor(title);
+            var item = new MonitorItem();
+            item.BeginMonitor(title);
+            IocScope.Dependency.Annex(item);
         }
 
         /// <summary>
@@ -189,14 +187,7 @@ namespace Agebull.Common.Logging
             {
                 return;
             }
-
-            _monitorItemLocal.Value = null;
-
-            if (!LogMonitor)
-            {
-                return;
-            }
-
+            IocScope.Dependency.Remove<MonitorItem>();
             var log = item.End();
             if (log != null)
             {

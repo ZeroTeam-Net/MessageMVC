@@ -39,7 +39,7 @@
             消息中间件的处理范围
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Web.WebSocketNotify.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#OnEnd(ZeroTeam.MessageMVC.Messages.IMessageItem)">
+        <member name="M:ZeroTeam.MessageMVC.Web.WebSocketNotify.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#OnEnd(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
             <summary>
             准备
             </summary>
@@ -81,13 +81,11 @@
             <param name="n"></param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Web.WebSocketNotify.Publish(System.String,System.String,System.String)">
+        <member name="M:ZeroTeam.MessageMVC.Web.WebSocketNotify.Publish(ZeroTeam.MessageMVC.Messages.IMessageItem)">
             <summary>
             发出广播
             </summary>
-            <param name="classify"></param>
-            <param name="title"></param>
-            <param name="value"></param>
+            <param name="message"></param>
             <returns></returns>
         </member>
     </members>

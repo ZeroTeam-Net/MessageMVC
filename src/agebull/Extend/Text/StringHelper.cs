@@ -24,6 +24,60 @@ namespace System
     public static class ValueToStringHelper
     {
         /// <summary>
+        /// 清理XML使之最短
+        /// </summary>
+        /// <param name="xml"></param>
+        /// <returns></returns>
+        public static string XmlTrim(this string xml)
+        {
+            if (xml == null)
+            {
+                return null;
+            }
+            int idx;
+            bool isFirst = false;
+            bool inString = false;
+            char stringChar = '"';
+            for (idx = 0; idx < xml.Length; idx++)
+            {
+                var ch = xml[idx];
+                if (inString)//文本内任何非结束字符跳过
+                {
+                    if (ch == stringChar)
+                        inString = false;
+                    continue;
+                }
+                if (!isFirst)
+                {
+                    if (ch == '<')
+                    {
+                        isFirst = true;
+                        continue;
+                    }
+                    if (!inString && (ch == '"' || ch == '\''))
+                    {
+                        inString = true;
+                        stringChar = ch;
+                    }
+                    continue;
+                }
+                if (char.IsWhiteSpace(ch))
+                    continue;
+                isFirst = false;
+                if (ch != '?')//已结束说明段
+                    break;
+            }
+            if (idx + 1 >= xml.Length)
+                return null;
+            if (idx + 1 == xml.Length)
+                return null;
+            if (idx > 1)
+                xml = xml.Substring(idx - 1);
+            xml = xml.TrimEnd();
+            return xml.Length < 4 || xml[^1] != '>' ? null : xml;
+        }
+
+        /// <summary>
         /// 安全清除首尾空白
         /// </summary>
         /// <param name="str">字符</param>

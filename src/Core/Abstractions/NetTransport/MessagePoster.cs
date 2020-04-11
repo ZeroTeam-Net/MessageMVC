@@ -43,7 +43,7 @@ namespace ZeroTeam.MessageMVC
         {
             logger = IocHelper.LoggerFactory.CreateLogger(nameof(MessagePoster));
             posters = new Dictionary<string, IMessagePoster>();
-            foreach(var poster in IocHelper.RootProvider.GetServices<IMessagePoster>())
+            foreach (var poster in IocHelper.RootProvider.GetServices<IMessagePoster>())
             {
                 posters.TryAdd(poster.GetTypeName(), poster);
             }
@@ -66,7 +66,7 @@ namespace ZeroTeam.MessageMVC
                 var services = cfgs.Split(',', StringSplitOptions.RemoveEmptyEntries);
                 foreach (var service in services)
                 {
-                    
+
                     ServiceMap[service] = poster.Value;
                 }
                 logger.Information(() => $"Poster {poster.Key} is config for {cfgs}");
@@ -95,14 +95,14 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         ///     手动注册
         /// </summary>
-        public static void RegistPoster(IMessagePoster poster, params string[] services)
+        public static void RegistPoster(object poster, params string[] services)
         {
             foreach (var service in services)
             {
-                ServiceMap[service] = poster;
+                ServiceMap[service] = poster as IMessagePoster;
             }
 
-            logger.Information(() => $"Poster {poster.GetTypeName()} is regist for {string.Join(',', services)}");
+            logger.Information(() => $"Poster {poster.GetTypeName()} is regist for services [{string.Join(' ', services)}]");
         }
 
         /// <summary>
@@ -127,15 +127,23 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         /// <param name="item">消息</param>
         /// <returns>返回值</returns>
-        public static Task<(MessageState state, string result)> Post(IMessageItem item)
+        public static async Task<(IInlineMessage message, ISerializeProxy serialize)> Post(IMessageItem item)
         {
+            if (item == null || string.IsNullOrEmpty(item.Topic) || string.IsNullOrEmpty(item.Title))
+            {
+                throw new NotSupportedException("参数[item]不能为空且[Topic]与[Title]必须为有效值");
+            }
+            var inline = item.ToInline();
             var producer = GetService(item.Topic);
             if (producer == null)
             {
+                inline.State = MessageState.NoSupper;
                 logger.Warning(() => $"No find [{item.Topic}] poster");
-                return Task.FromResult((MessageState.NoSupper, default(string)));
+                return (inline, null);
             }
-            return producer.Post(item);
+            var msg = await producer.Post(inline);
+            logger.Trace(() => inline.ToJson(true));
+            return (msg, producer);
         }
 
         #endregion
@@ -151,8 +159,8 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static MessageState Publish<TArg>(string topic, string title, TArg content)
         {
-            var (state, _) = Post(MessageHelper.NewRemote(topic, title, content)).Result;
-            return state;
+            var res = Post(MessageHelper.NewRemote(topic, title, content)).Result;
+            return res.message.State;
         }
 
         /// <summary>
@@ -164,8 +172,8 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static MessageState Publish(string topic, string title, string content)
         {
-            var (state, _) = Post(MessageHelper.NewRemote(topic, title, content)).Result;
-            return state;
+            var res = Post(MessageHelper.NewRemote(topic, title, content)).Result;
+            return res.message.State;
         }
 
         /// <summary>
@@ -177,8 +185,8 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static async Task<MessageState> PublishAsync<TArg>(string topic, string title, TArg content)
         {
-            var (state, _) = await Post(MessageHelper.NewRemote(topic, title, content));
-            return state;
+            var res = await Post(MessageHelper.NewRemote(topic, title, content));
+            return res.message.State;
         }
 
         /// <summary>
@@ -190,8 +198,8 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static async Task<MessageState> PublishAsync(string topic, string title, string content)
         {
-            var (state, _) = await Post(MessageHelper.NewRemote(topic, title, content));
-            return state;
+            var res = await Post(MessageHelper.NewRemote(topic, title, content));
+            return res.message.State;
         }
 
         #endregion
@@ -207,10 +215,8 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static TRes Call<TArg, TRes>(string service, string api, TArg args)
         {
-            var (state, result) = Post(MessageHelper.NewRemote(service, api, args)).Result;
-            return state != MessageState.Success
-                ? default
-                : JsonHelper.TryDeserializeObject<TRes>(result);
+            var (msg, seri) = Post(MessageHelper.NewRemote(service, api, args)).Result;
+            return msg.GetResultData<TRes>(seri);
         }
 
         /// <summary>
@@ -220,9 +226,9 @@ namespace ZeroTeam.MessageMVC
         /// <param name="api">接口名称</param>
         /// <param name="args">接口参数</param>
         /// <returns></returns>
-        public static void Call<TArg>(string service, string api, TArg args)
+        public static MessageState Call<TArg>(string service, string api, TArg args)
         {
-            Post(MessageHelper.NewRemote(service, api, args)).Wait();
+            return Post(MessageHelper.NewRemote(service, api, args)).Result.message.State;
         }
 
         /// <summary>
@@ -233,10 +239,8 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static TRes Call<TRes>(string service, string api)
         {
-            var (state, result) = Post(MessageHelper.NewRemote(service, api)).Result;
-            return state != MessageState.Success
-                ? default
-                : JsonHelper.TryDeserializeObject<TRes>(result);
+            var (msg, seri) = Post(MessageHelper.NewRemote(service, api)).Result;
+            return msg.GetResultData<TRes>(seri);
         }
 
         /// <summary>
@@ -248,8 +252,8 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static string Call(string service, string api, string args)
         {
-            var (_, result) = Post(MessageHelper.NewRemote(service, api, args)).Result;
-            return result;
+            var (msg, seri) = Post(MessageHelper.NewRemote(service, api, args)).Result;
+            return msg.GetResult(seri);
         }
 
         /// <summary>
@@ -261,10 +265,8 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static async Task<TRes> CallAsync<TArg, TRes>(string service, string api, TArg args)
         {
-            var (state, result) = await Post(MessageHelper.NewRemote(service, api, args));
-            return state != MessageState.Success
-                ? default
-                : JsonHelper.TryDeserializeObject<TRes>(result);
+            var (msg, seri) = await Post(MessageHelper.NewRemote(service, api, args));
+            return msg.GetResultData<TRes>(seri);
         }
 
         /// <summary>
@@ -287,10 +289,8 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static async Task<TRes> CallAsync<TRes>(string service, string api)
         {
-            var (state, result) = await Post(MessageHelper.NewRemote(service, api));
-            return state != MessageState.Success
-                ? default
-                : JsonHelper.TryDeserializeObject<TRes>(result);
+            var (msg, seri) = await Post(MessageHelper.NewRemote(service, api));
+            return msg.GetResultData<TRes>(seri);
         }
 
         /// <summary>
@@ -302,8 +302,8 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static async Task<string> CallAsync(string service, string api, string args)
         {
-            var (_, result) = await Post(MessageHelper.NewRemote(service, api, args));
-            return result;
+            var (msg, seri) = await Post(MessageHelper.NewRemote(service, api, args));
+            return msg.GetResult(seri);
         }
 
         #endregion

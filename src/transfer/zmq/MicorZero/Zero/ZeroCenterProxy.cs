@@ -16,7 +16,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         public ZeroCenterProxy(ZeroItem item)
         {
             ManageAddress = item.ManageAddress;
-            ServiceKey = item.ServiceKey.ToZeroBytes();
+            ServiceKey = item.ServiceKey.ToBytes();
         }
 
         /// <summary>

@@ -15,6 +15,7 @@
     <Compile Include="Controler\RpcControler.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\tools\Contract\ZeroTeam.MessageMVC.ApiContract.csproj" />
     <ProjectReference Include="..\..\transfer\zmq\Inproc\ZeroTeam.ZeroMQ.Inproc.csproj" />
     <ProjectReference Include="..\..\transfer\zmq\MicorZero\ZeroTeam.ZeroMQ.ZeroRPC.csproj" />
   </ItemGroup>

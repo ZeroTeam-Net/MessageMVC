@@ -1,7 +1,9 @@
 ﻿using Agebull.Common.Ioc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using System.IO;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.AddIn;
 using ZeroTeam.MessageMVC.Context;
@@ -15,6 +17,8 @@ namespace ZeroTeam.MessageMVC
     /// </summary>
     public static class ZeroApp
     {
+        static int isInitialized = 0;
+
         /// <summary>
         /// 检查并注入配置
         /// </summary>
@@ -25,24 +29,33 @@ namespace ZeroTeam.MessageMVC
             {
                 IocHelper.SetServiceCollection(services);
             }
+
+            //序列化工具
+            services.AddTransient<ISerializeProxy, NewtonJsonSerializeProxy>();
+            services.AddTransient<IJsonSerializeProxy, NewtonJsonSerializeProxy>();
+            services.AddTransient<IXmlSerializeProxy, XmlSerializeProxy>();
+
             //配置\依赖对象初始化,系统配置获取
             services.AddTransient<IFlowMiddleware, ConfigMiddleware>();
             //消息选择器
             services.AddTransient<IFlowMiddleware, MessagePoster>();
             //API路由与执行
             services.AddTransient<IMessageMiddleware, ApiExecuter>();
-            //IZeroContext构造
-            services.TryAddTransient<IZeroContext, ZeroContext>();
-            //ApiResult构造
-            services.TryAddTransient<IApiResultDefault, ApiResultDefault>();
             //消息接收服务自动发现
-            services.AddTransient<IReceiverDiscory, ReceiverDiscory>();
+            services.AddTransient<IReceiverDiscover, ReceiverDiscover>();
             //插件载入
             if (ZeroAppOption.Instance.EnableAddIn)
             {
                 services.AddSingleton<IFlowMiddleware>(AddInImporter.Instance);
             }
 
+            //IZeroContext构造
+            services.TryAddScoped<IZeroContext, ZeroContext>();
+            services.TryAddTransient<IUser,UserInfo>();
+            //序列化器
+            services.TryAddTransient<ISerializeProxy, NewtonJsonSerializeProxy>();
+            services.TryAddTransient<IJsonSerializeProxy, NewtonJsonSerializeProxy>();
+            services.TryAddTransient<IXmlSerializeProxy, XmlSerializeProxy>();
             ZeroFlowControl.CheckOption();
             IocHelper.Update();
         }
@@ -55,8 +68,11 @@ namespace ZeroTeam.MessageMVC
         /// <param name="waitEnd"></param>
         public static Task UseFlow(this IServiceCollection services, Assembly assembly, bool waitEnd)
         {
-            CheckOption(services);
-            ZeroFlowControl.Discove(assembly);
+            if (Interlocked.Increment(ref isInitialized) == 1)
+            {
+                CheckOption(services);
+                ZeroFlowControl.Discove(assembly);
+            }
             ZeroFlowControl.Initialize();
             if (waitEnd)
             {
@@ -68,26 +84,22 @@ namespace ZeroTeam.MessageMVC
             }
         }
 
-
         /// <summary>
         /// 使用主流程控制器
         /// </summary>
         /// <param name="services"></param>
         /// <param name="assembly">需要发现服务的程序集</param>
-        public static bool UseTest(this IServiceCollection services, Assembly assembly)
+        public static bool UseTest(this IServiceCollection services, Assembly assembly = null)
         {
-            services.AddTransient<IFlowMiddleware, MessagePoster>();//消息选择器
-            services.AddTransient<IFlowMiddleware, ConfigMiddleware>();//配置\依赖对象初始化,系统配置获取
-            services.AddTransient<IMessageMiddleware, ApiExecuter>();//API路由与执行
-
-            if (IocHelper.ServiceCollection != services)
+            if (Interlocked.Increment(ref isInitialized) == 1)
             {
-                IocHelper.SetServiceCollection(services);
+                services.TryAddTransient<IServiceTransfer, InnerIO>();
+                services.TryAddTransient<IMessageConsumer, InnerIO>();
+                services.TryAddTransient<INetEvent, InnerIO>();
+                CheckOption(services);
+                if (assembly != null)
+                    ZeroFlowControl.Discove(assembly);
             }
-
-            IocHelper.Update();
-            ZeroFlowControl.CheckOption();
-            ZeroFlowControl.Discove(assembly);
             ZeroFlowControl.Initialize();
             return ZeroFlowControl.Run();
         }
@@ -98,7 +110,10 @@ namespace ZeroTeam.MessageMVC
         /// <param name="services"></param>
         public static Task UseFlow(this IServiceCollection services)
         {
-            CheckOption(services);
+            if (Interlocked.Increment(ref isInitialized) == 1)
+            {
+                CheckOption(services);
+            }
             ZeroFlowControl.Initialize();
             return ZeroFlowControl.RunAsync();
         }
@@ -108,10 +123,13 @@ namespace ZeroTeam.MessageMVC
         /// 使用主流程控制器
         /// </summary>
         /// <param name="services"></param>
-        public static async void UseFlowByAutoDiscory(this IServiceCollection services)
+        public static async void UseFlowByAutoDiscover(this IServiceCollection services)
         {
-            CheckOption(services);
-            ZeroFlowControl.Discove();
+            if (Interlocked.Increment(ref isInitialized) == 1)
+            {
+                CheckOption(services);
+                ZeroFlowControl.Discove();
+            }
             ZeroFlowControl.Initialize();
             await ZeroFlowControl.RunAsync();
         }
@@ -122,8 +140,11 @@ namespace ZeroTeam.MessageMVC
         /// <param name="services"></param>
         public static Task UseFlowAsync(this IServiceCollection services)
         {
-            CheckOption(services);
-            ZeroFlowControl.Discove();
+            if (Interlocked.Increment(ref isInitialized) == 1)
+            {
+                CheckOption(services);
+                ZeroFlowControl.Discove();
+            }
             ZeroFlowControl.Initialize();
             return ZeroFlowControl.RunAwaiteAsync();
         }

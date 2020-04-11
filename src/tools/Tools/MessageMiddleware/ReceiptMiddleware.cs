@@ -1,5 +1,6 @@
 ﻿using Agebull.Common;
 using Agebull.Common.Logging;
+using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
@@ -34,9 +35,11 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <param name="tag">扩展信息</param>
         /// <param name="next">下一个处理方法</param>
         /// <returns></returns>
-        async Task IMessageMiddleware.OnEnd(IMessageItem message)
+        async Task IMessageMiddleware.OnEnd(IInlineMessage message)
         {
-            if (GlobalContext.CurrentNoLazy?.Option?["Receipt"] != "true")
+            string re = null;
+            var vl = GlobalContext.CurrentNoLazy?.Option?.TryGetValue("Receipt", out re) ?? false;
+            if (!vl || string.Equals(re, "true", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
@@ -48,6 +51,7 @@ namespace ZeroTeam.MessageMVC.Tools
                 LogRecorder.Debug($"回执服务未注册,无法处理异常发送结果\r\n{json}");
                 return;
             }
+            message.OfflineResult(null);
             var receipt = MessageHelper.Simple(message.ID, ToolsOption.Instance.ReceiptService, ToolsOption.Instance.ReceiptApi, json);
             await rep.Post(receipt);
         }

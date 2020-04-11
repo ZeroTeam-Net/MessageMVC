@@ -1,6 +1,10 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
+using ZeroTeam.MessageMVC.Messages;
+using ApiFunc = System.Func<ZeroTeam.MessageMVC.Messages.IInlineMessage, ZeroTeam.MessageMVC.Messages.ISerializeProxy, object, object>;
+
 
 namespace ZeroTeam.MessageMVC.Documents
 {
@@ -15,6 +19,12 @@ namespace ZeroTeam.MessageMVC.Documents
         ///     参数类型
         /// </summary>
         public Type ArgumentType;
+
+
+        /// <summary>
+        ///     参数类型
+        /// </summary>
+        public Dictionary<string,Type> Arguments;
 
         /// <summary>是否有调用参数</summary>
         public Type ResultType;
@@ -35,6 +45,17 @@ namespace ZeroTeam.MessageMVC.Documents
         public bool IsAsync;
 
         /// <summary>有参方法</summary>
-        public Func<object, object> Action;
+        public ApiFunc Action;
+
+
+        /// <summary>
+        /// 反序列化类型
+        /// </summary>
+        public SerializeType ArgumentSerializeType;
+
+        /// <summary>
+        /// 序列化类型
+        /// </summary>
+        public SerializeType ResultSerializeType;
     }
 }

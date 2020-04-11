@@ -5,7 +5,7 @@ namespace ZeroTeam.MessageMVC.Http
     /// <summary>
     /// HTTP协议相关的支持
     /// </summary>
-    public class HttpProtocol
+    internal class HttpProtocol
     {
         /// <summary>
         ///     跨域支持

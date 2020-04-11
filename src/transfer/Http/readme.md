@@ -8,7 +8,7 @@ HttpRoute.Call方法代替HttpTransfer调用MessageProcessor,从而保证了向�
 ## HttpTransfer
 
 由于我们使用了AspnetCore的基础框架,所以并无法象其它消息传输对象一样,在Loop中通过轮询实现。
-HttpTransfer的存在，仅是为了满足设计规范，保证ApiDiscory时可生成正确的服务对象,
+HttpTransfer的存在，仅是为了满足设计规范，保证ApiDiscover时可生成正确的服务对象,
 ZeroFlowControl可以正确运行，MessageProcessor处理时可获得正确的IService对象进行回调。
 
 作为为规则存在而存在的对象，如果消耗算力，那就罪大恶极了，所以我们在Loop方法中，使用了TaskCompletionSource,

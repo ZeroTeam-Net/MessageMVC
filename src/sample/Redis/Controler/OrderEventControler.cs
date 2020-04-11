@@ -1,5 +1,6 @@
 ﻿using Agebull.Common;
 using System;
+using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Sample.Controllers

@@ -59,11 +59,14 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         private async Task ReConsumer()
         {
-            var service = new ZeroService();
+            var service = new ZeroService
+            {
+                Receiver = new InnerIO()
+            };
             await Task.Yield();
             foreach (var file in files)
             {
-                if (!ZeroFlowControl.CanDo)
+                if (!ZeroFlowControl.IsRuning)
                 {
                     return;
                 }
@@ -72,9 +75,9 @@ namespace ZeroTeam.MessageMVC.Messages
                 try
                 {
                     var json = File.ReadAllText(file);
-                    var item = JsonHelper.DeserializeObject<MessageItem>(json);
+                    var item = JsonHelper.DeserializeObject<InlineMessage>(json);
                     service.ServiceName = item.ServiceName;
-                    await MessageProcessor.OnMessagePush(service, item);
+                    await MessageProcessor.OnMessagePush(service, item, null);
                 }
                 catch (Exception e)
                 {

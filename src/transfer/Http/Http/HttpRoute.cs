@@ -4,6 +4,7 @@ using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
@@ -28,56 +29,19 @@ namespace ZeroTeam.MessageMVC.Http
         /// </summary>
         public static void Initialize(IServiceCollection services)
         {
-            Option = ConfigurationManager.Get<MessageRouteOption>("MessageMVC:HttpRoute");
+            ConfigurationManager.RegistOnChange(() =>
+            {
+                Option = ConfigurationManager.Get<MessageRouteOption>("MessageMVC:HttpRoute");
+            }, true);
+
+
+            services.AddTransient<IMessagePoster, HttpPoster>();
 
             services.AddTransient<IServiceTransfer, HttpTransfer>();
 
-            services.UseFlowByAutoDiscory();
-
+            services.UseFlowByAutoDiscover();
         }
 
-        /*// <summary>
-        ///     刷新
-        /// </summary>
-        public static void Flush()
-        {
-            RouteCache.Flush();
-        }
-
-        /// <summary>
-        /// 配置HTTP
-        /// </summary>
-        /// <param name="options"></param>
-        public static void Options(KestrelServerOptions options)
-        {
-            options.AddServerHeader = true;
-            //将此选项设置为 null 表示不应强制执行最低数据速率。
-            options.Limits.MinResponseDataRate = null;
-
-            var httpOptions = ConfigurationManager.Root.GetSection("http").Get<HttpOption[]>();
-            foreach (var option in httpOptions)
-            {
-                if (option.IsHttps)
-                {
-                    var filename = option.CerFile[0] == '/'
-                        ? option.CerFile
-                        : Path.Combine(Environment.CurrentDirectory, option.CerFile);
-                    var certificate = new X509Certificate2(filename, option.CerPwd);
-                    options.Listen(IPAddress.Any, option.Port, listenOptions =>
-                    {
-                        listenOptions.UseHttps(certificate);
-                        listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
-                    });
-                }
-                else
-                {
-                    options.Listen(IPAddress.Any, option.Port, listenOptions =>
-                    {
-                        listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
-                    });
-                }
-            }
-        }*/
         #endregion
 
         #region 基本调用
@@ -109,6 +73,82 @@ namespace ZeroTeam.MessageMVC.Http
         /// <returns></returns>
         private static async Task CallTask(HttpContext context)
         {
+            try
+            {
+                if (context.Request.Headers.TryGetValue("User-Agent", out var agent) &&
+                    agent.Count == 1 && agent[0] == MessageRouteOption.AgentName)
+                {
+                    await InnerCall(context);
+                }
+                else
+                {
+                    await OutCall(context);
+                }
+            }
+            catch (Exception e)
+            {
+                LogRecorder.Exception(e);
+                try
+                {
+                    LogRecorder.MonitorTrace(e.Message);
+                    await context.Response.WriteAsync(ApiResultHelper.BusinessErrorJson, Encoding.UTF8);
+                }
+                catch (Exception exception)
+                {
+                    LogRecorder.MonitorTrace(exception.Message);
+                    LogRecorder.Exception(exception);
+                }
+            }
+        }
+
+        #endregion
+
+        #region 内部调用
+
+        /// <summary>
+        /// 外部调用
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        private static async Task InnerCall(HttpContext context)
+        {
+            HttpProtocol.FormatResponse(context.Request, context.Response);
+            //命令
+            if (context.Request.ContentLength == null || context.Request.ContentLength <= 0)
+            {
+                await context.Response.WriteAsync(ApiResultHelper.NotSupportJson, Encoding.UTF8);
+                return;
+            }
+            using var texter = new StreamReader(context.Request.Body);
+            var json = await texter.ReadToEndAsync();
+
+            var message = JsonHelper.DeserializeObject<InlineMessage>(json);
+            if (message == null)
+            {
+                await context.Response.WriteAsync(ApiResultHelper.NotSupportJson, Encoding.UTF8);
+                return;
+            }
+
+            var service = ZeroFlowControl.GetService(message.ServiceName);
+            if (service == null)
+            {
+                await context.Response.WriteAsync(ApiResultHelper.NotSupportJson, Encoding.UTF8);
+                return;
+            }
+            await MessageProcessor.OnMessagePush(service, message, context);
+        }
+
+        #endregion
+
+        #region 外部调用
+
+        /// <summary>
+        /// 外部调用
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        private static async Task OutCall(HttpContext context)
+        {
             HttpProtocol.CrosCall(context.Response);
             var uri = context.Request.GetUri();
             if (uri.AbsolutePath == "/")
@@ -120,46 +160,63 @@ namespace ZeroTeam.MessageMVC.Http
             HttpProtocol.FormatResponse(context.Request, context.Response);
             //命令
             var data = new HttpMessage();
-            try
+            //开始调用
+            if (data.CheckRequest(context))
             {
-                //开始调用
-                if (await data.CheckRequest(context))
+                var service = ZeroFlowControl.GetService(data.ApiHost);
+                if (service == null)
                 {
-                    var service = ZeroFlowControl.GetService(data.ApiHost);
-                    if (service == null)
-                    {
-                        data.Result = ApiResultHelper.NoFindJson;
-                    }
-                    else if (Option.FastCall)
-                    {
-                        await new ApiExecuter().Handle(service, data, null, null);
-                    }
-                    else
-                    {
-                        await MessageProcessor.OnMessagePush(service, data, context);
-                    }
+                    data.Result = ApiResultHelper.NoFindJson;
                 }
-            }
-            catch (Exception e)
-            {
-                LogRecorder.Exception(e);
-                try
+                else if (Option.FastCall)
                 {
-                    LogRecorder.MonitorTrace(e.Message);
-                    //Data.UserState = UserOperatorStateType.LocalException;
-                    //Data.ZeroState = ZeroOperatorStateType.LocalException;
-                    ZeroTrace.WriteException("Route", e);
-                    ////IocHelper.Create<IRuntimeWaring>()?.Waring("Route", Data.Uri.LocalPath, e.Message);
-                    await context.Response.WriteAsync(ApiResultHelper.LocalErrorJson, Encoding.UTF8);
+                    await new ApiExecuter().Handle(service, data, null, null);
                 }
-                catch (Exception exception)
+                else
                 {
-                    LogRecorder.Exception(exception);
+                    await MessageProcessor.OnMessagePush(service, data, context);
                 }
             }
         }
 
         #endregion
 
+
+        #region 测试调用
+
+        /// <summary>
+        /// 测试调用
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        private static async Task TestCall(HttpContext context)
+        {
+            HttpProtocol.CrosCall(context.Response);
+            var uri = context.Request.GetUri();
+            if (uri.AbsolutePath == "/")
+            {
+                //response.Redirect("/index.html");
+                await context.Response.WriteAsync("Wecome MessageMVC,Lucky every day!", Encoding.UTF8);
+                return;
+            }
+            HttpProtocol.FormatResponse(context.Request, context.Response);
+            //命令
+            var data = new HttpMessage();
+            //开始调用
+            if (data.CheckRequest(context))
+            {
+                var service = ZeroFlowControl.GetService(data.ApiHost);
+                if (service == null)
+                {
+                    data.Result = ApiResultHelper.NoFindJson;
+                    return;
+                }
+                data.Inline();
+                var (msg, sei) = await MessagePoster.Post(data);
+                await context.Response.WriteAsync(msg.Result, Encoding.UTF8);
+            }
+        }
+
+        #endregion
     }
 }

@@ -45,7 +45,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             sb.Append(ZeroAppOption.Instance.AppName);
             sb.Append("-");
             sb.Append(RandomCode.Generate(4));
-            return sb.ToString().ToZeroBytes();
+            return sb.ToString().ToBytes();
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
             sb.Append("-");
             sb.Append(RandomCode.Generate(4));
-            return sb.ToString().ToZeroBytes();
+            return sb.ToString().ToBytes();
         }
     }
 }

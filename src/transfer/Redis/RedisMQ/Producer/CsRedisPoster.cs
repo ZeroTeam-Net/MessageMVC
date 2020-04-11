@@ -15,7 +15,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
     /// <summary>
     ///     Redis生产者
     /// </summary>
-    public class CsRedisPoster : IMessagePoster, IFlowMiddleware
+    public class CsRedisPoster : NewtonJsonSerializeProxy, IMessagePoster, IFlowMiddleware
     {
         /// <summary>
         /// 单例
@@ -86,11 +86,10 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                         continue;
                     }
                 }
-                RedisQueueItem item;
 
-                while (redisQueues.TryPeek(out item))
+                while (redisQueues.TryPeek(out RedisQueueItem item))
                 {
-                    if(!!await DoPost(logger, path, item))
+                    if (!await DoPost(logger, path, item))
                     {
                         isFailed = true;
                         break;
@@ -169,17 +168,26 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// </summary>
         /// <param name="message">消息</param>
         /// <returns></returns>
-        public Task<(MessageState state, string result)> Post(IMessageItem message)
+        public Task<IInlineMessage> Post(IMessageItem message)
         {
+            if (message is IInlineMessage inline)
+            {
+                inline.Offline(this);
+            }
+            else
+            {
+                inline = message.ToInline();
+            }
             var item = new RedisQueueItem
             {
                 ID = message.ID,
                 Channel = message.Topic,
-                Message = JsonHelper.SerializeObject(message)
+                Message = ToString(message, false)
             };
             redisQueues.Enqueue(item);
             semaphore.Release();
-            return Task.FromResult((MessageState.Accept, item.ID));
+            inline.State = MessageState.Accept;
+            return Task.FromResult(inline);
         }
 
         #endregion
@@ -236,6 +244,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         {
             client.Dispose();
         }
+
         #endregion
     }
 }

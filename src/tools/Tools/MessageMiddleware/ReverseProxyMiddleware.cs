@@ -35,7 +35,7 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <param name="tag">扩展信息</param>
         /// <param name="next">下一个处理方法</param>
         /// <returns></returns>
-        async Task IMessageMiddleware.Handle(IService service, IMessageItem message, object tag, Func<Task> next)
+        async Task IMessageMiddleware.Handle(IService service, IInlineMessage message, object tag, Func<Task> next)
         {
             if (service.ServiceName == message.Topic)
             {
@@ -52,15 +52,13 @@ namespace ZeroTeam.MessageMVC.Tools
             LogRecorder.MonitorTrace("ReverseProxy To..");
             try
             {
-                var (state, result) = await producer.Post(message);
-                message.Result = result;
-                message.State = state;
+                var msg = await producer.Post(message);
+                msg.GetResult(producer);
+                message.CopyResult(msg);
             }
             catch (Exception ex)
             {
-                LogRecorder.Exception(ex);
-                message.Exception = ex;
-                message.State = MessageState.Exception;
+                throw new MessageReceiveException(nameof(ReverseProxyMiddleware), ex);
             }
         }
     }

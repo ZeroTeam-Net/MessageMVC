@@ -1,6 +1,8 @@
 using Agebull.Common;
+using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Agebull.EntityModel.Common;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -8,6 +10,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
+using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.ZeroMQ.ZeroRPC
@@ -29,11 +32,14 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// </summary>
         int IZeroMiddleware.Level => 0;
 
+        ILogger logger;
+
         /// <summary>
         /// 初始化
         /// </summary>
         public void Initialize()
         {
+            logger = IocHelper.LoggerFactory.CreateLogger(nameof(ZeroPostProxy));
             ZeroRpcFlow.ZeroNetEvents.Add(OnZeroNetEvent);
         }
 
@@ -45,49 +51,12 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         /// 实例
         /// </summary>
-        public static ZeroPostProxy Instance { get; private set; }
+        public static readonly ZeroPostProxy Instance = new ZeroPostProxy();
 
 
         #endregion
 
-        #region Socket
-
-        /// <summary>
-        /// 代理地址
-        /// </summary>
-        private const string InprocAddress = "inproc://ZeroRPCProxy.req";
-
-        /// <summary>
-        /// 本地代理
-        /// </summary>
-        private ZSocket _proxyServiceSocket;
-
-
-        /// <summary>
-        /// 取得连接器
-        /// </summary>
-        /// <param name="station"></param>
-        /// <returns></returns>
-        public static ZSocketEx GetSocket(string station)
-        {
-            return GetSocket(station, RandomCode.Generate(8));
-        }
-
-        /// <summary>
-        /// 取得连接器
-        /// </summary>
-        /// <param name="station"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public static ZSocketEx GetSocket(string station, string name)
-        {
-            if (!StationProxy.TryGetValue(station, out var item))// || item.Config.State != ZeroCenterState.Run
-            {
-                return null;
-            }
-
-            return ZSocketEx.CreateOnceSocket(InprocAddress, item.Config.ServiceKey, name.ToZeroBytes(), ZSocketType.PAIR);
-        }
+        #region 站点变更
 
         /// <summary>
         /// 站点是否已修改
@@ -129,10 +98,72 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             return Task.CompletedTask;
         }
 
+        #endregion
+
+        #region 主循环
+
+        /// <summary>
+        /// 构造
+        /// </summary>
+        public void Start()
+        {
+            Task.Run(Loop);
+        }
+
+        /// <summary>
+        /// 轮询
+        /// </summary>
+        /// <returns>返回False表明需要重启</returns>
+        public bool Loop()
+        {
+            Prepare();
+
+            logger.Information("Run");
+            ZeroRPCPoster.Instance.State = StationStateType.Run;
+            while (CanLoopEx)
+            {
+                Listen();
+            }
+            logger.Information("Close");
+            ZeroRPCPoster.Instance.State = StationStateType.Closed;
+            return true;
+        }
+
+        /// <summary>
+        /// 关闭时的处理
+        /// </summary>
+        /// <returns></returns>
+        public void End()
+        {
+            logger.Information("End");
+            _proxyServiceSocket.Dispose();
+            _zmqPool?.Dispose();
+
+            foreach (var proxyItem in StationProxy.Values)
+            {
+                proxyItem.Socket?.Dispose();
+            }
+            StationProxy.Clear();
+        }
+
+        #endregion
+
+        #region ZMQ Socket
+
         /// <summary>
         /// Pool对象
         /// </summary>
         private IZmqPool _zmqPool;
+
+        /// <summary>
+        /// 代理地址
+        /// </summary>
+        private const string InprocAddress = "inproc://ZeroRPCProxy.req";
+
+        /// <summary>
+        /// 本地代理
+        /// </summary>
+        private ZSocket _proxyServiceSocket;
 
         /// <summary>
         /// 构造Pool
@@ -176,128 +207,15 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             return _zmqPool;
         }
 
-        private ZSocketEx CreateProxySocket(ZeroCaller caller)
-        {
-            if (!ZeroRpcFlow.Config.TryGetConfig(caller.Station, out caller.Config))
-            {
-                caller.Result = ApiResultHelper.NoFindJson;
-                caller.State = ZeroOperatorStateType.NotFind;
-                return null;
-            }
-
-            if (caller.Config.State != ZeroCenterState.None && caller.Config.State != ZeroCenterState.Run)
-            {
-                caller.Result = caller.Config.State == ZeroCenterState.Pause
-                    ? ApiResultHelper.PauseJson
-                    : ApiResultHelper.NotSupportJson;
-                caller.State = ZeroOperatorStateType.Pause;
-                return null;
-            }
-
-            caller.State = ZeroOperatorStateType.None;
-
-            return ZSocketEx.CreateOnceSocket(InprocAddress, null, caller.Name.ToString().ToZeroBytes(), ZSocketType.PAIR);
-        }
-
-        #endregion
-
-        #region RPC
-
-        private static readonly byte[] LayoutErrorFrame = new byte[]
-        {
-            0,
-            (byte) ZeroOperatorStateType.FrameInvalid,
-            ZeroFrameType.ResultEnd
-        };
-
-        /// <summary>
-        /// 发送返回值 
-        /// </summary>
-        /// <param name="caller"></param>
-        /// <returns></returns>
-        private void SendLayoutErrorResult(byte[] caller)
-        {
-            SendResult(new ZMessage
-            {
-                new ZFrame(caller),
-                new ZFrame(LayoutErrorFrame)
-            });
-            Interlocked.Decrement(ref WaitCount);
-        }
-
-        private static readonly byte[] NetErrorFrame = new byte[]
-        {
-            0,
-            (byte) ZeroOperatorStateType.NetError,
-            ZeroFrameType.ResultEnd
-        };
-
-        /// <summary>
-        /// 发送返回值 
-        /// </summary>
-        /// <param name="caller"></param>
-        /// <returns></returns>
-        private void SendNetErrorResult(byte[] caller)
-        {
-            SendResult(new ZMessage
-            {
-                new ZFrame(caller),
-                new ZFrame(NetErrorFrame)
-            });
-            Interlocked.Decrement(ref WaitCount);
-        }
-
-        /// <summary>
-        /// 发送返回值 
-        /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        private void SendResult(ZMessage message)
-        {
-            try
-            {
-                ZError error;
-                lock (_proxyServiceSocket)
-                {
-                    using (message)
-                    {
-                        if (_proxyServiceSocket.Send(message, out error))
-                        {
-                            return;
-                        }
-                    }
-                }
-
-                LogRecorder.MonitorTrace(() => $"ApiProxy({error.Name}) : {error.Text}");
-            }
-            catch (Exception e)
-            {
-                LogRecorder.Exception(e, "ApiStation.SendResult");
-                LogRecorder.MonitorTrace(e.Message);
-            }
-        }
-
-        #endregion
-
-        #region 主循环
-
-        /// <summary>
-        /// 构造
-        /// </summary>
-        public void Start()
-        {
-            Instance = this;
-            Task.Run(Loop);
-        }
-
         /// <summary>
         /// 能不能循环处理
         /// </summary>
-        protected bool CanLoopEx => WaitCount > 0 || ZeroFlowControl.CanDo;
+        protected bool CanLoopEx => WaitCount > 0 || ZeroFlowControl.IsRuning;
 
         private void Prepare()
         {
-            var identity = ZeroAppOption.Instance.TraceName.ToZeroBytes();
+            logger.Information("Prepare");
+            var identity = ZeroAppOption.Instance.TraceName.ToBytes();
             foreach (var config in ZeroRpcFlow.Config.GetConfigs())
             {
                 StationProxy.Add(config.StationName, new StationProxyItem
@@ -308,72 +226,43 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 });
             }
             _proxyServiceSocket = ZSocketEx.CreateServiceSocket(InprocAddress, null, ZSocketType.ROUTER);
-            ZeroTrace.SystemLog("ApiProxy", "Run");
             _isChanged = true;
         }
-        /// <summary>
-        /// 轮询
-        /// </summary>
-        /// <returns>返回False表明需要重启</returns>
-        public bool Loop()
+        private void Listen()
         {
-            Prepare();
-
-            ZeroRPCPoster.Instance.State = StationStateType.Run;
-            while (CanLoopEx)
+            try
             {
-                try
+                if (_isChanged)
                 {
-                    if (_isChanged)
-                    {
-                        _zmqPool = CreatePool();
-                    }
-                    if (!_zmqPool.Poll())
-                    {
-                        continue;
-                    }
+                    _zmqPool = CreatePool();
+                }
+                if (!_zmqPool.Poll())
+                {
+                    return;
+                }
 
-                    if (_zmqPool.CheckIn(0, out var message))
-                    {
-                        OnLocalCall(message);
-                    }
+                if (_zmqPool.CheckIn(0, out var message))
+                {
+                    OnLocalCall(message);
+                }
 
-                    for (int idx = 1; idx < _zmqPool.Size; idx++)
+                for (int idx = 1; idx < _zmqPool.Size; idx++)
+                {
+                    if (_zmqPool.CheckIn(idx, out message))
                     {
-                        if (_zmqPool.CheckIn(idx, out message))
-                        {
-                            OnRemoteResult(message);
-                        }
+                        OnRemoteResult(message);
                     }
                 }
-                catch (Exception e)
-                {
-                    LogRecorder.Exception(e);
-                }
             }
-            ZeroRPCPoster.Instance.State = StationStateType.Closed;
-            return true;
-        }
-
-        /// <summary>
-        /// 关闭时的处理
-        /// </summary>
-        /// <returns></returns>
-        public void End()
-        {
-            _proxyServiceSocket.Dispose();
-            _zmqPool?.Dispose();
-
-            foreach (var proxyItem in StationProxy.Values)
+            catch (Exception e)
             {
-                proxyItem.Socket?.Dispose();
+                logger.Information("Listen exception {0}", e.Message);
             }
-            StationProxy.Clear();
         }
 
         #endregion
 
-        #region 方法
+        #region ZMQ消息处理
 
         /// <summary>
         /// 调用
@@ -381,82 +270,89 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <param name="message"></param>
         private void OnLocalCall(ZMessage message)
         {
-            Interlocked.Increment(ref WaitCount);
+            ulong id;
+            ZMessage message2;
+            StationProxyItem item;
             using (message)
             {
+                id = ulong.Parse(message[0].ToString());
                 var station = message[1].ToString();
-                if (!StationProxy.TryGetValue(station, out var item))
+                if (!StationProxy.TryGetValue(station, out item))
                 {
-                    SendLayoutErrorResult(message[0].ReadAll());
+                    if (Tasks.TryGetValue(id, out var task))
+                    {
+                        task.Caller.Message.State = MessageState.FormalError;
+                        task.Caller.Message.Result = ApiResultHelper.ArgumentErrorJson;
+                        task.TaskSource.SetResult(ZeroOperatorStateType.ArgumentInvalid);
+                    }
                     return;
                 }
-                var message2 = message.Duplicate(2);
-                bool success;
-                ZError error;
-                using (message2)
-                {
-                    success = item.Socket.SendMessage(message2, ZSocketFlags.DontWait, out error);
-                }
-
-                if (success)
-                {
-                    return;
-                }
-
-                ZeroTrace.WriteError("ApiProxy . OnLocalCall", error.Text);
-                var caller = message[0].ReadAll();
-                SendNetErrorResult(caller);
+                message2 = message.Duplicate(2);
+            }
+            logger.Trace("OnLocalCall : {0}", id);
+            bool success;
+            ZError error;
+            using (message2)
+            {
+                success = item.Socket.SendMessage(message2, ZSocketFlags.DontWait, out error);
             }
 
+            if (success)
+            {
+                Interlocked.Increment(ref WaitCount);
+            }
+            else
+            {
+                LogRecorder.Trace(error.Text);
+                if (Tasks.TryGetValue(id, out var task))
+                {
+                    task.Caller.Message.State = MessageState.NetError;
+                    task.Caller.Message.Result = ApiResultHelper.NetworkErrorJson;
+                    task.TaskSource.SetResult(ZeroOperatorStateType.NetError);
+                }
+            }
         }
+
+
 
         private void OnRemoteResult(ZMessage message)
         {
-            long id;
-            ZeroResult result;
-            using (message)
+            ZeroResult result = ZeroResultData.Unpack<ZeroResult>(message, true, (res, type, bytes) =>
             {
-                result = ZeroResultData.Unpack<ZeroResult>(message, true, (res, type, bytes) =>
+                switch (type)
                 {
-                    switch (type)
-                    {
-                        case ZeroFrameType.ResultText:
-                            res.Result = ZeroNetMessage.GetString(bytes);
-                            return true;
-                        case ZeroFrameType.BinaryContent:
-                            res.Binary = bytes;
-                            return true;
-                    }
-                    return false;
-                });
-                if (result.State != ZeroOperatorStateType.Runing)
-                {
-                    Interlocked.Decrement(ref WaitCount);
+                    case ZeroFrameType.ResultText:
+                        res.Result = ZeroNetMessage.GetString(bytes);
+                        return true;
+                        //case ZeroFrameType.BinaryContent:
+                        //    res.Binary = bytes;
+                        //    return true;
                 }
+                return false;
+            });
 
-                if (!long.TryParse(result.Requester, out id))
-                {
-                    using var message2 = message.Duplicate();
-                    message2.Prepend(new ZFrame(result.Requester ?? result.RequestId));
-                    SendResult(message2);
-                    return;
-                }
-            }
-
-            if (!Tasks.TryGetValue(id, out var src))
+            if (!ulong.TryParse(result.Requester, out ulong id))
             {
+                LogRecorder.Trace(() => $"[OnRemoteResult]  Requester error:{result.Requester}");
                 return;
             }
 
-            src.Caller.State = result.State;
             if (result.State == ZeroOperatorStateType.Runing)
             {
-                LogRecorder.Trace($"task:({id})=>Runing");
+                LogRecorder.Trace(() => $"[OnRemoteResult] task:({id})=>Runing");
+                return;
+            }
+
+            Interlocked.Decrement(ref WaitCount);
+            if (!Tasks.TryGetValue(id, out var src))
+            {
+                LogRecorder.Trace(() => $"[OnRemoteResult]  Requester error:{result.Requester}");
                 return;
             }
             Tasks.TryRemove(id, out _);
-            LogRecorder.Trace("OnRemoteResult");
-            if (!src.TaskSource.TrySetResult(result))
+            src.Caller.CheckState(result.State);
+            src.Caller.CheckResult(result.Result, result.State);
+            if (!src.TaskSource.TrySetResult(result.State))
             {
                 LogRecorder.Error($"task:({id})=>Failed result({JsonHelper.SerializeObject(result)})");
             }
@@ -474,46 +370,29 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <param name="description"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        internal Task<ZeroResult> CallZero(ZeroCaller caller, byte[] description, params byte[][] args)
-        {
-            return CallZero(caller, description, (IEnumerable<byte[]>)args);
-        }
-
-        /// <summary>
-        ///     一次请求
-        /// </summary>
-        /// <param name="caller"></param>
-        /// <param name="description"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        internal Task<ZeroResult> CallZero(ZeroCaller caller, byte[] description, IEnumerable<byte[]> args)
+        internal Task<ZeroOperatorStateType> CallZero(ZeroCaller caller, byte[] description, params byte[][] args)
         {
             var socket = CreateProxySocket(caller);
             if (socket == null)
             {
-                return Task.FromResult(new ZeroResult
-                {
-                    State = ZeroOperatorStateType.NoWorker,
-                });
+                return Task.FromResult(ZeroOperatorStateType.NoWorker);
             }
             var info = new TaskInfo
             {
-                Caller = caller,
-                Start = DateTime.Now
+                Caller = caller
             };
-            if (!Tasks.TryAdd(caller.Name, info))
+            if (!Tasks.TryAdd(caller.ID, info))
             {
-                return Task.FromResult(new ZeroResult
-                {
-                    State = ZeroOperatorStateType.NoWorker,
-                });
+                caller.Message.ResultData = ApiResultHelper.Helper.Unavailable;
+                caller.Message.State = MessageState.Error;
+                return Task.FromResult(ZeroOperatorStateType.Unavailable);
             }
 
             using (MonitorScope.CreateScope("SendToZero"))
             {
                 using var message = new ZMessage
                 {
-                    new ZFrame(caller.Station),
+                    new ZFrame(caller.Message.ServiceName),
                     new ZFrame(description)
                 };
                 if (args != null)
@@ -533,19 +412,40 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 }
                 if (!res)
                 {
-                    return Task.FromResult(new ZeroResult
-                    {
-                        State = ZeroOperatorStateType.LocalSendError,
-                        ZmqError = error
-                    });
+                    caller.Message.Result = ApiResultHelper.NetworkErrorJson;
+                    caller.Message.State = MessageState.NetError;
+                    return Task.FromResult(ZeroOperatorStateType.LocalSendError);
                 }
             }
 
-            info.TaskSource = new TaskCompletionSource<ZeroResult>();
+            info.TaskSource = new TaskCompletionSource<ZeroOperatorStateType>();
             return info.TaskSource.Task;
         }
 
-        internal readonly ConcurrentDictionary<long, TaskInfo> Tasks = new ConcurrentDictionary<long, TaskInfo>();
+        private ZSocketEx CreateProxySocket(ZeroCaller caller)
+        {
+            if (!ZeroRpcFlow.Config.TryGetConfig(caller.Message.ServiceName, out caller.Config))
+            {
+                caller.Message.Result = ApiResultHelper.NoFindJson;
+                caller.Message.State = MessageState.NoSupper;
+                return null;
+            }
+
+            if (caller.Config.State != ZeroCenterState.None && caller.Config.State != ZeroCenterState.Run)
+            {
+                caller.Message.Result = caller.Config.State == ZeroCenterState.Pause
+                    ? ApiResultHelper.PauseJson
+                    : ApiResultHelper.NotSupportJson;
+                caller.Message.State = MessageState.NoSupper;
+                return null;
+            }
+
+            caller.Message.State = MessageState.None;
+
+            return ZSocketEx.CreateOnceSocket(InprocAddress, null, caller.ID.ToString().ToBytes(), ZSocketType.PAIR);
+        }
+
+        internal readonly ConcurrentDictionary<ulong, TaskInfo> Tasks = new ConcurrentDictionary<ulong, TaskInfo>();
 
 
         internal class TaskInfo
@@ -553,12 +453,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             /// <summary>
             /// TaskCompletionSource
             /// </summary>
-            public TaskCompletionSource<ZeroResult> TaskSource;
-
-            /// <summary>
-            /// 任务开始时间
-            /// </summary>
-            public DateTime Start;
+            public TaskCompletionSource<ZeroOperatorStateType> TaskSource;
 
             /// <summary>
             /// 调用对象

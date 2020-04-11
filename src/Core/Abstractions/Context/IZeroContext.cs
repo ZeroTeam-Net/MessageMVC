@@ -32,12 +32,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         /// 当前消息
         /// </summary>
-        IMessageItem Message { get; set; }
-
-        /// <summary>
-        ///     依赖对象字典
-        /// </summary>
-        DependencyObjects DependencyObjects { get; }
+        IInlineMessage Message { get; set; }
 
     }
 }

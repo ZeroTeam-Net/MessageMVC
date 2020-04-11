@@ -46,7 +46,7 @@ namespace MicroZero.Http.Gateway
         /// <param name="tag">扩展信息</param>
         /// <param name="next">下一个处理方法</param>
         /// <returns></returns>
-        async Task<bool> IMessageMiddleware.Prepare(IService service, IMessageItem message, object tag)
+        async Task<bool> IMessageMiddleware.Prepare(IService service, IInlineMessage message, object tag)
         {
             return await LoadCache(message as HttpMessage);
         }
@@ -57,7 +57,7 @@ namespace MicroZero.Http.Gateway
         /// </summary>
         /// <param name="message">当前消息</param>
         /// <returns></returns>
-        Task IMessageMiddleware.OnEnd(IMessageItem message)
+        Task IMessageMiddleware.OnEnd(IInlineMessage message)
         {
             CacheResult(message as HttpMessage);
             return Task.CompletedTask;
@@ -83,7 +83,7 @@ namespace MicroZero.Http.Gateway
         private async Task<bool> LoadCache(HttpMessage data)
         {
             var api = $"{data.ApiHost}/{data.ApiName}";
-            if (!CacheMap.TryGetValue(api, out CacheSetting))
+            if (!CacheOption.CacheMap.TryGetValue(api, out CacheSetting))
             {
                 return false;
             }
@@ -92,25 +92,15 @@ namespace MicroZero.Http.Gateway
             kb.Append('?');
             if (CacheSetting.Feature.HasFlag(CacheFeature.Keys))
             {
-                foreach (var key in CacheSetting.Keys)
-                {
-                    if (data.Arguments.TryGetValue(key, out var value))
-                    {
-                        kb.Append($"{key}={value}&");
-                    }
-                }
                 try
                 {
-                    if (!string.IsNullOrWhiteSpace(data.HttpContent))
-                    {
-                        var dic = JsonHelper.DeserializeObject<Dictionary<string, string>>(data.HttpContent);
 
-                        foreach (var key in CacheSetting.Keys)
+                    foreach (var key in CacheSetting.Argument)
+                    {
+                        var value = data.GetValueArgument(key, 0);
+                        if (!string.IsNullOrWhiteSpace(value))
                         {
-                            if (data.Arguments.TryGetValue(key, out var value))
-                            {
-                                kb.Append($"{key}={value}&");
-                            }
+                            kb.Append($"{key}={value}&");
                         }
                     }
                 }
@@ -126,7 +116,7 @@ namespace MicroZero.Http.Gateway
                 }
                 if (CacheSetting.Feature.HasFlag(CacheFeature.QueryString))
                 {
-                    foreach (var kv in data.Arguments)
+                    foreach (var kv in data.HttpArguments)
                     {
                         kb.Append($"{kv.Key}={kv.Value}&");
                     }
@@ -135,12 +125,26 @@ namespace MicroZero.Http.Gateway
                         kb.Append(data.HttpContent);
                     }
                 }
+                if (CacheSetting.Feature.HasFlag(CacheFeature.Form))
+                {
+                    foreach (var kv in data.HttpForms)
+                    {
+                        kb.Append($"{kv.Key}={kv.Value}&");
+                    }
+                }
+                if (CacheSetting.Feature.HasFlag(CacheFeature.Content))
+                {
+                    if (!string.IsNullOrWhiteSpace(data.HttpContent))
+                    {
+                        kb.Append(data.HttpContent);
+                    }
+                }
             }
 
             CacheKey = kb.ToString();
-            if (!Cache.TryGetValue(CacheKey, out var cacheData))
+            if (!CacheOption.Cache.TryGetValue(CacheKey, out var cacheData))
             {
-                Cache.TryAdd(CacheKey, new CacheData
+                CacheOption.Cache.TryAdd(CacheKey, new CacheData
                 {
                     IsLoading = 1,
                     Content = ApiResultHelper.NoReadyJson
@@ -175,140 +179,35 @@ namespace MicroZero.Http.Gateway
         /// <param name="data"></param>
         private void CacheResult(HttpMessage data)
         {
-            if (CacheSetting != null && CacheKey != null)
+            if (CacheSetting == null || CacheKey == null)
             {
-                if (Cache.TryGetValue(CacheKey, out var cd))
-                {
-                    var res = data.IsSucceed ? data.Result : cd.Content;
-                    foreach (var task in cd.Waits.ToArray())
-                    {
-                        task.TrySetResult(res);
-                    }
-                }
-                if (!data.IsSucceed && !CacheSetting.Feature.HasFlag(CacheFeature.NetError))
-                {
-                    return;
-                }
-
-                Cache[CacheKey] = new CacheData
-                {
-                    Content = data.Result,
-                    Success = data.IsSucceed,
-                    IsLoading = 0,
-                    UpdateTime = DateTime.Now.AddSeconds(CacheSetting.FlushSecond)
-                };
-                LogRecorder.MonitorTrace($"Cache succeed {CacheKey}");
+                return;
             }
-            if (/*data.IsSucceed &&*/ UpdateMap.TryGetValue($"{data.ApiHost}/{data.ApiName}", out var uc))
+            if (CacheOption.Cache.TryGetValue(CacheKey, out var cd))
             {
-                var kb = new StringBuilder();
-                kb.Append(uc.CacheApi);
-                kb.Append('?');
-
-                foreach (var map in uc.Map)
+                var res = data.IsSucceed ? data.Result : cd.Content;
+                foreach (var task in cd.Waits.ToArray())
                 {
-                    if (data.Arguments.TryGetValue(map.Key, out var value))
-                    {
-                        kb.Append($"{map.Value}={value}&");
-                    }
-                }
-
-                //var jObject = (JObject)JsonConvert.DeserializeObject(data.Result);
-
-                //foreach (var map in uc.Map)
-                //{
-                //    if (jObject.TryGetValue(map.Key, out var value))
-                //        kb.Append($"{map.Value}={value}&");
-                //}
-                var key = kb.ToString();
-                if (Cache.TryRemove(key, out var cd))
-                {
-                    LogRecorder.MonitorTrace($"Cache remove {key}");
-                    foreach (var task in cd.Waits.ToArray())
-                    {
-                        task.TrySetResult(cd.Content);
-                    }
+                    task.TrySetResult(res);
                 }
             }
+            if (!data.IsSucceed && !CacheSetting.Feature.HasFlag(CacheFeature.NetError))
+            {
+                return;
+            }
+
+            CacheOption.Cache[CacheKey] = new CacheData
+            {
+                Content = data.Result,
+                Success = data.IsSucceed,
+                IsLoading = 0,
+                UpdateTime = DateTime.Now.AddSeconds(CacheSetting.FlushSecond)
+            };
+            LogRecorder.MonitorTrace($"Cache succeed {CacheKey}");
         }
 
         #endregion
 
-        #region 配置
-
-        static RouteCache()
-        {
-            ConfigurationManager.RegistOnChange(LoadOption, true);
-        }
-
-        /// <summary>
-        ///     缓存配置
-        /// </summary>
-        static CacheOption Option = new CacheOption();
-
-
-        /// <summary>
-        ///     缓存数据
-        /// </summary>
-        static readonly ConcurrentDictionary<string, CacheData> Cache = new ConcurrentDictionary<string, CacheData>(StringComparer.OrdinalIgnoreCase);
-
-        /// <summary>
-        ///     路由配置
-        /// </summary>
-        static Dictionary<string, ApiCacheOption> CacheMap { get; set; }
-
-        /// <summary>
-        ///     路由配置
-        /// </summary>
-        static Dictionary<string, CacheFlushOption> UpdateMap { get; set; }
-
-        static void LoadOption()
-        {
-            Cache.Clear();
-            CacheMap = new Dictionary<string, ApiCacheOption>(StringComparer.OrdinalIgnoreCase);
-            UpdateMap = new Dictionary<string, CacheFlushOption>(StringComparer.OrdinalIgnoreCase);
-            try
-            {
-                Option = ConfigurationManager.Option<CacheOption>("Gateway:Chache") ?? new CacheOption();
-
-                if (Option?.Api != null)
-                {
-                    foreach (var setting in Option.Api)
-                    {
-                        setting.Initialize();
-                        if (!CacheMap.ContainsKey(setting.Api))
-                        {
-                            CacheMap.Add(setting.Api, setting);
-                        }
-                        else
-                        {
-                            CacheMap[setting.Api] = setting;
-                        }
-                    }
-                }
-
-                if (Option?.Trigger != null)
-                {
-                    foreach (var setting in Option.Trigger)
-                    {
-                        if (!UpdateMap.ContainsKey(setting.TriggerApi))
-                        {
-                            UpdateMap.Add(setting.TriggerApi, setting);
-                        }
-                        else
-                        {
-                            UpdateMap[setting.TriggerApi] = setting;
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                LogRecorder.Exception(ex);
-            }
-        }
-
-        #endregion
 
     }
 }

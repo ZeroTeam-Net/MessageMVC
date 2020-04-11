@@ -26,7 +26,12 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         ///     用户组织数字标识
         /// </summary>
-        long Organization { get; set; }
+        long OrganizationId { get; set; }
+
+        /// <summary>
+        ///     用户组织名称
+        /// </summary>
+        string OrganizationName { get; set; }
 
     }
 
@@ -37,10 +42,27 @@ namespace ZeroTeam.MessageMVC.Context
     public class UserInfo : IUser
     {
         /// <summary>
+        /// 系统用户标识
+        /// </summary>
+        public const long SystemUserId = 0;
+        /// <summary>
+        /// 系统组织标识
+        /// </summary>
+        public const long SystemOrganizationId = 0;
+
+        /// <summary>
+        /// 未知用户标识
+        /// </summary>
+        public const long UnknownUserId = -1;
+        /// <summary>
+        /// 未知组织标识
+        /// </summary>
+        public const long UnknownOrganizationId = -1;
+        /// <summary>
         ///     应用用户数字标识
         /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate), DefaultValue(-1)]
-        public long UserId { get; set; }
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate), DefaultValue(UnknownUserId)]
+        public long UserId { get; set; } = UnknownUserId;
 
         /// <summary>
         ///     用户编码
@@ -57,8 +79,14 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         ///     用户组织数字标识
         /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate), DefaultValue(UnknownOrganizationId)]
+        public long OrganizationId { get; set; } = UnknownOrganizationId;
+
+        /// <summary>
+        ///     用户组织名称
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public long Organization { get; set; }
+        public string OrganizationName { get; set; }
 
     }
 }

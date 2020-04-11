@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Services;
 
 namespace ZeroTeam.MessageMVC.Messages
@@ -9,8 +11,13 @@ namespace ZeroTeam.MessageMVC.Messages
     /// <remarks>
     /// 实现了IMessagePoster自注册,可以做到本进程调用不会提升到网络层面
     /// </remarks>
-    public class MessageReceiverBase : IMessagePoster
+    public class MessageReceiverBase
     {
+        /// <summary>
+        /// 日志记录器
+        /// </summary>
+        public ILogger Logger { get; set; }
+
         /// <summary>
         /// 服务
         /// </summary>
@@ -24,9 +31,8 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 初始化
         /// </summary>
-        void IMessagePoster.Initialize()
+        public void Initialize()
         {
-
             State = StationStateType.Initialized;
             MessagePoster.RegistPoster(this, Service.ServiceName);
         }
@@ -36,10 +42,47 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         /// <param name="message">消息</param>
         /// <returns></returns>
-        async Task<(MessageState state, string result)> IMessagePoster.Post(IMessageItem message)
+        public async Task<IInlineMessage> Post(IMessageItem message)
         {
-            await MessageProcessor.OnMessagePush(Service, message, null);
-            return (message.State, message.Result);
+            var inline = message.ToInline();
+            await MessageProcessor.OnMessagePush(Service, inline, MessageProcessor.DefaultOriginal);
+            return inline;
         }
+
+
+        #region 序列化
+
+        ///<inheritdoc/>
+        public object Serialize(object soruce)
+        {
+            return Service.Serialize.Serialize(soruce);
+        }
+
+        ///<inheritdoc/>
+        public object Deserialize(object soruce, Type type)
+        {
+            return Service.Serialize.Deserialize(soruce, type);
+        }
+
+
+        ///<inheritdoc/>
+        public T ToObject<T>(string soruce)
+        {
+            return Service.Serialize.ToObject<T>(soruce);
+        }
+
+
+        ///<inheritdoc/>
+        public object ToObject(string soruce, Type type)
+        {
+            return Service.Serialize.ToObject(soruce, type);
+        }
+
+        ///<inheritdoc/>
+        public string ToString(object obj,bool indented)
+        {
+            return Service.Serialize.ToString(obj, indented);
+        }
+        #endregion
     }
 }

@@ -47,13 +47,6 @@ namespace ZeroTeam.MessageMVC.Documents
         public TypeDocument ResultInfo;
 
         /// <summary>
-        ///     Api路由名称
-        /// </summary>
-
-        [JsonProperty("route", NullValueHandling = NullValueHandling.Ignore)]
-        public string RouteName;
-
-        /// <summary>
         ///     Api名称
         /// </summary>
 

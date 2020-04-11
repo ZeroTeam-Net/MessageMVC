@@ -13,7 +13,7 @@
         /// <summary>
         /// 配置错误
         /// </summary>
-        public const int ConfigError = 1;
+        public const int CheckOption = 1;
 
         /// <summary>
         /// 错误状态
@@ -71,8 +71,6 @@
             {
                 case None://0
                     return nameof(None);
-                case ConfigError://1
-                    return nameof(ConfigError);
                 case Failed://2
                     return nameof(Failed);
                 case Initialized: //3

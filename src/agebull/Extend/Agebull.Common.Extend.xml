@@ -823,6 +823,13 @@
             <param name="value"> </param>
             <returns> </returns>
         </member>
+        <member name="M:System.TypeExtend.GetFullTypeName(System.Type)">
+            <summary>
+                得到类型的可读名字
+            </summary>
+            <param name="type"> </param>
+            <returns> </returns>
+        </member>
         <member name="M:System.TypeExtend.GetTypeNameSpace(System.Object)">
             <summary>
               得到对象的可读类型名字
@@ -1529,6 +1536,13 @@
             值格式化扩展
             </summary>
         </member>
+        <member name="M:System.ValueToStringHelper.XmlTrim(System.String)">
+            <summary>
+            清理XML使之最短
+            </summary>
+            <param name="xml"></param>
+            <returns></returns>
+        </member>
         <member name="M:System.ValueToStringHelper.SafeTrim(System.String)">
             <summary>
             安全清除首尾空白
@@ -1784,6 +1798,18 @@
             <summary>
               对于BYTE型的扩展
             </summary>
+        </member>
+        <member name="F:Agebull.Common.ByteHelper.EmptyBytes">
+            <summary>
+            空字节
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.ByteHelper.ToBytes(System.String)">
+            <summary>
+            转为UTF8字节
+            </summary>
+            <param name="str"></param>
+            <returns>字节</returns>
         </member>
         <member name="M:Agebull.Common.ByteHelper.ToByte(System.UInt64)">
             <summary>
@@ -3021,6 +3047,12 @@
             IOC范围对象,内部框架使用
             </summary>
         </member>
+        <member name="M:Agebull.Common.Ioc.IocScope.#ctor(System.String)">
+            <summary>
+            生成一个范围
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:Agebull.Common.Ioc.IocScope.CreateScope(System.String)">
             <summary>
             生成一个范围
@@ -3058,6 +3090,31 @@
             </summary>
         </member>
         <member name="P:Agebull.Common.Ioc.IocScope.Dependency">
+            <summary>
+            附件内容
+            </summary>
+        </member>
+        <member name="T:Agebull.Common.Ioc.ScopeData">
+            <summary>
+            范围数据
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Ioc.ScopeData.Name">
+            <summary>
+            范围名称
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Ioc.ScopeData.Logger">
+            <summary>
+            日志记录器
+            </summary>
+        </member>
+        <member name="F:Agebull.Common.Ioc.ScopeData.DisposeFunc">
+            <summary>
+            析构方法
+            </summary>
+        </member>
+        <member name="F:Agebull.Common.Ioc.ScopeData.Dependency">
             <summary>
             附件内容
             </summary>
@@ -3475,73 +3532,6 @@
             <param name="rootName"> </param>
             <param name="nodes"> </param>
             <returns> </returns>
-        </member>
-        <member name="T:Agebull.Common.JsonHelper">
-            <summary>
-            Json序列化装饰器
-            </summary>
-        </member>
-        <member name="F:Agebull.Common.JsonHelper.EmptyBytes">
-            <summary>
-            空字节
-            </summary>
-        </member>
-        <member name="M:Agebull.Common.JsonHelper.ToZeroBytes(System.String)">
-            <summary>
-            转为UTF8字节
-            </summary>
-            <param name="str"></param>
-            <returns>字节</returns>
-        </member>
-        <member name="M:Agebull.Common.JsonHelper.ToZeroBytes``1(``0)">
-            <summary>
-            转为UTF8字节
-            </summary>
-            <param name="v"></param>
-            <returns>字节</returns>
-        </member>
-        <member name="M:Agebull.Common.JsonHelper.ToJson``1(``0)">
-            <summary>
-            序列化
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="t"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Agebull.Common.JsonHelper.ToJson(System.Object)">
-            <summary>
-            序列化
-            </summary>
-            <param name="t"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Agebull.Common.JsonHelper.SerializeObject``1(``0)">
-            <summary>
-            序列化
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="t"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Agebull.Common.JsonHelper.DeserializeObject``1(System.String)">
-            <summary>
-            反序列化
-            </summary>
-        </member>
-        <member name="M:Agebull.Common.JsonHelper.TryDeserializeObject``1(System.String,``0@)">
-            <summary>
-            反序列化
-            </summary>
-        </member>
-        <member name="M:Agebull.Common.JsonHelper.TryDeserializeObject``1(System.String)">
-            <summary>
-            反序列化
-            </summary>
-        </member>
-        <member name="M:Agebull.Common.JsonHelper.DeserializeObject(System.String,System.Type)">
-            <summary>
-            反序列化
-            </summary>
         </member>
         <member name="T:Agebull.Common.Reflection.EnumHelper">
             <summary>
@@ -3962,7 +3952,7 @@
             <param name="type"> </param>
             <returns> </returns>
         </member>
-        <member name="M:Agebull.Common.Reflection.ReflectionHelper.GetTypeName2(System.Type,System.Boolean)">
+        <member name="M:Agebull.Common.Reflection.ReflectionHelper.GetTypeName(System.Type,System.Boolean)">
             <summary>
                 得到类型的可读名字
             </summary>
@@ -4456,23 +4446,6 @@
             <param name="n"></param>
             <param name="v"></param>
         </member>
-        <member name="T:Agebull.EntityModel.Common.NameValue2">
-            <summary>
-                名称内容对象
-            </summary>
-        </member>
-        <member name="M:Agebull.EntityModel.Common.NameValue2.#ctor">
-            <summary>
-                构造
-            </summary>
-        </member>
-        <member name="M:Agebull.EntityModel.Common.NameValue2.#ctor(System.String,System.Object)">
-            <summary>
-                构造
-            </summary>
-            <param name="n"></param>
-            <param name="v"></param>
-        </member>
         <member name="T:Agebull.EntityModel.Common.CommonExtend">
             <summary>
                 公共方法的一些扩展
@@ -4585,7 +4558,20 @@
                 依赖对象都为IgnoreDataMember属性,即不可网络序列化
             </remarks>
         </member>
+        <member name="M:Agebull.EntityModel.Common.DependencyObjects.Remove``1">
+            <summary>
+                删除一种类型对象
+            </summary>
+        </member>
         <member name="M:Agebull.EntityModel.Common.DependencyObjects.Annex``1(``0)">
+            <summary>
+                附加一种类型对象
+            </summary>
+            <remarks>
+                这种方法只存在一个,即多次附加,只存最后一个对象
+            </remarks>
+        </member>
+        <member name="M:Agebull.EntityModel.Common.DependencyObjects.TryAnnex``1(``0)">
             <summary>
                 附加一种类型对象
             </summary>
@@ -4596,6 +4582,12 @@
         <member name="M:Agebull.EntityModel.Common.DependencyObjects.AutoDependency``1">
             <summary>
                 取得一种类型的扩展属性(可以自动构造或提前附加)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Agebull.EntityModel.Common.DependencyObjects.TryGetDependency``1(System.Func{``0})">
+            <summary>
+                取得一种类型的扩展属性(需要附加)
             </summary>
             <returns></returns>
         </member>
@@ -4610,23 +4602,6 @@
                 取得一种类型的扩展属性(需要附加)
             </summary>
             <returns></returns>
-        </member>
-        <member name="T:Newtonsoft.Json.JsonNumberConverter">
-            <summary>
-                大数字序列化器
-            </summary>
-        </member>
-        <member name="P:Newtonsoft.Json.JsonNumberConverter.CanRead">
-            <inheritdoc />
-        </member>
-        <member name="M:Newtonsoft.Json.JsonNumberConverter.WriteJson(Newtonsoft.Json.JsonWriter,System.Object,Newtonsoft.Json.JsonSerializer)">
-            <inheritdoc />
-        </member>
-        <member name="M:Newtonsoft.Json.JsonNumberConverter.ReadJson(Newtonsoft.Json.JsonReader,System.Type,System.Object,Newtonsoft.Json.JsonSerializer)">
-            <inheritdoc />
-        </member>
-        <member name="M:Newtonsoft.Json.JsonNumberConverter.CanConvert(System.Type)">
-            <inheritdoc />
         </member>
     </members>
 </doc>

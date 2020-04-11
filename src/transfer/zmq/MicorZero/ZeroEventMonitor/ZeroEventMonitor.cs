@@ -1,4 +1,5 @@
 ﻿using Agebull.Common;
+using Agebull.Common.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -35,7 +36,8 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         /// </summary>
         private async Task Monitor()
         {
-            ZeroTrace.SystemLog("Zero center in monitor...");
+            MonitorStateMachine.Logger.Information("Zero center in monitor...");
+
             List<string> subs = new List<string>();
             if (ZeroRpcFlow.Config.CanRaiseEvent != true)
             {
@@ -48,7 +50,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
                 using var poll = ZmqPool.CreateZmqPool();
                 var socket = ZSocketEx.CreateSubSocket(
                     ZeroRpcFlow.Config.Master.MonitorAddress,
-                    ZeroRpcFlow.Config.Master.ServiceKey.ToZeroBytes(),
+                    ZeroRpcFlow.Config.Master.ServiceKey.ToBytes(),
                     ZSocketHelper.CreateIdentity(false, "Monitor"), subs);
 
                 poll.Prepare(ZPollEvent.In, socket);
@@ -74,7 +76,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
                     else if ((DateTime.Now - failed).TotalSeconds > 10)
                     {
                         //超时，连接重置
-                        ZeroTrace.WriteError("Zero center event monitor failed,there was no message for a long time");
+                        MonitorStateMachine.Logger.Error("Zero center event monitor failed,there was no message for a long time");
                         ZeroRpcFlow.ZeroCenterState = ZeroCenterState.Failed;
                         ZeroRpcFlow.RaiseEvent(ZeroNetEventType.CenterSystemStop, true);
                         await Task.Delay(1000);
@@ -82,7 +84,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
                     }
                 }
             }
-            ZeroTrace.SystemLog("Zero center monitor stoped!");
+            MonitorStateMachine.Logger.Information("Zero center monitor stoped!");
             TaskEndSem.Release();
         }
     }

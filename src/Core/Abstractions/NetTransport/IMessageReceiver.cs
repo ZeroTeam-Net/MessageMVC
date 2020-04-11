@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using Microsoft.Extensions.Logging;
+using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Services;
 
@@ -9,6 +10,11 @@ namespace ZeroTeam.MessageMVC.Messages
     /// </summary>
     public interface IMessageReceiver : IMessagePoster
     {
+        /// <summary>
+        /// 日志记录器
+        /// </summary>
+        ILogger Logger { get; set; }
+
         /// <summary>
         /// 服务
         /// </summary>
@@ -64,22 +70,6 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <returns></returns>
         Task Commit() => Task.CompletedTask;
 
-        /// <summary>
-        /// 返回值已给出
-        /// </summary>
-        /// <returns></returns>
-        /// <remarks>
-        /// 默认实现为保证OnCallEnd可控制且不再抛出异常,无特殊需要不应再次实现
-        /// </remarks>
-        async Task<bool> OnMessageResult(MessageProcessor processor, IMessageItem message, object tag)
-        {
-            if (tag == null)//内部自调用,无需处理
-            {
-                return true;
-            }
-
-            return await OnResult(message, tag);
-        }
 
         /// <summary>
         /// 发送返回值 
@@ -88,7 +78,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <remarks>
         /// 默认实现为保证OnCallEnd可控制且不再抛出异常,无特殊需要不应再次实现
         /// </remarks>
-        Task<bool> OnResult(IMessageItem message, object tag) => Task.FromResult(true);
+        Task<bool> OnResult(IInlineMessage message, object tag) => Task.FromResult(true);
 
     }
 }

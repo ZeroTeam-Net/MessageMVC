@@ -1,8 +1,8 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using Agebull.Common.Logging;
 using Newtonsoft.Json;
-using ZeroTeam.MessageMVC;
 
 namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
@@ -107,7 +107,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
             catch (Exception e)
             {
-                ZeroTrace.WriteException("Unpack", e);
+                LogRecorder.Trace(() => $"ZMessage unpack err({e.Message })");
                 publishItem = null;
                 return false;
             }
@@ -156,7 +156,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
             catch (Exception e)
             {
-                ZeroTrace.WriteException("Unpack", e);
+                LogRecorder.Trace(() => $"ZMessage unpack err({e.Message })");
                 publishItem = null;
                 return false;
             }
