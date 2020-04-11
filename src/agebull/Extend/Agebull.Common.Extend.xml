@@ -688,6 +688,14 @@
             <param name="values"> </param>
             <returns> </returns>
         </member>
+        <member name="M:System.EnumExtend.AnyFlags(System.Enum,System.Enum[])">
+            <summary>
+              包含枚举的一或多个值
+            </summary>
+            <param name="source"> </param>
+            <param name="values"> </param>
+            <returns> </returns>
+        </member>
         <member name="T:System.ReflectionExtend">
             <summary>
               表示一个字段的重要程度与分类扩展属性

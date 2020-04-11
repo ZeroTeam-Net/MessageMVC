@@ -43,7 +43,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         Business = 0x40,
 
-        /*// <summary>
+        /// <summary>
         ///     扩展用户性质3
         /// </summary>
         User1 = 0x80,
@@ -81,7 +81,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         ///     扩展用户性质8
         /// </summary>
-        User8 = 0x8000,*/
+        User8 = 0x8000,
 
         /// <summary>
         ///     参数可以为null
@@ -89,7 +89,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ArgumentCanNil = 0x10000,
 
         /// <summary>
-        ///     参数仅为定义,其实不使用
+        ///     参数仅为定义,内部进行自定义读取
         /// </summary>
         ArgumentIsDefault = 0x20000
     }

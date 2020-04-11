@@ -46,7 +46,19 @@ namespace System
         /// <param name="source"> </param>
         /// <param name="values"> </param>
         /// <returns> </returns>
+        [Obsolete]
         public static bool HasSomeFlags(this Enum source, params Enum[] values)
+        {
+            return values.Any(source.HasFlag);
+        }
+
+        /// <summary>
+        ///   包含枚举的一或多个值
+        /// </summary>
+        /// <param name="source"> </param>
+        /// <param name="values"> </param>
+        /// <returns> </returns>
+        public static bool AnyFlags(this Enum source, params Enum[] values)
         {
             return values.Any(source.HasFlag);
         }

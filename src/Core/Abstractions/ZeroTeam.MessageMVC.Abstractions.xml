@@ -681,6 +681,46 @@
                 商家用户
             </summary>
         </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.User1">
+            <summary>
+                扩展用户性质3
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.User2">
+            <summary>
+                扩展用户性质2
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.User3">
+            <summary>
+                扩展用户性质3
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.User4">
+            <summary>
+                扩展用户性质4
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.User5">
+            <summary>
+                扩展用户性质5
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.User6">
+            <summary>
+                扩展用户性质6
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.User7">
+            <summary>
+                扩展用户性质7
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.User8">
+            <summary>
+                扩展用户性质8
+            </summary>
+        </member>
         <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.ArgumentCanNil">
             <summary>
                 参数可以为null
@@ -688,7 +728,7 @@
         </member>
         <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.ArgumentIsDefault">
             <summary>
-                参数仅为定义,其实不使用
+                参数仅为定义,内部进行自定义读取
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOptionFilterAttribute">
@@ -1973,6 +2013,20 @@
             <param name="serializeType">序列化类型</param>
             <param name="serialize">序列化器</param>
             <param name="type">序列化对象</param>
+            <returns>值</returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.GetValueArgument(System.String)">
+            <summary>
+            取参数值
+            </summary>
+            <param name="name">名称</param>
+            <returns>值</returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.GetByteArgument(System.String)">
+            <summary>
+            取参数值
+            </summary>
+            <param name="name">名称</param>
             <returns>值</returns>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.GetValueArgument(System.String,System.Int32,System.Int32,ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Type)">

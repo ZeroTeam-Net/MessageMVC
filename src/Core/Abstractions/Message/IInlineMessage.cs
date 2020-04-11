@@ -218,6 +218,30 @@ namespace ZeroTeam.MessageMVC.Messages
         object GetArgument(int scope, int serializeType, ISerializeProxy serialize, Type type);
 
         /// <summary>
+        /// 取参数值
+        /// </summary>
+        /// <param name="name">名称</param>
+        /// <returns>值</returns>
+        string GetValueArgument(string name)
+        {
+            if (Extend == null || !Extend.TryGetValue(name, out var value) || !(value is string str))
+                return null;
+            return str;
+        }
+
+        /// <summary>
+        /// 取参数值
+        /// </summary>
+        /// <param name="name">名称</param>
+        /// <returns>值</returns>
+        byte[] GetByteArgument(string name)
+        {
+            if (Extend == null || !Extend.TryGetValue(name, out var value) || !(value is byte[] bytes))
+                return null;
+            return bytes;
+        }
+
+        /// <summary>
         /// 取参数值(动态IL代码调用)  BUG
         /// </summary>
         /// <param name="name">名称</param>

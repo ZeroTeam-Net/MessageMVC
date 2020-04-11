@@ -156,6 +156,7 @@ namespace ZeroTeam.MessageMVC.Messages
                 return null;
             return value?.ToString();//需要优化
         }
+
     }
 }
 
