@@ -44,7 +44,8 @@ namespace ZeroTeam.MessageMVC.Http
         /// <returns></returns>
         Task<bool> IMessageMiddleware.Prepare(IService service, IInlineMessage message, object tag)
         {
-            return CheckToken2(message);
+            Message = (HttpMessage)message;
+            return CheckToken2();
         }
         #endregion
 
@@ -204,28 +205,27 @@ namespace ZeroTeam.MessageMVC.Http
         ///     1：令牌为空或不合格
         ///     2：令牌是伪造的
         /// </returns>
-        private async Task<bool> CheckToken2(IInlineMessage msg)
+        private async Task<bool> CheckToken2()
         {
             if (!SecurityOption.Instance.EnableAuth)
             {
                 return true;
             }
-            var message = msg as HttpMessage;
             try
             {
-                if (message.HttpArguments.ContainsKey("token"))
+                if (Message.HttpArguments.ContainsKey("token"))
                 {
-                    message.HttpArguments.Remove("token");
+                    Message.HttpArguments.Remove("token");
                 }
 
                 if (!CheckApisInner())
                 {
-                    message.State = MessageState.NoSupper;
-                    message.Result = ApiResultHelper.DenyAccessJson;
+                    Message.State = MessageState.NoSupper;
+                    Message.Result = ApiResultHelper.DenyAccessJson;
                     return false;
                 }
 
-                if (string.IsNullOrWhiteSpace(message.Trace.Token))
+                if (string.IsNullOrWhiteSpace(Message.Trace.Token))
                 {
                     //if (Data.ApiItem != null && Data.ApiItem.NeedLogin)
                     //{
@@ -243,29 +243,29 @@ namespace ZeroTeam.MessageMVC.Http
                 var (state, json, result) = await CheckToken();
                 if (state != MessageState.Success)
                 {
-                    message.State = MessageState.NetError;
-                    message.Result = ApiResultHelper.UnavailableJson;
+                    Message.State = MessageState.NetError;
+                    Message.Result = ApiResultHelper.UnavailableJson;
                     return false;
                 }
 
                 if (result == null || !result.Success)
                 {
-                    message.State = MessageState.NoSupper;
-                    message.Result = json;
+                    Message.State = MessageState.NoSupper;
+                    Message.Result = json;
                     return false;
                 }
                 return true;
             }
             catch (Exception ex)
             {
-                message.RuntimeStatus = IocHelper.Create<IOperatorStatus>();
-                message.RuntimeStatus.Exception = ex;
-                if (message.ResultCreater != null)
-                    message.ResultData = message.ResultCreater(DefaultErrorCode.UnhandleException, null);
+                Message.RuntimeStatus = IocHelper.Create<IOperatorStatus>();
+                Message.RuntimeStatus.Exception = ex;
+                if (Message.ResultCreater != null)
+                    Message.ResultData = Message.ResultCreater(DefaultErrorCode.UnhandleException, null);
                 else
-                    message.Result ??= ex.Message;
+                    Message.Result ??= ex.Message;
 
-                message.State = MessageState.NetError;
+                Message.State = MessageState.NetError;
                 LogRecorder.Exception(ex);
                 return false;
             }
@@ -333,7 +333,7 @@ namespace ZeroTeam.MessageMVC.Http
                     API = $"{Message.ApiHost}/{Message.ApiName}"
                 })
             };
-            var (msg, sec) = await MessagePoster.Post(message);
+            var (msg, _) = await MessagePoster.Post(message);
 
             return (msg.State, msg.Result, ApiResultHelper.Helper.DeserializeInterface<IUser>(msg.Result));
         }

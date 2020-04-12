@@ -34,7 +34,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         ///     需要登录
         /// </summary>
-        public bool NeedLogin => (Access & (ApiAccessOption.Employe | ApiAccessOption.Customer | ApiAccessOption.Business)) > 0;
+        public bool NeedLogin => !Access.HasFlag(ApiAccessOption.Anymouse);
 
         /// <summary>
         ///     是否公开接口
@@ -179,7 +179,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 return arg.Validate(out message);
             }
 
-            if (data.ArgumentData != null && Access.HasFlag(ApiAccessOption.ArgumentCanNil))
+            if (data.ArgumentData != null || Access.HasFlag(ApiAccessOption.ArgumentCanNil))
             {
                 message = null;
                 return true;

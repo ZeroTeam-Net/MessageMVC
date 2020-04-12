@@ -28,10 +28,10 @@ namespace ZeroTeam.MessageMVC.ConfigSync
                 services.AddTransient<IMessageMiddleware, LoggerMiddleware>();
             }
             //启用调用链跟踪(使用IZeroContext全局上下文)
+            services.AddTransient<IMessageMiddleware, GlobalContextMiddleware>();
             if (ToolsOption.Instance.EnableLinkTrace)
             {
                 GlobalContext.EnableLinkTrace = true;
-                services.AddTransient<IMessageMiddleware, GlobalContextMiddleware>();
                 LogRecorder.GetUserNameFunc = () => GlobalContext.CurrentNoLazy?.User?.UserId.ToString() ?? "-1";
                 LogRecorder.GetRequestIdFunc = () => GlobalContext.CurrentNoLazy?.Trace?.TraceId ?? RandomCode.Generate(10);
             }

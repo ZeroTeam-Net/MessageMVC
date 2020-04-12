@@ -1,5 +1,3 @@
-using Agebull.Common;
-using Agebull.Common.Configuration;
 using Agebull.Common.Ioc;
 using Agebull.Common.Reflection;
 using Agebull.EntityModel.Common;
@@ -91,11 +89,13 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 var service = ZeroFlowControl.TryGetZeroObject(serviceInfo.Name);
                 if (service == null)
                 {
-                    service = new ZeroService();// IocHelper.Create<IService>();
-                    service.IsAutoService = true;
-                    service.ServiceName = serviceInfo.Name;
-                    service.Serialize = SelectSerialize(serviceInfo.Serialize);
-                    service.Receiver = serviceInfo.NetBuilder(serviceInfo.Name);
+                    service = new ZeroService
+                    {
+                        IsAutoService = true,
+                        ServiceName = serviceInfo.Name,
+                        Serialize = SelectSerialize(serviceInfo.Serialize),
+                        Receiver = serviceInfo.NetBuilder(serviceInfo.Name)
+                    };// IocHelper.Create<IService>();
 
                     ZeroFlowControl.RegistService(service);
                 }
@@ -166,7 +166,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             }
 
             var defPage = type.GetCustomAttributes<ApiPageAttribute>().FirstOrDefault()?.PageUrl?.SafeTrim();
-            var defOption = type.GetCustomAttributes<ApiAccessOptionFilterAttribute>().FirstOrDefault()?.Option;
+            var defOption = type.GetCustomAttributes<ApiAccessOptionFilterAttribute>().FirstOrDefault()?.Option ?? ApiAccessOption.OpenAccess;
             var defCategory = type.GetCustomAttributes<CategoryAttribute>().FirstOrDefault()?.Category.SafeTrim();
 
             foreach (var method in type.GetMethods(BindingFlags.Instance | BindingFlags.Public))
@@ -194,7 +194,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     throw new NotSupportedException($"{type}序列化方式暂不支持");
             };
         }
-        private void CheckMethod(Type type, XmlMember docx, ServiceInfo serviceInfo, string routeHead, string defPage, ApiAccessOption? defOption, string defCategory, MethodInfo method)
+        private void CheckMethod(Type type, XmlMember docx, ServiceInfo serviceInfo, string routeHead, string defPage, ApiAccessOption defOption, string defCategory, MethodInfo method)
         {
             var routeAttribute = method.GetCustomAttributes<RouteAttribute>().FirstOrDefault();
             if (routeAttribute == null)
@@ -219,13 +219,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 option = accessOption.Option;
             }
-            else if (defOption != null)
-            {
-                option = defOption.Value;
-            }
             else
             {
-                option = ApiAccessOption.Internal | ApiAccessOption.Customer | ApiAccessOption.Employe | ApiAccessOption.ArgumentCanNil;
+                option = defOption;
             }
 
             var category = method.GetCustomAttributes<CategoryAttribute>().FirstOrDefault()?.Category.SafeTrim();

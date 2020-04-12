@@ -473,7 +473,7 @@ namespace ZeroTeam.MessageMVC.Services
                 ApiActions[name] = action;
             }
             logger ??= IocHelper.LoggerFactory.CreateLogger($"ZeroService({ServiceName})");
-            logger.Information(() => $"[Regist Action] {name}({info.Controller}.{info.Name})");
+            logger.Trace(() => $"[Regist Action] {name}({info.Controller}.{info.Name})");
         }
 
         #endregion

@@ -41,6 +41,7 @@ namespace ZeroTeam.MessageMVC.Context
             if (message.Trace?.Context != null)
             {
                 GlobalContext.SetContext(message.Trace.Context);
+                message.Trace.Context = null;
             }
             else
             {
@@ -66,10 +67,10 @@ namespace ZeroTeam.MessageMVC.Context
                     GlobalContext.Current.Option.Add("EnableLinkTrace", "true");
                 }
             }
+
             if (GlobalContext.Current.Trace == null)
             {
-                GlobalContext.Current.Trace = message.Trace ?? TraceInfo.New(message.ID);
-                GlobalContext.Current.Trace.Context = null;
+                GlobalContext.Current.Trace = message.Trace;
             }
 
             await next();

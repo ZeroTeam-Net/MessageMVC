@@ -11,38 +11,25 @@ namespace ZeroTeam.MessageMVC.Messages
     [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class InlineMessage : MessageItem, IInlineMessage
     {
+        private Dictionary<string, string> dictionary;
         /// <summary>
-        ///     开始时间
+        /// 字典参数
         /// </summary>
-
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public DateTime? Start { get; set; }
-
-        /// <summary>
-        ///     结束时间
-        /// </summary>
-
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public DateTime? End { get; set; }
-
-        private Dictionary<string, object> extend;
-        /// <summary>
-        /// 其他带外内容
-        /// </summary>
-        public Dictionary<string, object> Extend
+        public Dictionary<string, string> Dictionary
         {
-            get => extend; set
+            get => dictionary; 
+            set
             {
                 IsInline = true;
                 ArgumentOutdated = true;
-                extend = value;
+                dictionary = value;
             }
         }
 
         private object argumentData;
 
         /// <summary>
-        /// 参数
+        /// 实体参数
         /// </summary>
         public object ArgumentData
         {
@@ -152,9 +139,9 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <returns>值</returns>
         public object GetValueArgument(string name, int scope, int serializeType, ISerializeProxy serialize, Type type)
         {
-            if (Extend == null || !Extend.TryGetValue(name, out var value))
+            if (Dictionary == null || !Dictionary.TryGetValue(name, out var value))
                 return null;
-            return value?.ToString();//需要优化
+            return value;
         }
 
     }

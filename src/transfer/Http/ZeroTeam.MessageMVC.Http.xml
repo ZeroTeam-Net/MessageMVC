@@ -11,12 +11,12 @@
         </member>
         <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.ArgumentData">
             <summary>
-            参数
+            实体参数
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.Extend">
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.Dictionary">
             <summary>
-            其他带外内容
+            字典参数
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.IsInline">

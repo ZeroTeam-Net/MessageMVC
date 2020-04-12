@@ -1,4 +1,3 @@
-using Agebull.Common;
 using Agebull.Common.Logging;
 using System;
 using System.Threading;
@@ -77,10 +76,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 return;
             }
             //2 确定调用方法及对应权限
-            if (action.Access.AnyFlags(ApiAccessOption.Customer | ApiAccessOption.Employe | ApiAccessOption.Business)
+            if (!ZeroAppOption.Instance.IsOpenAccess &&
+                (!action.Access.AnyFlags(ApiAccessOption.Anymouse) || action.Access.AnyFlags(ApiAccessOption.Authority))
                 && (GlobalContext.User == null || GlobalContext.User.UserId <= UserInfo.SystemOrganizationId))
             {
-                LogRecorder.Trace("错误: 需要用户令牌");
+                LogRecorder.Trace("错误: 需要用户登录信息");
                 if (action.IsApiContract)
                 {
                     Message.ResultData = ApiResultHelper.Error(DefaultErrorCode.DenyAccess, "错误: 需要用户令牌");
@@ -144,13 +144,13 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         {
             //还原参数
             Message.Inline(action.ArgumentSerializer ?? Service.Serialize,
-                action.Access.HasFlag(ApiAccessOption.ArgumentIsDefault) ? null : action.ArgumentType,
+                action.Access.HasFlag(ApiAccessOption.DictionaryArgument) ? null : action.ArgumentType,
                 action.ResultSerializer,
                 ApiResultHelper.Error);
 
 
             //3 参数校验
-            if (action.Access.HasFlag(ApiAccessOption.ArgumentIsDefault))
+            if (action.Access.HasFlag(ApiAccessOption.DictionaryArgument))
             {
                 return true;
             }

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 using ZeroTeam.MessageMVC.Context;
 
 namespace ZeroTeam.MessageMVC.Messages
@@ -45,6 +46,12 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public string Content { get; set; }
+
+        /// <summary>
+        /// 其他二进制内容
+        /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+        public Dictionary<string, byte[]> Binary { get; set; }
 
 
         /// <summary>

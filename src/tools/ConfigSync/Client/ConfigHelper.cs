@@ -10,9 +10,10 @@ namespace ZeroTeam.MessageMVC.ConfigSync
     public static class ConfigHelper
     {
         /// <summary>
-        /// 保存到文件
+        /// 配置节点保存到文件
         /// </summary>
-        /// <param name="section"></param>
+        /// <param name="section">配置节点名称</param>
+        /// <param name="json">配置JSON内容</param>
         /// <returns></returns>
         public static async Task SaveToFile(string section, string json = null)
         {

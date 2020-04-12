@@ -1,5 +1,6 @@
 using Agebull.Common.Ioc;
 using Newtonsoft.Json;
+using System;
 
 namespace ZeroTeam.MessageMVC.Context
 {
@@ -10,10 +11,7 @@ namespace ZeroTeam.MessageMVC.Context
     [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public static class GlobalContext
     {
-        /// <summary>
-        ///     当前线程的调用上下文
-        /// </summary>
-        public static IUser User => Current.User;
+        #region 上下文对象处理
 
         /// <summary>
         ///     当前线程的调用上下文
@@ -25,23 +23,6 @@ namespace ZeroTeam.MessageMVC.Context
         /// </summary>
         public static IZeroContext CurrentNoLazy => IocScope.Dependency.Dependency<IZeroContext>();
 
-        static bool enableLinkTrace ;
-
-        /// <summary>
-        ///     启用调用链跟踪,默认为AppOption中的设置, 可通过远程传递而扩散
-        /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public static bool EnableLinkTrace
-        {
-            set => enableLinkTrace = value;
-            get => enableLinkTrace || CurrentNoLazy?.Option["EnableLinkTrace"] == "true";
-        }
-
-        /// <summary>
-        /// 表示一个匿名用户
-        /// </summary>
-        public static IUser Anymouse { get; } = IocHelper.Create<IUser>();
-
         /// <summary>
         ///     设置当前上下文（框架内调用，外部误用后果未知）
         /// </summary>
@@ -50,7 +31,7 @@ namespace ZeroTeam.MessageMVC.Context
         {
             if (null == context)
             {
-                IocScope.Dependency.Remove< IZeroContext>();
+                IocScope.Dependency.Remove<IZeroContext>();
             }
             else
             {
@@ -68,5 +49,72 @@ namespace ZeroTeam.MessageMVC.Context
         /// </summary>
         public static void SetEmpty() => IocScope.Dependency.Remove<IZeroContext>();
 
+        #endregion
+
+        #region 用户
+        /// <summary>
+        ///     当前线程的调用上下文
+        /// </summary>
+        public static IUser User => Current.User;
+
+        /// <summary>
+        /// 表示一个匿名用户
+        /// </summary>
+        public static IUser Anymouse { get; } = IocHelper.Create<IUser>();
+
+        #endregion
+
+        #region 上下文配置
+
+        static bool enableLinkTrace;
+
+        /// <summary>
+        ///     启用调用链跟踪,默认为AppOption中的设置, 可通过远程传递而扩散
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public static bool EnableLinkTrace
+        {
+            set => enableLinkTrace = value;
+            get => enableLinkTrace || IsOptionTrue("EnableLinkTrace");
+        }
+        /// <summary>
+        /// 上下文配置指定名称是否配置为true
+        /// </summary>
+        /// <param name="name">配置名称</param>
+        /// <param name="destValue">用于对比的目标值</param>
+        /// <param name="comparison">文本比较方式(默认为忽略大小写)</param>
+        /// <returns></returns>
+        public static bool IsOptionEquals(string name, string destValue, StringComparison comparison = StringComparison.OrdinalIgnoreCase)
+        {
+            if (CurrentNoLazy?.Option == null ||
+                CurrentNoLazy.Option.TryGetValue(name, out var op) != true
+                || string.IsNullOrEmpty(op))
+                return false;
+            return string.Equals(op, destValue, comparison);
+        }
+
+        /// <summary>
+        /// 上下文配置指定名称是否配置为true
+        /// </summary>
+        /// <param name="name">配置名称</param>
+        /// <returns></returns>
+        public static bool IsOptionTrue(string name)
+        {
+            return IsOptionEquals(name, "true");
+        }
+        /// <summary>
+        /// 取子网上下文配置指定名称的内容(不存在则为空)
+        /// </summary>
+        /// <param name="name">配置名称</param>
+        /// <returns></returns>
+        public static string GetOption(string name)
+        {
+            if (CurrentNoLazy?.Option == null ||
+                CurrentNoLazy.Option.TryGetValue(name, out var op) != true)
+                return null;
+            return op;
+        }
+
+        #endregion
     }
 }

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
@@ -27,14 +28,14 @@ namespace ZeroTeam.MessageMVC.Http
         #region IMessageItem
 
         /// <summary>
-        /// 参数
+        /// 实体参数
         /// </summary>
         public object ArgumentData { get; set; }
 
         /// <summary>
-        /// 其他带外内容
+        /// 字典参数
         /// </summary>
-        public Dictionary<string, object> Extend { get; set; }
+        public Dictionary<string, string> Dictionary { get; set; }
 
         /// <summary>
         /// 是否已在线
@@ -145,7 +146,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// <summary>
         ///     请求的表单
         /// </summary>
-        public Dictionary<string, object> HttpForms { get => Extend; set => Extend = value; }
+        public Dictionary<string, string> HttpForms { get => Dictionary; set => Dictionary = value; }
 
         /// <summary>
         ///     请求的内容字典
@@ -362,12 +363,13 @@ namespace ZeroTeam.MessageMVC.Http
             return null;
         }
 
-        private void ReadFiles(Dictionary<string, object> ext)
+        private void ReadFiles()
         {
             if (!HttpRoute.Option.EnableFormFile)
             {
                 return;
             }
+            Binary = new Dictionary<string, byte[]>();
             var request = HttpContext.Request;
             var files = request.Form?.Files;
             if (files == null || files.Count <= 0)
@@ -381,26 +383,26 @@ namespace ZeroTeam.MessageMVC.Http
                 {
                     stream.Read(bytes, 0, (int)file.Length);
                 }
-                ext.TryAdd(file.Name, bytes);
+                Binary.TryAdd(file.Name, bytes);
             }
         }
 
 
 
-        string PrepareContent()
+        async Task<string> PrepareContent()
         {
             var request = HttpContext.Request;
             if (request.ContentLength != null && request.ContentLength > 0)
             {
                 using var texter = new StreamReader(request.Body);
-                return texter.ReadToEnd() ?? string.Empty;
+                return await texter.ReadToEndAsync() ?? string.Empty;
             }
             return string.Empty;
         }
 
-        private Dictionary<string, object> PrepareHttpForm()
+        private Dictionary<string, string> PrepareHttpForm()
         {
-            var arguments = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            var arguments = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             var request = HttpContext.Request;
             try
             {
@@ -411,7 +413,7 @@ namespace ZeroTeam.MessageMVC.Http
                         arguments.TryAdd(key, request.Form[key]);
                     }
                 }
-                ReadFiles(arguments);
+                ReadFiles();
             }
             catch
             {
@@ -452,7 +454,7 @@ namespace ZeroTeam.MessageMVC.Http
                 ArgumentOutdated = false;
                 Content = ArgumentData == null
                     ? GetContent(ArgumentScope.Content, ref serialize)
-                    : (ResultSerializer ?? serialize).ToString(ArgumentData ?? Extend);
+                    : (ResultSerializer ?? serialize).ToString(ArgumentData ?? Dictionary);
             }
             ((IInlineMessage)this).GetResult(serialize);
             return this;
@@ -461,7 +463,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// <summary>
         /// 如果未上线且还原参数为字典,否则什么也不做
         /// </summary>
-        internal void Inline()
+        internal async void Inline()
         {
             if (IsInline)
                 return;
@@ -470,15 +472,15 @@ namespace ZeroTeam.MessageMVC.Http
             try
             {
                 HttpArguments ??= PrepareHttpArgument();
-                if(Extend == null)
+                if (Dictionary == null)
                 {
-                    Extend = PrepareHttpForm();
-                    foreach(var kv in HttpArguments)
+                    Dictionary = PrepareHttpForm();
+                    foreach (var kv in HttpArguments)
                     {
-                        Extend.TryAdd(kv.Key, kv.Value);
+                        Dictionary.TryAdd(kv.Key, kv.Value);
                     }
                 }
-                HttpContent ??= PrepareContent();
+                HttpContent ??= await PrepareContent();
             }
             catch (Exception e)
             {
@@ -506,7 +508,7 @@ namespace ZeroTeam.MessageMVC.Http
                     if (!string.IsNullOrEmpty(HttpContent))
                         ArgumentData = serialize.ToObject(HttpContent, type);
                     else
-                        ArgumentData = JsonHelper.DeserializeObject(JsonHelper.SerializeObject(Extend), type);
+                        ArgumentData = JsonHelper.DeserializeObject(JsonHelper.SerializeObject(Dictionary), type);
                 }
             }
             catch (Exception e)

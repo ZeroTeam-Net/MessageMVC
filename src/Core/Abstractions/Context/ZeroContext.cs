@@ -18,6 +18,7 @@ namespace ZeroTeam.MessageMVC.Context
         {
             User = IocHelper.Create<IUser>();//防止反序列化失败
             Status = new ContextStatus();
+            Option = new Dictionary<string, string>();
         }
 
         /// <summary>

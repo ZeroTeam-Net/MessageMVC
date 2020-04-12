@@ -653,72 +653,22 @@
         </member>
         <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.Public">
             <summary>
-                公开访问(无需授权)
+                公开访问(网关入口)
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.Internal">
             <summary>
-                内部访问(需要授权)
+                内部访问(内部Poster)
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.Anymouse">
             <summary>
-                游客
+                匿名访问
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.Customer">
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.Authority">
             <summary>
-                客户
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.Employe">
-            <summary>
-                内部员工
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.Business">
-            <summary>
-                商家用户
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.User1">
-            <summary>
-                扩展用户性质3
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.User2">
-            <summary>
-                扩展用户性质2
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.User3">
-            <summary>
-                扩展用户性质3
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.User4">
-            <summary>
-                扩展用户性质4
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.User5">
-            <summary>
-                扩展用户性质5
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.User6">
-            <summary>
-                扩展用户性质6
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.User7">
-            <summary>
-                扩展用户性质7
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.User8">
-            <summary>
-                扩展用户性质8
+                需要身份验证
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.ArgumentCanNil">
@@ -726,9 +676,24 @@
                 参数可以为null
             </summary>
         </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.DictionaryArgument">
+            <summary>
+                参数仅为定义,内部进行通过字典读取
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.OpenAccess">
+            <summary>
+            开放访问,即公开且匿名访问
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.UserAccess">
+            <summary>
+            用户访问,即公开且需要身份验证
+            </summary>
+        </member>
         <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.ArgumentIsDefault">
             <summary>
-                参数仅为定义,内部进行自定义读取
+                参数仅为定义,内部进行通过字典读取
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOptionFilterAttribute">
@@ -978,6 +943,11 @@
                 当前应用名称
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.IsOpenAccess">
+            <summary>
+                开放式访问
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.MaxWorkThreads">
             <summary>
               线程池最大工作线程数
@@ -1126,11 +1096,6 @@
                 全局上下文
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Context.GlobalContext.User">
-            <summary>
-                当前线程的调用上下文
-            </summary>
-        </member>
         <member name="P:ZeroTeam.MessageMVC.Context.GlobalContext.Current">
             <summary>
                 当前线程的调用上下文
@@ -1139,16 +1104,6 @@
         <member name="P:ZeroTeam.MessageMVC.Context.GlobalContext.CurrentNoLazy">
             <summary>
                 当前线程的调用上下文(无懒构造)
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Context.GlobalContext.EnableLinkTrace">
-            <summary>
-                启用调用链跟踪,默认为AppOption中的设置, 可通过远程传递而扩散
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Context.GlobalContext.Anymouse">
-            <summary>
-            表示一个匿名用户
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Context.GlobalContext.SetContext(ZeroTeam.MessageMVC.Context.IZeroContext)">
@@ -1166,6 +1121,44 @@
             <summary>
                 置空并销毁当前上下文
             </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.GlobalContext.User">
+            <summary>
+                当前线程的调用上下文
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.GlobalContext.Anymouse">
+            <summary>
+            表示一个匿名用户
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.GlobalContext.EnableLinkTrace">
+            <summary>
+                启用调用链跟踪,默认为AppOption中的设置, 可通过远程传递而扩散
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Context.GlobalContext.IsOptionEquals(System.String,System.String,System.StringComparison)">
+            <summary>
+            上下文配置指定名称是否配置为true
+            </summary>
+            <param name="name">配置名称</param>
+            <param name="destValue">用于对比的目标值</param>
+            <param name="comparison">文本比较方式(默认为忽略大小写)</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Context.GlobalContext.IsOptionTrue(System.String)">
+            <summary>
+            上下文配置指定名称是否配置为true
+            </summary>
+            <param name="name">配置名称</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Context.GlobalContext.GetOption(System.String)">
+            <summary>
+            取子网上下文配置指定名称的内容(不存在则为空)
+            </summary>
+            <param name="name">配置名称</param>
+            <returns></returns>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Context.IUser">
             <summary>
@@ -1914,12 +1907,12 @@
         </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.ArgumentData">
             <summary>
-            参数
+            实体参数
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.Extend">
+        <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.Dictionary">
             <summary>
-            其他带外内容
+            字典参数
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.ResultOutdated">
@@ -2015,14 +2008,14 @@
             <param name="type">序列化对象</param>
             <returns>值</returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.GetValueArgument(System.String)">
+        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.GetStringArgument(System.String)">
             <summary>
             取参数值
             </summary>
             <param name="name">名称</param>
             <returns>值</returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.GetByteArgument(System.String)">
+        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.GetBinaryArgument(System.String)">
             <summary>
             取参数值
             </summary>
@@ -2065,6 +2058,11 @@
             内容
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.IMessageItem.Binary">
+            <summary>
+            其他二进制内容
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.IMessageItem.Result">
             <summary>
             处理结果,对应状态的解释信息
@@ -2100,24 +2098,14 @@
             消息交互格式
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.InlineMessage.Start">
+        <member name="P:ZeroTeam.MessageMVC.Messages.InlineMessage.Dictionary">
             <summary>
-                开始时间
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.InlineMessage.End">
-            <summary>
-                结束时间
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.InlineMessage.Extend">
-            <summary>
-            其他带外内容
+            字典参数
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.InlineMessage.ArgumentData">
             <summary>
-            参数
+            实体参数
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.InlineMessage.IsInline">
@@ -2295,6 +2283,11 @@
         <member name="P:ZeroTeam.MessageMVC.Messages.MessageItem.Content">
             <summary>
             内容
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.MessageItem.Binary">
+            <summary>
+            其他二进制内容
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.MessageItem.Result">

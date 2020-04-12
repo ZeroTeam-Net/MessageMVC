@@ -30,10 +30,7 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <summary>
         /// 准备
         /// </summary>
-        /// <param name="service">当前服务</param>
         /// <param name="message">当前消息</param>
-        /// <param name="tag">扩展信息</param>
-        /// <param name="next">下一个处理方法</param>
         /// <returns></returns>
         async Task IMessageMiddleware.OnEnd(IInlineMessage message)
         {

@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Runtime.Serialization;
 using ZeroTeam.MessageMVC.Context;
 
@@ -16,7 +15,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         public OperatorTrace()
         {
-            if (GlobalContext.CurrentNoLazy?.Option["EnableLinkTrace"] == "true")
+            if (GlobalContext.EnableLinkTrace)
             {
                 Point = $"{GlobalContext.CurrentNoLazy?.Trace?.LocalMachine}|{GlobalContext.CurrentNoLazy?.Trace?.LocalApp}";
                 RequestId = GlobalContext.CurrentNoLazy?.Trace?.TraceId;

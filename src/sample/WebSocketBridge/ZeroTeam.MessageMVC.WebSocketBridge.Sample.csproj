@@ -7,7 +7,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\middleware\WebSocketBridge\ZeroTeam.MessageMVC.WebSocketBridge.csproj" />
     <ProjectReference Include="..\..\transfer\Redis\RedisMQ\ZeroTeam.MessageMVC.RedisMQ.csproj" />
-    <ProjectReference Include="..\..\transfer\zmq\Inproc\ZeroTeam.ZeroMQ.Inproc.csproj" />
   </ItemGroup>
 
   <ItemGroup>

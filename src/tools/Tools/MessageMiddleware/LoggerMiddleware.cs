@@ -34,7 +34,6 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <param name="service">当前服务</param>
         /// <param name="message">当前消息</param>
         /// <param name="tag">扩展信息</param>
-        /// <param name="next">下一个处理方法</param>
         /// <returns></returns>
         Task<bool> IMessageMiddleware.Prepare(IService service, IInlineMessage message, object tag)
         {

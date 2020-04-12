@@ -17,6 +17,11 @@ namespace ZeroTeam.MessageMVC
         public string AppName { get; set; }
 
         /// <summary>
+        ///     开放式访问
+        /// </summary>
+        public bool IsOpenAccess { get; set; }
+
+        /// <summary>
         ///   线程池最大工作线程数
         /// </summary>
 

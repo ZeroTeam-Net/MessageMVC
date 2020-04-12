@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Kafka;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.ZeroMQ.Inporc;
 using ZeroTeam.ZeroMQ.ZeroRPC;
 
 namespace MicroZero.Kafka.QueueStation
@@ -17,7 +16,6 @@ namespace MicroZero.Kafka.QueueStation
             IocHelper.AddSingleton<IServiceTransfer, ZeroRpcReceiver>();
 
             IocHelper.ServiceCollection.UseKafka();
-            IocHelper.ServiceCollection.UseZeroMQInporc();
             await IocHelper.ServiceCollection.UseFlow(typeof(Program).Assembly, false);
 
             MessagePoster.Publish("test1", "test", "");

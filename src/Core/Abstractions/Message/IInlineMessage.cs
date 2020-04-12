@@ -26,14 +26,14 @@ namespace ZeroTeam.MessageMVC.Messages
         string Argument => Content;
 
         /// <summary>
-        /// 参数
+        /// 实体参数
         /// </summary>
         object ArgumentData { get; set; }
 
         /// <summary>
-        /// 其他带外内容
+        /// 字典参数
         /// </summary>
-        Dictionary<string, object> Extend { get; set; }
+        Dictionary<string, string> Dictionary { get; set; }
 
         /// <summary>
         /// 返回值已过时
@@ -81,7 +81,7 @@ namespace ZeroTeam.MessageMVC.Messages
         {
             if (message == this)
                 return;
-            Extend = message.Extend;
+            Dictionary = message.Dictionary;
             ArgumentData = message.ArgumentData;
             ResultData = message.ResultData;
             Result = message.Result;
@@ -160,7 +160,7 @@ namespace ZeroTeam.MessageMVC.Messages
                 //BUG:会多次调用参数序列化
                 Content = ArgumentData == null
                     ? null
-                    : (ResultSerializer ?? serialize).ToString(ArgumentData ?? Extend);
+                    : (ResultSerializer ?? serialize).ToString(ArgumentData ?? Dictionary);
             }
             GetResult(serialize);
             return this;
@@ -199,7 +199,7 @@ namespace ZeroTeam.MessageMVC.Messages
                 return;
             IsInline = true;
             if (type == null || type.IsBaseType())
-                Extend = serialize.ToObject<Dictionary<string, object>>(Content);
+                Dictionary = serialize.ToObject<Dictionary<string, string>>(Content);
             else
                 ArgumentData = serialize.ToObject(Content, type);
         }
@@ -222,9 +222,9 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         /// <param name="name">名称</param>
         /// <returns>值</returns>
-        string GetValueArgument(string name)
+        string GetStringArgument(string name)
         {
-            if (Extend == null || !Extend.TryGetValue(name, out var value) || !(value is string str))
+            if (Dictionary == null || !Dictionary.TryGetValue(name, out var value) || !(value is string str))
                 return null;
             return str;
         }
@@ -234,9 +234,9 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         /// <param name="name">名称</param>
         /// <returns>值</returns>
-        byte[] GetByteArgument(string name)
+        byte[] GetBinaryArgument(string name)
         {
-            if (Extend == null || !Extend.TryGetValue(name, out var value) || !(value is byte[] bytes))
+            if (Binary == null || !Binary.TryGetValue(name, out var bytes))
                 return null;
             return bytes;
         }

@@ -2,7 +2,6 @@
 using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
-using ZeroTeam.MessageMVC.ZeroMQ.Inporc;
 
 namespace MicroZero.Kafka.QueueStation
 {

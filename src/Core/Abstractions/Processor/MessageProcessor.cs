@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Services;
 using ZeroTeam.MessageMVC.ZeroApis;
 
@@ -105,6 +106,8 @@ namespace ZeroTeam.MessageMVC.Messages
                     if (!await middleware.Prepare(Service, Message, Original))
                         return false;
                 }
+                if (GlobalContext.CurrentNoLazy == null)
+                    GlobalContext.Current.Message = Message;
                 return true;
             }
             catch (Exception ex)

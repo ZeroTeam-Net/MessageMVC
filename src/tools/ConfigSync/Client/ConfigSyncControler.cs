@@ -3,6 +3,9 @@ using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.ConfigSync
 {
+    /// <summary>
+    /// 配置同步控制器
+    /// </summary>
     [NetEvent("ConfigSync")]
     public class ConfigSyncControler : IApiControler
     {

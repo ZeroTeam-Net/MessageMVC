@@ -12,14 +12,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="Controler\InprocControler.cs" />
     <Compile Include="Controler\KafkaControler.cs" />
     <Compile Include="Controler\RpcControler.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\transfer\Kafka\ZeroTeam.MessageMVC.Kafka.csproj" />
-    <ProjectReference Include="..\..\transfer\zmq\Inproc\ZeroTeam.ZeroMQ.Inproc.csproj" />
     <ProjectReference Include="..\..\transfer\zmq\MicorZero\ZeroTeam.ZeroMQ.ZeroRPC.csproj" />
   </ItemGroup>
   <ItemGroup>
