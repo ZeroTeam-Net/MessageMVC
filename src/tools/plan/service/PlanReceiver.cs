@@ -236,8 +236,8 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                             continue;
                         }
 
-                        var msg =
-                            await rep.Post(MessageHelper.Simple(id, ToolsOption.Instance.ReceiptService, "receipt/v1/load", id));
+                        var msg = await rep.Post(MessageHelper.Simple(id,
+                            ToolsOption.Instance.ReceiptService, "receipt/v1/load", id));
 
                         if (msg.State != MessageState.Success || msg.State != MessageState.Failed)
                         {
@@ -250,14 +250,14 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                             continue;
                         }
 
-                        var message = JsonHelper.DeserializeObject<MessageItem>((string)msg.Result);
-                        if (message == null)
+                        var result = ApiResultHelper.Helper.Deserialize<InlineMessage>(msg.Result);
+                        if (result == null || !result.Success || result.ResultData == null)
                         {
                             await RedisHelper.LRemAsync(PlanItem.planErrorKey, 0, id);
                             await item.ReTry();//远程错误,直接重试
                             continue;
                         }
-
+                        var message = result.ResultData;
                         await item.SaveResult(message.Topic, message.Result);
 
                         item.RealInfo.exec_state = item.Message.State;

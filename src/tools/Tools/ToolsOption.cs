@@ -59,7 +59,7 @@ namespace ZeroTeam.MessageMVC.Tools
 
         static ToolsOption()
         {
-            ConfigurationManager.RegistOnChange(Instance.Update, true);
+            ConfigurationManager.RegistOnChange("MessageMVC:Tools",Instance.Update, true);
         }
 
         /// <summary>

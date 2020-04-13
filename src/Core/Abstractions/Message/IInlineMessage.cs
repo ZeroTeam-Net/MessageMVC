@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.ZeroApis;
 
@@ -71,6 +72,7 @@ namespace ZeroTeam.MessageMVC.Messages
             Result = null;
             ResultData = null;
             RuntimeStatus = null;
+            ResultOutdated = false;
             State = MessageState.None;
         }
 
@@ -100,9 +102,9 @@ namespace ZeroTeam.MessageMVC.Messages
         {
             if (!ResultOutdated)
                 return Result;
-            ResultOutdated = false;
-            if (ResultData == null)
+            if (ResultData == null && this.RuntimeStatus != null)
                 ResultData = this.RuntimeStatus;
+            ResultOutdated = false;
             if (ResultData == null)
                 return Result;
             if (ResultSerializer != null)
@@ -189,20 +191,32 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 如果未上线且还原参数为字典,否则什么也不做
         /// </summary>
-        void Inline(ISerializeProxy serialize, Type type, ISerializeProxy resultSerializer, Func<int, string, object> errResultCreater)
+        Task Inline(ISerializeProxy serialize, Type type, ISerializeProxy resultSerializer, Func<int, string, object> errResultCreater)
         {
             if (resultSerializer != null)
                 ResultSerializer = resultSerializer;
             if (errResultCreater != null)
                 ResultCreater = errResultCreater;
-            if (IsInline)
-                return;
-            IsInline = true;
-            if (type == null || type.IsBaseType())
-                Dictionary = serialize.ToObject<Dictionary<string, string>>(Content);
-            else
-                ArgumentData = serialize.ToObject(Content, type);
+            if (!IsInline)
+            {
+                IsInline = true;
+                if (type == null || type.IsBaseType())
+                    Dictionary = serialize.ToObject<Dictionary<string, string>>(Content);
+                else
+                    ArgumentData = serialize.ToObject(Content, type);
+            }
+            return Task.CompletedTask;
         }
+
+        /// <summary>
+        /// 准备在线(框架内调用)
+        /// </summary>
+        /// <returns></returns>
+        Task PrepareInline()
+        {
+            return Task.CompletedTask;
+        }
+
         #endregion
         #region 方法 
 

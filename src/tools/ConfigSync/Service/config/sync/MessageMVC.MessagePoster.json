@@ -1,6 +1,9 @@
 ﻿{
   "MessageMVC" : {
     "MessagePoster" : {
-    }
+          "default": "CsRedisPoster",
+          "HttpPoster": "TrdReceipt,Authority",
+          "CsRedisPoster": "PlanTask,ConfigSync"
+        }
   }
 }

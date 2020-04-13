@@ -14,7 +14,7 @@ namespace DiscoverTest
         [SetUp]
         public void Setup()
         {
-            ZeroApp.UseTest(IocHelper.ServiceCollection);
+            ZeroApp.UseTest(DependencyHelper.ServiceCollection);
         }
 
         [TearDown]

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.ConfigSync
@@ -16,18 +17,20 @@ namespace ZeroTeam.MessageMVC.ConfigSync
         [Route("v1/changed")]
         public async Task OnChanged(ConfigChangedArgument argument)
         {
-            //var sections = argument.Section.Split(':', '.');
-            //var file = Path.Combine(ZeroAppOption.Instance.ConfigFolder, "sync", $"{string.Join('.', sections)}.json");
-            //if (!File.Exists(file))//本地不需要
-            //    return;
-            //string json;
-            //if (argument.Type == "section")
-            //{
-            //    json = await RedisHelper.HGetAsync(ConfigChangOption.ConfigRedisKey , argument.Section);
-            //}
+            if (argument.Type == "section")
+            {
+                await ConfigHelper.SaveToFile(argument.Section);
+            }
             //else
             //{
-            //    json = await File.ReadAllTextAsync(file) ?? "{}";
+            //    var sections = argument.Section.Split(':', '.');
+            //    var key = sections[^1];
+
+
+            //    var file = Path.Combine(ZeroAppOption.Instance.ConfigFolder, "sync", $"{string.Join('.', sections)}.json");
+            //    if (!File.Exists(file))//本地不需要
+            //        return;
+            //    var json = await File.ReadAllTextAsync(file) ?? "{}";
             //    var obj = (JObject)JsonConvert.DeserializeObject(json);
             //    if (!obj.ContainsKey(argument.Key))//本地不需要
             //        return;
@@ -35,7 +38,6 @@ namespace ZeroTeam.MessageMVC.ConfigSync
             //    json = JsonConvert.SerializeObject(obj);
             //}
 
-            await ConfigHelper.SaveToFile(argument.Section);
         }
     }
 }

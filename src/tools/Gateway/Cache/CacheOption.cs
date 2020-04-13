@@ -1,10 +1,9 @@
 using Agebull.Common.Configuration;
-using Agebull.Common.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-namespace MicroZero.Http.Gateway
+namespace ZeroTeam.MessageMVC.Http
 {
 
     /// <summary>
@@ -27,7 +26,7 @@ namespace MicroZero.Http.Gateway
 
         static CacheOption()
         {
-            ConfigurationManager.RegistOnChange(LoadOption, true);
+            ConfigurationManager.RegistOnChange("Gateway:Chache",LoadOption, true);
 
         }
         static void LoadOption()

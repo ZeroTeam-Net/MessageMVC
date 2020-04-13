@@ -31,7 +31,7 @@ namespace ZeroTeam.MessageMVC.AddIn
         /// <summary>
         /// 等级
         /// </summary>
-        int IZeroMiddleware.Level => short.MinValue;
+        int IZeroMiddleware.Level => -0xFFFA;
 
         /// <summary>
         /// 插件对象
@@ -57,7 +57,7 @@ namespace ZeroTeam.MessageMVC.AddIn
                      : IOHelper.CheckPath(ZeroAppOption.Instance.RootPath, ZeroAppOption.Instance.AddInPath));
             }
 
-            var logger = IocHelper.LoggerFactory.CreateLogger(nameof(AddInImporter));
+            var logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(AddInImporter));
 
             // 通过容器对象将宿主和部件组装到一起。 
             try
@@ -77,7 +77,7 @@ namespace ZeroTeam.MessageMVC.AddIn
                 logger.Information(() => reg.GetType().Assembly.FullName);
                 try
                 {
-                    reg.AutoRegist(IocHelper.ServiceCollection);
+                    reg.AutoRegist(DependencyHelper.ServiceCollection);
                 }
                 catch (System.Exception ex)
                 {

@@ -379,7 +379,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
         private static void ServiceCollection(ILGenerator ilGenerator)
         {
-            var method = typeof(IocHelper).GetProperty($"ServiceCollection").GetGetMethod();
+            var method = typeof(DependencyHelper).GetProperty($"ServiceCollection").GetGetMethod();
             ilGenerator.Emit(OpCodes.Call, method);
         }
 
@@ -397,7 +397,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
         private static void Logger(ILGenerator ilGenerator, Type type)
         {
-            var method = typeof(IocHelper).GetProperty($"LoggerFactory").GetGetMethod();
+            var method = typeof(DependencyHelper).GetProperty($"LoggerFactory").GetGetMethod();
             ilGenerator.Emit(OpCodes.Call, method);
             var local = ilGenerator.DeclareLocal(typeof(ILoggerFactory));
             ilGenerator.Emit(OpCodes.Stloc, local);
@@ -421,12 +421,12 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         {
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
             {
-                var method = typeof(IocHelper).GetMethod($"GetServices").MakeGenericMethod(type.GetGenericArguments()[0]);
+                var method = typeof(DependencyHelper).GetMethod($"GetServices").MakeGenericMethod(type.GetGenericArguments()[0]);
                 ilGenerator.Emit(OpCodes.Call, method);
             }
             else
             {
-                var method = typeof(IocHelper).GetMethod($"Create").MakeGenericMethod(type);
+                var method = typeof(DependencyHelper).GetMethod($"Create").MakeGenericMethod(type);
                 ilGenerator.Emit(OpCodes.Call, method);
             }
         }

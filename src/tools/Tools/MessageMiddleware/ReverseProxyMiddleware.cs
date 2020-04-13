@@ -3,6 +3,7 @@ using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.Services;
+using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Tools
 {
@@ -26,7 +27,6 @@ namespace ZeroTeam.MessageMVC.Tools
         /// </summary>
         MessageHandleScope IMessageMiddleware.Scope => MessageHandleScope.Handle;
 
-
         /// <summary>
         /// 准备
         /// </summary>
@@ -45,7 +45,7 @@ namespace ZeroTeam.MessageMVC.Tools
             var producer = MessagePoster.GetService(message.Topic);
             if (producer == null)
             {
-                await next();
+                message.RuntimeStatus = ApiResultHelper.Helper.NoFind;
                 return;
             }
             message.State = MessageState.Accept;

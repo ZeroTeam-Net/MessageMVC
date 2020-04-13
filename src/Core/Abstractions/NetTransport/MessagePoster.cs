@@ -20,7 +20,7 @@ namespace ZeroTeam.MessageMVC
 
         string IZeroMiddleware.Name => "MessagePoster";
 
-        int IZeroMiddleware.Level => int.MaxValue;
+        int IZeroMiddleware.Level =>0xFFFF;
 
         #endregion
 
@@ -41,9 +41,9 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         void IFlowMiddleware.Initialize()
         {
-            logger = IocHelper.LoggerFactory.CreateLogger(nameof(MessagePoster));
+            logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(MessagePoster));
             posters = new Dictionary<string, IMessagePoster>();
-            foreach (var poster in IocHelper.RootProvider.GetServices<IMessagePoster>())
+            foreach (var poster in DependencyHelper.RootProvider.GetServices<IMessagePoster>())
             {
                 posters.TryAdd(poster.GetTypeName(), poster);
             }

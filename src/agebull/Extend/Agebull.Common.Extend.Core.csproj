@@ -10,7 +10,7 @@
   <PropertyGroup>
     <Description>一些常用的基础功能扩展</Description>
     <AssemblyTitle>Agebull.Common.Extend</AssemblyTitle>
-    <Version>4.0.0.2</Version>
+    <Version>4.0.0.3</Version>
     <!--monoandroid60;xamarinios10-->
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <DebugType>portable</DebugType>
@@ -71,7 +71,7 @@
     <None Remove="SystemExtend\**" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="Ioc\AppConfigHelper.cs" />
+    <Compile Remove="Dependency\AppConfigHelper.cs" />
     <Compile Remove="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

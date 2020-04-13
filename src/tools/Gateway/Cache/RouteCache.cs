@@ -1,18 +1,14 @@
-using Agebull.Common;
-using Agebull.Common.Configuration;
 using Agebull.Common.Logging;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using ZeroTeam.MessageMVC.Http;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.Services;
+using ZeroTeam.MessageMVC.Wechart;
 using ZeroTeam.MessageMVC.ZeroApis;
 
-namespace MicroZero.Http.Gateway
+namespace ZeroTeam.MessageMVC.Http
 {
     /// <summary>
     ///     缓存
@@ -31,7 +27,10 @@ namespace MicroZero.Http.Gateway
         /// <summary>
         /// 消息中间件的处理范围
         /// </summary>
-        MessageHandleScope IMessageMiddleware.Scope => MessageHandleScope.Prepare | MessageHandleScope.End;
+        MessageHandleScope IMessageMiddleware.Scope =>
+            GatewayOption.Instance.EnableCache
+                 ? MessageHandleScope.Prepare | MessageHandleScope.End
+                 : MessageHandleScope.None;
 
         /// <summary>
         /// 当前处理器
@@ -48,7 +47,11 @@ namespace MicroZero.Http.Gateway
         /// <returns></returns>
         async Task<bool> IMessageMiddleware.Prepare(IService service, IInlineMessage message, object tag)
         {
-            return await LoadCache(message as HttpMessage);
+            if (message.Topic == WxPayOption.Instance.CallbackPath)
+                return true;
+            if (message is HttpMessage httpMessage)
+                return await LoadCache(httpMessage);
+            return true;
         }
 
 
@@ -59,7 +62,8 @@ namespace MicroZero.Http.Gateway
         /// <returns></returns>
         Task IMessageMiddleware.OnEnd(IInlineMessage message)
         {
-            CacheResult(message as HttpMessage);
+            if (message is HttpMessage httpMessage)
+                CacheResult(httpMessage);
             return Task.CompletedTask;
         }
         #endregion
@@ -79,14 +83,49 @@ namespace MicroZero.Http.Gateway
         /// <summary>
         ///     检查缓存
         /// </summary>
-        /// <returns>取到缓存，可以直接返回</returns>
+        /// <returns>是否需要后续动作</returns>
         private async Task<bool> LoadCache(HttpMessage data)
         {
             var api = $"{data.ApiHost}/{data.ApiName}";
             if (!CacheOption.CacheMap.TryGetValue(api, out CacheSetting))
             {
+                return true;
+            }
+            BuildCacheKey(data, api);
+            if (!CacheOption.Cache.TryGetValue(CacheKey, out var cacheData))
+            {
+                CacheOption.Cache.TryAdd(CacheKey, new CacheData
+                {
+                    IsLoading = 1,
+                    Content = ApiResultHelper.NoReadyJson
+                });
+                LogRecorder.MonitorTrace(() => $"缓存未命中,直接访问后端服务器 {CacheKey}");
+                return true;
+            }
+            if (cacheData.Success && (cacheData.UpdateTime > DateTime.Now || cacheData.IsLoading > 0))
+            {
+                data.Result = cacheData.Content;
+                LogRecorder.MonitorTrace(() => $"命中缓存,直接使用 {CacheKey}");
                 return false;
             }
+            //一个载入，其它的等待调用成功
+            if (Interlocked.Increment(ref cacheData.IsLoading) == 1)
+            {
+                LogRecorder.MonitorTrace(() => $"并发冲突,直接访问后端服务器 {CacheKey}");
+                return false;
+            }
+            Interlocked.Decrement(ref cacheData.IsLoading);
+            //等待调用成功
+            LogRecorder.MonitorTrace(() => $"等待前一个访问结束 {CacheKey}");
+            var task = new TaskCompletionSource<string>();
+            cacheData.Waits.Add(task);
+            data.Result = await task.Task;
+            LogRecorder.MonitorTrace(() => $"直接使用返回结束 {CacheKey}");
+            return true;
+        }
+
+        private void BuildCacheKey(HttpMessage data, string api)
+        {
             var kb = new StringBuilder();
             kb.Append(api);
             kb.Append('?');
@@ -142,35 +181,6 @@ namespace MicroZero.Http.Gateway
             }
 
             CacheKey = kb.ToString();
-            if (!CacheOption.Cache.TryGetValue(CacheKey, out var cacheData))
-            {
-                CacheOption.Cache.TryAdd(CacheKey, new CacheData
-                {
-                    IsLoading = 1,
-                    Content = ApiResultHelper.NoReadyJson
-                });
-                LogRecorder.MonitorTrace(() => $"Cache Load {CacheKey}");
-                return false;
-            }
-            if (cacheData.Success && (cacheData.UpdateTime > DateTime.Now || cacheData.IsLoading > 0))
-            {
-                data.Result = cacheData.Content;
-                LogRecorder.MonitorTrace(() => $"Cache by {CacheKey}");
-                return true;
-            }
-            //一个载入，其它的等待调用成功
-            if (Interlocked.Increment(ref cacheData.IsLoading) == 1)
-            {
-                LogRecorder.MonitorTrace(() => $"Cache update {CacheKey}");
-                return false;
-            }
-            Interlocked.Decrement(ref cacheData.IsLoading);
-            //等待调用成功
-            LogRecorder.MonitorTrace(() => $"Cache wait {CacheKey}");
-            var task = new TaskCompletionSource<string>();
-            cacheData.Waits.Add(task);
-            data.Result = await task.Task;
-            return true;
         }
 
         /// <summary>

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.Services;
+using ZeroTeam.MessageMVC.Wechart;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Http
@@ -27,7 +28,11 @@ namespace ZeroTeam.MessageMVC.Http
         /// <summary>
         /// 消息中间件的处理范围
         /// </summary>
-        MessageHandleScope IMessageMiddleware.Scope => MessageHandleScope.Prepare;
+        MessageHandleScope IMessageMiddleware.Scope => 
+            GatewayOption.Instance.EnableSecurityChecker
+                 ? MessageHandleScope.Prepare
+                 : MessageHandleScope.None;
+
 
         /// <summary>
         /// 当前处理器
@@ -44,8 +49,11 @@ namespace ZeroTeam.MessageMVC.Http
         /// <returns></returns>
         Task<bool> IMessageMiddleware.Prepare(IService service, IInlineMessage message, object tag)
         {
-            Message = (HttpMessage)message;
-            return CheckToken2();
+            if (message.Topic == WxPayOption.Instance.CallbackPath)
+                return Task.FromResult(true);
+            if (message is HttpMessage httpMessage)
+                return  CheckToken2(httpMessage);
+            return Task.FromResult(true);
         }
         #endregion
 
@@ -205,12 +213,13 @@ namespace ZeroTeam.MessageMVC.Http
         ///     1：令牌为空或不合格
         ///     2：令牌是伪造的
         /// </returns>
-        private async Task<bool> CheckToken2()
+        private async Task<bool> CheckToken2(HttpMessage message)
         {
             if (!SecurityOption.Instance.EnableAuth)
             {
                 return true;
             }
+            Message = message;
             try
             {
                 if (Message.HttpArguments.ContainsKey("token"))
@@ -258,7 +267,7 @@ namespace ZeroTeam.MessageMVC.Http
             }
             catch (Exception ex)
             {
-                Message.RuntimeStatus = IocHelper.Create<IOperatorStatus>();
+                Message.RuntimeStatus = DependencyHelper.Create<IOperatorStatus>();
                 Message.RuntimeStatus.Exception = ex;
                 if (Message.ResultCreater != null)
                     Message.ResultData = Message.ResultCreater(DefaultErrorCode.UnhandleException, null);

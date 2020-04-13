@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Agebull.Common.Configuration;
+using CSRedis;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using ZeroTeam.MessageMVC.RedisMQ;
+using System;
 
 namespace ZeroTeam.MessageMVC.Http
 {
@@ -16,7 +18,9 @@ namespace ZeroTeam.MessageMVC.Http
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
-            RedisHelper.Initialization(new CSRedis.CSRedisClient(RedisOption.Instance.ConnectionString));
+            Console.WriteLine(Environment.CurrentDirectory);
+            var con = ConfigurationManager.Root.GetSection("MessageMVC:Redis:ConnectionString").Value;
+            RedisHelper.Initialization(new CSRedisClient(con));
 
             HttpRoute.Initialize(services);
         }
@@ -27,7 +31,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// <param name="app"></param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment _)
         {
-            app.Run(HttpRoute.Call); 
+            app.Run(HttpRoute.Call);
         }
     }
 }

@@ -31,7 +31,7 @@ namespace ZeroTeam.MessageMVC.Context
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public int Feature { get; set; }
 
-        private IOperatorStatus _status = IocHelper.Create<IOperatorStatus>();
+        private IOperatorStatus _status = DependencyHelper.Create<IOperatorStatus>();
 
         /// <summary>
         ///     最后状态(当前时间)
@@ -49,7 +49,7 @@ namespace ZeroTeam.MessageMVC.Context
             }
             set
             {
-                _status = value ?? IocHelper.Create<IOperatorStatus>();
+                _status = value ?? DependencyHelper.Create<IOperatorStatus>();
                 if (_status.Message == null)
                 {
                     return;

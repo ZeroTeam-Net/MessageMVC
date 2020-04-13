@@ -100,6 +100,11 @@ namespace ZeroTeam.MessageMVC
             {
                 EnableAddIn = option.EnableAddIn;
             }
+            if (option.IsOpenAccess)
+            {
+                IsOpenAccess = option.IsOpenAccess;
+            }
+            
 
             if (!string.IsNullOrWhiteSpace(option.AddInPath))
             {
@@ -141,6 +146,10 @@ namespace ZeroTeam.MessageMVC
             if (EnableAddIn)
             {
                 EnableAddIn = option.EnableAddIn;
+            }
+            if (IsOpenAccess)
+            {
+                IsOpenAccess = option.IsOpenAccess;
             }
 
             if (string.IsNullOrWhiteSpace(AddInPath))

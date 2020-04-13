@@ -1436,11 +1436,6 @@
                 参数类型
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Documents.ApiActionInfo.Arguments">
-            <summary>
-                参数类型
-            </summary>
-        </member>
         <member name="F:ZeroTeam.MessageMVC.Documents.ApiActionInfo.ResultType">
             <summary>是否有调用参数</summary>
         </member>
@@ -1488,6 +1483,11 @@
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.Documents.ApiDocument.ArgumentInfo">
+            <summary>
+                参数说明
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Documents.ApiDocument.Arguments">
             <summary>
                 参数说明
             </summary>
@@ -1997,6 +1997,12 @@
             <summary>
             如果未上线且还原参数为字典,否则什么也不做
             </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.PrepareInline">
+            <summary>
+            准备在线(框架内调用)
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.GetArgument(System.Int32,System.Int32,ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Type)">
             <summary>

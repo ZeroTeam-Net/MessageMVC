@@ -44,12 +44,12 @@ namespace ZeroTeam.MessageMVC.Wechart
 
         static WxPayOption()
         {
-            ConfigurationManager.RegistOnChange(LoadOption, true);
+            ConfigurationManager.RegistOnChange("Gateway:WxPay", LoadOption, true);
 
         }
         static void LoadOption()
         {
-            var option = ConfigurationManager.Option<WxPayOption>("WxPay");
+            var option = ConfigurationManager.Option<WxPayOption>("Gateway:WxPay");
             if (option == null)
                 return;
             Instance.CallbackPath = option.CallbackPath;

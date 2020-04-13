@@ -16,12 +16,12 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         ///     当前线程的调用上下文
         /// </summary>
-        public static IZeroContext Current => IocScope.Dependency.TryGetDependency(IocHelper.Create<IZeroContext>);
+        public static IZeroContext Current => DependencyScope.Dependency.TryGetDependency(DependencyHelper.Create<IZeroContext>);
 
         /// <summary>
         ///     当前线程的调用上下文(无懒构造)
         /// </summary>
-        public static IZeroContext CurrentNoLazy => IocScope.Dependency.Dependency<IZeroContext>();
+        public static IZeroContext CurrentNoLazy => DependencyScope.Dependency.Dependency<IZeroContext>();
 
         /// <summary>
         ///     设置当前上下文（框架内调用，外部误用后果未知）
@@ -31,23 +31,23 @@ namespace ZeroTeam.MessageMVC.Context
         {
             if (null == context)
             {
-                IocScope.Dependency.Remove<IZeroContext>();
+                DependencyScope.Dependency.Remove<IZeroContext>();
             }
             else
             {
-                IocScope.Dependency.Annex(context);
+                DependencyScope.Dependency.Annex(context);
             }
         }
 
         /// <summary>
         ///     内部构造
         /// </summary>
-        public static IZeroContext Reset() => IocScope.Dependency.Annex(IocHelper.Create<IZeroContext>());
+        public static IZeroContext Reset() => DependencyScope.Dependency.Annex(DependencyHelper.Create<IZeroContext>());
 
         /// <summary>
         ///     置空并销毁当前上下文
         /// </summary>
-        public static void SetEmpty() => IocScope.Dependency.Remove<IZeroContext>();
+        public static void SetEmpty() => DependencyScope.Dependency.Remove<IZeroContext>();
 
         #endregion
 
@@ -60,7 +60,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         /// 表示一个匿名用户
         /// </summary>
-        public static IUser Anymouse { get; } = IocHelper.Create<IUser>();
+        public static IUser Anymouse { get; } = DependencyHelper.Create<IUser>();
 
         #endregion
 

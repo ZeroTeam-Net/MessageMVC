@@ -10,8 +10,8 @@ namespace MicroZero.Kafka.QueueStation
     {
         static async Task Main()
         {
-            IocHelper.ServiceCollection.UseKafka();
-            await IocHelper.ServiceCollection.UseFlow(typeof(Program).Assembly, false);
+            DependencyHelper.ServiceCollection.UseKafka();
+            await DependencyHelper.ServiceCollection.UseFlow(typeof(Program).Assembly, false);
 
             _ = Task.Run(Test);
 

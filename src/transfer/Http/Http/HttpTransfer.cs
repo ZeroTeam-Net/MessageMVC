@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
 
@@ -89,7 +88,7 @@ namespace ZeroTeam.MessageMVC.Http
                 }
             }
 
-            await context.Response.WriteAsync(message.Result, Encoding.UTF8);
+            await context.Response.WriteAsync(message.Result ?? "", Encoding.UTF8);
             return true;
         }
 

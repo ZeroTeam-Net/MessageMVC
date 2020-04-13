@@ -107,7 +107,7 @@ namespace Agebull.Common.Logging
         {
             if (Interlocked.Increment(ref isInitialized) > 1)
                 return;
-            IocHelper.ServiceCollection.AddLogging(builder =>
+            DependencyHelper.ServiceCollection.AddLogging(builder =>
             {
                 builder.AddConfiguration(ConfigurationManager.Root.GetSection("Logging"));
                 if (UseConsoleLogger)
@@ -124,8 +124,8 @@ namespace Agebull.Common.Logging
                 LoggerProviderOptions.RegisterProviderOptions<TextLoggerOption, TextLoggerProvider>(builder.Services);
 
             });
-            IocHelper.Update();
-            ConfigurationManager.RegistOnChange(ReadConfig, false);
+            DependencyHelper.Update();
+            ConfigurationManager.RegistOnChange("Logging", ReadConfig, false);
         }
         /// <summary>
         /// 读取配置
@@ -156,7 +156,7 @@ namespace Agebull.Common.Logging
         /// <summary>
         /// 日志记录器
         /// </summary>
-        public static ILogger Logger => IocScope.Logger;
+        public static ILogger Logger => DependencyScope.Logger;
 
         /// <summary>
         /// 取请求ID

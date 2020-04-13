@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MicroZero.Http.Gateway
+namespace ZeroTeam.MessageMVC.Http
 {
     /// <summary>
     ///     缓存触发刷新设置

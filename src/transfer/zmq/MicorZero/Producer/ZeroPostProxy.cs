@@ -39,7 +39,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// </summary>
         public void Initialize()
         {
-            logger = IocHelper.LoggerFactory.CreateLogger(nameof(ZeroPostProxy));
+            logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(ZeroPostProxy));
             ZeroRpcFlow.ZeroNetEvents.Add(OnZeroNetEvent);
         }
 

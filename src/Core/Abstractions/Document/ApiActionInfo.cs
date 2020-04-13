@@ -20,12 +20,6 @@ namespace ZeroTeam.MessageMVC.Documents
         /// </summary>
         public Type ArgumentType;
 
-
-        /// <summary>
-        ///     参数类型
-        /// </summary>
-        public Dictionary<string,Type> Arguments;
-
         /// <summary>是否有调用参数</summary>
         public Type ResultType;
 

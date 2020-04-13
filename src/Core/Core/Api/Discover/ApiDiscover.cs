@@ -50,7 +50,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         {
             XmlMember.Load(Assembly);
 
-            TransportDiscories ??= IocHelper.RootProvider.GetServices<IReceiverDiscover>().ToArray();
+            TransportDiscories ??= DependencyHelper.RootProvider.GetServices<IReceiverDiscover>().ToArray();
 
             var types = Assembly.GetTypes().Where(p => p.IsSupperInterface(typeof(IApiControler))).ToArray();
             foreach (var type in types)
@@ -69,7 +69,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         {
             XmlMember.Load(assembly);
             Assembly = assembly;
-            TransportDiscories ??= IocHelper.RootProvider.GetServices<IReceiverDiscover>().ToArray();
+            TransportDiscories ??= DependencyHelper.RootProvider.GetServices<IReceiverDiscover>().ToArray();
 
             var types = Assembly.GetTypes().Where(p => p.IsSupperInterface(typeof(IApiControler))).ToArray();
             foreach (var type in types)
@@ -95,7 +95,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                         ServiceName = serviceInfo.Name,
                         Serialize = SelectSerialize(serviceInfo.Serialize),
                         Receiver = serviceInfo.NetBuilder(serviceInfo.Name)
-                    };// IocHelper.Create<IService>();
+                    };// DependencyHelper.Create<IService>();
 
                     ZeroFlowControl.RegistService(service);
                 }
@@ -126,9 +126,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 Name = type.Name
             };
             ServiceInfo service = null;
+
             #region 服务类型检测
 
-            var serializeType = type.GetCustomAttributes<SerializeTypeAttribute>().FirstOrDefault()?.Type ?? SerializeType.Json;
+            var serializeType = GetCustomAttribute<SerializeTypeAttribute>(type)?.Type ?? SerializeType.Json;
 
             foreach (var dis in TransportDiscories)
             {
@@ -159,17 +160,17 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
             #region API发现
 
-            string routeHead = type.GetCustomAttributes<RouteAttribute>().FirstOrDefault()?.Name.SafeTrim(' ', '\t', '\r', '\n', '/');
+            string routeHead = GetCustomAttribute<RouteAttribute>(type)?.Name.SafeTrim(' ', '\t', '\r', '\n', '/');
             if (routeHead != null)
             {
                 routeHead += "/";
             }
 
-            var defPage = type.GetCustomAttributes<ApiPageAttribute>().FirstOrDefault()?.PageUrl?.SafeTrim();
-            var defOption = type.GetCustomAttributes<ApiAccessOptionFilterAttribute>().FirstOrDefault()?.Option ?? ApiAccessOption.OpenAccess;
-            var defCategory = type.GetCustomAttributes<CategoryAttribute>().FirstOrDefault()?.Category.SafeTrim();
+            var defPage = GetCustomAttribute<ApiPageAttribute>(type)?.PageUrl?.SafeTrim();
+            var defOption = GetCustomAttribute<ApiAccessOptionFilterAttribute>(type)?.Option ?? ApiAccessOption.OpenAccess;
+            var defCategory = GetCustomAttribute<CategoryAttribute>(type)?.Category.SafeTrim();
 
-            foreach (var method in type.GetMethods(BindingFlags.Instance | BindingFlags.Public))
+            foreach (var method in type.GetMethods(PublicFlags))
             {
                 CheckMethod(type, docx, service, routeHead, defPage, defOption, defCategory, method);
             }
@@ -180,23 +181,23 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             switch (type)
             {
                 case SerializeType.Json:
-                    return IocHelper.Create<IJsonSerializeProxy>();
+                    return DependencyHelper.Create<IJsonSerializeProxy>();
 
                 case SerializeType.NewtonJson:
                     return new NewtonJsonSerializeProxy();
 
                 case SerializeType.Xml:
-                    return IocHelper.Create<IXmlSerializeProxy>();
+                    return DependencyHelper.Create<IXmlSerializeProxy>();
 
                 case SerializeType.Bson:
-                    return IocHelper.Create<IBsonSerializeProxy>();
+                    return DependencyHelper.Create<IBsonSerializeProxy>();
                 default:
                     throw new NotSupportedException($"{type}序列化方式暂不支持");
             };
         }
         private void CheckMethod(Type type, XmlMember docx, ServiceInfo serviceInfo, string routeHead, string defPage, ApiAccessOption defOption, string defCategory, MethodInfo method)
         {
-            var routeAttribute = method.GetCustomAttributes<RouteAttribute>().FirstOrDefault();
+            var routeAttribute = GetCustomAttribute<RouteAttribute>(method);
             if (routeAttribute == null)
             {
                 return;
@@ -213,7 +214,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             var route = routeAttribute.Name == null
                 ? $"{head}{method.Name}"
                 : $"{head}{routeAttribute.Name.Trim(' ', '\t', '\r', '\n', '/')}";
-            var accessOption = method.GetCustomAttributes<ApiAccessOptionFilterAttribute>().FirstOrDefault();
+            var accessOption = GetCustomAttribute<ApiAccessOptionFilterAttribute>(method);
             ApiAccessOption option;
             if (accessOption != null)
             {
@@ -224,8 +225,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 option = defOption;
             }
 
-            var category = method.GetCustomAttributes<CategoryAttribute>().FirstOrDefault()?.Category.SafeTrim();
-            var page = method.GetCustomAttributes<ApiPageAttribute>().FirstOrDefault()?.PageUrl.SafeTrim();
+            var category = GetCustomAttribute<CategoryAttribute>(method)?.Category.SafeTrim();
+            var page = GetCustomAttribute<ApiPageAttribute>(method)?.PageUrl.SafeTrim();
 
             var api = new ApiActionInfo
             {
@@ -242,9 +243,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             api.HaseArgument = arg != null;
             api.ResultType = method.ReturnType;
 
-            var serializeType = method.GetCustomAttributes<SerializeTypeAttribute>().FirstOrDefault();
-            var resultSerializeType = method.GetCustomAttributes<ResultSerializeTypeAttribute>().FirstOrDefault();
-            var argumentSerializeType = method.GetCustomAttributes<ArgumentSerializeTypeAttribute>().FirstOrDefault();
+            var serializeType = GetCustomAttribute<SerializeTypeAttribute>(method);
+            var resultSerializeType = GetCustomAttribute<ResultSerializeTypeAttribute>(method);
+            var argumentSerializeType = GetCustomAttribute<ArgumentSerializeTypeAttribute>(method);
 
             api.ArgumentSerializeType = argumentSerializeType?.Type ?? serializeType?.Type ?? serviceInfo.Serialize;
             api.ResultSerializeType = resultSerializeType?.Type ?? serializeType?.Type ?? serviceInfo.Serialize;
@@ -271,250 +272,15 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     api.ArgumentInfo.Caption = doc.Arguments.Values.FirstOrDefault();
                 }
             }
+            api.Arguments = new List<TypeDocument>();
             var paras = method.GetParameters();
-            api.Arguments = paras.Length == 0
-                ? new Dictionary<string, Type>()
-                : paras.ToDictionary(p => p.Name, p => p.ParameterType);
+            foreach (var para in paras)
+            {
+                var info = ReadEntity(para.ParameterType, para.Name ?? "argument") ?? new TypeDocument();
+                info.Name = para.Name;
+                api.Arguments.Add(info);
+            }
             serviceInfo.Aips.Add(api.ApiName, api);
-        }
-
-        #endregion
-
-
-        #region UnitTest
-
-        /// <summary>
-        /// 生成单元测试代码
-        /// </summary>
-        /// <param name="path"></param>
-        public void NUnitCode(string path)
-        {
-            foreach (var serviceInfo in ServiceInfos.Values)
-            {
-                if (serviceInfo.Aips.Count == 0)
-                {
-                    continue;
-                }
-                var file = Path.Combine(path, $"{serviceInfo.Name}.cs");
-                if (File.Exists(file))
-                    continue;
-                var code = new StringBuilder();
-                code.AppendLine($@"using System;
-using System.Threading.Tasks;
-using NUnit.Framework;
-using Agebull.Common.Ioc;
-using ZeroTeam.MessageMVC;
-using ZeroTeam.MessageMVC.Messages;
-
-namespace {serviceInfo.Type.Namespace}.UnitTest
-{{
-    [TestFixture]
-    public class {serviceInfo.Type.GetTypeName()}UnitTest
-    {{
-        [SetUp]
-        public void Setup()
-        {{
-            ZeroApp.UseTest(IocHelper.ServiceCollection, typeof({serviceInfo.Type.GetTypeName()}).Assembly);
-        }}
-
-        [TearDown]
-        public void TearDown()
-        {{
-            ZeroFlowControl.Shutdown();
-        }}
-
-");
-                foreach (var api in serviceInfo.Aips.Values.Cast<ApiActionInfo>())
-                {
-                    var argCode = new StringBuilder();
-                    string json = ArgumentJson(argCode, api);
-                    code.AppendLine($@"
-
-        /// <summary>
-        /// {api.Caption}
-        /// </summary>
-        [Test]
-        public async Task {api.Name}()
-        {{
-            var (msg, ser) = await MessagePoster.Post(new InlineMessage
-            {{
-                ServiceName = ""{serviceInfo.Name}"",
-                ApiName = ""{api.ApiName}"",
-                Content = 
-@""{json}""
-            }});
-            Assert.IsTrue(msg.State == MessageState.Success , msg.Result);
-        }}
-");
-                }
-                code.AppendLine("    }");
-                code.AppendLine("}");
-                File.WriteAllText(file, code.ToString());
-            }
-        }
-        /// <summary>
-        /// 生成单元测试代码
-        /// </summary>
-        /// <param name="path"></param>
-        public void xUnitCode(string path)
-        {
-            foreach (var serviceInfo in ServiceInfos.Values)
-            {
-                if (serviceInfo.Aips.Count == 0)
-                {
-                    continue;
-                }
-                var file = Path.Combine(path, $"{serviceInfo.Name}.cs");
-                if (File.Exists(file))
-                    continue;
-                var code = new StringBuilder();
-                code.AppendLine($@"using System;
-using System.Threading.Tasks;
-using Xunit;
-using Agebull.Common.Ioc;
-using ZeroTeam.MessageMVC;
-using ZeroTeam.MessageMVC.Messages;
-
-namespace {serviceInfo.Type.Namespace}.UnitTest
-{{
-    public class {serviceInfo.Type.GetTypeName()}UnitTest : IDisposable
-    {{
-        public {serviceInfo.Type.GetTypeName()}UnitTest()
-        {{
-            ZeroApp.UseTest(IocHelper.ServiceCollection, typeof({serviceInfo.Type.GetTypeName()}).Assembly);
-        }}
-        void IDisposable.Dispose()
-        {{
-            ZeroFlowControl.Shutdown();
-        }}
-
-");
-                foreach (var api in serviceInfo.Aips.Values.Cast<ApiActionInfo>())
-                {
-                    var argCode = new StringBuilder();
-                    string json = ArgumentJson(argCode, api);
-                    code.AppendLine($@"
-
-        /// <summary>
-        /// {api.Caption}
-        /// </summary>
-        [Fact]
-        public async Task {api.Name}()
-        {{
-            var (msg, ser) = await MessagePoster.Post(new InlineMessage
-            {{
-                ServiceName = ""{serviceInfo.Name}"",
-                ApiName = ""{api.ApiName}"",
-                Content = 
-@""{json}""
-            }});
-            Assert.True(msg.State == MessageState.Success , msg.Result);
-        }}
-");
-                }
-                code.AppendLine("    }");
-                code.AppendLine("}");
-                File.WriteAllText(file, code.ToString());
-            }
-        }
-
-        private string ArgumentJson(StringBuilder argCode, ApiActionInfo info)
-        {
-            string json;
-            if (info.Arguments.Count != 1)
-            {
-                foreach (var arg in info.Arguments)
-                {
-                    if (!arg.Value.IsBaseType())
-                    {
-                        json = ClassArgumentJson(arg.Value).Trim(',', ' ', '\t', '\r', '\n');
-                    }
-                    else
-                    {
-                        json = JsonValue(arg.Value).Trim(',', ' ', '\t', '\r', '\n');
-                    }
-                    argCode.AppendLine($"\"{ arg.Key }\" : {json},");
-                }
-                json = argCode.ToString().Replace("\"", "\"\"").Trim(',', ' ', '\t', '\r', '\n');
-                return $@"{{
-{json.SpaceLine(4)}
-}}";
-            }
-            else
-            {
-                var arg = info.Arguments.First();
-                if (!arg.Value.IsBaseType())
-                {
-                    return ClassArgumentJson(arg.Value).Replace("\"", "\"\"");
-                }
-                else
-                {
-                    json = JsonValue(arg.Value).Replace("\"", "\"\"").Trim(',', ' ', '\t', '\r', '\n');
-                    return $@"{{
-    ""{ arg.Key }"" : {json}
-}}";
-                }
-            }
-        }
-
-        const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-
-        string ClassArgumentJson(Type type)
-        {
-            var argCode = new StringBuilder();
-            argCode.AppendLine("{");
-            foreach (var field in type.GetFields(flags))
-            {
-                var json = field.GetAttribute<JsonPropertyAttribute>();
-                if (json == null && !field.IsPublic)
-                    continue;
-                argCode.Append(JsonValue(field.FieldType, json?.PropertyName ?? field.Name));
-                argCode.AppendLine(",");
-            }
-            foreach (var field in type.GetProperties(flags))
-            {
-                var json = field.GetAttribute<JsonPropertyAttribute>();
-                if (json == null && (!field.CanWrite || !field.SetMethod.IsPublic))
-                    continue;
-                argCode.Append(JsonValue(field.PropertyType, json?.PropertyName ?? field.Name));
-                argCode.AppendLine(",");
-            }
-            return argCode.ToString().Trim(',', ' ', '\t', '\r', '\n') + "\r\n}";
-        }
-
-        string JsonValue(Type type, string name)
-        {
-            return $"    \"{name}\" : {JsonValue(type)}";
-        }
-
-        string JsonValue(Type type)
-        {
-            if (type == typeof(string))
-                return "\"string\"";
-            if (type == typeof(bool))
-                return "true";
-            if (type == typeof(Guid))
-                return $"\"{Guid.NewGuid().ToString()}\"";
-            if (type.IsValueType)
-                return "0";
-            else
-                return ClassArgumentJson(type).SpaceLine(4);
-        }
-
-        string ClassArgumentCode(Type type)
-        {
-            var argCode = new StringBuilder();
-            argCode.AppendLine($"ArgumentData = new {type.GetFullTypeName()}{{");
-            foreach (var field in type.GetFields(flags))
-            {
-                var json = field.GetAttribute<JsonPropertyAttribute>();
-                if (json == null || !field.IsPublic)
-                    continue;
-                argCode.Append(' ', 4);
-                argCode.Append($"");
-
-            }
-            return argCode.ToString();
         }
 
         #endregion
@@ -565,11 +331,43 @@ namespace {serviceInfo.Type.Namespace}.UnitTest
 
             //if (typeDocs.TryGetValue(type, out var doc))
             //    return doc;
-            ReadEntity(typeDocument, type);
+            ReadEntity(ref typeDocument, type);
             return typeDocument;
         }
-        private void ReadEntity(TypeDocument typeDocument, Type type)
+        private void ReadEntity(ref TypeDocument typeDocument, Type type)
         {
+            if (type.IsEnum)
+            {
+                typeDocument = new TypeDocument
+                {
+                    IsEnum = true,
+                    ObjectType = ObjectType.Base,
+                    Name = type.Name,
+                    ClassName = type.GetFullTypeName()
+                };
+                return;
+            }
+            if (type == typeof(string))
+            {
+                typeDocument = new TypeDocument
+                {
+                    ObjectType = ObjectType.Base,
+                    Name = type.Name,
+                    ClassName = type.GetFullTypeName()
+                };
+                return;
+            }
+            if (type.IsBaseType())
+            {
+                typeDocument = new TypeDocument
+                {
+                    ObjectType = ObjectType.Base,
+                    Name = type.Name,
+                    ClassName = type.GetFullTypeName()
+                };
+                return;
+            }
+
             if (type == null || type.IsAutoClass || !IsLetter(type.Name[0]) ||
                 type.IsInterface || type.IsMarshalByRef || type.IsCOMObject ||
                 type == typeof(object) || type == typeof(void) ||
@@ -602,13 +400,13 @@ namespace {serviceInfo.Type.Namespace}.UnitTest
             _typeDocs2.Add(type, typeDocument);
             if (type.IsArray)
             {
-                ReadEntity(typeDocument, type.Assembly.GetType(type.FullName.Split('[')[0]));
+                ReadEntity(ref typeDocument, type.Assembly.GetType(type.FullName.Split('[')[0]));
                 return;
             }
             if (type.IsGenericType && !type.IsValueType &&
                 type.GetGenericTypeDefinition().GetInterface(typeof(IEnumerable<>).FullName) != null)
             {
-                ReadEntity(typeDocument, type.GetGenericArguments().Last());
+                ReadEntity(ref typeDocument, type.GetGenericArguments().Last());
                 return;
             }
 
@@ -637,10 +435,10 @@ namespace {serviceInfo.Type.Namespace}.UnitTest
                 return;
             }
 
-            var dc = type.GetCustomAttributes<DataContractAttribute>();
-            var jo = type.GetCustomAttributes<JsonObjectAttribute>();
+            var dc = GetCustomAttribute<DataContractAttribute>(type);
+            var jo = GetCustomAttribute<JsonObjectAttribute>(type);
 
-            foreach (var property in type.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
+            foreach (var property in type.GetProperties(AllFlags))
             {
                 if (property.IsSpecialName)
                 {
@@ -648,7 +446,7 @@ namespace {serviceInfo.Type.Namespace}.UnitTest
                 }
                 CheckMember(typeDocument, type, property, property.PropertyType, jo != null, dc != null);
             }
-            foreach (var field in type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
+            foreach (var field in type.GetFields(AllFlags))
             {
                 if (!char.IsLetter(field.Name[0]) || field.IsSpecialName)
                 {
@@ -671,11 +469,11 @@ namespace {serviceInfo.Type.Namespace}.UnitTest
                 return null;
             }
 
-            var jp = member.GetCustomAttributes<JsonPropertyAttribute>().FirstOrDefault();
-            var dm = member.GetCustomAttributes<DataMemberAttribute>().FirstOrDefault();
+            var jp = GetCustomAttribute<JsonPropertyAttribute>(member);
+            var dm = GetCustomAttribute<DataMemberAttribute>(member);
             if (json)
             {
-                var ji = member.GetCustomAttributes<JsonIgnoreAttribute>();
+                var ji = GetCustomAttribute<JsonIgnoreAttribute>(member);
                 if (ji != null)
                 {
                     return null;
@@ -687,7 +485,7 @@ namespace {serviceInfo.Type.Namespace}.UnitTest
             }
             else if (dc)
             {
-                var id = member.GetCustomAttributes<IgnoreDataMemberAttribute>();
+                var id = GetCustomAttribute<IgnoreDataMemberAttribute>(member);
                 if (id != null)
                 {
                     return null;
@@ -782,7 +580,7 @@ namespace {serviceInfo.Type.Namespace}.UnitTest
                 field.JsonName = jp.PropertyName;
             }
 
-            var rule = member.GetCustomAttributes<DataRuleAttribute>().FirstOrDefault();
+            var rule = GetCustomAttribute<DataRuleAttribute>(member);
             if (rule != null)
             {
                 field.CanNull = rule.CanNull;
@@ -794,6 +592,231 @@ namespace {serviceInfo.Type.Namespace}.UnitTest
 
             return field;
         }
+        T GetCustomAttribute<T>(Type type) where T : Attribute => type.GetCustomAttributes<T>().FirstOrDefault();
+        T GetCustomAttribute<T>(MemberInfo type) where T : Attribute => type.GetCustomAttributes<T>().FirstOrDefault();
+
         #endregion
+
+        #region UnitTest
+
+        /// <summary>
+        /// 生成单元测试代码
+        /// </summary>
+        /// <param name="path"></param>
+        public void NUnitCode(string path)
+        {
+            foreach (var serviceInfo in ServiceInfos.Values)
+            {
+                if (serviceInfo.Aips.Count == 0)
+                {
+                    continue;
+                }
+                var file = Path.Combine(path, $"{serviceInfo.Name}.cs");
+                if (File.Exists(file))
+                    continue;
+                var code = new StringBuilder();
+                code.AppendLine($@"using System;
+using System.Threading.Tasks;
+using NUnit.Framework;
+using Agebull.Common.Ioc;
+using ZeroTeam.MessageMVC;
+using ZeroTeam.MessageMVC.Messages;
+
+namespace {serviceInfo.Type.Namespace}.UnitTest
+{{
+    [TestFixture]
+    public class {serviceInfo.Type.GetTypeName()}UnitTest
+    {{
+        [SetUp]
+        public void Setup()
+        {{
+            ZeroApp.UseTest(DependencyHelper.ServiceCollection, typeof({serviceInfo.Type.GetTypeName()}).Assembly);
+        }}
+
+        [TearDown]
+        public void TearDown()
+        {{
+            ZeroFlowControl.Shutdown();
+        }}
+
+");
+                foreach (var api in serviceInfo.Aips.Values.Cast<ApiActionInfo>())
+                {
+                    var argCode = new StringBuilder();
+                    string json = ArgumentJson(argCode, api);
+                    code.AppendLine($@"
+
+        /// <summary>
+        /// {api.Caption}
+        /// </summary>
+        [Test]
+        public async Task {api.ApiName.Replace('/', '_')}()
+        {{
+            var (msg, ser) = await MessagePoster.Post(new InlineMessage
+            {{
+                ServiceName = ""{serviceInfo.Name}"",
+                ApiName = ""{api.ApiName}"",
+                Content = 
+@""{json}""
+            }});
+            Assert.IsTrue(msg.State == MessageState.Success , msg.Result);
+        }}
+");
+                }
+                code.AppendLine("    }");
+                code.AppendLine("}");
+                File.WriteAllText(file, code.ToString());
+            }
+        }
+        /// <summary>
+        /// 生成单元测试代码
+        /// </summary>
+        /// <param name="path"></param>
+        public void xUnitCode(string path)
+        {
+            foreach (var serviceInfo in ServiceInfos.Values)
+            {
+                if (serviceInfo.Aips.Count == 0)
+                {
+                    continue;
+                }
+                var file = Path.Combine(path, $"{serviceInfo.Name}.cs");
+                if (File.Exists(file))
+                    continue;
+                var code = new StringBuilder();
+                code.AppendLine($@"using System;
+using System.Threading.Tasks;
+using Xunit;
+using Agebull.Common.Ioc;
+using ZeroTeam.MessageMVC;
+using ZeroTeam.MessageMVC.Messages;
+
+namespace {serviceInfo.Type.Namespace}.UnitTest
+{{
+    public class {serviceInfo.Type.GetTypeName()}UnitTest : IDisposable
+    {{
+        public {serviceInfo.Type.GetTypeName()}UnitTest()
+        {{
+            ZeroApp.UseTest(DependencyHelper.ServiceCollection, typeof({serviceInfo.Type.GetTypeName()}).Assembly);
+        }}
+        void IDisposable.Dispose()
+        {{
+            ZeroFlowControl.Shutdown();
+        }}
+
+");
+                foreach (var api in serviceInfo.Aips.Values.Cast<ApiActionInfo>())
+                {
+                    var argCode = new StringBuilder();
+                    string json = ArgumentJson(argCode, api);
+                    code.AppendLine($@"
+
+        /// <summary>
+        /// {api.Caption}
+        /// </summary>
+        [Fact]
+        public async Task {api.Name}()
+        {{
+            var (msg, ser) = await MessagePoster.Post(new InlineMessage
+            {{
+                ServiceName = ""{serviceInfo.Name}"",
+                ApiName = ""{api.ApiName}"",
+                Content = 
+@""{json}""
+            }});
+            Assert.True(msg.State == MessageState.Success , msg.Result);
+        }}
+");
+                }
+                code.AppendLine("    }");
+                code.AppendLine("}");
+                File.WriteAllText(file, code.ToString());
+            }
+        }
+
+        private string ArgumentJson(StringBuilder argCode, ApiActionInfo info)
+        {
+            string json;
+            if (info.ArgumentInfo != null)
+            {
+                if (info.ArgumentInfo.ObjectType != ObjectType.Base)
+                {
+                    return ClassArgumentJson(info.ArgumentInfo).Replace("\"", "\"\"");
+                }
+                else
+                {
+                    json = JsonValue(info.ArgumentInfo).Replace("\"", "\"\"").Trim(',', ' ', '\t', '\r', '\n');
+                    return $@"{{
+    ""{ info.Name }"" : {json}
+}}";
+                }
+            }
+            else
+            {
+                foreach (var arg in info.Arguments)
+                {
+                    if (arg.ObjectType != ObjectType.Base)
+                    {
+                        json = ClassArgumentJson(arg).Trim(',', ' ', '\t', '\r', '\n');
+                    }
+                    else
+                    {
+                        json = JsonValue(arg).Trim(',', ' ', '\t', '\r', '\n');
+                    }
+                    argCode.AppendLine($"\"{ arg.Name }\" : {json},");
+                }
+                json = argCode.ToString().Replace("\"", "\"\"").Trim(',', ' ', '\t', '\r', '\n');
+                return $@"{{
+{json.SpaceLine(4)}
+}}";
+            }
+        }
+
+        const BindingFlags AllFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+        const BindingFlags PublicFlags = BindingFlags.Public | BindingFlags.Instance;
+
+        string ClassArgumentJson(TypeDocument doc)
+        {
+            var argCode = new StringBuilder();
+            argCode.AppendLine("{");
+            foreach (var field in doc.Fields.Values)
+            {
+                argCode.Append(JsonValue(field, field.JsonName));
+                argCode.AppendLine(",");
+            }
+            return argCode.ToString().Trim(',', ' ', '\t', '\r', '\n') + "\r\n}";
+        }
+
+        string JsonValue(TypeDocument type, string name)
+        {
+            return $"    \"{name}\" : {JsonValue(type)}";
+        }
+
+        string JsonValue(TypeDocument type)
+        {
+            if (type.ObjectType != ObjectType.Base)
+                return ClassArgumentJson(type).SpaceLine(4);
+            return type.TypeName switch
+            {
+                "string" => string.IsNullOrEmpty(type.Example)
+                         ? "\"测试文本\""
+                         : $"\"{type.Example.Replace("\"", "\"\"")}\"",
+                "bool" => string.IsNullOrEmpty(type.Example)
+? "true"
+: $"{type.Example.ToLower()}",
+                "Guid" => string.IsNullOrEmpty(type.Example)
+? $"\"{Guid.NewGuid()}\""
+: $"\"{type.Example.Replace("\"", "\"\"")}\"",
+                "DateTime" => string.IsNullOrEmpty(type.Example)
+? $"\"{DateTime.Today:yyyy-MM-DD}\""
+: $"\"{type.Example.Replace("\"", "\"\"")}\"",
+                _ => string.IsNullOrEmpty(type.Example)
+? "0"
+: $"\"{type.Example.Replace("\"", "\"\"")}\"",
+            };
+        }
+
+        #endregion
+
     }
 }

@@ -96,7 +96,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 switch (ResultSerializeType)
                 {
                     case SerializeType.Json:
-                        ResultSerializer = IocHelper.Create<IJsonSerializeProxy>();
+                        ResultSerializer = DependencyHelper.Create<IJsonSerializeProxy>();
                         break;
                     case SerializeType.NewtonJson:
                         ResultSerializer = new NewtonJsonSerializeProxy();
@@ -248,16 +248,16 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             switch (ArgumentSerializeType)
             {
                 case SerializeType.Json:
-                    ArgumentSerializer = IocHelper.Create<IJsonSerializeProxy>();
+                    ArgumentSerializer = DependencyHelper.Create<IJsonSerializeProxy>();
                     break;
                 case SerializeType.NewtonJson:
                     ArgumentSerializer = new NewtonJsonSerializeProxy();
                     break;
                 case SerializeType.Xml:
-                    ArgumentSerializer = IocHelper.Create<IXmlSerializeProxy>();
+                    ArgumentSerializer = DependencyHelper.Create<IXmlSerializeProxy>();
                     break;
                 case SerializeType.Bson:
-                    ArgumentSerializer = IocHelper.Create<IBsonSerializeProxy>();
+                    ArgumentSerializer = DependencyHelper.Create<IBsonSerializeProxy>();
                     break;
                 case SerializeType.Custom:
                     throw new NotSupportedException($"{ResultSerializeType}序列化方式暂不支持");

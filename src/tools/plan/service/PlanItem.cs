@@ -15,7 +15,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
 
         #region 系统配置与常量
 
-        internal static ILogger<PlanItem> logger = IocHelper.LoggerFactory.CreateLogger<PlanItem>();
+        internal static ILogger<PlanItem> logger = DependencyHelper.LoggerFactory.CreateLogger<PlanItem>();
 
         private int planAutoRemoveTime => PlanSystemOption.Option.CloseTimeout;
 

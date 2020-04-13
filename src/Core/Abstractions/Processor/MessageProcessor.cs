@@ -72,9 +72,10 @@ namespace ZeroTeam.MessageMVC.Messages
         private async Task Process()
         {
             await Task.Yield();
-            using (IocScope.CreateScope($"MessageProcessor : {Message.Topic}/{Message.Title}"))
+            using (DependencyScope.CreateScope($"MessageProcessor : {Message.Topic}/{Message.Title}"))
             {
                 Message.Reset();
+                await Message.PrepareInline();
                 if (await Prepare() && Message.State == MessageState.None)
                     await DoHandle();
 
@@ -94,7 +95,7 @@ namespace ZeroTeam.MessageMVC.Messages
             index = 0;
             try
             {
-                middlewares = IocHelper.ServiceProvider.GetServices<IMessageMiddleware>().OrderBy(p => p.Level).ToArray();
+                middlewares = DependencyHelper.ServiceProvider.GetServices<IMessageMiddleware>().OrderBy(p => p.Level).ToArray();
 
                 foreach (var middleware in middlewares)
                 {
@@ -217,14 +218,10 @@ namespace ZeroTeam.MessageMVC.Messages
         private async Task OnMessageError(Exception ex)
         {
             Message.RuntimeStatus.Exception = ex;
+            LogRecorder.Exception(ex);
+            LogRecorder.MonitorTrace(() => $"发生未处理异常.[{Message.RuntimeStatus.Code}]{Message.RuntimeStatus.Message}");
 
             var array = middlewares.Where(p => p.Scope.HasFlag(MessageHandleScope.Exception)).ToArray();
-            if (array.Length == 0)
-            {
-                LogRecorder.Exception(ex);
-                LogRecorder.MonitorTrace(() => $"发生未处理异常.[{Message.RuntimeStatus.Code}]{Message.RuntimeStatus.Message}");
-                return;
-            }
             foreach (var middleware in array)
             {
                 try
@@ -243,10 +240,14 @@ namespace ZeroTeam.MessageMVC.Messages
             {
                 Message.ResultData = Message.ResultCreater(Message.RuntimeStatus.Code, Message.RuntimeStatus.Message);
             }
+            else if (Message.RuntimeStatus != null)
+            {
+                Message.ResultData = Message.RuntimeStatus;
+            }
             else
             {
                 Message.ResultOutdated = false;
-                Message.Result ??= ex.Message;
+                Message.Result = ex.Message;
             }
         }
         #endregion

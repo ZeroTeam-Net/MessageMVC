@@ -55,7 +55,7 @@ namespace ZeroTeam.MessageMVC.Http
 
         static SecurityOption()
         {
-            ConfigurationManager.RegistOnChange(LoadOption, true);
+            ConfigurationManager.RegistOnChange("Gateway:Security",LoadOption, true);
 
         }
         static void LoadOption()

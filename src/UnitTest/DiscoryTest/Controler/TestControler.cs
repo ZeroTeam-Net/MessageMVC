@@ -44,7 +44,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         {
             logger = log;
             Option = option;
-            if (service == IocHelper.ServiceCollection)
+            if (service == DependencyHelper.ServiceCollection)
                 Console.WriteLine(Option.AppName);
 
         }
@@ -117,7 +117,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         [Route("v1/json")]
         public string Json(Argument argument)
         {
-            return IocHelper.Create<IJsonSerializeProxy>().ToString(argument);
+            return DependencyHelper.Create<IJsonSerializeProxy>().ToString(argument);
         }
 
         [Route("v1/xml")]

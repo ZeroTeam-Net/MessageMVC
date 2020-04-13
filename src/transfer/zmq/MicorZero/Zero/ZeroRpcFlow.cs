@@ -23,7 +23,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         /// 等级,用于确定中间件优先级
         /// </summary>
-        int IZeroMiddleware.Level => short.MinValue;
+        int IZeroMiddleware.Level => -0xFFF;
 
         /// <summary>
         ///     站点配置
@@ -41,7 +41,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// </summary>
         void IFlowMiddleware.CheckOption(ZeroAppOption config)
         {
-            Logger = IocHelper.LoggerFactory.CreateLogger(nameof(ZeroRpcFlow));
+            Logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(ZeroRpcFlow));
             ZContext.Initialize();
 
             #region 配置组合

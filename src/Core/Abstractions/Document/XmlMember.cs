@@ -199,14 +199,14 @@ namespace ZeroTeam.MessageMVC.Documents
                           let np = name.Value.Split(chars)
                           select new XmlMember
                           {
-                              Type = np[0],
+                              Type = np[0]?.Trim(),
                               Name = np[1].TrimEnd(chars2),
-                              Caption = summary?.Value.ConverToAscii(),
-                              Description = remarks?.Value.ConverToAscii(),
-                              Seealso = seealso?.Value,
-                              Value = value?.Value,
-                              Example = example?.Value,
-                              Returns = returns?.Value,
+                              Caption = summary?.Value.ConverToAscii()?.Trim(),
+                              Description = remarks?.Value.ConverToAscii()?.Trim(),
+                              Seealso = seealso?.Value?.Trim(),
+                              Value = value?.Value?.Trim(),
+                              Example = example?.Value?.Trim(),
+                              Returns = returns?.Value?.Trim(),
                               XArguments = paramss
                           };
 

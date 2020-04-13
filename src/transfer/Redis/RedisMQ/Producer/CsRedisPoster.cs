@@ -202,7 +202,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <summary>
         /// 等级
         /// </summary>
-        int IZeroMiddleware.Level => short.MinValue;
+        int IZeroMiddleware.Level => 0;
 
         private CSRedisClient client;
         /// <summary>
@@ -210,7 +210,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// </summary>
         public void Initialize()
         {
-            logger = IocHelper.LoggerFactory.CreateLogger(nameof(CsRedisPoster));
+            logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(CsRedisPoster));
 
             client = new CSRedisClient(RedisOption.Instance.ConnectionString);
             try

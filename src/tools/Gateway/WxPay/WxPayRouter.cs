@@ -31,8 +31,10 @@ namespace ZeroTeam.MessageMVC.Wechart
         /// <summary>
         /// 消息中间件的处理范围
         /// </summary>
-        MessageHandleScope IMessageMiddleware.Scope => MessageHandleScope.Prepare;
-
+        MessageHandleScope IMessageMiddleware.Scope =>
+            GatewayOption.Instance.EnableWxPay
+                 ? MessageHandleScope.Prepare
+                 : MessageHandleScope.None;
         /// <summary>
         /// 当前处理器
         /// </summary>
@@ -97,7 +99,7 @@ namespace ZeroTeam.MessageMVC.Wechart
             }
             catch (Exception ex)
             {
-                message.RuntimeStatus = IocHelper.Create<IOperatorStatus>();
+                message.RuntimeStatus = DependencyHelper.Create<IOperatorStatus>();
                 message.RuntimeStatus.Exception = ex;
                 if (message.ResultCreater != null)
                     message.ResultData = message.ResultCreater(DefaultErrorCode.UnhandleException, null);

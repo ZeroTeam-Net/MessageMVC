@@ -44,7 +44,7 @@ namespace ZeroTeam.MessageMVC.ZeroMQ.Inporc
         /// <summary>
         /// 等级
         /// </summary>
-        int IZeroMiddleware.Level => short.MinValue;
+        int IZeroMiddleware.Level => --0xFF;
 
         /*// <summary>
         /// 等待数量

@@ -9,30 +9,39 @@ namespace ZeroTeam.MessageMVC.PlanTasks
     internal class ReceiptControler : IApiControler
     {
         [Route("v1/save")]
-        public async Task<IApiResult> Save(MessageItem message)
+        public async Task<IApiResult> Save(InlineMessage message)
         {
             await RedisHelper.SetAsync($"receipt:{message.ID}", message);
             //var file = Path.Combine(ZeroAppOption.Instance.DataFolder, $"{message}.json");
             //await File.AppendAllTextAsync(file, JsonHelper.SerializeObject(message));
             return ApiResultHelper.Succees();
         }
-
+        /// <summary>
+        /// 载入
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [Route("v1/load")]
-        public Task<string> Load(string id)
+        public async Task<IApiResult<InlineMessage>> Load(string id)
         {
             //var file = Path.Combine(ZeroAppOption.Instance.DataFolder, $"{id}.json");
             //if (!File.Exists(file))
             //    return null;
             //return await File.ReadAllTextAsync(file);
-
-           return RedisHelper.GetAsync($"receipt:{id}");
+            var message = await RedisHelper.GetAsync<InlineMessage>($"receipt:{id}");
+            return message != null
+                ? ApiResultHelper.Succees(message)
+                : ApiResultHelper.Error<InlineMessage>(DefaultErrorCode.ArgumentError);
         }
 
         [Route("v1/remove")]
-        public void Remove(string id)
+        public async Task<IApiResult> Remove(string id)
         {
             //File.Delete(Path.Combine(ZeroAppOption.Instance.DataFolder, $"{id}.json"));
-            RedisHelper.DelAsync($"receipt:{id}");
+            var ab = await RedisHelper.DelAsync($"receipt:{id}");
+            return ab == 1
+                ? ApiResultHelper.Succees()
+                : ApiResultHelper.Error(DefaultErrorCode.ArgumentError);
         }
     }
 }

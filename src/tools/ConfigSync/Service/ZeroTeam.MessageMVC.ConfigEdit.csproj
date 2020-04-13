@@ -13,7 +13,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="appsettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\..\transfer\Http\ZeroTeam.MessageMVC.Http.csproj" />
+    <ProjectReference Include="..\..\Contract\ZeroTeam.MessageMVC.ApiContract.csproj" />
+    <ProjectReference Include="..\..\Tools\ZeroTeam.MessageMVC.Tools.csproj" />
     <ProjectReference Include="..\Client\ZeroTeam.MessageMVC.ConfigSync.csproj" />
   </ItemGroup>
 
@@ -25,6 +31,12 @@
 
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MicroZero.Http.Gateway
+namespace ZeroTeam.MessageMVC.Http
 {
     /// <summary>
     ///     缓存特征

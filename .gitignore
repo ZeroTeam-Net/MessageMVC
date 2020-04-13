@@ -16,3 +16,6 @@ packages
 *.~vsdx
 nuget
 /TestResults
+/publish
+/src/tools/Gateway/config/sync
+*.pubxml

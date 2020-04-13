@@ -86,10 +86,10 @@ namespace ZeroTeam.MessageMVC
             ApplicationState = StationState.CheckOption;
             if (LogRecorder.NoRegist)
                 LogRecorder.DoInitialize();
-            logger = IocHelper.LoggerFactory.CreateLogger(nameof(ZeroFlowControl));
+            logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(ZeroFlowControl));
 
-            IocHelper.Update();
-            Middlewares = IocHelper.RootProvider.GetServices<IFlowMiddleware>().OrderBy(p => p.Level).ToArray();
+            DependencyHelper.Update();
+            Middlewares = DependencyHelper.RootProvider.GetServices<IFlowMiddleware>().OrderBy(p => p.Level).ToArray();
             foreach (var mid in Middlewares)
             {
                 try
@@ -102,7 +102,7 @@ namespace ZeroTeam.MessageMVC
                     throw;
                 }
             }
-            IocHelper.Update();
+            DependencyHelper.Update();
 
             //显示
             Console.WriteLine($@"Wecome ZeroTeam MessageMVC
@@ -196,9 +196,9 @@ namespace ZeroTeam.MessageMVC
             if (ApplicationState >= StationState.Initialized)
                 return;
             ApplicationState = StationState.Initialized;
-            IocHelper.Update();
-            Middlewares = IocHelper.RootProvider.GetServices<IFlowMiddleware>().OrderBy(p => p.Level).ToArray();
-            var servcies = IocHelper.RootProvider.GetServices<IService>();
+            DependencyHelper.Update();
+            Middlewares = DependencyHelper.RootProvider.GetServices<IFlowMiddleware>().OrderBy(p => p.Level).ToArray();
+            var servcies = DependencyHelper.RootProvider.GetServices<IService>();
             if (servcies != null)
             {
                 foreach (var service in servcies)
@@ -207,7 +207,7 @@ namespace ZeroTeam.MessageMVC
                 }
             }
             OnZeroInitialize();
-            IocHelper.Update();
+            DependencyHelper.Update();
         }
 
         #endregion

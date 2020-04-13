@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using MicroZero.Http.Gateway;
+using ZeroTeam.MessageMVC.Http;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.RedisMQ;
 using ZeroTeam.MessageMVC.Wechart;
@@ -19,10 +19,13 @@ namespace ZeroTeam.MessageMVC.Http
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
-            services.UseRedisPoster();
-            services.AddTransient<IMessageMiddleware, SecurityChecker>();
-            services.AddTransient<IMessageMiddleware, RouteCache>();
-            services.AddTransient<IMessageMiddleware, WxPayRouter>();
+            services.UseCsRedis();
+            if (GatewayOption.Instance.EnableSecurityChecker)
+                services.AddTransient<IMessageMiddleware, SecurityChecker>();
+            if (GatewayOption.Instance.EnableCache)
+                services.AddTransient<IMessageMiddleware, RouteCache>();
+            if (GatewayOption.Instance.EnableWxPay)
+                services.AddTransient<IMessageMiddleware, WxPayRouter>();
 
             HttpRoute.Initialize(services);
         }

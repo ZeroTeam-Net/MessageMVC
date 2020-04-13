@@ -144,8 +144,9 @@ namespace System
         /// <returns></returns>
         public static bool IsBaseType(this Type type)
         {
-            return type.IsPrimitive || type.IsEnum || BaseTypes.Contains(type);
+            return type.IsPrimitive || type.IsEnum || type.IsValueType || BaseTypes.Contains(type);
         }
+
         /// <summary>
         /// 所有基础类型
         /// </summary>

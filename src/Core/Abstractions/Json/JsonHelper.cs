@@ -11,7 +11,7 @@ namespace ZeroTeam.MessageMVC.Messages
     /// </summary>
     public static class JsonHelper
     {
-        static IJsonSerializeProxy porxy = IocHelper.Create<IJsonSerializeProxy>() ?? new NewtonJsonSerializeProxy();
+        static IJsonSerializeProxy porxy = DependencyHelper.Create<IJsonSerializeProxy>() ?? new NewtonJsonSerializeProxy();
 
         /// <summary>
         /// 序列化

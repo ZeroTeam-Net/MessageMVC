@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Services;
+using ZeroTeam.MessageMVC.Tools;
 
 namespace ZeroTeam.MessageMVC.Messages
 {
@@ -24,7 +25,10 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 消息中间件的处理范围
         /// </summary>
-        MessageHandleScope IMessageMiddleware.Scope => MessageHandleScope.Handle;
+        MessageHandleScope IMessageMiddleware.Scope => 
+            ToolsOption.Instance.EnableMessageReConsumer
+            ? MessageHandleScope.Handle
+            : MessageHandleScope.None;
 
         /// <summary>
         /// 准备

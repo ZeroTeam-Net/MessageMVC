@@ -44,7 +44,7 @@ namespace ZeroTeam.MessageMVC.Web
         {
             if (Config.Folders.Contains(message.Topic))
             {
-                await Publish(message.Offline(IocHelper.Create<IJsonSerializeProxy>()));//BUG
+                await Publish(message.Offline(DependencyHelper.Create<IJsonSerializeProxy>()));//BUG
             }
         }
 
@@ -100,7 +100,7 @@ namespace ZeroTeam.MessageMVC.Web
                 ZeroFlowControl.RegistService(new ZeroService
                 {
                     ServiceName = folder,
-                    Receiver = IocHelper.Create<IMessageConsumer>()
+                    Receiver = DependencyHelper.Create<IMessageConsumer>()
                 });
                 Handlers.Add(folder, new List<WebSocketClient>());
                 app.Map($"/{folder}", Map);

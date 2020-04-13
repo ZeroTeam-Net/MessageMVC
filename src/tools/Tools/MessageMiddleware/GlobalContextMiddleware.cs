@@ -21,7 +21,9 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         /// 消息中间件的处理范围
         /// </summary>
-        MessageHandleScope IMessageMiddleware.Scope => MessageHandleScope.Handle;
+        MessageHandleScope IMessageMiddleware.Scope => ToolsOption.Instance.EnableLinkTrace
+                ? MessageHandleScope.Handle
+                : MessageHandleScope.None;
 
         /// <summary>
         /// 当前处理器
@@ -72,7 +74,10 @@ namespace ZeroTeam.MessageMVC.Context
             {
                 GlobalContext.Current.Trace = message.Trace;
             }
-
+            if (GlobalContext.Current.Trace == null)
+            {
+                GlobalContext.Current.Trace = TraceInfo.New(message.ID);
+            }
             await next();
 
         }

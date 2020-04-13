@@ -16,7 +16,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// </summary>
         public ZeroContext()
         {
-            User = IocHelper.Create<IUser>();//防止反序列化失败
+            User = DependencyHelper.Create<IUser>();//防止反序列化失败
             Status = new ContextStatus();
             Option = new Dictionary<string, string>();
         }
@@ -38,10 +38,12 @@ namespace ZeroTeam.MessageMVC.Context
         /// </summary>
         public IInlineMessage Message { get; set; }
 
+        private TraceInfo trace;
+
         /// <summary>
         ///     跟踪信息
         /// </summary>
-        public TraceInfo Trace { get; set; }
+        public TraceInfo Trace { get => trace ??= new TraceInfo(); set => trace = value; }
 
         /// <summary>
         /// 全局状态

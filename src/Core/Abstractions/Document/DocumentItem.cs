@@ -83,7 +83,7 @@ namespace ZeroTeam.MessageMVC.Documents
 
             if (!string.IsNullOrWhiteSpace(document.Example))
             {
-                Example = document.Example;
+                Example = document.Example.Trim();
             }
 
             if (!string.IsNullOrWhiteSpace(document.Value))

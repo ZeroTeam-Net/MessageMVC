@@ -24,7 +24,7 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 等级
         /// </summary>
-        int IZeroMiddleware.Level => int.MinValue;
+        int IZeroMiddleware.Level => -0xFFFE;
 
         /// <summary>
         ///     配置校验,作为第一步
@@ -32,8 +32,8 @@ namespace ZeroTeam.MessageMVC
         void IFlowMiddleware.CheckOption(ZeroAppOption config)
         {
             CheckConfig(config);
-            IocHelper.AddSingleton(config);
-            IocHelper.Update();
+            DependencyHelper.AddSingleton(config);
+            DependencyHelper.Update();
             LogRecorder.GetMachineNameFunc = () => config.TraceName;
             if (LogRecorder.UseBaseLogger)
             {

@@ -18,9 +18,9 @@ namespace WebNotifyTest
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            IocHelper.ServiceCollection = services;
+            DependencyHelper.ServiceCollection = services;
             services.AddTransient<IMessageMiddleware, WebSocketNotify>();
-            IocHelper.SetServiceCollection(services);
+            DependencyHelper.SetServiceCollection(services);
             services.UseCsRedis();
             
         }
@@ -29,7 +29,7 @@ namespace WebNotifyTest
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             WebSocketNotify.Binding(app);
-            IocHelper.ServiceCollection.UseFlow();
+            DependencyHelper.ServiceCollection.UseFlow();
             app.UseStaticFiles();
             app.UseDefaultFiles("/index.htm");
 

@@ -1,7 +1,4 @@
-using Agebull.Common;
-using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
-using Agebull.EntityModel.Common;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -413,7 +410,6 @@ namespace ZeroTeam.MessageMVC.Http
                         arguments.TryAdd(key, request.Form[key]);
                     }
                 }
-                ReadFiles();
             }
             catch
             {
@@ -461,9 +457,10 @@ namespace ZeroTeam.MessageMVC.Http
         }
 
         /// <summary>
-        /// 如果未上线且还原参数为字典,否则什么也不做
+        /// 准备在线(框架内调用)
         /// </summary>
-        internal async void Inline()
+        /// <returns></returns>
+        public async Task PrepareInline()
         {
             if (IsInline)
                 return;
@@ -480,6 +477,7 @@ namespace ZeroTeam.MessageMVC.Http
                         Dictionary.TryAdd(kv.Key, kv.Value);
                     }
                 }
+                ReadFiles();
                 HttpContent ??= await PrepareContent();
             }
             catch (Exception e)
@@ -492,7 +490,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// <summary>
         /// 如果未上线且还原参数为字典,否则什么也不做
         /// </summary>
-        public void Inline(ISerializeProxy serialize, Type type, ISerializeProxy resultSerializer, Func<int, string, object> errResultCreater)
+        public async Task Inline(ISerializeProxy serialize, Type type, ISerializeProxy resultSerializer, Func<int, string, object> errResultCreater)
         {
             if (resultSerializer != null)
                 ResultSerializer = resultSerializer;
@@ -500,7 +498,7 @@ namespace ZeroTeam.MessageMVC.Http
                 ResultCreater = errResultCreater;
             if (IsInline)
                 return;
-            Inline();
+            await PrepareInline();
             try
             {
                 if (type != null && !type.IsBaseType())

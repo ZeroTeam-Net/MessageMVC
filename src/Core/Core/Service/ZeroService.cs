@@ -139,7 +139,7 @@ namespace ZeroTeam.MessageMVC.Services
         /// </summary>
         internal void Initialize()
         {
-            logger ??= IocHelper.LoggerFactory.CreateLogger($"ZeroService({ServiceName})");
+            logger ??= DependencyHelper.LoggerFactory.CreateLogger($"ZeroService({ServiceName})");
 
             eventSlim = new ManualResetEventSlim(true);
             if (ServiceName == null)
@@ -423,7 +423,7 @@ namespace ZeroTeam.MessageMVC.Services
         /// </summary>
         public ISerializeProxy Serialize
         {
-            get => serialize ??= IocHelper.Create<ISerializeProxy>();
+            get => serialize ??= DependencyHelper.Create<ISerializeProxy>();
             set => serialize = value;
         }
 
@@ -472,7 +472,7 @@ namespace ZeroTeam.MessageMVC.Services
             {
                 ApiActions[name] = action;
             }
-            logger ??= IocHelper.LoggerFactory.CreateLogger($"ZeroService({ServiceName})");
+            logger ??= DependencyHelper.LoggerFactory.CreateLogger($"ZeroService({ServiceName})");
             logger.Trace(() => $"[Regist Action] {name}({info.Controller}.{info.Name})");
         }
 

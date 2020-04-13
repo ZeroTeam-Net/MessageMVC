@@ -93,8 +93,9 @@ namespace ZeroTeam.MessageMVC.Context
         /// </summary>
         public TraceInfo()
         {
-            Context = IocHelper.Create<IZeroContext>();//防止反序列化失败
+            Context = DependencyHelper.Create<IZeroContext>();//防止反序列化失败
         }
+
         /// <summary>
         /// 构造
         /// </summary>

@@ -22,6 +22,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="config\**" />
+    <Content Remove="config\**" />
+    <EmbeddedResource Remove="config\**" />
+    <None Remove="config\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Cache\CacheEventProcess.cs" />
   </ItemGroup>
 
@@ -41,6 +48,8 @@
     <ProjectReference Include="..\..\transfer\Kafka\ZeroTeam.MessageMVC.Kafka.csproj" />
     <ProjectReference Include="..\..\tools\plan\client\ZeroTeam.MessageMVC.Plan.Client.csproj" />
     <ProjectReference Include="..\..\transfer\Redis\RedisMQ\ZeroTeam.MessageMVC.RedisMQ.csproj" />
+    <ProjectReference Include="..\ConfigSync\Client\ZeroTeam.MessageMVC.ConfigSync.csproj" />
+    <ProjectReference Include="..\Contract\ZeroTeam.MessageMVC.ApiContract.csproj" />
   </ItemGroup>
 
   <ItemGroup>

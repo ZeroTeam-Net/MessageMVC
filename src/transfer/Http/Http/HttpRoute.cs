@@ -1,4 +1,5 @@
 using Agebull.Common.Configuration;
+using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Http;
@@ -8,6 +9,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
+using ZeroTeam.MessageMVC.Services;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Http
@@ -29,10 +31,10 @@ namespace ZeroTeam.MessageMVC.Http
         /// </summary>
         public static void Initialize(IServiceCollection services)
         {
-            ConfigurationManager.RegistOnChange(() =>
-            {
-                Option = ConfigurationManager.Get<MessageRouteOption>("MessageMVC:HttpRoute");
-            }, true);
+            ConfigurationManager.RegistOnChange("MessageMVC:HttpRoute", () =>
+             {
+                 Option = ConfigurationManager.Get<MessageRouteOption>("MessageMVC:HttpRoute");
+             }, true);
 
 
             services.AddTransient<IMessagePoster, HttpPoster>();
@@ -42,6 +44,23 @@ namespace ZeroTeam.MessageMVC.Http
             services.UseFlowByAutoDiscover();
         }
 
+        /// <summary>
+        ///     初始化
+        /// </summary>
+        public static void Initialize(IServiceCollection services, Type type)
+        {
+            ConfigurationManager.RegistOnChange("MessageMVC:HttpRoute", () =>
+            {
+                Option = ConfigurationManager.Get<MessageRouteOption>("MessageMVC:HttpRoute");
+            }, true);
+
+
+            services.AddTransient<IMessagePoster, HttpPoster>();
+
+            services.AddTransient<IServiceTransfer, HttpTransfer>();
+
+            services.UseFlow(type.Assembly, false);
+        }
         #endregion
 
         #region 基本调用
@@ -166,13 +185,19 @@ namespace ZeroTeam.MessageMVC.Http
                 var service = ZeroFlowControl.GetService(data.ApiHost);
                 if (service == null)
                 {
+                    service = new ZeroService
+                    {
+                        //ServiceName = data.ApiHost,
+                        Receiver = new HttpTransfer(),
+                        Serialize = DependencyHelper.Create<JsonSerializeProxy>()
+                    };
                     data.Result = ApiResultHelper.NoFindJson;
                 }
-                else if (Option.FastCall)
-                {
-                    await new ApiExecuter().Handle(service, data, null, null);
-                }
-                else
+                //else if (Option.FastCall)
+                //{
+                //    await new ApiExecuter().Handle(service, data, null, null);
+                //}
+                //else
                 {
                     await MessageProcessor.OnMessagePush(service, data, context);
                 }
@@ -211,7 +236,7 @@ namespace ZeroTeam.MessageMVC.Http
                     data.Result = ApiResultHelper.NoFindJson;
                     return;
                 }
-                data.Inline();
+                await data.PrepareInline();
                 var (msg, sei) = await MessagePoster.Post(data);
                 await context.Response.WriteAsync(msg.Result, Encoding.UTF8);
             }

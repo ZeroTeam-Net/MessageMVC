@@ -1,5 +1,4 @@
-﻿using Agebull.Common.Logging;
-using System;
+﻿using System;
 
 namespace ZeroTeam.MessageMVC.Messages
 {

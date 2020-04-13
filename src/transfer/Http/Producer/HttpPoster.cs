@@ -1,6 +1,7 @@
 using Agebull.Common.Configuration;
 using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -31,34 +32,42 @@ namespace ZeroTeam.MessageMVC.Http
         private string defName;
 
 
+        private readonly Dictionary<string, HttpClientOption> Options = new Dictionary<string, HttpClientOption>();
 
         /// <summary>
         ///     初始化
         /// </summary>
         void IMessagePoster.Initialize()
         {
+            ConfigurationManager.RegistOnChange("MessageMVC:HttpClient", LoadOption, true);
+        }
+
+        void LoadOption()
+        {
+            Options.Clear();
             var dirStr = ConfigurationManager.Get<HttpClientOption[]>("MessageMVC:HttpClient");
-            foreach (var kv in dirStr)
-            {
-                IocHelper.ServiceCollection.AddHttpClient(kv.Name, config =>
+            if (dirStr != null)
+                foreach (var kv in dirStr)
                 {
-                    config.BaseAddress = new Uri(kv.Url);
-                    config.DefaultRequestHeaders.Add("User-Agent", MessageRouteOption.AgentName);
-                });
-                if (string.IsNullOrEmpty(kv.Services))
-                {
-                    defName = kv.Name;
-                }
-                else
-                {
-                    foreach (var service in kv.Services.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                    Options.TryAdd(kv.Name, kv);
+                    DependencyHelper.ServiceCollection.AddHttpClient(kv.Name);
+                    if (string.IsNullOrEmpty(kv.Services))
                     {
-                        ServiceMap.Add(service, kv.Name);
+                        defName = kv.Name;
+                    }
+                    else
+                    {
+                        foreach (var service in kv.Services.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                        {
+                            if (ServiceMap.ContainsKey(service))
+                                ServiceMap[service] = kv.Name;
+                            else
+                                ServiceMap.Add(service, kv.Name);
+                        }
                     }
                 }
-            }
-            IocHelper.Update();
-            httpClientFactory = IocHelper.Create<IHttpClientFactory>();
+            DependencyHelper.Update();
+            httpClientFactory = DependencyHelper.Create<IHttpClientFactory>();
 
         }
 
@@ -86,6 +95,8 @@ namespace ZeroTeam.MessageMVC.Http
                 try
                 {
                     var client = httpClientFactory.CreateClient(name);
+                    client.BaseAddress = new Uri(Options[name].Url);
+                    client.DefaultRequestHeaders.Add("User-Agent", MessageRouteOption.AgentName);
                     using var response = await client.PostAsync($"/{inline.Topic}/{inline.Title}", new StringContent(inline.ToJson()));
 
                     inline.Result = await response.Content.ReadAsStringAsync();

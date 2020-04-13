@@ -183,10 +183,11 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpMessage.Inline">
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpMessage.PrepareInline">
             <summary>
-            如果未上线且还原参数为字典,否则什么也不做
+            准备在线(框架内调用)
             </summary>
+            <returns></returns>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Http.HttpMessage.Inline(ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Type,ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Func{System.Int32,System.String,System.Object})">
             <summary>
@@ -224,6 +225,11 @@
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Http.HttpRoute.Initialize(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+                初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpRoute.Initialize(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Type)">
             <summary>
                 初始化
             </summary>

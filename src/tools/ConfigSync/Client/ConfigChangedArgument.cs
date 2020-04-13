@@ -26,17 +26,4 @@
         /// </summary>
         public string Value { get; set; }
     }
-
-    /// <summary>
-    /// 配置更新配置
-    /// </summary>
-    public class ConfigChangOption
-    {
-
-        /// <summary>
-        /// 配置的Redis键
-        /// </summary>
-
-        public const string ConfigRedisKey = "zt:mmvc:global:cfg";
-    }
 }

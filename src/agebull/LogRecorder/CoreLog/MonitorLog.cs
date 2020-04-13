@@ -14,7 +14,7 @@ namespace Agebull.Common.Logging
         /// <summary>
         /// 当前范围数据
         /// </summary>
-        internal static MonitorItem MonitorItem => IocScope.Dependency.Dependency<MonitorItem>();
+        internal static MonitorItem MonitorItem => DependencyScope.Dependency.Dependency<MonitorItem>();
 
         /// <summary>
         /// 开始检测资源
@@ -27,7 +27,7 @@ namespace Agebull.Common.Logging
             }
             var item = new MonitorItem();
             item.BeginMonitor(title);
-            IocScope.Dependency.Annex(item);
+            DependencyScope.Dependency.Annex(item);
         }
 
         /// <summary>
@@ -187,7 +187,7 @@ namespace Agebull.Common.Logging
             {
                 return;
             }
-            IocScope.Dependency.Remove<MonitorItem>();
+            DependencyScope.Dependency.Remove<MonitorItem>();
             var log = item.End();
             if (log != null)
             {

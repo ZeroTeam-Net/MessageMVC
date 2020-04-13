@@ -15,7 +15,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <param name="exception">原始异常</param>
         public MessageReceiveException(string msg, Exception exception) : base(msg, exception)
         {
-            LogRecorder.Exception(exception, msg);
+            
         }
     }
 }

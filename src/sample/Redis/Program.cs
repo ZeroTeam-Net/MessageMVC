@@ -12,7 +12,7 @@ namespace MicroZero.Kafka.QueueStation
     {
         static async Task Main()
         {
-            var service = IocHelper.ServiceCollection;
+            var service = DependencyHelper.ServiceCollection;
             service.UseCsRedis();
             await service.UseFlow(typeof(Program).Assembly, false);
 

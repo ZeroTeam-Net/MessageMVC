@@ -25,7 +25,9 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <summary>
         /// 消息中间件的处理范围
         /// </summary>
-        MessageHandleScope IMessageMiddleware.Scope => MessageHandleScope.Prepare | MessageHandleScope.End;
+        MessageHandleScope IMessageMiddleware.Scope => ToolsOption.Instance.EnableMonitorLog
+                ? MessageHandleScope.Prepare | MessageHandleScope.End
+                : MessageHandleScope.None;
 
         IDisposable scope;
         /// <summary>

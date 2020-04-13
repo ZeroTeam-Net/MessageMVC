@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using ZeroTeam.MessageMVC.ZeroApis;
 
@@ -31,6 +32,13 @@ namespace ZeroTeam.MessageMVC.Documents
 
         [JsonProperty("argument", NullValueHandling = NullValueHandling.Ignore)]
         public TypeDocument ArgumentInfo;
+
+        /// <summary>
+        ///     参数说明
+        /// </summary>
+
+        [JsonProperty("arguments", NullValueHandling = NullValueHandling.Ignore)]
+        public List<TypeDocument> Arguments;
 
         /// <summary>
         ///     分类

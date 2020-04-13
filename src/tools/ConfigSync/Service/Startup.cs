@@ -19,12 +19,8 @@ namespace ZeroTeam.MessageMVC.ConfigSync
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
-            RedisHelper.Initialization(new CSRedisClient(RedisOption.Instance.ConnectionString));
-            services.AddSingleton<IFlowMiddleware>(CsRedisPoster.Instance);//Redis环境准备
-            services.AddSingleton<IMessagePoster>(CsRedisPoster.Instance);//Redis发布
-            services.AddTransient<INetEvent, CSRedisConsumer>();//Redis订阅
-
-            HttpRoute.Initialize(services);
+            services.UseCsRedis();
+            HttpRoute.Initialize(services,typeof(Startup));
         }
 
         /// <summary>

@@ -50,7 +50,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
 
         static RedisOption()
         {
-            ConfigurationManager.RegistOnChange(Instance.Update, true);
+            ConfigurationManager.RegistOnChange("MessageMVC:Redis",Instance.Update, true);
         }
 
         /// <summary>

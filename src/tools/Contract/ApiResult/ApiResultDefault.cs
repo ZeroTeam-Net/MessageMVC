@@ -9,7 +9,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     {
         #region 序列化
 
-        static ISerializeProxy Serializer = IocHelper.Create<ISerializeProxy>();
+        static ISerializeProxy Serializer = DependencyHelper.Create<ISerializeProxy>();
 
         /// <summary>
         /// 序列化

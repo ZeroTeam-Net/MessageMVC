@@ -12,11 +12,11 @@ namespace MicroZero.Kafka.QueueStation
     {
         static async Task Main()
         {
-            IocHelper.AddTransient<IFlowMiddleware, ZeroRpcFlow>();
-            IocHelper.AddSingleton<IServiceTransfer, ZeroRpcReceiver>();
+            DependencyHelper.AddTransient<IFlowMiddleware, ZeroRpcFlow>();
+            DependencyHelper.AddSingleton<IServiceTransfer, ZeroRpcReceiver>();
 
-            IocHelper.ServiceCollection.UseKafka();
-            await IocHelper.ServiceCollection.UseFlow(typeof(Program).Assembly, false);
+            DependencyHelper.ServiceCollection.UseKafka();
+            await DependencyHelper.ServiceCollection.UseFlow(typeof(Program).Assembly, false);
 
             MessagePoster.Publish("test1", "test", "");
             MessagePoster.Publish("Inproc", "test", "");

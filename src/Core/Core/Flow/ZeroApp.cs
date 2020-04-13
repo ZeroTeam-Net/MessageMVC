@@ -25,9 +25,9 @@ namespace ZeroTeam.MessageMVC
         /// <param name="services"></param>
         public static void CheckOption(this IServiceCollection services)
         {
-            if (IocHelper.ServiceCollection != services)
+            if (DependencyHelper.ServiceCollection != services)
             {
-                IocHelper.SetServiceCollection(services);
+                DependencyHelper.SetServiceCollection(services);
             }
 
             //序列化工具
@@ -57,7 +57,7 @@ namespace ZeroTeam.MessageMVC
             services.TryAddTransient<IJsonSerializeProxy, NewtonJsonSerializeProxy>();
             services.TryAddTransient<IXmlSerializeProxy, XmlSerializeProxy>();
             ZeroFlowControl.CheckOption();
-            IocHelper.Update();
+            DependencyHelper.Update();
         }
 
         /// <summary>

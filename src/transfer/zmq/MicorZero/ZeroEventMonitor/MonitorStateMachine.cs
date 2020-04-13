@@ -18,7 +18,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
     {
         #region 状态变更
 
-        internal static ILogger Logger = IocHelper.LoggerFactory.CreateLogger("ZeroManagemant");
+        internal static ILogger Logger = DependencyHelper.LoggerFactory.CreateLogger("ZeroManagemant");
 
         private static IMonitorStateMachine _stateMachine = new EmptyStateMachine();
 

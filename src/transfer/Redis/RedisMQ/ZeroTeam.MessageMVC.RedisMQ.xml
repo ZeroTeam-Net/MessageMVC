@@ -6,7 +6,7 @@
     <members>
         <member name="T:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer">
             <summary>
-            RedisMQ消费者
+            RedisMQ消息队列
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.client">
@@ -42,34 +42,94 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.Guard">
-            <summary>
-            异常守护
-            </summary>
-        </member>
         <member name="F:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.isBusy">
             <summary>
             单处理守卫变量
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.OnMessagePush">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.OnMessagePush(CSRedis.CSRedisClient.SubscribeMessageEventArgs)">
             <summary>
             消息处理
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.ReadList">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.ReadList(System.String)">
             <summary>
             取出队列,全部处理,为空后退出
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.Read">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.Read(System.String)">
             <summary>
             取出队列,全部处理,为空后退出
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.ZeroTeam#MessageMVC#Messages#IMessageReceiver#OnResult(ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
+        <member name="T:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue">
+            <summary>
+            RedisMQ消费者
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.client">
+            <summary>
+            本地代理
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.subscribeObject">
+            <summary>
+            订阅对象
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.ZeroTeam#MessageMVC#Messages#IMessagePoster#Initialize">
+            <summary>
+            初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.ZeroTeam#MessageMVC#Messages#IMessageReceiver#LoopBegin">
+            <summary>
+            同步运行状态
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.ZeroTeam#MessageMVC#Messages#IMessageReceiver#Close">
+            <summary>
+            关闭
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.ZeroTeam#MessageMVC#Messages#IMessageReceiver#LoopComplete">
+            <summary>
+            同步关闭状态
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.Guard">
+            <summary>
+            异常守护
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.isBusy">
+            <summary>
+            单处理守卫变量
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.OnMessagePush">
+            <summary>
+            消息处理
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.ReadList">
+            <summary>
+            取出队列,全部处理,为空后退出
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.Read">
+            <summary>
+            取出队列,全部处理,为空后退出
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.ZeroTeam#MessageMVC#Messages#IMessageReceiver#OnResult(ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
             <summary>
             标明调用结束
             </summary>
