@@ -86,7 +86,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         /// 测试接口
         /// </summary>
         [Test]
-        public async Task NoSupper()
+        public async Task NonSupport()
         {
 
             var (msg, ser) = await MessagePoster.Post(new InlineMessage
@@ -94,7 +94,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
                 ServiceName = "UnitService",
                 ApiName = "abcccceerw"
             });
-            Assert.IsTrue(msg.State == MessageState.NoSupper, msg.Result);
+            Assert.IsTrue(msg.State == MessageState.NonSupport, msg.Result);
         }
 
 
@@ -252,8 +252,8 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             Console.WriteLine(msg.Result);
             var ctx = msg.ResultData as IZeroContext;
             Assert.IsTrue(ctx != null, msg.Result);
-            Assert.IsTrue(ctx.Trace.CallApp == traceInfo.CallApp, msg.Result);
-            Assert.IsTrue(ctx.Trace.Start == traceInfo.Start, msg.Result);
+            Assert.IsTrue(msg.Trace.CallApp == traceInfo.CallApp, msg.Result);
+            Assert.IsTrue(msg.Trace.Start == traceInfo.Start, msg.Result);
             Assert.IsTrue(ctx.User.OrganizationId ==UserInfo.UnknownOrganizationId, msg.Result);
         }
         

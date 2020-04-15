@@ -132,7 +132,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         IApiResult NoFind { get; }
 
         /// <summary>不支持的操作</summary>
-        IApiResult NotSupport { get; }
+        IApiResult NonSupport { get; }
 
         /// <summary>参数错误</summary>
         IApiResult ArgumentError { get; }
@@ -170,6 +170,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
         /// <summary>服务不可用</summary>
         IApiResult Unavailable { get; }
+
+        /// <summary>等待处理中</summary>
+        IApiResult Waiting { get; }
 
     }
 }

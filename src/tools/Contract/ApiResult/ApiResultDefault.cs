@@ -71,6 +71,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 Message = message ?? DefaultErrorCode.GetMessage(errCode)
             };
         }
+        
+        ///<inheritdoc/>
+        IApiResult IApiResultHelper.Waiting => Generate(DefaultErrorCode.Queue);
+
 
         /// <summary>成功</summary>
         /// <remarks>成功</remarks>
@@ -80,7 +84,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         IApiResult IApiResultHelper.NoFind => Generate(DefaultErrorCode.NoFind, "*页面不存在*");
 
         /// <summary>不支持的操作</summary>
-        IApiResult IApiResultHelper.NotSupport => Generate(DefaultErrorCode.Ignore, "*不支持的操作*");
+        IApiResult IApiResultHelper.NonSupport => Generate(DefaultErrorCode.Ignore, "*不支持的操作*");
 
         /// <summary>参数错误字符串</summary>
         IApiResult IApiResultHelper.ArgumentError => Generate(DefaultErrorCode.ArgumentError, "参数错误");

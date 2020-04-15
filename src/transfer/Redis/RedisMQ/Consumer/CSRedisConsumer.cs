@@ -191,8 +191,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                 await client.DelAsync(key);
                 return true;
             }
-            if (item.Trace == null)
-                item.Trace = new TraceInfo();
+            item.Trace ??= new TraceInfo();
             item.Trace.TraceId = id;
             item.Topic = Service.ServiceName;
             await MessageProcessor.OnMessagePush(Service, item, null);//BUG:应该配置化同步或异步

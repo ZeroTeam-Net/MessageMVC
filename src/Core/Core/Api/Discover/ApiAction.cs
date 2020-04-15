@@ -1,6 +1,7 @@
 using Agebull.Common;
 using Agebull.Common.Ioc;
 using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
@@ -60,6 +61,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         public ISerializeProxy ResultSerializer { get; set; }
 
+        /// <summary>
+        ///     返回值构造对象
+        /// </summary>
+        public Func<int, string, object> ResultCreater { get; set; }
+
         void CheckResult()
         {
             if (ResultType == typeof(void) || ResultType == null)
@@ -85,14 +91,31 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 IsAsync = false;
             }
-
-            if (ResultType == typeof(string) || ResultType.IsValueType)
+            if (ResultType.IsValueType)
             {
+                //var def = ResultType.InvokeMember(null, BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.CreateInstance, null, null, null);
+
+                ResultCreater = (code, msg) => msg;
+                ResultSerializer = new SerializeProxy();
+                ResultSerializeType = SerializeType.Custom;
+            }
+            else if (ResultType == typeof(string))
+            {
+                ResultCreater = (code, msg) => msg;
                 ResultSerializer = new SerializeProxy();
                 ResultSerializeType = SerializeType.Custom;
             }
             else
             {
+                if (ResultType.IsSupperInterface(typeof(IOperatorStatus)))
+                    ResultCreater = (code, msg) =>
+                    {
+                        var re = DependencyHelper.Create<IOperatorStatus>();
+                        re.Code = code;
+                        re.Message = msg;
+                        return re;
+                    };
+
                 switch (ResultSerializeType)
                 {
                     case SerializeType.Json:
@@ -137,11 +160,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         public string ArgumentName { get; set; }
 
         /// <summary>
-        ///     基本数据,即按参数名称取值
-        /// </summary>
-        public bool ArgumentIsBaseValue { get; set; }
-
-        /// <summary>
         ///     参数类型
         /// </summary>
         public Type ArgumentType { get; set; }
@@ -155,9 +173,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 return true;
             }
-            message.ArgumentData = ArgumentIsBaseValue
-                ? message.GetValueArgument(ArgumentName, (int)ArgumentScope, (int)ArgumentSerializeType, ArgumentSerializer, ArgumentType)
-                : message.GetArgument((int)ArgumentScope, (int)ArgumentSerializeType, ArgumentSerializer, ArgumentType);
+            message.ArgumentData = message.GetArgument((int)ArgumentScope, (int)ArgumentSerializeType, ArgumentSerializer, ArgumentType);
             return true;
         }
 
@@ -213,7 +229,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ///     执行
         /// </summary>
         /// <returns></returns>
-        public Task<(MessageState state, object result)> Execute(IInlineMessage message,ISerializeProxy serializer)
+        public Task<(MessageState state, object result)> Execute(IInlineMessage message, ISerializeProxy serializer)
         {
             if (IsAsync)
             {

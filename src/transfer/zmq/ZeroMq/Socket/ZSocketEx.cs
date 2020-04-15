@@ -197,40 +197,40 @@ namespace ZeroTeam.ZeroMQ
         {
             if (identity != null)
                 socket.SetOption(ZSocketOption.IDENTITY, identity);
-            if (Option.Linger > 0)
-                socket.SetOption(ZSocketOption.LINGER, Option.Linger);
-            if (Option.RecvTimeout > 0)
-                socket.SetOption(ZSocketOption.RCVTIMEO, Option.RecvTimeout);
-            if (Option.SendTimeout > 0)
-                socket.SetOption(ZSocketOption.SNDTIMEO, Option.SendTimeout);
+            if (SocketOption.Instance.Linger > 0)
+                socket.SetOption(ZSocketOption.LINGER, SocketOption.Instance.Linger);
+            if (SocketOption.Instance.RecvTimeout > 0)
+                socket.SetOption(ZSocketOption.RCVTIMEO, SocketOption.Instance.RecvTimeout);
+            if (SocketOption.Instance.SendTimeout > 0)
+                socket.SetOption(ZSocketOption.SNDTIMEO, SocketOption.Instance.SendTimeout);
             if (service)
             {
-                if (Option.Backlog > 0)
-                    socket.SetOption(ZSocketOption.BACKLOG, Option.Backlog);
+                if (SocketOption.Instance.Backlog > 0)
+                    socket.SetOption(ZSocketOption.BACKLOG, SocketOption.Instance.Backlog);
             }
             else
             {
-                if (Option.ConnectTimeout > 0)
-                    socket.SetOption(ZSocketOption.CONNECT_TIMEOUT, Option.ConnectTimeout);
-                if (Option.ReconnectIvl > 0)
-                    socket.SetOption(ZSocketOption.RECONNECT_IVL, Option.ReconnectIvl);
-                if (Option.ReconnectIvlMax > 0)
-                    socket.SetOption(ZSocketOption.RECONNECT_IVL_MAX, Option.ReconnectIvlMax);
+                if (SocketOption.Instance.ConnectTimeout > 0)
+                    socket.SetOption(ZSocketOption.CONNECT_TIMEOUT, SocketOption.Instance.ConnectTimeout);
+                if (SocketOption.Instance.ReconnectIvl > 0)
+                    socket.SetOption(ZSocketOption.RECONNECT_IVL, SocketOption.Instance.ReconnectIvl);
+                if (SocketOption.Instance.ReconnectIvlMax > 0)
+                    socket.SetOption(ZSocketOption.RECONNECT_IVL_MAX, SocketOption.Instance.ReconnectIvlMax);
             }
             if (!longLink)
                 return;
 
-            //if (Option.HeartbeatIvl > 0)
+            //if (SocketOption.Instance.HeartbeatIvl > 0)
             //{
-            //    socket.SetOption(ZSocketOption.HEARTBEAT_IVL, Option.HeartbeatIvl);
-            //    socket.SetOption(ZSocketOption.HEARTBEAT_TIMEOUT, Option.HeartbeatTimeout);
-            //    socket.SetOption(ZSocketOption.HEARTBEAT_TTL, Option.HeartbeatTtl);
+            //    socket.SetOption(ZSocketOption.HEARTBEAT_IVL, SocketOption.Instance.HeartbeatIvl);
+            //    socket.SetOption(ZSocketOption.HEARTBEAT_TIMEOUT, SocketOption.Instance.HeartbeatTimeout);
+            //    socket.SetOption(ZSocketOption.HEARTBEAT_TTL, SocketOption.Instance.HeartbeatTtl);
             //}
-            if (Option.TcpKeepalive > 0)
+            if (SocketOption.Instance.TcpKeepalive > 0)
             {
                 socket.SetOption(ZSocketOption.TCP_KEEPALIVE, 1);
-                socket.SetOption(ZSocketOption.TCP_KEEPALIVE_IDLE, Option.TcpKeepaliveIdle);
-                socket.SetOption(ZSocketOption.TCP_KEEPALIVE_INTVL, Option.TcpKeepaliveIntvl);
+                socket.SetOption(ZSocketOption.TCP_KEEPALIVE_IDLE, SocketOption.Instance.TcpKeepaliveIdle);
+                socket.SetOption(ZSocketOption.TCP_KEEPALIVE_INTVL, SocketOption.Instance.TcpKeepaliveIntvl);
             }
         }
 

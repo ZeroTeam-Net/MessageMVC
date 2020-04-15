@@ -31,10 +31,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         Type ArgumentType { get; set; }
 
-        /// <summary>
-        ///     基本数据,即按参数名称取值
-        /// </summary>
-        bool ArgumentIsBaseValue { get; set; }
 
 
         /// <summary>
@@ -74,6 +70,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         ISerializeProxy ResultSerializer { get; set; }
 
+        /// <summary>
+        ///     返回值构造对象
+        /// </summary>
+        Func<int, string, object> ResultCreater { get; set; }
 
         /// <summary>
         ///     参数类型

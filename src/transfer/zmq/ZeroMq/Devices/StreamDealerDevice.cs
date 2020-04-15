@@ -105,7 +105,7 @@
 			{
 				var frame = ZFrame.CreateEmpty();
 
-				while (-1 == zmq.msg_recv(frame.Ptr, sock.SocketPtr, (int)(/* ZSocketFlags.DontWait | */ ZSocketFlags.More)))
+				while (-1 == zmq.msg_recv(frame.Ptr, sock.SocketPtr, (int)/* ZSocketFlags.DontWait | */ ZSocketFlags.More))
 				{
 					error = ZError.GetLastErr();
 
@@ -190,7 +190,7 @@
 
 			foreach (var frame in msg)
 			{
-				while (-1 == zmq.msg_send(frame.Ptr, sock.SocketPtr, (int)(/* ZSocketFlags.DontWait | */ ZSocketFlags.More)))
+				while (-1 == zmq.msg_send(frame.Ptr, sock.SocketPtr, (int)/* ZSocketFlags.DontWait | */ ZSocketFlags.More))
 				{
 					error = ZError.GetLastErr();
 

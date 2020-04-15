@@ -295,7 +295,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
             catch (Exception ex)
             {
-                LogRecorder.Exception(ex);
+                Logger.Exception(ex);
                 RealState = StationRealState.Failed;
                 return Task.FromResult(false);
             }
@@ -341,7 +341,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
             catch (Exception e)
             {
-                LogRecorder.Exception(e);
+                Logger.Exception(e);
                 return false;
             }
 
@@ -360,12 +360,12 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 int num = 0;
                 while (Listen(pool))
                 {
-                    LogRecorder.Trace("处理堆积任务{0}", ++num);
+                    Logger.Trace("处理堆积任务{0}", ++num);
                 }
             }
             catch (Exception e)
             {
-                LogRecorder.Exception(e, "处理堆积任务出错{0}", Service.Name);
+                Logger.Exception(e, "处理堆积任务出错{0}", Service.Name);
             }
             pool.Dispose();
             Logger.Information("LoopComplete");
@@ -375,10 +375,17 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
 
         private void OnCall(ApiCallItem callItem)
         {
+            var messageItem = MessageHelper.Restore(callItem.ApiName, callItem.Station, callItem.Argument, callItem.RequestId, callItem.Context);
+
+            messageItem.Trace.CallId = callItem.GlobalId;
+            messageItem.Trace.CallMachine = callItem.Requester;
+            messageItem.Trace.LocalId = callItem.LocalId;
+
             switch (callItem.ApiName[0])
             {
                 case '$':
-                    OnExecuestEnd(ApiResultHelper.SucceesJson, callItem, ZeroOperatorStateType.Ok);
+                    messageItem.RuntimeStatus = ApiResultHelper.Helper.Ok;
+                    OnExecuestEnd(messageItem, callItem, ZeroOperatorStateType.Ok);
                     return;
                     //case '*':
                     //    item.Result = MicroZeroApplication.TestFunc();
@@ -386,17 +393,15 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     //    return;
             }
 
-            var messageItem = MessageHelper.Restore(callItem.ApiName, callItem.Station, callItem.Argument, callItem.RequestId, callItem.Context);
-            messageItem.Trace.CallId = callItem.GlobalId;
-            messageItem.Trace.LocalId = callItem.LocalId;
             try
             {
                 _ = MessageProcessor.OnMessagePush(Service, messageItem, callItem);
             }
             catch (Exception e)
             {
-                LogRecorder.Exception(e);
-                OnExecuestEnd(ApiResultHelper.BusinessExceptionJson, callItem, ZeroOperatorStateType.LocalException);
+                Logger.Exception(e);
+                messageItem.RuntimeStatus = ApiResultHelper.Helper.BusinessException;
+                OnExecuestEnd(messageItem, callItem, ZeroOperatorStateType.LocalException);
             }
         }
 
@@ -421,8 +426,8 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     case MessageState.Success:
                         state = ZeroOperatorStateType.Ok;
                         break;
-                    case MessageState.NetError:
-                        state = ZeroOperatorStateType.NetError;
+                    case MessageState.NetworkError:
+                        state = ZeroOperatorStateType.NetworkError;
                         break;
                     case MessageState.Failed:
                         state = ZeroOperatorStateType.Failed;
@@ -432,13 +437,12 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                         break;
                     //case MessageState.None:
                     //case MessageState.Accept:
-                    //case MessageState.NoSupper:
+                    //case MessageState.NonSupport:
                     default:
-                        state = ZeroOperatorStateType.NotSupport;
+                        state = ZeroOperatorStateType.NonSupport;
                         break;
                 }
-                message.Offline(this);
-                OnExecuestEnd(message.Result, item, state);
+                OnExecuestEnd(message, item, state);
             }
             return Task.FromResult(true);
         }
@@ -471,12 +475,17 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         /// 发送返回值 
         /// </summary>
-        /// <param name="result"></param>
+        /// <param name="message"></param>
         /// <param name="item"></param>
         /// <param name="state"></param>
         /// <returns></returns>
-        internal Task<bool> OnExecuestEnd(string result, ApiCallItem item, ZeroOperatorStateType state)
+        internal Task<bool> OnExecuestEnd(IInlineMessage message, ApiCallItem item, ZeroOperatorStateType state)
         {
+            message.Offline(this);
+
+            var result = message.ToMessageResult();
+            result.Result = null;
+
             int i = 0;
             var des = new byte[10 + item.Originals.Count];
             des[i++] = (byte)(item.Originals.Count + (item.EndTag == ZeroFrameType.ResultFileEnd ? 7 : 6));
@@ -486,6 +495,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             des[i++] = ZeroFrameType.CallId;
             des[i++] = ZeroFrameType.GlobalId;
             des[i++] = ZeroFrameType.ResultText;
+            des[i++] = ZeroFrameType.ExtendText;
             var msg = new List<byte[]>
             {
                 item.Caller,
@@ -494,7 +504,8 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 item.RequestId.ToBytes(),
                 item.CallId.ToBytes(),
                 item.GlobalId.ToBytes(),
-                result.ToBytes()
+                message.Result.ToBytes(),
+                result.ToJson().ToBytes()
             };
             if (item.EndTag == ZeroFrameType.ResultFileEnd)
             {
@@ -504,7 +515,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             foreach (var org in item.Originals)
             {
                 des[i++] = org.Key;
-                msg.Add((org.Value));
+                msg.Add(org.Value);
             }
             des[i++] = ZeroFrameType.SerivceKey;
             msg.Add(Config.ServiceKey);

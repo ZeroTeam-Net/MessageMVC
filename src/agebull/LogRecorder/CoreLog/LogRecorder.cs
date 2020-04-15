@@ -203,57 +203,12 @@ namespace Agebull.Common.Logging
 
         #region 记录
 
-        /// <summary>
-        ///   记录日志
-        /// </summary>
-        /// <param name="type"> 消息类型 </param>
-        /// <param name="name"> 消息名称 </param>
-        /// <param name="message"> 日志详细信息 </param>
-        /// <param name="formatArgs">格式化参数</param>
-        public static void Record(LogType type, string name, string message, params object[] formatArgs)
-        {
-            if (message == null)
-            {
-                return;
-            }
-
-            try
-            {
-                var eventId = new EventId((int)Interlocked.Increment(ref lastId), name);
-                switch (type)
-                {
-                    case LogType.DataBase:
-                    case LogType.Monitor:
-                        Logger.LogInformation(eventId, message, formatArgs);
-                        break;
-                    case LogType.Debug:
-                        Logger.LogDebug(eventId, message, formatArgs);
-                        break;
-                    case LogType.Warning:
-                        Logger.LogWarning(eventId, message, formatArgs);
-                        break;
-                    case LogType.System:
-                    case LogType.Error:
-                    case LogType.Exception:
-                        Logger.LogError(eventId, message, formatArgs);
-                        break;
-                    default:
-                        Logger.LogTrace(eventId, message, formatArgs);
-                        break;
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-        }
         ///<summary>
         ///  记录数据日志
         ///</summary>
         ///<param name="message"> 日志详细信息 </param>
-        ///<param name="formatArgs"> 格式化的参数 </param>
 
-        public static void RecordDataLog(string message, params object[] formatArgs)
+        public static void RecordDataLog(string message)
         {
             if (LogDataSql)
             {
@@ -261,60 +216,9 @@ namespace Agebull.Common.Logging
                 {
                     return;
                 }
-
                 var eventId = new EventId((int)Interlocked.Increment(ref lastId), "DataLog");
                 Logger.LogTrace(eventId, message);
             }
-        }
-
-        ///<summary>
-        ///  记录登录日志
-        ///</summary>
-        ///<param name="message"> 日志详细信息 </param>
-        ///<param name="formatArgs"> 格式化的参数 </param>
-        public static void RecordLoginLog(string message, params object[] formatArgs)
-        {
-            if (message == null)
-            {
-                return;
-            }
-
-            var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Login");
-            Logger.LogTrace(eventId, message);
-        }
-
-        ///<summary>
-        ///  记录网络请求日志
-        ///</summary>
-        ///<param name="message"> 日志详细信息 </param>
-        ///<param name="formatArgs"> 格式化的参数 </param>
-
-        public static void RecordRequestLog(string message, params object[] formatArgs)
-        {
-            if (message == null)
-            {
-                return;
-            }
-
-            var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Request");
-            Logger.LogTrace(eventId, message);
-        }
-
-        ///<summary>
-        ///  记录WCF消息日志
-        ///</summary>
-        ///<param name="message"> 日志详细信息 </param>
-        ///<param name="formatArgs"> 格式化的参数 </param>
-
-        public static void RecordNetLog(string message, params object[] formatArgs)
-        {
-            if (message == null)
-            {
-                return;
-            }
-
-            var eventId = new EventId((int)Interlocked.Increment(ref lastId), "NetWork");
-            Logger.LogTrace(eventId, message);
         }
 
         ///<summary>
@@ -322,14 +226,14 @@ namespace Agebull.Common.Logging
         ///</summary>
         ///<param name="message"> 日志详细信息 </param>
         ///<param name="formatArgs"> 格式化的参数 </param>
-        public static void Message(string message, params object[] formatArgs)
+        public static void Information(string message, params object[] formatArgs)
         {
             if (message == null)
             {
                 return;
             }
 
-            var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Message");
+            var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Information");
             Logger.LogInformation(eventId, message, formatArgs);
         }
 
@@ -337,62 +241,15 @@ namespace Agebull.Common.Logging
         ///   记录系统日志
         /// </summary>
         /// <param name="message"> 消息 </param>
-        public static void SystemLog(string message)
+        public static void Information(string message)
         {
             if (message == null)
             {
                 return;
             }
 
-            var eventId = new EventId((int)Interlocked.Increment(ref lastId), "System");
+            var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Information");
             Logger.LogInformation(eventId, message);
-        }
-
-        /// <summary>
-        ///   记录系统日志
-        /// </summary>
-        /// <param name="message"> 日志详细信息 </param>
-        /// <param name="formatArgs">格式化参数</param>
-        public static void SystemLog(string message, params object[] formatArgs)
-        {
-            if (message == null)
-            {
-                return;
-            }
-
-            var eventId = new EventId((int)Interlocked.Increment(ref lastId), "System");
-            Logger.LogInformation(eventId, message, formatArgs);
-        }
-
-        /// <summary>
-        ///   记录系统日志
-        /// </summary>
-        /// <param name="message"> 消息 </param>
-        public static void PlanLog(string message)
-        {
-            if (message == null)
-            {
-                return;
-            }
-
-            var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Plan");
-            Logger.LogTrace(eventId, message);
-        }
-
-        ///<summary>
-        ///  写入一般日志
-        ///</summary>
-        ///<param name="message"> 日志详细信息 </param>
-        ///<param name="formatArgs"> 格式化的参数 </param>
-        public static void RecordMessage(string message, params object[] formatArgs)
-        {
-            if (message == null)
-            {
-                return;
-            }
-
-            var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Message");
-            Logger.LogInformation(eventId, message, formatArgs);
         }
 
         ///<summary>
@@ -460,79 +317,40 @@ namespace Agebull.Common.Logging
         /// </summary>
         ///<param name="message"> 日志详细信息 </param>
         ///<param name="formatArgs"> 格式化的参数 </param>
-
+        [Conditional("Trace")]
         public static void RecordStackTrace(string message, params object[] formatArgs)
         {
             if (message == null)
             {
                 return;
             }
-
-            if (MonitorTrace(() => StackTraceInfomation(message, formatArgs)))
-            {
-                return;
-            }
-
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Trace");
             Logger.LogTrace(eventId, StackTraceInfomation(message, formatArgs));
         }
 
         /// <summary>
-        /// 显示监视跟踪
+        /// 写入跟踪日志
         /// </summary>
+        [Conditional("Trace")]
         public static void Trace(Func<string> message)
         {
-            if (MonitorTrace(message))
-            {
-                return;
-            }
-
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Trace");
             Logger.LogTrace(eventId, message());
         }
 
         /// <summary>
-        ///   写入调试日志
+        ///   写入跟踪日志
         /// </summary>
         /// <param name="message"> 日志详细信息 </param>
         /// <param name="formatArgs">格式化参数</param>
-
+        [Conditional("Trace")]
         public static void Trace(string message, params object[] formatArgs)
         {
             if (message == null)
             {
                 return;
             }
-
-            if (MonitorTrace(message, formatArgs))
-            {
-                return;
-            }
-
             var eventId = new EventId((int)Interlocked.Increment(ref lastId), "Trace");
-            Logger.LogTrace(eventId, message, formatArgs);
-        }
-
-        ///<summary>
-        ///  记录一般日志
-        ///</summary>
-        ///<param name="name"> </param>
-        ///<param name="message"> 消息 </param>
-        ///<param name="formatArgs"> 格式化的参数 </param>
-
-        public static void Trace(string name, string message, params object[] formatArgs)
-        {
-            if (message == null)
-            {
-                return;
-            }
-
-            if (MonitorTrace(message, formatArgs))
-            {
-                return;
-            }
-
-            var eventId = new EventId((int)Interlocked.Increment(ref lastId), name);
             Logger.LogTrace(eventId, message, formatArgs);
         }
 
@@ -545,7 +363,7 @@ namespace Agebull.Common.Logging
         ///</summary>
         ///<param name="message"> 日志详细信息 </param>
         ///<param name="formatArgs"> 格式化的参数 </param>
-
+        [Conditional("Debug")]
         public static void DebugByStackTrace(string message, params object[] formatArgs)
         {
             if (message == null)
@@ -562,7 +380,7 @@ namespace Agebull.Common.Logging
         /// </summary>
         /// <param name="message"> 日志详细信息 </param>
         /// <param name="formatArgs">格式化参数</param>
-
+        [Conditional("Debug")]
         public static void Debug(string message, params object[] formatArgs)
         {
             if (message == null)
@@ -577,7 +395,7 @@ namespace Agebull.Common.Logging
         ///   写入调试日志
         /// </summary>
         /// <param name="obj"> 记录对象 </param>
-
+        [Conditional("Debug")]
         public static void Debug(object obj)
         {
             if (obj == null)

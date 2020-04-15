@@ -82,7 +82,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 return new ZeroResult
                 {
                     InteractiveSuccess = false,
-                    State = ZeroOperatorStateType.NetError
+                    State = ZeroOperatorStateType.NetworkError
                 };
             }
 

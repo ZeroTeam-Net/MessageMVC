@@ -36,7 +36,7 @@
 					native->ReadyEvents = (short)ZPollEvent.None;
 				}
 
-				while (!(result = (-1 != zmq.poll(natives, count, timeoutMs))))
+				while (!(result = -1 != zmq.poll(natives, count, timeoutMs)))
 				{
 					error = ZError.GetLastErr();
 
@@ -76,7 +76,7 @@
 				native->Events = (short)(item.Events & pollEvents);
 				native->ReadyEvents = (short)ZPollEvent.None;
 
-				while (!(result = (-1 != zmq.poll(native, 1, timeoutMs))))
+				while (!(result = -1 != zmq.poll(native, 1, timeoutMs)))
 				{
 					error = ZError.GetLastErr();
 

@@ -66,9 +66,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             //1 查找调用方法
             if (action == null)
             {
-                LogRecorder.Trace("错误: 接口({0})不存在", Message.Title);
+                LogRecorder.MonitorTrace("错误: 接口({0})不存在", Message.Title);
                 Message.RuntimeStatus = ApiResultHelper.Error(DefaultErrorCode.NoFind);
-                Message.State = MessageState.NoSupper;
+                Message.State = MessageState.NonSupport;
                 if (next != null)
                 {
                     await next();
@@ -80,12 +80,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 (!action.Access.AnyFlags(ApiAccessOption.Anymouse) || action.Access.AnyFlags(ApiAccessOption.Authority))
                 && (GlobalContext.User == null || GlobalContext.User.UserId <= UserInfo.SystemOrganizationId))
             {
-                LogRecorder.Trace("错误: 需要用户登录信息");
-                if (action.IsApiContract)
-                {
-                    Message.ResultData = ApiResultHelper.Error(DefaultErrorCode.DenyAccess, "错误: 需要用户令牌");
-                }
-                Message.State = MessageState.NoSupper;
+                LogRecorder.MonitorTrace("错误: 需要用户登录信息");
+                Message.RuntimeStatus = ApiResultHelper.Error(DefaultErrorCode.DenyAccess, "错误: 需要用户登录信息");
+                Message.State = MessageState.NonSupport;
                 if (next != null)
                 {
                     await next();
@@ -108,6 +105,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 Message.State = state;
                 Message.ResultData = result;
             }
+            catch (MessageArgumentNullException b)
+            {
+                Message.State = MessageState.FormalError;
+                Message.RuntimeStatus = ApiResultHelper.Helper.Error(DefaultErrorCode.ArgumentError, $"参数{b.ParamName}不能为空");
+            }
             catch (OperationCanceledException)
             {
                 throw;
@@ -120,9 +122,14 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 throw;
             }
+            catch (FormatException)
+            {
+                Message.State = MessageState.FormalError;
+                Message.RuntimeStatus = ApiResultHelper.Helper.Error(DefaultErrorCode.ArgumentError, "参数转换出错误, 请检查调用参数是否合适");
+            }
             catch (Exception ex)
             {
-                throw new MessageBusinessException($"接口方法({message.ServiceName}/{message.ApiName}) 执行出错.", ex);
+               throw new MessageBusinessException($"接口方法({message.ServiceName}/{message.ApiName}) 执行出错.", ex);
             }
 
             if (next != null)
@@ -146,7 +153,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             Message.Inline(action.ArgumentSerializer ?? Service.Serialize,
                 action.Access.HasFlag(ApiAccessOption.DictionaryArgument) ? null : action.ArgumentType,
                 action.ResultSerializer,
-                ApiResultHelper.Error);
+                action.ResultCreater);
 
 
             //3 参数校验
@@ -159,11 +166,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 if (!action.RestoreArgument(Message))
                 {
-                    LogRecorder.Trace("错误 : 无法还原参数");
-                    if (action.IsApiContract)
-                    {
-                        Message.ResultData = ApiResultHelper.Error(DefaultErrorCode.ArgumentError, "错误 : 无法还原参数");
-                    }
+                    LogRecorder.MonitorTrace("错误 : 无法还原参数");
+                    Message.RuntimeStatus = ApiResultHelper.Error(DefaultErrorCode.ArgumentError, "错误 : 无法还原参数");
                     Message.State = MessageState.FormalError;
                     return false;
                 }
@@ -171,11 +175,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             catch (Exception ex)
             {
                 var msg = $"错误 : 还原参数异常{ex.Message}";
-                LogRecorder.Trace(msg);
-                if (action.IsApiContract)
-                {
-                    Message.ResultData = ApiResultHelper.Error(DefaultErrorCode.ArgumentError, msg);
-                }
+                LogRecorder.MonitorTrace(msg);
+                Message.RuntimeStatus = ApiResultHelper.Error(DefaultErrorCode.ArgumentError, msg);
                 Message.State = MessageState.FormalError;
                 return false;
             }
@@ -186,23 +187,16 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 {
                     return true;
                 }
-                LogRecorder.Trace("参数校验失败 : {0}", info);
-                if (action.IsApiContract)
-                {
-                    Message.ResultData = ApiResultHelper.Error(DefaultErrorCode.ArgumentError, info);
-                }
-
+                LogRecorder.MonitorTrace("参数校验失败 : {0}", info);
+                Message.RuntimeStatus = ApiResultHelper.Error(DefaultErrorCode.ArgumentError, info);
                 Message.State = MessageState.FormalError;
                 return false;
             }
             catch (Exception ex)
             {
                 var msg = $"错误 : 参数校验异常{ex.Message}";
-                LogRecorder.Trace(msg);
-                if (action.IsApiContract)
-                {
-                    Message.ResultData = ApiResultHelper.Error(DefaultErrorCode.ArgumentError, msg);
-                }
+                LogRecorder.MonitorTrace(msg);
+                Message.RuntimeStatus = ApiResultHelper.Error(DefaultErrorCode.ArgumentError, msg);
                 Message.State = MessageState.FormalError;
                 return false;
             }

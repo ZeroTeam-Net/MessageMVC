@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using ZeroTeam.MessageMVC.Http;
-using ZeroTeam.MessageMVC.Messages;
+using ZeroTeam.MessageMVC.Kafka;
 using ZeroTeam.MessageMVC.RedisMQ;
-using ZeroTeam.MessageMVC.Wechart;
 
 namespace ZeroTeam.MessageMVC.Http
 {
@@ -20,12 +18,13 @@ namespace ZeroTeam.MessageMVC.Http
         public void ConfigureServices(IServiceCollection services)
         {
             services.UseCsRedis();
-            if (GatewayOption.Instance.EnableSecurityChecker)
-                services.AddTransient<IMessageMiddleware, SecurityChecker>();
-            if (GatewayOption.Instance.EnableCache)
-                services.AddTransient<IMessageMiddleware, RouteCache>();
-            if (GatewayOption.Instance.EnableWxPay)
-                services.AddTransient<IMessageMiddleware, WxPayRouter>();
+            services.UseKafka(); 
+            //if (GatewayOption.Instance.EnableSecurityChecker)
+            //    services.AddTransient<IMessageMiddleware, SecurityChecker>();
+            //if (GatewayOption.Instance.EnableCache)
+            //    services.AddTransient<IMessageMiddleware, RouteCache>();
+            //if (GatewayOption.Instance.EnableWxPay)
+            //    services.AddTransient<IMessageMiddleware, WxPayRouter>();
 
             HttpRoute.Initialize(services);
         }

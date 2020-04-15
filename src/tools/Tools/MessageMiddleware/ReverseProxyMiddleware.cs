@@ -42,23 +42,26 @@ namespace ZeroTeam.MessageMVC.Tools
                 await next();
                 return;
             }
-            var producer = MessagePoster.GetService(message.Topic);
-            if (producer == null)
-            {
-                message.RuntimeStatus = ApiResultHelper.Helper.NoFind;
-                return;
-            }
-            message.State = MessageState.Accept;
-            LogRecorder.MonitorTrace("ReverseProxy To..");
+            LogRecorder.BeginStepMonitor($"通过反向代理调用{message.ServiceName}");
             try
             {
-                var msg = await producer.Post(message);
-                msg.GetResult(producer);
-                message.CopyResult(msg);
+                var (msg,seri) = await MessagePoster.Post(message);
+                if(seri == null)
+                {
+                    message.RuntimeStatus = ApiResultHelper.Helper.NoFind;
+                }
+                else
+                {
+                    msg.OfflineResult(seri);
+                }
             }
             catch (Exception ex)
             {
                 throw new MessageReceiveException(nameof(ReverseProxyMiddleware), ex);
+            }
+            finally
+            {
+                LogRecorder.EndStepMonitor();
             }
         }
     }

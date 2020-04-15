@@ -25,7 +25,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         /// <param name="message">消息</param>
         /// <returns></returns>
-        Task<IInlineMessage> Post(IMessageItem message);
+        Task<IMessageResult> Post(IInlineMessage message);
 
     }
 }

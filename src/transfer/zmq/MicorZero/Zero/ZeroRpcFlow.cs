@@ -52,13 +52,6 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 throw new Exception("无法找到主配置节点,路径为Zero,在zero.json或appsettings.json中设置");
             }
 
-            var opt = sec.Child<SocketOption>("socketOption");
-            if (opt != null)
-            {
-                ZSocket.Option = opt;
-            }
-
-            ZSocket.Option.CheckOption();
             Config = new ZeroRpcOption();
             var glc = sec.Child<ZeroRpcConfig>("Global");
             if (glc != null)

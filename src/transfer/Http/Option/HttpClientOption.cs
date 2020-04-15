@@ -40,7 +40,7 @@
                     if (!response.IsSuccessStatusCode)
                     {
                         LogRecorder.MonitorTrace("Error:{0}", response.StatusCode);
-                        return (MessageState.NetError, null);
+                        return (MessageState.NetworkError, null);
                     }
                     var result = response.Content.ReadAsStringAsync().Result;
                     LogRecorder.MonitorTrace(result);

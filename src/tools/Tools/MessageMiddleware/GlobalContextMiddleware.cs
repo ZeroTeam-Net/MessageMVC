@@ -1,4 +1,5 @@
 ﻿using Agebull.Common;
+using Agebull.Common.Ioc;
 using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
@@ -70,9 +71,16 @@ namespace ZeroTeam.MessageMVC.Context
                 }
             }
 
-            if (GlobalContext.Current.Trace == null)
+            if (message.Trace != null)
             {
                 GlobalContext.Current.Trace = message.Trace;
+                //message.Trace.Level += 1;
+                if (!message.IsOutAccess)
+                {
+                    message.Trace.LocalId = message.ID;
+                    message.Trace.LocalApp = $"{ZeroAppOption.Instance.AppName}({ZeroAppOption.Instance.AppVersion})";
+                    message.Trace.LocalMachine = $"{ZeroAppOption.Instance.ServiceName}({ZeroAppOption.Instance.LocalIpAddress})";
+                }
             }
             if (GlobalContext.Current.Trace == null)
             {

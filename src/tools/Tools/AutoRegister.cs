@@ -22,10 +22,16 @@ namespace ZeroTeam.MessageMVC.ConfigSync
         /// </summary>
         void IAutoRegister.AutoRegist(IServiceCollection services)
         {
-            //启用跟踪日志
-            if (ToolsOption.Instance.EnableMonitorLog)
+            ////启用跟踪日志
+            //if (ToolsOption.Instance.EnableMonitorLog)
+            //{
+            //    services.AddTransient<IMessageMiddleware, LoggerMiddleware>();
+            //}
+            //启用数据埋点
+            if (ToolsOption.Instance.EnableMarkPoint)
             {
-                services.AddTransient<IMessageMiddleware, LoggerMiddleware>();
+                ToolsOption.Instance.EnableLinkTrace = true;
+                services.AddSingleton<IMessageMiddleware, MarkPointMiddleware>();
             }
             //启用调用链跟踪(使用IZeroContext全局上下文)
             services.AddTransient<IMessageMiddleware, GlobalContextMiddleware>();
@@ -34,11 +40,6 @@ namespace ZeroTeam.MessageMVC.ConfigSync
                 GlobalContext.EnableLinkTrace = true;
                 LogRecorder.GetUserNameFunc = () => GlobalContext.CurrentNoLazy?.User?.UserId.ToString() ?? "-1";
                 LogRecorder.GetRequestIdFunc = () => GlobalContext.CurrentNoLazy?.Trace?.TraceId ?? RandomCode.Generate(10);
-            }
-            //启用数据埋点
-            if (ToolsOption.Instance.EnableMarkPoint)
-            {
-                services.AddSingleton<IMessageMiddleware, MarkPointMiddleware>();
             }
             //消息存储与异常消息重新消费
             if (ToolsOption.Instance.EnableMessageReConsumer)

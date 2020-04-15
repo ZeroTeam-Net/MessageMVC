@@ -89,6 +89,11 @@
                 返回值序列化对象
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAction.ResultCreater">
+            <summary>
+                返回值构造对象
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAction.ArgumentSerializeType">
             <summary>
             反序列化类型
@@ -107,11 +112,6 @@
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAction.ArgumentName">
             <summary>
                 参数名称
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAction.ArgumentIsBaseValue">
-            <summary>
-                基本数据,即按参数名称取值
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAction.ArgumentType">

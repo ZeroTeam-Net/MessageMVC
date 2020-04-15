@@ -1,10 +1,16 @@
 using Agebull.Common;
 using Agebull.Common.Configuration;
+using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Confluent.Kafka;
+using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Concurrent;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
+using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Kafka
 {
@@ -28,33 +34,199 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// </summary>
         string IZeroMiddleware.Name => "KafkaPoster";
 
+        ConsumerConfig config = ConfigurationManager.Get<ConsumerConfig>("MessageMVC:Kafka");
+
         /// <summary>
         /// 等级
         /// </summary>
         int IZeroMiddleware.Level => 0;
 
         /// <summary>
-        /// 初始化
+        ///     初始化
         /// </summary>
         public void Initialize()
         {
-            ConsumerConfig config = ConfigurationManager.Get<ConsumerConfig>("MessageMVC:Kafka");
+            logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(KafkaPoster));
+        }
+
+        /// <summary>
+        /// 关闭
+        /// </summary>
+        public void Start()
+        {
             producer = new ProducerBuilder<Null, string>(new ProducerConfig
             {
                 BootstrapServers = config.BootstrapServers
             }).Build();
             State = StationStateType.Run;
+            tokenSource = new CancellationTokenSource();
+            _ = AsyncPostQueue();
         }
 
         /// <summary>
-        ///     关闭
+        /// 关闭
         /// </summary>
-        void IFlowMiddleware.Close()
+        public void Close()
         {
+            tokenSource?.Cancel();
+            tokenSource.Dispose();
+            tokenSource = null;
             State = StationStateType.Closed;
             producer?.Dispose();
             producer = null;
         }
+
+        #endregion
+
+
+        #region 消息可靠性
+
+        private class KafkaQueueItem
+        {
+            public string ID { get; set; }
+            public string Topic { get; set; }
+            public string Message { get; set; }
+            public string FileName { get; set; }
+            public int Try { get; set; }
+        }
+        ILogger logger;
+        private static readonly ConcurrentQueue<KafkaQueueItem> queues = new ConcurrentQueue<KafkaQueueItem>();
+        private static readonly SemaphoreSlim semaphore = new SemaphoreSlim(0);
+        private CancellationTokenSource tokenSource;
+
+        private async Task AsyncPostQueue()
+        {
+            await Task.Yield();
+            //还原发送异常文件
+            var path = IOHelper.CheckPath(ZeroAppOption.Instance.DataFolder, "redis");
+            var isFailed = ReQueueErrorMessage(path);
+
+            logger.Information("异步消息投递已启动");
+            while (ZeroFlowControl.IsAlive)
+            {
+                if (isFailed)
+                {
+                    await Task.Delay(1000);
+                    isFailed = true;
+                }
+                if (queues.Count == 0)
+                {
+                    try
+                    {
+                        await semaphore.WaitAsync(60000, tokenSource.Token);
+                    }
+                    catch (TaskCanceledException)
+                    {
+                        logger.Information("收到系统退出消息,正在退出...");
+                        return;
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Warning(() => $"错误信号.{ex.Message}");
+                        isFailed = true;
+                        continue;
+                    }
+                }
+
+                while (queues.TryPeek(out KafkaQueueItem item))
+                {
+                    if (!await DoPost(logger, path, item))
+                    {
+                        isFailed = true;
+                        break;
+                    }
+                }
+            }
+            logger.Information("异步消息投递已关闭");
+        }
+        /// <summary>
+        /// 还原发送异常文件
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        private bool ReQueueErrorMessage(string path)
+        {
+            var files = IOHelper.GetAllFiles(path, "*.msg");
+            if (files.Count <= 0)
+            {
+                return false;
+            }
+            logger.Information(() => $"载入发送错误消息,总数{files.Count}");
+            foreach (var file in files)
+            {
+                try
+                {
+                    var json = File.ReadAllText(file);
+                    queues.Enqueue(JsonHelper.DeserializeObject<KafkaQueueItem>(json));
+                }
+                catch (Exception ex)
+                {
+                    logger.Warning(() => $"{file} : 消息载入错误.{ex.Message}");
+                }
+            }
+
+            return true;
+        }
+
+        private async Task<bool> DoPost(ILogger logger, string path, KafkaQueueItem item)
+        {
+            var state = false;
+            try
+            {
+                logger.Trace(() => $"[异步消息投递] 正在投递消息.{config.BootstrapServers}");
+                var ret = await producer.ProduceAsync(item.Topic, new Message<Null, string>
+                {
+                    Value = item.Message
+                });
+                logger.Trace(() => $"[异步消息投递] 投递结果:{ret.Status}");
+                queues.TryDequeue(out _);
+                state = true;
+            }
+            catch (Exception ex)
+            {
+                logger.Warning(() => $"[异步消息投递] {item.ID} 发送失败.{ex.Message}");
+            }
+            if (state)
+            {
+                if (item.FileName != null)
+                {
+                    try
+                    {
+                        logger.Trace(() => $"[异步消息投递] {item.ID} 发送成功,删除备份文件,{item.FileName}");
+                        File.Delete(item.FileName);
+                    }
+                    catch
+                    {
+                        logger.Warning(() => $"[异步消息投递] {item.ID} 发送成功,删除备份文件失败,{item.FileName}");
+                    }
+                }
+                else
+                {
+                    logger.Information(() => $"[异步消息投递] {item.ID} 发送成功");
+                }
+                return true;
+            }
+            //写入异常文件
+            ++item.Try;
+            if (item.FileName != null)
+            {
+                return false;
+            }
+
+            item.FileName = Path.Combine(path, $"{item.ID}.msg");
+            logger.Warning(() => $"[异步消息投递] {item.ID} 发送失败,记录异常备份文件,{item.FileName}");
+            try
+            {
+                File.WriteAllText(item.FileName, JsonHelper.SerializeObject(item));
+            }
+            catch (Exception ex)
+            {
+                item.FileName = null;
+                logger.Error(() => $"[异步消息投递] {item.ID} 发送失败,记录异常备份文件失败.错误:{ex.Message}.文件名:{item.FileName}");
+            }
+            return false;
+        }
+
         #endregion
 
         #region 消息生产
@@ -64,37 +236,20 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// </summary>
         /// <param name="message">消息</param>
         /// <returns></returns>
-        public async Task<IInlineMessage> Post(IMessageItem message)
+        public Task<IMessageResult> Post(IInlineMessage message)
         {
-            if (message is IInlineMessage inline)
+            var item = new KafkaQueueItem
             {
-                inline.Offline(this);
-            }
-            else
-            {
-                inline = message.ToInline();
-            }
-            if (producer == null)
-            {
-                message.State = MessageState.NoSupper;
-                return inline;
-            }
-            try
-            {
-                var ret = await producer.ProduceAsync(message.Topic, new Message<Null, string>
-                {
-                    Value = ToString(inline, true)
-                });
-                inline.State = ret.Status == PersistenceStatus.Persisted
-                    ? MessageState.Success
-                    : MessageState.NetError;
-
-            }
-            catch (Exception e)
-            {
-                throw new MessageReceiveException("Kafka Production<Error>", e);
-            }
-            return inline;
+                ID = message.ID,
+                Topic = message.Topic,
+                Message = ToString(message, false)
+            };
+            LogRecorder.MonitorTrace("[KafkaPoster.Post] 消息已投入发送队列,将在后台静默发送直到成功");
+            queues.Enqueue(item);
+            semaphore.Release();
+            message.State = MessageState.Accept;
+            message.RuntimeStatus = ApiResultHelper.Helper.Waiting;
+            return Task.FromResult(message.ToMessageResult());
         }
         #endregion
     }

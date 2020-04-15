@@ -5,7 +5,7 @@ namespace ZeroTeam.MessageMVC.Messages
 {
 
     /// <summary>
-    /// 消息交互格式
+    /// 标准消息交互格式
     /// </summary>
     public interface IMessageItem
     {

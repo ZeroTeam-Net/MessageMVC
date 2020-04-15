@@ -9,6 +9,11 @@
                 路由数据
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.IsOutAccess">
+            <summary>
+            是否外部访问
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.ArgumentData">
             <summary>
             实体参数
@@ -219,11 +224,6 @@
                 调用映射核心类
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.HttpRoute.Option">
-            <summary>
-            选项
-            </summary>
-        </member>
         <member name="M:ZeroTeam.MessageMVC.Http.HttpRoute.Initialize(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
                 初始化
@@ -326,11 +326,6 @@
             启用身份令牌
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.MessageRouteOption.FastCall">
-            <summary>
-            启用快速调用,即直接使用ApiExecuter
-            </summary>
-        </member>
         <member name="P:ZeroTeam.MessageMVC.Http.MessageRouteOption.EnableHeader">
             <summary>
             启用Header跟踪(如HTTP请求头)
@@ -343,6 +338,11 @@
             <remarks>
             当启用NGINX代理时,NGINX可能会增加一级节点,而导致默认第1个路径作为服务名称失效
             </remarks>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Http.MessageRouteOption.Instance">
+            <summary>
+            选项
+            </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Http.HttpPoster">
             <summary>
@@ -364,7 +364,7 @@
                 初始化
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpPoster.ZeroTeam#MessageMVC#Messages#IMessagePoster#Post(ZeroTeam.MessageMVC.Messages.IMessageItem)">
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpPoster.ZeroTeam#MessageMVC#Messages#IMessagePoster#Post(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
             <summary>
             生产消息
             </summary>

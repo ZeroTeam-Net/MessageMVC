@@ -1,75 +1,12 @@
-﻿namespace ZeroTeam.ZeroMQ
+﻿using Agebull.Common.Configuration;
+
+namespace ZeroTeam.ZeroMQ
 {
     /// <summary>
     /// Socket默认配置
     /// </summary>
     public class SocketOption
     {
-        /// <summary>
-        /// 构造
-        /// </summary>
-        public SocketOption()
-        {
-            PoolTimeOut = 500;
-
-            //ReconnectIvl = 200;
-            //ReconnectIvlMax = 1400;
-
-            //ConnectTimeout = 3000;
-
-            //Linger = 3000;
-            //RecvTimeout = 5000;
-            //SendTimeout = 5000;
-
-            //Backlog = 8192;
-
-            //HeartbeatIvl = 0;
-            //HeartbeatTimeout = 200;
-            //HeartbeatTtl = 200;
-
-            //TcpKeepalive = 1;
-            //TcpKeepaliveIdle = 7200;
-            //TcpKeepaliveIntvl = 72;
-
-        }
-
-        /// <summary>
-        /// 构造
-        /// </summary>
-        public void CheckOption()
-        {
-            if (PoolTimeOut <= 0)
-                PoolTimeOut = 500;
-
-            if (ConnectTimeout <= 0)
-                ConnectTimeout = 3000;
-
-            //ReconnectIvl = 200;
-            //ReconnectIvlMax = 1400;
-
-            //ConnectTimeout = 3000;
-
-            //Linger = 3000;
-            if (Linger <= 0)
-                Linger = 500;
-            //RecvTimeout = 5000;
-            if (RecvTimeout <= 0)
-                RecvTimeout = 5000;
-            //SendTimeout = 5000;
-            if (SendTimeout <= 0)
-                SendTimeout = 5000;
-
-            //Backlog = 8192;
-
-            //HeartbeatIvl = 0;
-            //HeartbeatTimeout = 200;
-            //HeartbeatTtl = 200;
-
-            //TcpKeepalive = 1;
-            //TcpKeepaliveIdle = 7200;
-            //TcpKeepaliveIntvl = 72;
-
-        }
         /// <summary>
         /// 使用EPool的超时时间
         /// </summary>
@@ -131,5 +68,83 @@
         /// 心跳TTL
         /// </summary>
         public int HeartbeatTtl { get; set; }  //  200;*/
+
+        #region 配置化
+
+        /// <summary>
+        /// 配置
+        /// </summary>
+        public static SocketOption Instance = new SocketOption
+        {
+            PoolTimeOut = 500,
+
+            ReconnectIvl = 200,
+            ReconnectIvlMax = 1400,
+
+            ConnectTimeout = 3000,
+
+            Linger = 3000,
+            RecvTimeout = 5000,
+            SendTimeout = 5000,
+
+            Backlog = 8192,
+
+            //HeartbeatIvl = 0,
+            //HeartbeatTimeout = 200,
+            //HeartbeatTtl = 200,
+
+            TcpKeepalive = 1,
+            TcpKeepaliveIdle = 7200,
+            TcpKeepaliveIntvl = 72
+        };
+
+        /// <summary>
+        /// 构造
+        /// </summary>
+        static SocketOption()
+        {
+            ConfigurationManager.RegistOnChange("Zero:socketOption", Instance.Load, true);
+        }
+
+        void Load()
+        {
+            var option = ConfigurationManager.Get<SocketOption>("Zero:socketOption");
+            if (option == null)
+                return;
+
+            if (option.PoolTimeOut > 100)
+                PoolTimeOut = option.PoolTimeOut;
+
+            if (option.ReconnectIvl > 0)
+                ReconnectIvl = option.ReconnectIvl;
+
+
+            if (option.ReconnectIvlMax > 0)
+                ReconnectIvlMax = option.ReconnectIvlMax;
+
+            if (option.ConnectTimeout > 0)
+                ConnectTimeout = option.ConnectTimeout;
+            if (option.Linger > 0)
+                Linger = option.Linger;
+            if (option.RecvTimeout > 0)
+                RecvTimeout = option.RecvTimeout;
+            if (option.SendTimeout > 0)
+                SendTimeout = option.SendTimeout;
+            if (option.Backlog > 0)
+                Backlog = option.Backlog;
+
+            //HeartbeatIvl = 0;
+            //HeartbeatTimeout = 200;
+            //HeartbeatTtl = 200;
+
+            if (option.TcpKeepalive >= 0)
+                TcpKeepalive = option.TcpKeepalive;
+            if (option.TcpKeepaliveIdle > 0)
+                TcpKeepaliveIdle = option.TcpKeepaliveIdle;
+            if (option.TcpKeepaliveIntvl > 0)
+                TcpKeepaliveIntvl = option.TcpKeepaliveIntvl;
+        }
+
+        #endregion
     }
 }

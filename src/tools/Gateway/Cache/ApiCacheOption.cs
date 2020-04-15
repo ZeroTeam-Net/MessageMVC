@@ -79,7 +79,7 @@ namespace ZeroTeam.MessageMVC.Http
 
             if (ByNetError)
             {
-                Feature |= CacheFeature.NetError;
+                Feature |= CacheFeature.NetworkError;
             }
         }
     }

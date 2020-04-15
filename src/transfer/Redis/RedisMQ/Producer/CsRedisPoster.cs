@@ -9,6 +9,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
+using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.RedisMQ
 {
@@ -39,28 +40,22 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         private static readonly SemaphoreSlim semaphore = new SemaphoreSlim(0);
         private CancellationTokenSource tokenSource;
 
-        private async void RedisQueue()
+        private async Task AsyncPostQueue()
         {
+            try
+            {
+                client.Ping();
+            }
+            catch (RedisClientException ex)
+            {
+                logger.Error(ex.Message);
+            }
             await Task.Yield();
             //还原发送异常文件
-            bool isFailed = false;
             var path = IOHelper.CheckPath(ZeroAppOption.Instance.DataFolder, "redis");
-            var files = IOHelper.GetAllFiles(path, "*.msg");
-            logger.Information(() => $"Reload publish failed message,{files.Count} files");
-            foreach (var file in files)
-            {
-                try
-                {
-                    isFailed = true;
-                    var json = File.ReadAllText(file);
-                    redisQueues.Enqueue(JsonHelper.DeserializeObject<RedisQueueItem>(json));
-                }
-                catch (Exception ex)
-                {
-                    logger.Warning(() => $"Reload error.{ex.Message}");
-                }
-            }
-            logger.Information("Begin asynchronous message post.");
+            var isFailed = ReQueueErrorMessage(path);
+
+            logger.Information("异步消息投递已启动");
             while (ZeroFlowControl.IsAlive)
             {
                 if (isFailed)
@@ -72,16 +67,16 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                 {
                     try
                     {
-                        await semaphore.WaitAsync(tokenSource.Token);
+                        await semaphore.WaitAsync(60000, tokenSource.Token);
                     }
                     catch (TaskCanceledException)
                     {
-                        logger.Information("End asynchronous message post.");
+                        logger.Information("收到系统退出消息,正在退出...");
                         return;
                     }
                     catch (Exception ex)
                     {
-                        logger.Warning(() => $"Semaphore error.{ex.Message}");
+                        logger.Warning(() => $"错误信号.{ex.Message}");
                         isFailed = true;
                         continue;
                     }
@@ -95,8 +90,36 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                         break;
                     }
                 }
-
             }
+            logger.Information("异步消息投递已关闭");
+        }
+        /// <summary>
+        /// 还原发送异常文件
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        private bool ReQueueErrorMessage(string path)
+        {
+            var files = IOHelper.GetAllFiles(path, "*.msg");
+            if (files.Count <= 0)
+            {
+                return false;
+            }
+            logger.Information(() => $"载入发送错误消息,总数{files.Count}");
+            foreach (var file in files)
+            {
+                try
+                {
+                    var json = File.ReadAllText(file);
+                    redisQueues.Enqueue(JsonHelper.DeserializeObject<RedisQueueItem>(json));
+                }
+                catch (Exception ex)
+                {
+                    logger.Warning(() => $"{file} : 消息载入错误.{ex.Message}");
+                }
+            }
+
+            return true;
         }
 
         private async Task<bool> DoPost(ILogger logger, string path, RedisQueueItem item)
@@ -119,29 +142,42 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                     await client.PublishAsync(item.Channel, item.ID);
                     item.Step = 3;
                 }
-                redisQueues.TryDequeue(out item);
+                redisQueues.TryDequeue(out _);
                 state = true;
-
-                if (item.FileName != null)
-                {
-                    File.Delete(item.FileName);
-                }
-                logger.Debug(() => $"Post success.{item.ID}");
             }
             catch (Exception ex)
             {
-                logger.Warning(() => $"Post error.{ex.Message}");
+                logger.Warning(() => $"[异步消息投递] {item.ID} 发送失败.{ex.Message}");
             }
             if (state)
+            {
+                if (item.FileName != null)
+                {
+                    try
+                    {
+                        File.Delete(item.FileName);
+                        logger.Warning(() => $"[异步消息投递] {item.ID} 发送成功,删除备份文件,{item.FileName}");
+                    }
+                    catch
+                    {
+                        logger.Warning(() => $"[异步消息投递] {item.ID} 发送成功,删除备份文件失败,{item.FileName}");
+                    }
+                }
+                else
+                {
+                    logger.Debug(() => $"[异步消息投递] {item.ID} 发送成功");
+                }
                 return true;
+            }
             //写入异常文件
             ++item.Try;
-
             if (item.FileName != null)
             {
                 return false;
             }
+
             item.FileName = Path.Combine(path, $"{item.ID}.msg");
+            logger.Warning(() => $"[异步消息投递] {item.ID} 发送失败,记录异常备份文件,{item.FileName}");
             try
             {
                 File.WriteAllText(item.FileName, JsonHelper.SerializeObject(item));
@@ -149,7 +185,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             catch (Exception ex)
             {
                 item.FileName = null;
-                logger.Warning(() => $"Save {item.FileName} error.{ex.Message}");
+                logger.Error(() => $"[异步消息投递] {item.ID} 发送失败,记录异常备份文件失败.错误:{ex.Message}.文件名:{item.FileName}");
             }
             return false;
         }
@@ -168,26 +204,20 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// </summary>
         /// <param name="message">消息</param>
         /// <returns></returns>
-        public Task<IInlineMessage> Post(IMessageItem message)
+        public Task<IMessageResult> Post(IInlineMessage message)
         {
-            if (message is IInlineMessage inline)
-            {
-                inline.Offline(this);
-            }
-            else
-            {
-                inline = message.ToInline();
-            }
             var item = new RedisQueueItem
             {
                 ID = message.ID,
                 Channel = message.Topic,
                 Message = ToString(message, false)
             };
+            LogRecorder.MonitorTrace("[CsRedisPoster.Post] 消息已投入发送队列,将在后台静默发送直到成功");
             redisQueues.Enqueue(item);
             semaphore.Release();
-            inline.State = MessageState.Accept;
-            return Task.FromResult(inline);
+            message.State = MessageState.Accept;
+            message.RuntimeStatus = ApiResultHelper.Helper.Waiting;
+            return Task.FromResult(message.ToMessageResult());
         }
 
         #endregion
@@ -211,19 +241,18 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         public void Initialize()
         {
             logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(CsRedisPoster));
+        }
+
+        /// <summary>
+        /// 关闭
+        /// </summary>
+        public void Start()
+        {
 
             client = new CSRedisClient(RedisOption.Instance.ConnectionString);
-            try
-            {
-                client.Ping();
-            }
-            catch (RedisClientException ex)
-            {
-                logger.Error(ex.Message);
-            }
             State = StationStateType.Run;
             tokenSource = new CancellationTokenSource();
-            RedisQueue();
+            _ = AsyncPostQueue();
         }
 
         /// <summary>

@@ -29,7 +29,7 @@ namespace ZeroTeam.MessageMVC.Tools
                 ? MessageHandleScope.Prepare | MessageHandleScope.End
                 : MessageHandleScope.None;
 
-        IDisposable scope;
+
         /// <summary>
         /// 准备
         /// </summary>
@@ -41,7 +41,7 @@ namespace ZeroTeam.MessageMVC.Tools
         {
             if (LogRecorder.LogMonitor)
             {
-                scope = MonitorScope.CreateScope($"{service.ServiceName}/{message.Title}");
+                LogRecorder.BeginMonitor($"{message.Topic}/{message.Title}");
                 LogRecorder.MonitorTrace(() => JsonConvert.SerializeObject(message, Formatting.Indented));
             }
             return Task.FromResult(true);
@@ -54,12 +54,13 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <returns></returns>
         Task IMessageMiddleware.OnEnd(IInlineMessage message)
         {
-            if (scope != null)
+            if (LogRecorder.LogMonitor)
             {
                 LogRecorder.MonitorTrace("[State] {0} [Result]{1}", message.State, message.Result);
                 if (message.Trace != null)
                     LogRecorder.MonitorTrace(()=>$"[Trace] {message.Trace.ToJson()}");
-                scope.Dispose();
+                var root = LogRecorder.EndMonitor();
+                LogRecorder.TraceMonitor(root);
             }
             return Task.CompletedTask;
         }

@@ -7,7 +7,9 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
+using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC
 {
@@ -20,7 +22,7 @@ namespace ZeroTeam.MessageMVC
 
         string IZeroMiddleware.Name => "MessagePoster";
 
-        int IZeroMiddleware.Level =>0xFFFF;
+        int IZeroMiddleware.Level => 0xFFFF;
 
         #endregion
 
@@ -51,7 +53,7 @@ namespace ZeroTeam.MessageMVC
             var def = sec.GetStr("default", "");
             if (posters.TryGetValue(def, out Default))
             {
-                logger.Information(() => $"Poster {def} is config for default.");
+                logger.Information(() => $"缺省发布器为{def}.");
             }
 
             foreach (var poster in posters)
@@ -62,14 +64,13 @@ namespace ZeroTeam.MessageMVC
                 {
                     continue;
                 }
-
+                logger.Information(() => $"服务[{cfgs}]配置为使用发布器{poster.Key}");
                 var services = cfgs.Split(',', StringSplitOptions.RemoveEmptyEntries);
                 foreach (var service in services)
                 {
 
                     ServiceMap[service] = poster.Value;
                 }
-                logger.Information(() => $"Poster {poster.Key} is config for {cfgs}");
             }
         }
 
@@ -89,7 +90,7 @@ namespace ZeroTeam.MessageMVC
             {
                 ServiceMap[service] = poster;
             }
-            logger.Information(() => $"Poster {name} is regist for {string.Join(',', services)}");
+            logger.Information(() => $"服务[{string.Join(',', services)}]注册为使用发布器{name}");
         }
 
         /// <summary>
@@ -101,8 +102,7 @@ namespace ZeroTeam.MessageMVC
             {
                 ServiceMap[service] = poster as IMessagePoster;
             }
-
-            logger.Information(() => $"Poster {poster.GetTypeName()} is regist for services [{string.Join(' ', services)}]");
+            logger.Information(() => $"服务[{string.Join(',', services)}]注册为使用发布器{poster.GetTypeName()}");
         }
 
         /// <summary>
@@ -125,25 +125,41 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 投递消息
         /// </summary>
-        /// <param name="item">消息</param>
+        /// <param name="message">消息</param>
         /// <returns>返回值</returns>
-        public static async Task<(IInlineMessage message, ISerializeProxy serialize)> Post(IMessageItem item)
+        public static async Task<(IInlineMessage message, ISerializeProxy serialize)> Post(IMessageItem message)
         {
-            if (item == null || string.IsNullOrEmpty(item.Topic) || string.IsNullOrEmpty(item.Title))
+            if (message == null || string.IsNullOrEmpty(message.Topic) || string.IsNullOrEmpty(message.Title))
             {
                 throw new NotSupportedException("参数[item]不能为空且[Topic]与[Title]必须为有效值");
             }
-            var inline = item.ToInline();
-            var producer = GetService(item.Topic);
+            if (!(message is IInlineMessage inline))
+            {
+                inline = message.ToInline();
+            }
+
+            if (GlobalContext.EnableLinkTrace)
+            {
+                inline.Trace = new TraceInfo
+                {
+                    TraceId = inline.ID,
+                    Start = DateTime.Now,
+                };
+                inline.Trace.CopyFromContext();
+            }
+            var producer = GetService(message.Topic);
             if (producer == null)
             {
-                inline.State = MessageState.NoSupper;
-                logger.Warning(() => $"No find [{item.Topic}] poster");
+                inline.State = MessageState.NonSupport;
+                inline.RuntimeStatus =ApiResultHelper.Helper.NoFind;
+                LogRecorder.MonitorTrace(() => $"服务{message.Topic}不存在");
                 return (inline, null);
             }
+            inline.Offline(producer);
             var msg = await producer.Post(inline);
-            logger.Trace(() => inline.ToJson(true));
-            return (msg, producer);
+            inline.CopyResult(msg);
+            LogRecorder.MonitorTrace(() => $"返回 => {msg.ToJson(true)}");
+            return (inline, producer);
         }
 
         #endregion
@@ -159,8 +175,8 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static MessageState Publish<TArg>(string topic, string title, TArg content)
         {
-            var res = Post(MessageHelper.NewRemote(topic, title, content)).Result;
-            return res.message.State;
+            var (message, _) = Post(MessageHelper.NewRemote(topic, title, content)).Result;
+            return message.State;
         }
 
         /// <summary>
@@ -172,8 +188,8 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static MessageState Publish(string topic, string title, string content)
         {
-            var res = Post(MessageHelper.NewRemote(topic, title, content)).Result;
-            return res.message.State;
+            var (message, _) = Post(MessageHelper.NewRemote(topic, title, content)).Result;
+            return message.State;
         }
 
         /// <summary>
@@ -185,8 +201,8 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static async Task<MessageState> PublishAsync<TArg>(string topic, string title, TArg content)
         {
-            var res = await Post(MessageHelper.NewRemote(topic, title, content));
-            return res.message.State;
+            var (message, _) = await Post(MessageHelper.NewRemote(topic, title, content));
+            return message.State;
         }
 
         /// <summary>
@@ -198,8 +214,8 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static async Task<MessageState> PublishAsync(string topic, string title, string content)
         {
-            var res = await Post(MessageHelper.NewRemote(topic, title, content));
-            return res.message.State;
+            var (message, _) = await Post(MessageHelper.NewRemote(topic, title, content));
+            return message.State;
         }
 
         #endregion
@@ -253,7 +269,8 @@ namespace ZeroTeam.MessageMVC
         public static string Call(string service, string api, string args)
         {
             var (msg, seri) = Post(MessageHelper.NewRemote(service, api, args)).Result;
-            return msg.GetResult(seri);
+            msg.OfflineResult(seri);
+            return msg.Result;
         }
 
         /// <summary>
@@ -303,7 +320,8 @@ namespace ZeroTeam.MessageMVC
         public static async Task<string> CallAsync(string service, string api, string args)
         {
             var (msg, seri) = await Post(MessageHelper.NewRemote(service, api, args));
-            return msg.GetResult(seri);
+            msg.OfflineResult(seri);
+            return msg.Result;
         }
 
         #endregion

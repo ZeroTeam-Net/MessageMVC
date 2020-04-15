@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Agebull.EntityModel.ModelApi" Version="4.0.0.27-bata" />
+    <PackageReference Include="ZeroTeam.MessageMVC.ApiContract" Version="1.0.0.37-bate" />
+    <PackageReference Include="ZeroTeam.MessageMVC.Http" Version="1.0.0.37-bate" />
+    <PackageReference Include="ZeroTeam.MessageMVC.Kafka" Version="1.0.0.37-bate" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DataModel\DataModel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

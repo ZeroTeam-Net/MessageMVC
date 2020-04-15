@@ -42,24 +42,29 @@ namespace ZeroTeam.MessageMVC.Tools
         ///     回执服务名称
         /// </summary>
 
-        public string ReceiptService { get; set; } = "TrdReceipt";
+        public string ReceiptService { get; set; }
 
 
         /// <summary>
         ///     回执接口方法
         /// </summary>
 
-        public string ReceiptApi { get; set; } = "receipt/v1/save";
+        public string ReceiptApi { get; set; }
 
 
         /// <summary>
         /// 实例
         /// </summary>
-        public static readonly ToolsOption Instance = new ToolsOption();
+        public static readonly ToolsOption Instance = new ToolsOption
+        {
+            ReceiptService = "TrdReceipt",
+            ReceiptApi = "receipt/v1/save",
+            MarkPointName = "MarkPoint"
+        };
 
         static ToolsOption()
         {
-            ConfigurationManager.RegistOnChange("MessageMVC:Tools",Instance.Update, true);
+            ConfigurationManager.RegistOnChange("MessageMVC:Tools", Instance.Update, true);
         }
 
         /// <summary>
@@ -68,14 +73,18 @@ namespace ZeroTeam.MessageMVC.Tools
         private void Update()
         {
             ToolsOption option = ConfigurationManager.Get<ToolsOption>("MessageMVC:Tools");
-
-            ReceiptService = option.ReceiptService;
-            ReceiptApi = option.ReceiptApi;
+            if (option == null)
+                return;
             EnableLinkTrace = option.EnableLinkTrace;
             EnableMonitorLog = option.EnableMonitorLog;
             EnableMessageReConsumer = option.EnableMessageReConsumer;
             EnableMarkPoint = option.EnableMarkPoint;
-            MarkPointName = option.MarkPointName;
+            if (!string.IsNullOrWhiteSpace(option.ReceiptService))
+                ReceiptService = option.ReceiptService;
+            if (!string.IsNullOrWhiteSpace(option.ReceiptApi))
+                ReceiptApi = option.ReceiptApi;
+            if (!string.IsNullOrWhiteSpace(option.ReceiptApi))
+                ReceiptApi = option.ReceiptApi;
         }
     }
 }

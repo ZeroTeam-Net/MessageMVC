@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Agebull.Common.Logging;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Services;
@@ -42,13 +43,14 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         /// <param name="message">消息</param>
         /// <returns></returns>
-        public async Task<IInlineMessage> Post(IMessageItem message)
+        public Task<IMessageResult> Post(IInlineMessage message)
         {
-            var inline = message.ToInline();
-            await MessageProcessor.OnMessagePush(Service, inline, MessageProcessor.DefaultOriginal);
-            return inline;
+            LogRecorder.MonitorTrace($"[{GetType().GetTypeName()}.Post] 进入本地隧道处理模式");
+            //如此做法,避免上下文混乱
+            var task = new TaskCompletionSource<IMessageResult>();
+            Task.Factory.StartNew(() => MessageProcessor.OnMessagePush(Service, message, task));
+            return task.Task;
         }
-
 
         #region 序列化
 
@@ -79,7 +81,7 @@ namespace ZeroTeam.MessageMVC.Messages
         }
 
         ///<inheritdoc/>
-        public string ToString(object obj,bool indented)
+        public string ToString(object obj, bool indented)
         {
             return Service.Serialize.ToString(obj, indented);
         }

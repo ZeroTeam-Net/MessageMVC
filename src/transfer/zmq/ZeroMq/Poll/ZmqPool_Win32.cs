@@ -25,7 +25,7 @@ namespace ZeroTeam.ZeroMQ
             {
                 var native = natives + i;
                 native->SocketPtr = sockets[i].SocketPtr;
-                native->Events = (short)(events);
+                native->Events = (short)events;
                 native->ReadyEvents = (short)ZPollEvent.None;
             }
         }
@@ -53,7 +53,7 @@ namespace ZeroTeam.ZeroMQ
             {
                 var native = natives + i;
                 native->SocketPtr = Sockets[i].SocketPtr;
-                native->Events = (short)(events);
+                native->Events = (short)events;
                 native->ReadyEvents = (short)ZPollEvent.None;
             }
         }

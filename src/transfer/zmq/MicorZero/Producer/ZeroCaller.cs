@@ -16,14 +16,6 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
     {
         #region Properties
 
-        static ulong nextId;
-
-        /// <summary>
-        ///     返回值
-        /// </summary>
-        internal ulong ID = ++nextId;
-
-
         /// <summary>
         /// 当前消息
         /// </summary>
@@ -42,50 +34,37 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         ///     远程调用
         /// </summary>
         /// <returns></returns>
-        internal async Task<bool> CallAsync()
+        internal async Task<MessageResult> CallAsync()
         {
             var req = GlobalContext.CurrentNoLazy?.Trace;
-            var result = await ZeroPostProxy.Instance.CallZero(this,
+            return await ZeroPostProxy.Instance.CallZero(this,
                  CallDescription,
                  Message.ApiName.ToBytes(),
                  Message.Argument.ToBytes(),
                  req == null ? ByteHelper.EmptyBytes : req.TraceId.ToBytes(),
-                 ID.ToString().ToBytes(),
+                 Message.ID.ToBytes(),
                  req == null ? ByteHelper.EmptyBytes : req.LocalId.ToBytes(),
                  GlobalContext.CurrentNoLazy.ToJsonBytes());
 
-            return result == ZeroOperatorStateType.Ok;
         }
 
         /// <summary>
         ///     检查在非成功状态下的返回值
         /// </summary>
-        internal void CheckResult(string json, ZeroOperatorStateType state)
+        internal IOperatorStatus GetOperatorStatus(ZeroOperatorStateType state)
         {
-            LogRecorder.Trace(() => $"OnRemoteResult : {state}\n{state}");
-            if (json != null)
-            {
-                Message.Result = json;
-                return;
-            }
-
-            IApiResult apiResult;
             switch (state)
             {
                 case ZeroOperatorStateType.Ok:
-                    apiResult = ApiResultHelper.Helper.Ok;
-                    break;
+                    return  ApiResultHelper.Helper.Ok;
                 case ZeroOperatorStateType.LocalNoReady:
                 case ZeroOperatorStateType.LocalZmqError:
-                    apiResult = ApiResultHelper.Helper.NoReady;
-                    break;
+                    return  ApiResultHelper.Helper.NoReady;
                 case ZeroOperatorStateType.LocalSendError:
                 case ZeroOperatorStateType.LocalRecvError:
-                    apiResult = ApiResultHelper.Helper.NetworkError;
-                    break;
+                    return  ApiResultHelper.Helper.NetworkError;
                 case ZeroOperatorStateType.LocalException:
-                    apiResult = ApiResultHelper.Helper.BusinessException;
-                    break;
+                    return  ApiResultHelper.Helper.BusinessException;
                 case ZeroOperatorStateType.Plan:
                 case ZeroOperatorStateType.Runing:
                 case ZeroOperatorStateType.VoteBye:
@@ -94,55 +73,34 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 case ZeroOperatorStateType.VoteWaiting:
                 case ZeroOperatorStateType.VoteStart:
                 case ZeroOperatorStateType.VoteEnd:
-                    apiResult = ApiResultHelper.Helper.Error(DefaultErrorCode.Success, state.Text());
-                    break;
+                    return  ApiResultHelper.Helper.Error(DefaultErrorCode.Success, state.Text());
                 case ZeroOperatorStateType.Error:
-                    apiResult = ApiResultHelper.Helper.BusinessException;
-                    break;
+                    return  ApiResultHelper.Helper.BusinessException;
                 case ZeroOperatorStateType.Unavailable:
-                    apiResult = ApiResultHelper.Helper.Unavailable;
-                    break;
+                    return  ApiResultHelper.Helper.Unavailable;
                 case ZeroOperatorStateType.NotFind:
                 case ZeroOperatorStateType.NoWorker:
-                    apiResult = ApiResultHelper.Helper.NoFind;
-                    break;
+                    return  ApiResultHelper.Helper.NoFind;
                 case ZeroOperatorStateType.ArgumentInvalid:
-                    apiResult = ApiResultHelper.Helper.ArgumentError;
-                    break;
+                    return  ApiResultHelper.Helper.ArgumentError;
                 case ZeroOperatorStateType.NetTimeOut:
-                    apiResult = ApiResultHelper.Helper.NetTimeOut;
-                    break;
+                    return  ApiResultHelper.Helper.NetTimeOut;
                 case ZeroOperatorStateType.ExecTimeOut:
-                    apiResult = ApiResultHelper.Helper.ExecTimeOut;
-                    break;
+                    return  ApiResultHelper.Helper.ExecTimeOut;
                 case ZeroOperatorStateType.FrameInvalid:
-                    apiResult = ApiResultHelper.Helper.NetworkError;
-                    break;
-                case ZeroOperatorStateType.NetError:
-
-                    apiResult = ApiResultHelper.Helper.NetworkError;
-                    break;
+                    return  ApiResultHelper.Helper.NetworkError;
+                case ZeroOperatorStateType.NetworkError:
+                    return  ApiResultHelper.Helper.NetworkError;
                 case ZeroOperatorStateType.Failed:
                 case ZeroOperatorStateType.Bug:
-                    apiResult = ApiResultHelper.Helper.BusinessError;
-                    break;
+                    return  ApiResultHelper.Helper.BusinessError;
                 case ZeroOperatorStateType.Pause:
-                    apiResult = ApiResultHelper.Helper.Pause;
-                    break;
+                    return  ApiResultHelper.Helper.Pause;
                 case ZeroOperatorStateType.DenyAccess:
-                    apiResult = ApiResultHelper.Helper.DenyAccess;
-                    break;
+                    return  ApiResultHelper.Helper.DenyAccess;
                 default:
-                    apiResult = ApiResultHelper.Helper.NotSupport;
-                    break;
+                    return  ApiResultHelper.Helper.NonSupport;
             }
-            //if (LastResult != null && LastResult.InteractiveSuccess)
-            //{
-            //    if (!LastResult.TryGetString(ZeroFrameType.Responser, out var point))
-            //        point = "zero_center";
-            //    apiResult.Status.Point = point;
-            //}
-            Message.Result = JsonHelper.SerializeObject(apiResult);
         }
 
         /// <summary>
@@ -171,8 +129,8 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     break;
                 case ZeroOperatorStateType.NotFind:
                 case ZeroOperatorStateType.NoWorker:
-                case ZeroOperatorStateType.NotSupport:
-                    Message.State = MessageState.NoSupper;
+                case ZeroOperatorStateType.NonSupport:
+                    Message.State = MessageState.NonSupport;
                     break;
                 case ZeroOperatorStateType.FrameInvalid:
                 case ZeroOperatorStateType.ArgumentInvalid:
@@ -191,11 +149,11 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 //case ZeroOperatorStateType.LocalSendError:
                 //case ZeroOperatorStateType.LocalRecvError:
                 //    Message.State =  MessageState.SendError;
-                //case ZeroOperatorStateType.NetError:
+                //case ZeroOperatorStateType.NetworkError:
                 //case ZeroOperatorStateType.Unavailable:
-                //    Message.State =  MessageState.NetError;
+                //    Message.State =  MessageState.NetworkError;
                 default:
-                    Message.State = MessageState.NetError;
+                    Message.State = MessageState.NetworkError;
                     break;
             }
         }

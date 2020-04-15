@@ -5,7 +5,7 @@ using System.Diagnostics;
 namespace Agebull.Common.Logging
 {
 
-    /// <summary>
+    /*// <summary>
     /// 根据步骤范围
     /// </summary>
     public class MonitorScope : ScopeBase
@@ -22,7 +22,7 @@ namespace Agebull.Common.Logging
                 return new EmptyScope();
             }
 
-            if ((LogRecorder.MonitorItem?.InMonitor ?? false))
+            if (LogRecorder.MonitorItem?.InMonitor ?? false)
                 throw new Exception();
             var scope = new MonitorScope();
             LogRecorder.BeginMonitor(name);
@@ -70,5 +70,5 @@ namespace Agebull.Common.Logging
         {
             LogRecorder.EndStepMonitor();
         }
-    }
+    }*/
 }

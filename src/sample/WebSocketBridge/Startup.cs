@@ -1,7 +1,4 @@
-using System;
-using System.Threading.Tasks;
 using Agebull.Common.Ioc;
-using Agebull.Common.Logging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,44 +17,18 @@ namespace WebNotifyTest
         {
             DependencyHelper.ServiceCollection = services;
             services.AddTransient<IMessageMiddleware, WebSocketNotify>();
-            DependencyHelper.SetServiceCollection(services);
             services.UseCsRedis();
-            
+            WebSocketNotify.CreateService();
+            services.UseFlow();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            WebSocketNotify.Binding(app);
-            DependencyHelper.ServiceCollection.UseFlow();
             app.UseStaticFiles();
             app.UseDefaultFiles("/index.htm");
 
-            //Task.Run(Test);
-        }
-
-
-        static async void Test()
-        {
-            int left = 0;
-            int join = short.MaxValue;
-            while (true)
-            {
-                await Task.Delay(1000);
-                try
-                {
-                    await MessagePoster.PublishAsync("MarkPoint", "real", new
-                    {
-                        left = left++,
-                        join = join--
-                    });
-                }
-                catch (Exception ex)
-                {
-                    LogRecorder.Exception(ex);
-                }
-            }
+            WebSocketNotify.Binding(app);
         }
     }
-
 }

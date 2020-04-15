@@ -1,0 +1,267 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ZeroTeam.MessageMVC.Tools</name>
+    </assembly>
+    <members>
+        <member name="T:ZeroTeam.MessageMVC.ConfigSync.AutoRegister">
+            <summary>
+              组件注册
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ConfigSync.AutoRegister.ZeroTeam#MessageMVC#AddIn#IAutoRegister#AutoRegist(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            注册
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ConfigSync.AutoRegister.ZeroTeam#MessageMVC#AddIn#IAutoRegister#Initialize">
+            <summary>
+            初始化
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Context.GlobalContextMiddleware">
+            <summary>
+            上下文对象
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.GlobalContextMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Level">
+            <summary>
+            层级
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.GlobalContextMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Scope">
+            <summary>
+            消息中间件的处理范围
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.GlobalContextMiddleware.Processor">
+            <summary>
+            当前处理器
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Context.GlobalContextMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Handle(ZeroTeam.MessageMVC.Services.IService,ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object,System.Func{System.Threading.Tasks.Task})">
+            <summary>
+            准备
+            </summary>
+            <param name="service">当前服务</param>
+            <param name="message">当前消息</param>
+            <param name="tag">扩展信息</param>
+            <param name="next">下一个处理方法</param>
+            <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Tools.MarkPointMiddleware">
+            <summary>
+            埋点发出中间件
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.MarkPointMiddleware.Processor">
+            <summary>
+            当前处理器
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.MarkPointMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Level">
+            <summary>
+            层级
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.MarkPointMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Scope">
+            <summary>
+            消息中间件的处理范围
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Tools.MarkPointMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Prepare(ZeroTeam.MessageMVC.Services.IService,ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
+            <summary>
+            准备
+            </summary>
+            <param name="service">当前服务</param>
+            <param name="message">当前消息</param>
+            <param name="tag">扩展信息</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Tools.MarkPointMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#OnEnd(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
+            <summary>
+            结果处理
+            </summary>
+            <param name="message">当前消息</param>
+            <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Tools.ReceiptMiddleware">
+            <summary>
+            回执服务中间件
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.ReceiptMiddleware.Processor">
+            <summary>
+            当前处理器
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.ReceiptMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Level">
+            <summary>
+            层级
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.ReceiptMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Scope">
+            <summary>
+            消息中间件的处理范围
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Tools.ReceiptMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#OnEnd(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
+            <summary>
+            准备
+            </summary>
+            <param name="message">当前消息</param>
+            <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Tools.ReverseProxyMiddleware">
+            <summary>
+            反向代理中间件
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.ReverseProxyMiddleware.Processor">
+            <summary>
+            当前处理器
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.ReverseProxyMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Level">
+            <summary>
+            层级
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.ReverseProxyMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Scope">
+            <summary>
+            消息中间件的处理范围
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Tools.ReverseProxyMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Handle(ZeroTeam.MessageMVC.Services.IService,ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object,System.Func{System.Threading.Tasks.Task})">
+            <summary>
+            准备
+            </summary>
+            <param name="service">当前服务</param>
+            <param name="message">当前消息</param>
+            <param name="tag">扩展信息</param>
+            <param name="next">下一个处理方法</param>
+            <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Tools.ToolsOption">
+            <summary>
+            扩展工具配置
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.EnableLinkTrace">
+            <summary>
+                启用调用链跟踪(使用IZeroContext全局上下文)
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.EnableMonitorLog">
+            <summary>
+                启用Monitor模式日志记录
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.EnableMarkPoint">
+            <summary>
+                启用埋点
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.MarkPointName">
+            <summary>
+                埋点服务名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.EnableMessageReConsumer">
+            <summary>
+                启用异常消息本地重放
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.ReceiptService">
+            <summary>
+                回执服务名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.ReceiptApi">
+            <summary>
+                回执接口方法
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Tools.ToolsOption.Instance">
+            <summary>
+            实例
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Tools.ToolsOption.Update">
+            <summary>
+            重新载入并更新
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Messages.ReConsumerMiddleware">
+            <summary>
+            重新消费未正确处理消息的中间件
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.ReConsumerMiddleware.ZeroTeam#MessageMVC#IZeroMiddleware#Name">
+            <summary>
+            实例名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.ReConsumerMiddleware.ZeroTeam#MessageMVC#IZeroMiddleware#Level">
+            <summary>
+            等级
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.ReConsumerMiddleware.ZeroTeam#MessageMVC#IFlowMiddleware#Close">
+            <summary>
+                关闭
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.ReConsumerMiddleware.ZeroTeam#MessageMVC#IFlowMiddleware#CheckOption(ZeroTeam.MessageMVC.ZeroAppOption)">
+            <summary>
+                配置校验,作为第一步
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.ReConsumerMiddleware.ZeroTeam#MessageMVC#IFlowMiddleware#Start">
+            <summary>
+            开启
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.ReConsumerMiddleware.ReConsumer">
+            <summary>
+                重新消费错误消息
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Messages.StorageMiddleware">
+            <summary>
+            消息存储中间件
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.StorageMiddleware.Processor">
+            <summary>
+            当前处理器
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.StorageMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Level">
+            <summary>
+            层级
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.StorageMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Scope">
+            <summary>
+            消息中间件的处理范围
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.StorageMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Prepare(ZeroTeam.MessageMVC.Services.IService,ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
+            <summary>
+            准备
+            </summary>
+            <param name="service">当前服务</param>
+            <param name="message">当前消息</param>
+            <param name="tag">扩展信息</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.StorageMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#OnEnd(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
+            <summary>
+            处理结束时(结果交付Service后)
+            </summary>
+            <param name="message">当前消息</param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

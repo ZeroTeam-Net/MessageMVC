@@ -106,7 +106,7 @@ namespace ZeroTeam.MessageMVC.Wechart
                 else
                     message.Result ??= ex.Message;
 
-                message.State = MessageState.NetError;
+                message.State = MessageState.NetworkError;
                 LogRecorder.Exception(ex);
                 LogRecorder.MonitorTrace($"Exception : {ex.Message})");
             }

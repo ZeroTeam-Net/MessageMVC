@@ -1081,7 +1081,7 @@ namespace Agebull.Common.Base
         /// <returns> </returns>
         public static bool IsNull(object a)
         {
-            return (a == null || a == DBNull.Value || string.IsNullOrWhiteSpace(a.ToString().Trim()));
+            return a == null || a == DBNull.Value || string.IsNullOrWhiteSpace(a.ToString().Trim());
         }
 
         /// <summary>
@@ -1232,15 +1232,15 @@ namespace Agebull.Common.Base
                     }
                     else if (d < 10000)
                     {
-                        rv = new DateTime(day.Year, (d / 100) % 100, d % 100);
+                        rv = new DateTime(day.Year, d / 100 % 100, d % 100);
                     }
                     else if (d < 1000000)
                     {
-                        rv = new DateTime(2000 + (d / 10000) % 100, (d / 100) % 100, d % 100);
+                        rv = new DateTime(2000 + d / 10000 % 100, d / 100 % 100, d % 100);
                     }
                     else
                     {
-                        rv = new DateTime(d / 10000, (d / 100) % 100, d % 100);
+                        rv = new DateTime(d / 10000, d / 100 % 100, d % 100);
                     }
                 }
                 catch
@@ -1366,11 +1366,11 @@ namespace Agebull.Common.Base
                 }
                 else if (d < 10000)
                 {
-                    rv = new DateTime(9999, 1, 1, (d / 100) % 100, d % 100, 0);
+                    rv = new DateTime(9999, 1, 1, d / 100 % 100, d % 100, 0);
                 }
                 else
                 {
-                    rv = new DateTime(9999, 1, 1, (d / 10000) % 100, (d / 100) % 100, d % 100);
+                    rv = new DateTime(9999, 1, 1, d / 10000 % 100, d / 100 % 100, d % 100);
                 }
                 return true;
             }

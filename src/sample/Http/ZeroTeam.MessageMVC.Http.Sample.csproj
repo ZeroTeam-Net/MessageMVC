@@ -22,6 +22,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="TestControler.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="appsettings.json" />
   </ItemGroup>
 
@@ -35,7 +39,6 @@
     <ProjectReference Include="..\..\tools\Contract\ZeroTeam.MessageMVC.ApiContract.csproj" />
     <ProjectReference Include="..\..\tools\Tools\ZeroTeam.MessageMVC.Tools.csproj" />
     <ProjectReference Include="..\..\transfer\Http\ZeroTeam.MessageMVC.Http.csproj" />
-    <ProjectReference Include="..\..\transfer\Kafka\ZeroTeam.MessageMVC.Kafka.csproj" />
     <ProjectReference Include="..\..\tools\plan\client\ZeroTeam.MessageMVC.Plan.Client.csproj" />
     <ProjectReference Include="..\..\transfer\Redis\RedisMQ\ZeroTeam.MessageMVC.RedisMQ.csproj" />
   </ItemGroup>

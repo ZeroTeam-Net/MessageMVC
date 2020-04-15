@@ -28,7 +28,7 @@
         /// <summary>
         /// 消息接收错误
         /// </summary>
-        NetError = 0x30,
+        NetworkError = 0x30,
 
         /// <summary>
         /// 处理成功
@@ -38,7 +38,7 @@
         /// <summary>
         /// 不支持处理
         /// </summary>
-        NoSupper = 0x41,
+        NonSupport = 0x41,
 
         /// <summary>
         /// 处理失败

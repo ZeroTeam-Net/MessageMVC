@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.Serialization;
-using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC.Context
 {
@@ -31,6 +30,12 @@ namespace ZeroTeam.MessageMVC.Context
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public DateTime? End { get; set; }
+
+        /// <summary>
+        ///     调用层级
+        /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public int Level { get; set; }
 
 
         /// <summary>
@@ -123,6 +128,8 @@ namespace ZeroTeam.MessageMVC.Context
                 CallId = ctx.Trace.LocalId;
                 CallApp = ctx.Trace.LocalApp;
                 CallMachine = ctx.Trace.LocalMachine;
+                //层级
+                Level = ctx.Trace.Level + 1;
                 //正常复制
                 TraceId = ctx.Trace.TraceId;
                 Token = ctx.Trace.Token;

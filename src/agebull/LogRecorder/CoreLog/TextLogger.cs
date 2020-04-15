@@ -323,7 +323,7 @@ namespace Agebull.Common.Logging
                     Option.disable = true;
                 }
             }
-            string Text() => $"{DateTime.Now:MM-dd HH:mm:ss.ffff} [{(eventId.Name ?? logLevel.ToString())}]\t{LogRecorder.GetMachineName()}({LogRecorder.GetUserName()}) [{eventId.Id:D4}({LogRecorder.GetRequestId()})]\t{formatter(state, exception)}";
+            string Text() => $"{DateTime.Now:MM-dd HH:mm:ss.ffff} [{eventId.Name ?? logLevel.ToString()}]\t{LogRecorder.GetMachineName()}({LogRecorder.GetUserName()}) [{eventId.Id:D4}({LogRecorder.GetRequestId()})]\t{formatter(state, exception)}";
             if (!Option.disable)
             {
                 WriteFile("log", Text());

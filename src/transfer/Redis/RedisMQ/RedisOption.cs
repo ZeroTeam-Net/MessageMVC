@@ -50,7 +50,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
 
         static RedisOption()
         {
-            ConfigurationManager.RegistOnChange("MessageMVC:Redis",Instance.Update, true);
+            ConfigurationManager.RegistOnChange("MessageMVC:Redis", Instance.Update, true);
         }
 
         /// <summary>
@@ -58,9 +58,11 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// </summary>
         private void Update()
         {
-            RedisOption option = ConfigurationManager.Option<RedisOption>("MessageMVC:Redis") ;
-
-            ConnectionString = option.ConnectionString;
+            RedisOption option = ConfigurationManager.Option<RedisOption>("MessageMVC:Redis");
+            if (option == null)
+                return;
+            if (!string.IsNullOrWhiteSpace(option.ConnectionString))
+                ConnectionString = option.ConnectionString;
             GuardCheckTime = option.GuardCheckTime;
             MessageLockTime = option.MessageLockTime;
             FailedIsError = option.FailedIsError;

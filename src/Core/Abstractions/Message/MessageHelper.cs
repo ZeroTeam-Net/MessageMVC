@@ -106,15 +106,6 @@ namespace ZeroTeam.MessageMVC.Messages
                 Title = title,
                 ArgumentData = content
             };
-            if (GlobalContext.EnableLinkTrace)
-            {
-                msg.Trace = new TraceInfo
-                {
-                    TraceId = msg.ID,
-                    Start = DateTime.Now,
-                };
-                msg.Trace.CopyFromContext();
-            }
             return msg;
         }
 
@@ -134,15 +125,6 @@ namespace ZeroTeam.MessageMVC.Messages
                 Title = title,
                 Content = content
             };
-            if (GlobalContext.EnableLinkTrace)
-            {
-                msg.Trace = new TraceInfo
-                {
-                    TraceId = msg.ID,
-                    Start = DateTime.Now,
-                };
-                msg.Trace.CopyFromContext();
-            }
             return msg;
         }
     }

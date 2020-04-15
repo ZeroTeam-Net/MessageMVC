@@ -31,7 +31,7 @@ namespace ZeroTeam.MessageMVC.AddIn
         /// <summary>
         /// 等级
         /// </summary>
-        int IZeroMiddleware.Level => -0xFFFA;
+        int IZeroMiddleware.Level => -0xFFF;
 
         /// <summary>
         /// 插件对象

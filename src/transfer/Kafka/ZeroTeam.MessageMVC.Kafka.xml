@@ -91,15 +91,27 @@
         </member>
         <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.Initialize">
             <summary>
-            初始化
+                初始化
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#IFlowMiddleware#Close">
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.Start">
             <summary>
-                关闭
+            关闭
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.Post(ZeroTeam.MessageMVC.Messages.IMessageItem)">
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.Close">
+            <summary>
+            关闭
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ReQueueErrorMessage(System.String)">
+            <summary>
+            还原发送异常文件
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.Post(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
             <summary>
             生产消息
             </summary>

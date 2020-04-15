@@ -13,7 +13,7 @@
   <PropertyGroup>
     <Description>扩展日志记录器(日志装饰器),默认实现一个简单的文本记录器</Description>
     <AssemblyTitle>Agebull.Common.LogRecorder</AssemblyTitle>
-    <Version>4.0.0.3</Version>
+    <Version>4.0.0.4</Version>
     <!--monoandroid60;xamarinios10-->
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <DebugType>portable</DebugType>
@@ -46,11 +46,11 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp3.1|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>TRACE;DEBUG;NETSTANDARD;NETSTANDARD2_0;</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETSTANDARD;NETSTANDARD2_0;LogMonitor</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.1|AnyCPU'">
-    <DefineConstants>TRACE;NETSTANDARD;RELEASE;NETSTANDARD2_0;</DefineConstants>
+    <DefineConstants>TRACE;NETSTANDARD;RELEASE;NETSTANDARD2_0;LogMonitor</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -64,6 +64,7 @@
     <Compile Remove="Logging\LogLevel.cs" />
     <Compile Remove="Logging\LogRecorder.cs" />
     <Compile Remove="Logging\MonitorLog.cs" />
+    <Compile Remove="Logging\MonitorScope.cs" />
     <Compile Remove="Logging\RecordInfo.cs" />
     <Compile Remove="Logging\TxtRecorder.cs" />
     <Compile Remove="LogQueue.cs" />

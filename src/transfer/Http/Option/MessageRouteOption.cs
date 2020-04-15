@@ -1,3 +1,4 @@
+using Agebull.Common.Configuration;
 using System.Collections.Generic;
 
 namespace ZeroTeam.MessageMVC.Http
@@ -10,7 +11,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// <summary>
         /// 标识内部调用的代理名称
         /// </summary>
-        public const string AgentName = "MessageMVC Gateway";
+        public const string AgentName = "MessageMVC";
 
         /// <summary>
         /// 启用文件上传
@@ -21,11 +22,6 @@ namespace ZeroTeam.MessageMVC.Http
         /// 启用身份令牌
         /// </summary>
         public bool EnableAuthToken { get; set; }
-
-        /// <summary>
-        /// 启用快速调用,即直接使用ApiExecuter
-        /// </summary>
-        public bool FastCall { get; set; }
 
 
         /// <summary>
@@ -40,6 +36,35 @@ namespace ZeroTeam.MessageMVC.Http
         /// 当启用NGINX代理时,NGINX可能会增加一级节点,而导致默认第1个路径作为服务名称失效
         /// </remarks>
         public Dictionary<string, int> HostPaths { get; set; }
-    }
 
+
+
+        /// <summary>
+        /// 选项
+        /// </summary>
+        public static MessageRouteOption Instance = new MessageRouteOption
+        {
+            HostPaths= new Dictionary<string, int>(),
+        };
+
+
+        static MessageRouteOption()
+        {
+            ConfigurationManager.RegistOnChange("MessageMVC:HttpRoute", Instance.Load, true);
+        }
+
+         void Load()
+        {
+            var option = ConfigurationManager.Get<MessageRouteOption>("MessageMVC:HttpRoute");
+            if (option == null)
+            {
+                return;
+            }
+            if (option.HostPaths != null)
+                Instance.HostPaths = option.HostPaths;
+            Instance.EnableHeader = option.EnableHeader;
+            Instance.EnableAuthToken = option.EnableAuthToken;
+            Instance.EnableFormFile = option.EnableFormFile;
+        }
+    }
 }

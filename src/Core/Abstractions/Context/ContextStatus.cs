@@ -31,7 +31,7 @@ namespace ZeroTeam.MessageMVC.Context
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public int Feature { get; set; }
 
-        private IOperatorStatus _status = DependencyHelper.Create<IOperatorStatus>();
+        private IOperatorStatus _status;
 
         /// <summary>
         ///     最后状态(当前时间)
@@ -41,35 +41,26 @@ namespace ZeroTeam.MessageMVC.Context
         {
             get
             {
-                if (_messageChanged)
+                if(_status == null)
                 {
-                    _status.Message = _messageBuilder.ToString();
+                    _status = DependencyHelper.Create<IOperatorStatus>();
+                    _status.Success = true;
                 }
-                return _status;
+                return _status ;
             }
-            set
-            {
-                _status = value ?? DependencyHelper.Create<IOperatorStatus>();
-                if (_status.Message == null)
-                {
-                    return;
-                }
 
-                _messageBuilder = new StringBuilder();
-                _messageBuilder.Append(_status.Message);
-            }
+            set => _status = value;
         }
 
         #region 方便使用
-
 
         /// <summary>
         ///     最后操作的操作状态
         /// </summary>
         public int LastState
         {
-            get => _status.Code;
-            set => _status.Code = value;
+            get => LastStatus.Code;
+            set => LastStatus.Code = value;
         }
 
         private bool _messageChanged;
@@ -82,11 +73,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// <param name="msg"></param>
         public void AppendMessage(string msg)
         {
-            if (_messageBuilder == null)
-            {
-                _messageBuilder = new StringBuilder(_status.Message);
-            }
-
+            _messageBuilder ??= new StringBuilder(_status.Message);
             _messageBuilder.AppendLine(msg);
             _messageChanged = true;
         }
@@ -96,15 +83,8 @@ namespace ZeroTeam.MessageMVC.Context
         /// </summary>
         public void ResetStatus()
         {
+            _status.Success = true;
             _status.Code = DefaultErrorCode.Success;
-            ClearMessage();
-        }
-
-        /// <summary>
-        ///     清除消息
-        /// </summary>
-        public void ClearMessage()
-        {
             _messageBuilder = null;
             _messageChanged = false;
             _status.Message = null;
@@ -115,8 +95,17 @@ namespace ZeroTeam.MessageMVC.Context
         /// </summary>
         public string LastMessage
         {
-            get => _status.Message;
-            set => _status.Message = value;
+            get
+            {
+                if (_messageChanged)
+                {
+                    _messageChanged = false;
+                    LastStatus.Message = _messageBuilder?.ToString();
+                    _messageBuilder = null;
+                }
+                return LastStatus.Message;
+            }
+            set => LastStatus.Message = value;
         }
 
         #endregion

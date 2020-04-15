@@ -1,3 +1,4 @@
+using Agebull.Common.Logging;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Messages;
@@ -38,22 +39,13 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// </summary>
         /// <param name="message">消息</param>
         /// <returns></returns>
-        public async Task<IInlineMessage> Post(IMessageItem message)
+        public async Task<IMessageResult> Post(IInlineMessage message)
         {
-            if (message is IInlineMessage inline)
+            LogRecorder.MonitorTrace("[ZeroRPCPoster.Post] 开始发送");
+            return await new ZeroCaller
             {
-                inline.Offline(this);
-            }
-            else
-            {
-                inline = message.ToInline();
-            }
-            var client = new ZeroCaller
-            {
-                Message = inline
-            };
-            await client.CallAsync();
-            return inline;
+                Message = message
+            }.CallAsync();
         }
 
         #endregion

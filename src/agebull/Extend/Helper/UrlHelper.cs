@@ -59,7 +59,7 @@ namespace Agebull.Common
                 if (index >= 0)
                 {
                     key = queryString.Substring(startIndex, index - startIndex);
-                    value = queryString.Substring(index + 1, (i - index) - 1);
+                    value = queryString.Substring(index + 1, i - index - 1);
                 }
                 else
                 {

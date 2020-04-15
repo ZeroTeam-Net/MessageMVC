@@ -11,13 +11,22 @@ namespace ZeroTeam.MessageMVC.Messages
     [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class InlineMessage : MessageItem, IInlineMessage
     {
+        /// <summary>
+        /// 是否外部访问
+        /// </summary>
+        public bool IsOutAccess => false;
+
+        /// <summary>
+        /// 字典参数
+        /// </summary>
         private Dictionary<string, string> dictionary;
+
         /// <summary>
         /// 字典参数
         /// </summary>
         public Dictionary<string, string> Dictionary
         {
-            get => dictionary; 
+            get => dictionary;
             set
             {
                 IsInline = true;
@@ -126,22 +135,6 @@ namespace ZeroTeam.MessageMVC.Messages
         public object GetArgument(int scope, int serializeType, ISerializeProxy serialize, Type type)
         {
             return ArgumentData;
-        }
-
-        /// <summary>
-        /// 取参数值(动态IL代码调用)  BUG
-        /// </summary>
-        /// <param name="name">名称</param>
-        /// <param name="scope">参数范围</param>
-        /// <param name="serializeType">序列化类型</param>
-        /// <param name="serialize">序列化器</param>
-        /// <param name="type">序列化对象</param>
-        /// <returns>值</returns>
-        public object GetValueArgument(string name, int scope, int serializeType, ISerializeProxy serialize, Type type)
-        {
-            if (Dictionary == null || !Dictionary.TryGetValue(name, out var value))
-                return null;
-            return value;
         }
 
     }

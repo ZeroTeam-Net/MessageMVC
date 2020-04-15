@@ -145,12 +145,19 @@
             单例
             </summary>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.ReQueueErrorMessage(System.String)">
+            <summary>
+            还原发送异常文件
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.State">
             <summary>
             运行状态
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.Post(ZeroTeam.MessageMVC.Messages.IMessageItem)">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.Post(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
             <summary>
             生产消息
             </summary>
@@ -170,6 +177,11 @@
         <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.Initialize">
             <summary>
                 初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.Start">
+            <summary>
+            关闭
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.Close">

@@ -21,7 +21,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// <summary>
         ///     发生网络错误时
         /// </summary>
-        NetError = 0x2,
+        NetworkError = 0x2,
 
         /// <summary>
         ///     参数相同（Get与POST请求）

@@ -1727,7 +1727,7 @@
             没有工作对象
             </summary>
         </member>
-        <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroOperatorStateType.NotSupport">
+        <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroOperatorStateType.NonSupport">
             <summary>
             不支持的操作
             </summary>
@@ -1737,7 +1737,7 @@
             超时失败
             </summary>
         </member>
-        <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroOperatorStateType.NetError">
+        <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroOperatorStateType.NetworkError">
             <summary>
             网络错误
             </summary>
@@ -2468,7 +2468,7 @@
             Sockt数量
             </summary>
         </member>
-        <member name="F:ZeroTeam.ZeroMQ.ZPollBase.TimeoutMs">
+        <member name="P:ZeroTeam.ZeroMQ.ZPollBase.TimeoutMs">
             <summary>
             超时
             </summary>
@@ -2560,16 +2560,6 @@
             Socket默认配置
             </summary>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.SocketOption.#ctor">
-            <summary>
-            构造
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.ZeroMQ.SocketOption.CheckOption">
-            <summary>
-            构造
-            </summary>
-        </member>
         <member name="P:ZeroTeam.ZeroMQ.SocketOption.PoolTimeOut">
             <summary>
             使用EPool的超时时间
@@ -2624,6 +2614,16 @@
              <summary>
             当探测没有确认时，重新发送探测的频度,单位秒
              </summary>
+        </member>
+        <member name="F:ZeroTeam.ZeroMQ.SocketOption.Instance">
+            <summary>
+            配置
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.SocketOption.#cctor">
+            <summary>
+            构造
+            </summary>
         </member>
         <member name="T:ZeroTeam.ZeroMQ.SocketState">
             <summary>
@@ -3069,11 +3069,6 @@
             <summary>
                 Reset all TCP filters assigned by <see cref="M:ZeroTeam.ZeroMQ.ZSocket.AddTcpAcceptFilter(System.String)" />
                 and allow TCP transport to accept connections from any IP.
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.ZeroMQ.ZSocket.Option">
-            <summary>
-            配置
             </summary>
         </member>
         <member name="M:ZeroTeam.ZeroMQ.ZSocket.ConfigSocket(ZeroTeam.ZeroMQ.ZSocket,System.Byte[],System.Boolean,System.Boolean)">

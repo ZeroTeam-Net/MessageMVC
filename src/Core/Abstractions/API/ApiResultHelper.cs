@@ -26,7 +26,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         public static string NoFindJson => Helper.Serialize(Helper.NoFind);
 
         /// <summary>系统不支持的Json字符串</summary>
-        public static string NotSupportJson => Helper.Serialize(Helper.NotSupport);
+        public static string NotSupportJson => Helper.Serialize(Helper.NonSupport);
 
         /// <summary>参数错误字符串</summary>
         public static string ArgumentErrorJson => Helper.Serialize(Helper.ArgumentError);
@@ -230,7 +230,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         ///     不支持的操作
         /// </summary>
-        public static ApiResult NotSupport => Error(ErrorCode.NoFind, "*页面不存在*");
+        public static ApiResult NonSupport => Error(ErrorCode.NoFind, "*页面不存在*");
 
         /// <summary>
         ///     参数错误字符串
@@ -318,7 +318,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         ///     系统不支持的Json字符串
         /// </summary>
-        public static string NotSupportJson => JsonConvert.SerializeObject(NotSupport);
+        public static string NotSupportJson => JsonConvert.SerializeObject(NonSupport);
 
         /// <summary>
         ///     参数错误字符串

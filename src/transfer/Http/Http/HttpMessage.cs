@@ -25,6 +25,11 @@ namespace ZeroTeam.MessageMVC.Http
         #region IMessageItem
 
         /// <summary>
+        /// 是否外部访问
+        /// </summary>
+        public bool IsOutAccess => true;
+
+        /// <summary>
         /// 实体参数
         /// </summary>
         public object ArgumentData { get; set; }
@@ -199,7 +204,7 @@ namespace ZeroTeam.MessageMVC.Http
 
         private void CheckHeaders(HttpContext context, HttpRequest request)
         {
-            if (HttpRoute.Option.EnableAuthToken)
+            if (MessageRouteOption.Instance.EnableAuthToken)
             {
                 Trace.Token = request.Headers["AUTHORIZATION"].LastOrDefault()?
                 .Trim()
@@ -214,7 +219,7 @@ namespace ZeroTeam.MessageMVC.Http
                     Trace.Token = null;
                 }
             }
-            if (HttpRoute.Option.EnableHeader)
+            if (MessageRouteOption.Instance.EnableHeader)
             {
                 Trace.Headers = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
                 foreach (var head in request.Headers)
@@ -238,8 +243,7 @@ namespace ZeroTeam.MessageMVC.Http
                 Result = ApiResultHelper.ArgumentErrorJson;
                 return false;
             }
-            var idx = 0;
-            HttpRoute.Option.HostPaths?.TryGetValue(words[0], out idx);
+            MessageRouteOption.Instance.HostPaths.TryGetValue(words[0], out var idx);
             if (words.Length <= idx + 1)
             {
                 //UserState = UserOperatorStateType.FormalError;
@@ -317,6 +321,25 @@ namespace ZeroTeam.MessageMVC.Http
         /// <param name="serialize">序列化器</param>
         /// <param name="type">序列化对象</param>
         /// <returns>值</returns>
+        public object FrameGetValueArgument(string name, int scope, int serializeType, ISerializeProxy serialize, Type type)
+        {
+            var value = GetValueArgument(name, scope);
+            if (value == null && type != typeof(string))
+            {
+                throw new MessageArgumentNullException(name);
+            }
+            return value;
+        }
+
+        /// <summary>
+        /// 取参数值(动态IL代码调用)  BUG
+        /// </summary>
+        /// <param name="name">名称</param>
+        /// <param name="scope">参数范围</param>
+        /// <param name="serializeType">序列化类型</param>
+        /// <param name="serialize">序列化器</param>
+        /// <param name="type">序列化对象</param>
+        /// <returns>值</returns>
         public object GetValueArgument(string name, int scope, int serializeType, ISerializeProxy serialize, Type type)
         {
             var vl = GetValueArgument(name, scope);
@@ -362,7 +385,7 @@ namespace ZeroTeam.MessageMVC.Http
 
         private void ReadFiles()
         {
-            if (!HttpRoute.Option.EnableFormFile)
+            if (!MessageRouteOption.Instance.EnableFormFile)
             {
                 return;
             }
@@ -452,7 +475,7 @@ namespace ZeroTeam.MessageMVC.Http
                     ? GetContent(ArgumentScope.Content, ref serialize)
                     : (ResultSerializer ?? serialize).ToString(ArgumentData ?? Dictionary);
             }
-            ((IInlineMessage)this).GetResult(serialize);
+            ((IInlineMessage)this).OfflineResult(serialize);
             return this;
         }
 

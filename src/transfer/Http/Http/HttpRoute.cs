@@ -22,20 +22,10 @@ namespace ZeroTeam.MessageMVC.Http
         #region 初始化
 
         /// <summary>
-        /// 选项
-        /// </summary>
-        public static MessageRouteOption Option { get; set; }
-
-        /// <summary>
         ///     初始化
         /// </summary>
         public static void Initialize(IServiceCollection services)
         {
-            ConfigurationManager.RegistOnChange("MessageMVC:HttpRoute", () =>
-             {
-                 Option = ConfigurationManager.Get<MessageRouteOption>("MessageMVC:HttpRoute");
-             }, true);
-
 
             services.AddTransient<IMessagePoster, HttpPoster>();
 
@@ -49,12 +39,6 @@ namespace ZeroTeam.MessageMVC.Http
         /// </summary>
         public static void Initialize(IServiceCollection services, Type type)
         {
-            ConfigurationManager.RegistOnChange("MessageMVC:HttpRoute", () =>
-            {
-                Option = ConfigurationManager.Get<MessageRouteOption>("MessageMVC:HttpRoute");
-            }, true);
-
-
             services.AddTransient<IMessagePoster, HttpPoster>();
 
             services.AddTransient<IServiceTransfer, HttpTransfer>();
@@ -92,31 +76,14 @@ namespace ZeroTeam.MessageMVC.Http
         /// <returns></returns>
         private static async Task CallTask(HttpContext context)
         {
-            try
+            if (context.Request.Headers.TryGetValue("User-Agent", out var agent) &&
+                agent.Count == 1 && agent[0] == MessageRouteOption.AgentName)
             {
-                if (context.Request.Headers.TryGetValue("User-Agent", out var agent) &&
-                    agent.Count == 1 && agent[0] == MessageRouteOption.AgentName)
-                {
-                    await InnerCall(context);
-                }
-                else
-                {
-                    await OutCall(context);
-                }
+                await InnerCall(context);
             }
-            catch (Exception e)
+            else
             {
-                LogRecorder.Exception(e);
-                try
-                {
-                    LogRecorder.MonitorTrace(e.Message);
-                    await context.Response.WriteAsync(ApiResultHelper.BusinessErrorJson, Encoding.UTF8);
-                }
-                catch (Exception exception)
-                {
-                    LogRecorder.MonitorTrace(exception.Message);
-                    LogRecorder.Exception(exception);
-                }
+                await OutCall(context);
             }
         }
 
@@ -131,30 +98,55 @@ namespace ZeroTeam.MessageMVC.Http
         /// <returns></returns>
         private static async Task InnerCall(HttpContext context)
         {
-            HttpProtocol.FormatResponse(context.Request, context.Response);
-            //命令
-            if (context.Request.ContentLength == null || context.Request.ContentLength <= 0)
+            try
             {
-                await context.Response.WriteAsync(ApiResultHelper.NotSupportJson, Encoding.UTF8);
-                return;
-            }
-            using var texter = new StreamReader(context.Request.Body);
-            var json = await texter.ReadToEndAsync();
+                HttpProtocol.FormatResponse(context.Request, context.Response);
+                //命令
+                if (context.Request.ContentLength == null || context.Request.ContentLength <= 0)
+                {
+                    await context.Response.WriteAsync(ApiResultHelper.NotSupportJson, Encoding.UTF8);
+                    return;
+                }
+                using var texter = new StreamReader(context.Request.Body);
+                var json = await texter.ReadToEndAsync();
 
-            var message = JsonHelper.DeserializeObject<InlineMessage>(json);
-            if (message == null)
-            {
-                await context.Response.WriteAsync(ApiResultHelper.NotSupportJson, Encoding.UTF8);
-                return;
-            }
+                var message = JsonHelper.DeserializeObject<InlineMessage>(json);
+                if (message == null)
+                {
+                    await context.Response.WriteAsync(new MessageResult
+                    {
+                        State = MessageState.FormalError,
+                        RuntimeStatus = ApiResultHelper.Helper.ArgumentError
+                    }.ToJson(), Encoding.UTF8);
+                    return;
+                }
 
-            var service = ZeroFlowControl.GetService(message.ServiceName);
-            if (service == null)
-            {
-                await context.Response.WriteAsync(ApiResultHelper.NotSupportJson, Encoding.UTF8);
-                return;
+                var service = ZeroFlowControl.GetService(message.ServiceName) ??
+                     new ZeroService
+                     {
+                         ServiceName = "***",
+                         Receiver = new HttpTransfer(),
+                         Serialize = DependencyHelper.Create<JsonSerializeProxy>()
+                     };
+
+                await MessageProcessor.OnMessagePush(service, message, context);
             }
-            await MessageProcessor.OnMessagePush(service, message, context);
+            catch (Exception e)
+            {
+                LogRecorder.Exception(e);
+                try
+                {
+                    await context.Response.WriteAsync(new MessageResult
+                    {
+                        State = MessageState.Error,
+                        RuntimeStatus = ApiResultHelper.Helper.UnhandleException
+                    }.ToJson(), Encoding.UTF8);
+                }
+                catch (Exception exception)
+                {
+                    LogRecorder.Exception(exception);
+                }
+            }
         }
 
         #endregion
@@ -168,38 +160,47 @@ namespace ZeroTeam.MessageMVC.Http
         /// <returns></returns>
         private static async Task OutCall(HttpContext context)
         {
-            HttpProtocol.CrosCall(context.Response);
-            var uri = context.Request.GetUri();
-            if (uri.AbsolutePath == "/")
+            try
             {
-                //response.Redirect("/index.html");
-                await context.Response.WriteAsync("Wecome MessageMVC,Lucky every day!", Encoding.UTF8);
-                return;
-            }
-            HttpProtocol.FormatResponse(context.Request, context.Response);
-            //命令
-            var data = new HttpMessage();
-            //开始调用
-            if (data.CheckRequest(context))
-            {
-                var service = ZeroFlowControl.GetService(data.ApiHost);
-                if (service == null)
+                HttpProtocol.CrosCall(context.Response);
+                var uri = context.Request.GetUri();
+                if (uri.AbsolutePath == "/")
                 {
-                    service = new ZeroService
-                    {
-                        //ServiceName = data.ApiHost,
-                        Receiver = new HttpTransfer(),
-                        Serialize = DependencyHelper.Create<JsonSerializeProxy>()
-                    };
-                    data.Result = ApiResultHelper.NoFindJson;
+                    //response.Redirect("/index.html");
+                    await context.Response.WriteAsync("Wecome MessageMVC,Lucky every day!", Encoding.UTF8);
+                    return;
                 }
-                //else if (Option.FastCall)
-                //{
-                //    await new ApiExecuter().Handle(service, data, null, null);
-                //}
-                //else
+                HttpProtocol.FormatResponse(context.Request, context.Response);
+                //命令
+                var data = new HttpMessage();
+                //开始调用
+                if (data.CheckRequest(context))
                 {
+                    var service = ZeroFlowControl.GetService(data.ServiceName) ??
+                         new ZeroService
+                         {
+                             ServiceName = "***",
+                             Receiver = new HttpTransfer(),
+                             Serialize = DependencyHelper.Create<JsonSerializeProxy>()
+                         };
                     await MessageProcessor.OnMessagePush(service, data, context);
+                }
+                else
+                {
+                    await context.Response.WriteAsync(ApiResultHelper.NotSupportJson, Encoding.UTF8);
+                    return;
+                }
+            }
+            catch (Exception e)
+            {
+                LogRecorder.Exception(e);
+                try
+                {
+                    await context.Response.WriteAsync(ApiResultHelper.BusinessErrorJson, Encoding.UTF8);
+                }
+                catch (Exception exception)
+                {
+                    LogRecorder.Exception(exception);
                 }
             }
         }

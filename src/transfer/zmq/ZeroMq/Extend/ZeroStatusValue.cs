@@ -170,13 +170,13 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     return ZeroCommandFailed;
                 case ZeroOperatorStateType.NotFind:
                     return ZeroCommandNoFind;
-                case ZeroOperatorStateType.NotSupport:
+                case ZeroOperatorStateType.NonSupport:
                     return ZeroCommandNoSupport;
                 case ZeroOperatorStateType.FrameInvalid:
                     return ZeroCommandInvalid;
                 case ZeroOperatorStateType.NetTimeOut:
                     return ZeroCommandTimeout;
-                case ZeroOperatorStateType.NetError:
+                case ZeroOperatorStateType.NetworkError:
                     return ZeroCommandNetError;
                 case ZeroOperatorStateType.NoWorker:
                     return ZeroCommandNotWorker;
@@ -223,7 +223,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 return UserOperatorStateType.LogicalError;
             if (state < ZeroOperatorStateType.Error)
                 return UserOperatorStateType.FormalError;
-            if (state <= ZeroOperatorStateType.NotSupport)
+            if (state <= ZeroOperatorStateType.NonSupport)
                 return UserOperatorStateType.NotFind;
             if (state == ZeroOperatorStateType.DenyAccess)
                 return UserOperatorStateType.DenyAccess;

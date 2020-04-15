@@ -1,10 +1,8 @@
 using Agebull.Common;
 using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
-using Agebull.EntityModel.Common;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -148,6 +146,97 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
 
         #endregion
 
+        #region 请求
+
+
+        /// <summary>
+        ///     一次请求
+        /// </summary>
+        /// <param name="caller"></param>
+        /// <param name="description"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        internal Task<MessageResult> CallZero(ZeroCaller caller, byte[] description, params byte[][] args)
+        {
+            var info = new ZeroRPCTaskInfo
+            {
+                Caller = caller
+            };
+
+
+            var socket = CreateProxySocket(caller);
+            if (socket == null)
+            {
+                LogRecorder.MonitorTrace(() => $"[ZeroPostProxy.CallZero] 本地Sock构造失败.{caller.Message.State}");
+                return Task.FromResult(new MessageResult
+                {
+                    ID = caller.Message.ID,
+                    State = MessageState.FormalError,
+                    Trace = caller.Message.Trace,
+                    RuntimeStatus = ApiResultHelper.Helper.ArgumentError
+                });
+            }
+            using var message = new ZMessage
+                {
+                    new ZFrame(caller.Message.ServiceName),
+                    new ZFrame(description)
+                };
+            if (args != null)
+            {
+                foreach (var arg in args)
+                {
+                    message.Add(new ZFrame(arg));
+                }
+                message.Add(new ZFrame(caller.Config.ServiceKey));
+            }
+
+            bool res;
+            using (socket)
+            {
+                res = socket.Send(message, out ZError _);
+            }
+            if (!res)
+            {
+                LogRecorder.MonitorTrace(() => $"[ZeroPostProxy.CallZero] 发送到队列失败.{InprocAddress}");
+                return Task.FromResult(new MessageResult
+                {
+                    ID = caller.Message.ID,
+                    Trace = caller.Message.Trace,
+                    State = MessageState.NetworkError,
+                    RuntimeStatus = ApiResultHelper.Helper.NetworkError
+                });
+            }
+            LogRecorder.MonitorTrace(() => $"[ZeroPostProxy.CallZero] 已发送到异步队列");
+
+            ZeroRPCTaskInfo.Tasks.TryAdd(caller.Message.ID, info);
+            info.TaskSource = new TaskCompletionSource<MessageResult>();
+            return info.TaskSource.Task;
+        }
+
+        private ZSocketEx CreateProxySocket(ZeroCaller caller)
+        {
+            if (!ZeroRpcFlow.Config.TryGetConfig(caller.Message.ServiceName, out caller.Config))
+            {
+                caller.Message.RuntimeStatus = ApiResultHelper.Helper.NoFind;
+                caller.Message.State = MessageState.NonSupport;
+                return null;
+            }
+
+            if (caller.Config.State != ZeroCenterState.None && caller.Config.State != ZeroCenterState.Run)
+            {
+                caller.Message.RuntimeStatus = caller.Config.State == ZeroCenterState.Pause
+                    ? ApiResultHelper.Helper.Pause
+                    : ApiResultHelper.Helper.NonSupport;
+                caller.Message.State = MessageState.NonSupport;
+                return null;
+            }
+
+            caller.Message.State = MessageState.Accept;
+
+            return ZSocketEx.CreateOnceSocket(InprocAddress, null, caller.Message.ID.ToBytes(), ZSocketType.PAIR);
+        }
+        #endregion
+
         #region ZMQ Socket
 
         /// <summary>
@@ -270,26 +359,30 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <param name="message"></param>
         private void OnLocalCall(ZMessage message)
         {
-            ulong id;
+            string id;
             ZMessage message2;
             StationProxyItem item;
             using (message)
             {
-                id = ulong.Parse(message[0].ToString());
+                id = message[0].ToString();
                 var station = message[1].ToString();
                 if (!StationProxy.TryGetValue(station, out item))
                 {
-                    if (Tasks.TryGetValue(id, out var task))
+                    logger.Error("({0})站点[{1}]不存在.", id, station);
+                    if (ZeroRPCTaskInfo.Tasks.TryGetValue(id, out var task))
                     {
-                        task.Caller.Message.State = MessageState.FormalError;
-                        task.Caller.Message.Result = ApiResultHelper.ArgumentErrorJson;
-                        task.TaskSource.SetResult(ZeroOperatorStateType.ArgumentInvalid);
+                        task.TaskSource.SetResult(new MessageResult
+                        {
+                            ID = id,
+                            State = MessageState.FormalError,
+                            RuntimeStatus = ApiResultHelper.Helper.ArgumentError
+                        });
                     }
                     return;
                 }
                 message2 = message.Duplicate(2);
             }
-            logger.Trace("OnLocalCall : {0}", id);
+            logger.Trace("({0})正在发送到远程服务", id);
             bool success;
             ZError error;
             using (message2)
@@ -299,16 +392,20 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
 
             if (success)
             {
+                logger.Trace("({0})发送到远程服务成功,等待返回", id);
                 Interlocked.Increment(ref WaitCount);
             }
             else
             {
-                LogRecorder.Trace(error.Text);
-                if (Tasks.TryGetValue(id, out var task))
+                logger.Trace("({0})发送到远程服务失败.{1}", id, error.Text);
+                if (ZeroRPCTaskInfo.Tasks.TryGetValue(id, out var task))
                 {
-                    task.Caller.Message.State = MessageState.NetError;
-                    task.Caller.Message.Result = ApiResultHelper.NetworkErrorJson;
-                    task.TaskSource.SetResult(ZeroOperatorStateType.NetError);
+                    task.TaskSource.SetResult(new MessageResult
+                    {
+                        ID = id,
+                        State = MessageState.NetworkError,
+                        RuntimeStatus = ApiResultHelper.Helper.NetworkError
+                    });
                 }
             }
         }
@@ -317,12 +414,16 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
 
         private void OnRemoteResult(ZMessage message)
         {
-            ZeroResult result = ZeroResultData.Unpack<ZeroResult>(message, true, (res, type, bytes) =>
+            string json = null;
+            ZeroResult zeroResult = ZeroResultData.Unpack<ZeroResult>(message, true, (res, type, bytes) =>
             {
                 switch (type)
                 {
                     case ZeroFrameType.ResultText:
                         res.Result = ZeroNetMessage.GetString(bytes);
+                        return true;
+                    case ZeroFrameType.ExtendText:
+                        json = ZeroNetMessage.GetString(bytes);
                         return true;
                         //case ZeroFrameType.BinaryContent:
                         //    res.Binary = bytes;
@@ -331,134 +432,51 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 return false;
             });
 
-            if (!ulong.TryParse(result.Requester, out ulong id))
+            if (!long.TryParse(zeroResult.Requester, out long id))
             {
-                LogRecorder.Trace(() => $"[OnRemoteResult]  Requester error:{result.Requester}");
                 return;
             }
 
-            if (result.State == ZeroOperatorStateType.Runing)
+            if (zeroResult.State == ZeroOperatorStateType.Runing)
             {
-                LogRecorder.Trace(() => $"[OnRemoteResult] task:({id})=>Runing");
+                logger.Trace("({0}).远程通知正在处理中");
                 return;
             }
 
             Interlocked.Decrement(ref WaitCount);
-            if (!Tasks.TryGetValue(id, out var src))
+            if (!ZeroRPCTaskInfo.Tasks.TryRemove(zeroResult.Requester, out var src))
             {
-                LogRecorder.Trace(() => $"[OnRemoteResult]  Requester error:{result.Requester}");
+                logger.Trace("({0})接收到远程返回,原始请求者非支.", zeroResult.Requester);
                 return;
             }
-            Tasks.TryRemove(id, out _);
-            src.Caller.CheckState(result.State);
-            src.Caller.CheckResult(result.Result, result.State);
-            if (!src.TaskSource.TrySetResult(result.State))
+            if (JsonHelper.TryDeserializeObject<MessageResult>(json, out var result))
             {
-                LogRecorder.Error($"task:({id})=>Failed result({JsonHelper.SerializeObject(result)})");
+                result.Result = src.Caller.Message.Result;
             }
-        }
-
-        #endregion
-
-        #region 请求
-
-
-        /// <summary>
-        ///     一次请求
-        /// </summary>
-        /// <param name="caller"></param>
-        /// <param name="description"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        internal Task<ZeroOperatorStateType> CallZero(ZeroCaller caller, byte[] description, params byte[][] args)
-        {
-            var socket = CreateProxySocket(caller);
-            if (socket == null)
+            else
             {
-                return Task.FromResult(ZeroOperatorStateType.NoWorker);
-            }
-            var info = new TaskInfo
-            {
-                Caller = caller
-            };
-            if (!Tasks.TryAdd(caller.ID, info))
-            {
-                caller.Message.ResultData = ApiResultHelper.Helper.Unavailable;
-                caller.Message.State = MessageState.Error;
-                return Task.FromResult(ZeroOperatorStateType.Unavailable);
-            }
-
-            using (MonitorScope.CreateScope("SendToZero"))
-            {
-                using var message = new ZMessage
+                src.Caller.CheckState(zeroResult.State);
+                result = new MessageResult
                 {
-                    new ZFrame(caller.Message.ServiceName),
-                    new ZFrame(description)
+                    ID = src.Caller.Message.ID,
+                    State = src.Caller.Message.State,
+                    Trace = src.Caller.Message.Trace,
+                    Result = src.Caller.Message.Result,
+                    RuntimeStatus = src.Caller.GetOperatorStatus(zeroResult.State)
                 };
-                if (args != null)
-                {
-                    foreach (var arg in args)
-                    {
-                        message.Add(new ZFrame(arg));
-                    }
-                    message.Add(new ZFrame(caller.Config.ServiceKey));
-                }
-
-                bool res;
-                ZError error;
-                using (socket)
-                {
-                    res = socket.Send(message, out error);
-                }
-                if (!res)
-                {
-                    caller.Message.Result = ApiResultHelper.NetworkErrorJson;
-                    caller.Message.State = MessageState.NetError;
-                    return Task.FromResult(ZeroOperatorStateType.LocalSendError);
-                }
             }
-
-            info.TaskSource = new TaskCompletionSource<ZeroOperatorStateType>();
-            return info.TaskSource.Task;
-        }
-
-        private ZSocketEx CreateProxySocket(ZeroCaller caller)
-        {
-            if (!ZeroRpcFlow.Config.TryGetConfig(caller.Message.ServiceName, out caller.Config))
+            logger.Trace("({0})接收到远程返回.{1}", result.Result);
+            try
             {
-                caller.Message.Result = ApiResultHelper.NoFindJson;
-                caller.Message.State = MessageState.NoSupper;
-                return null;
+                if (!src.TaskSource.TrySetResult(result))
+                {
+                    logger.Trace("({0})接收到远程返回.但等待队列已销毁:", zeroResult.Requester);
+                }
             }
-
-            if (caller.Config.State != ZeroCenterState.None && caller.Config.State != ZeroCenterState.Run)
+            catch
             {
-                caller.Message.Result = caller.Config.State == ZeroCenterState.Pause
-                    ? ApiResultHelper.PauseJson
-                    : ApiResultHelper.NotSupportJson;
-                caller.Message.State = MessageState.NoSupper;
-                return null;
+                logger.Trace("({0})接收到远程返回.但等待队列已销毁:", zeroResult.Requester);
             }
-
-            caller.Message.State = MessageState.None;
-
-            return ZSocketEx.CreateOnceSocket(InprocAddress, null, caller.ID.ToString().ToBytes(), ZSocketType.PAIR);
-        }
-
-        internal readonly ConcurrentDictionary<ulong, TaskInfo> Tasks = new ConcurrentDictionary<ulong, TaskInfo>();
-
-
-        internal class TaskInfo
-        {
-            /// <summary>
-            /// TaskCompletionSource
-            /// </summary>
-            public TaskCompletionSource<ZeroOperatorStateType> TaskSource;
-
-            /// <summary>
-            /// 调用对象
-            /// </summary>
-            public ZeroCaller Caller;
         }
 
         #endregion

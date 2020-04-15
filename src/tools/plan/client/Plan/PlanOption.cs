@@ -12,12 +12,12 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <summary>
         /// 消息标识
         /// </summary>
-        public string plan_id;
+        public string plan_id { get; set; }
 
         /// <summary>
         /// 计划说明
         /// </summary>
-        public string description;
+        public string description { get; set; }
 
         /// <summary>
         /// 计划类型

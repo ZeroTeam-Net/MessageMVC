@@ -103,7 +103,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         /// 不支持的操作
         /// </summary>
-        NotSupport = 0xF3,
+        NonSupport = 0xF3,
         /// <summary>
         /// 超时失败
         /// </summary>
@@ -111,7 +111,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         /// 网络错误
         /// </summary>
-        NetError = 0xF5,
+        NetworkError = 0xF5,
         /// <summary>
         /// 计划格式错误
         /// </summary>

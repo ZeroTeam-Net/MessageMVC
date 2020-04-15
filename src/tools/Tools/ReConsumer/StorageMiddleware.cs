@@ -20,61 +20,58 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 层级
         /// </summary>
-        int IMessageMiddleware.Level => -1;
+        int IMessageMiddleware.Level => 0xFFFFFF;
 
         /// <summary>
         /// 消息中间件的处理范围
         /// </summary>
-        MessageHandleScope IMessageMiddleware.Scope => 
+        MessageHandleScope IMessageMiddleware.Scope =>
             ToolsOption.Instance.EnableMessageReConsumer
-            ? MessageHandleScope.Handle
+            ? MessageHandleScope.Prepare | MessageHandleScope.End
             : MessageHandleScope.None;
-
+       static readonly string path = IOHelper.CheckPath(ZeroAppOption.Instance.DataFolder, "message");
         /// <summary>
         /// 准备
         /// </summary>
         /// <param name="service">当前服务</param>
         /// <param name="message">当前消息</param>
         /// <param name="tag">扩展信息</param>
-        /// <param name="next">下一个处理方法</param>
         /// <returns></returns>
-        async Task IMessageMiddleware.Handle(IService service, IInlineMessage message, object tag, Func<Task> next)
-        {
-            Save(message);
-            await next();
-            State(message);
-        }
-
-        private void Save(IInlineMessage message)
+        async Task<bool> IMessageMiddleware.Prepare(IService service, IInlineMessage message, object tag)
         {
             try
             {
-                var file = Path.Combine(ZeroAppOption.Instance.DataFolder, "message", $"{message.ID}.msg");
+                var file = Path.Combine(path, $"{message.ID}.msg");
                 if (!File.Exists(file))
                 {
-                    File.WriteAllText(file, JsonHelper.SerializeObject(message));
+                    await File.WriteAllTextAsync(file, JsonHelper.SerializeObject(message));
                 }
-
-                message.State = MessageState.Accept;
             }
             catch
             {
             }
+            return true;
         }
 
-        private void State(IInlineMessage message)
+        /// <summary>
+        /// 处理结束时(结果交付Service后)
+        /// </summary>
+        /// <param name="message">当前消息</param>
+        /// <returns></returns>
+        Task IMessageMiddleware.OnEnd(IInlineMessage message)
         {
             if (message.State != MessageState.Success)
             {
-                return;
+                return Task.CompletedTask;
             }
             try
             {
-                File.Delete(Path.Combine(ZeroAppOption.Instance.DataFolder, "message", $"{message.ID}.msg"));
+                File.Delete(Path.Combine(path, $"{message.ID}.msg"));
             }
             catch
             {
             }
+            return Task.CompletedTask;
         }
     }
 }

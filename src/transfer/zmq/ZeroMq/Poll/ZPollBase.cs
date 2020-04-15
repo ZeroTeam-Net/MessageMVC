@@ -20,7 +20,9 @@ namespace ZeroTeam.ZeroMQ
         /// <summary>
         /// 超时
         /// </summary>
-        public readonly int TimeoutMs = ZSocket.Option.PoolTimeOut <= 100 ? 1000 : ZSocket.Option.PoolTimeOut;
+        public int TimeoutMs => SocketOption.Instance.PoolTimeOut <= 100 
+            ? 1000 
+            : SocketOption.Instance.PoolTimeOut;
 
         /// <summary>
         /// 错误对象

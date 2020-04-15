@@ -229,7 +229,7 @@ namespace ZeroTeam.MessageMVC.Http
 
                 if (!CheckApisInner())
                 {
-                    Message.State = MessageState.NoSupper;
+                    Message.State = MessageState.NonSupport;
                     Message.Result = ApiResultHelper.DenyAccessJson;
                     return false;
                 }
@@ -252,14 +252,14 @@ namespace ZeroTeam.MessageMVC.Http
                 var (state, json, result) = await CheckToken();
                 if (state != MessageState.Success)
                 {
-                    Message.State = MessageState.NetError;
+                    Message.State = MessageState.NetworkError;
                     Message.Result = ApiResultHelper.UnavailableJson;
                     return false;
                 }
 
                 if (result == null || !result.Success)
                 {
-                    Message.State = MessageState.NoSupper;
+                    Message.State = MessageState.NonSupport;
                     Message.Result = json;
                     return false;
                 }
@@ -274,7 +274,7 @@ namespace ZeroTeam.MessageMVC.Http
                 else
                     Message.Result ??= ex.Message;
 
-                Message.State = MessageState.NetError;
+                Message.State = MessageState.NetworkError;
                 LogRecorder.Exception(ex);
                 return false;
             }
@@ -307,7 +307,7 @@ namespace ZeroTeam.MessageMVC.Http
             }
             if (SecurityOption.Instance.DenyTokens.Contains(Message.Trace.Token))
             {
-                Message.State = MessageState.NoSupper;
+                Message.State = MessageState.NonSupport;
                 Message.Result = ApiResultHelper.DenyAccessJson;
                 return null;
             }

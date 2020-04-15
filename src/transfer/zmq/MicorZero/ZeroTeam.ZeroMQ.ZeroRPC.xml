@@ -490,11 +490,6 @@
                 Api站点
             </summary>
         </member>
-        <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroCaller.ID">
-            <summary>
-                返回值
-            </summary>
-        </member>
         <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroCaller.Message">
             <summary>
             当前消息
@@ -511,7 +506,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroCaller.CheckResult(System.String,ZeroTeam.ZeroMQ.ZeroRPC.ZeroOperatorStateType)">
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroCaller.GetOperatorStatus(ZeroTeam.ZeroMQ.ZeroRPC.ZeroOperatorStateType)">
             <summary>
                 检查在非成功状态下的返回值
             </summary>
@@ -583,6 +578,15 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroPostProxy.CallZero(ZeroTeam.ZeroMQ.ZeroRPC.ZeroCaller,System.Byte[],System.Byte[][])">
+            <summary>
+                一次请求
+            </summary>
+            <param name="caller"></param>
+            <param name="description"></param>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
         <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroPostProxy._zmqPool">
             <summary>
             Pool对象
@@ -614,25 +618,6 @@
             </summary>
             <param name="message"></param>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroPostProxy.CallZero(ZeroTeam.ZeroMQ.ZeroRPC.ZeroCaller,System.Byte[],System.Byte[][])">
-            <summary>
-                一次请求
-            </summary>
-            <param name="caller"></param>
-            <param name="description"></param>
-            <param name="args"></param>
-            <returns></returns>
-        </member>
-        <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroPostProxy.TaskInfo.TaskSource">
-            <summary>
-            TaskCompletionSource
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroPostProxy.TaskInfo.Caller">
-            <summary>
-            调用对象
-            </summary>
-        </member>
         <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCPoster">
             <summary>
                 ZMQ生产者
@@ -653,12 +638,32 @@
             构造
             </summary>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCPoster.Post(ZeroTeam.MessageMVC.Messages.IMessageItem)">
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCPoster.Post(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
             <summary>
             生产消息
             </summary>
             <param name="message">消息</param>
             <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCTaskInfo">
+            <summary>
+            调用ZeroRPC的等待队列信息
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCTaskInfo.TaskSource">
+            <summary>
+            TaskCompletionSource
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCTaskInfo.Caller">
+            <summary>
+            调用对象
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCTaskInfo.Tasks">
+            <summary>
+            当前所有等待队列
+            </summary>
         </member>
         <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcReceiver">
             <summary>
@@ -787,11 +792,11 @@
             <param name="socket"></param>
             <param name="message"></param>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcReceiver.OnExecuestEnd(System.String,ZeroTeam.ZeroMQ.ZeroRPC.ApiCallItem,ZeroTeam.ZeroMQ.ZeroRPC.ZeroOperatorStateType)">
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcReceiver.OnExecuestEnd(ZeroTeam.MessageMVC.Messages.IInlineMessage,ZeroTeam.ZeroMQ.ZeroRPC.ApiCallItem,ZeroTeam.ZeroMQ.ZeroRPC.ZeroOperatorStateType)">
             <summary>
             发送返回值 
             </summary>
-            <param name="result"></param>
+            <param name="message"></param>
             <param name="item"></param>
             <param name="state"></param>
             <returns></returns>

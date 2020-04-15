@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.Services;
@@ -84,6 +84,28 @@ namespace ZeroTeam.MessageMVC.Web
                 }
             }
         }
+
+        /// <summary>  
+        /// 路由绑定处理  
+        /// </summary>
+        public static void CreateService()
+        {
+            if (Config.Folders == null)
+            {
+                return;
+            }
+            DependencyHelper.Update();
+            foreach (var folder in Config.Folders)
+            {
+                ZeroFlowControl.RegistService(new ZeroService
+                {
+                    ServiceName = folder,
+                    Receiver = DependencyHelper.Create<IMessageConsumer>()
+                });
+                Handlers.Add(folder, new List<WebSocketClient>());
+            }
+        }
+
         /// <summary>  
         /// 路由绑定处理  
         /// </summary>  
@@ -97,12 +119,6 @@ namespace ZeroTeam.MessageMVC.Web
 
             foreach (var folder in Config.Folders)
             {
-                ZeroFlowControl.RegistService(new ZeroService
-                {
-                    ServiceName = folder,
-                    Receiver = DependencyHelper.Create<IMessageConsumer>()
-                });
-                Handlers.Add(folder, new List<WebSocketClient>());
                 app.Map($"/{folder}", Map);
             }
         }

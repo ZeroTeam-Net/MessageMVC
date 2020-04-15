@@ -17,7 +17,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
 
         internal static ILogger<PlanItem> logger = DependencyHelper.LoggerFactory.CreateLogger<PlanItem>();
 
-        private int planAutoRemoveTime => PlanSystemOption.Option.CloseTimeout;
+        private int planAutoRemoveTime => PlanSystemOption.Instance.CloseTimeout;
 
         internal const string OptionKey = "opt";
         internal const string RealKey = "rea";
@@ -197,9 +197,9 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                 return false;
             }
 
-            var timeout = PlanSystemOption.Option.RetryDelay.Length < RealInfo.retry_num
-                ? PlanSystemOption.Option.RetryDelay[RealInfo.retry_num]
-                : PlanSystemOption.Option.RetryDelay[^1];
+            var timeout = PlanSystemOption.Instance.RetryDelay.Length < RealInfo.retry_num
+                ? PlanSystemOption.Instance.RetryDelay[RealInfo.retry_num]
+                : PlanSystemOption.Instance.RetryDelay[^1];
 
             await JoinQueue(NowTime() + timeout);
 
@@ -662,7 +662,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <returns></returns>
         public async Task<bool> SaveResult(string worker, string response)
         {
-            if (!PlanSystemOption.Option.SavePlanResult)
+            if (!PlanSystemOption.Instance.SavePlanResult)
             {
                 return false;
             }

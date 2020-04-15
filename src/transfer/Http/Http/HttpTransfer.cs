@@ -38,6 +38,13 @@ namespace ZeroTeam.MessageMVC.Http
             var context = (HttpContext)tag;
             var status = message.RuntimeStatus ?? (message.ResultData as IApiResult);
 
+            if (message.Result == null)
+            {
+                if (message.ResultData != null)
+                    message.Result = message.ResultData.ToJson();
+                else if (message.RuntimeStatus != null)
+                    message.Result = message.RuntimeStatus.ToJson();
+            }
             // 写入返回
             message.OfflineResult(this);
             if (status != null)
@@ -72,10 +79,10 @@ namespace ZeroTeam.MessageMVC.Http
                     case MessageState.FormalError:
                         context.Response.StatusCode = 200;
                         break;
-                    case MessageState.NoSupper:
+                    case MessageState.NonSupport:
                         context.Response.StatusCode = 404;
                         break;
-                    case MessageState.NetError:
+                    case MessageState.NetworkError:
                     case MessageState.Error:
                         context.Response.StatusCode = 503;
                         break;
@@ -87,8 +94,14 @@ namespace ZeroTeam.MessageMVC.Http
                         break;
                 }
             }
-
-            await context.Response.WriteAsync(message.Result ?? "", Encoding.UTF8);
+            if (message.IsOutAccess)
+            {
+                await context.Response.WriteAsync(message.Result ?? "", Encoding.UTF8);
+            }
+            else
+            {
+                await context.Response.WriteAsync(message.ToMessageResult().ToJson(), Encoding.UTF8);
+            }
             return true;
         }
 

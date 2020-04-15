@@ -82,6 +82,16 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         public const int Unavailable = 0xE;
 
+        /// <summary>
+        ///     正在排队
+        /// </summary>
+        public const int Queue = 0xF;
+
+        /// <summary>
+        ///     未知结果
+        /// </summary>
+        public const int Unknow = 0x10;
+
         #region 消息字典
 
         private static readonly Dictionary<int, string> Map = new Dictionary<int, string>
@@ -100,7 +110,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {NoFind, "页面不存在"},
             {TokenUnknow, "未知令牌"},
             {TokenTimeOut, "令牌过期"},
-            {Unavailable, "服务不可用"}
+            {Unavailable, "服务不可用"},
+            {Queue, "正在排队"},
+            {Unknow, "未知结果"}
         };
 
         /// <summary>

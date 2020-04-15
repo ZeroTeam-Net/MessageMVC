@@ -911,7 +911,7 @@ namespace Agebull.Common.Reflection
             {
                 tp = type.GetElementType();
             }
-            if (tp != null && (tp.IsGenericType && tp.GetGenericTypeDefinition() == typeof(Nullable<>)))
+            if (tp != null && tp.IsGenericType && tp.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
                 tp = tp.GetGenericArguments()[0];
             }

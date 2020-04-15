@@ -201,7 +201,7 @@ namespace ZeroTeam.MessageMVC.Http
                     task.TrySetResult(res);
                 }
             }
-            if (!data.IsSucceed && !CacheSetting.Feature.HasFlag(CacheFeature.NetError))
+            if (!data.IsSucceed && !CacheSetting.Feature.HasFlag(CacheFeature.NetworkError))
             {
                 return;
             }

@@ -56,6 +56,11 @@
             配置对象
             </summary>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.Web.WebSocketNotify.CreateService">
+            <summary>  
+            路由绑定处理  
+            </summary>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.Web.WebSocketNotify.Binding(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
             <summary>  
             路由绑定处理  

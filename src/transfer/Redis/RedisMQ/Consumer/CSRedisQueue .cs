@@ -216,12 +216,13 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                 }
                 catch (RedisClientException ex)
                 {
+                    logger.Exception(ex);
                     logger.Warning(() => $"ReadList error.{ex.Message }");
                     await Task.Delay(3000);
                 }
                 catch (Exception ex)
                 {
-                    var exxx = ex;
+                    logger.Exception(ex);
                     logger.Warning(() => $"ReadList error.{ex.Message }");
                     await Task.Delay(300);
                 }
@@ -272,8 +273,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                 await client.DelAsync(guard);
                 return true;
             }
-            if (item.Trace == null)
-                item.Trace = new TraceInfo();
+            item.Trace ??= new TraceInfo();
             item.Trace.TraceId = id;
             item.Topic = Service.ServiceName;
             await MessageProcessor.OnMessagePush(Service, item, null);//BUG:应该配置化同步或异步
@@ -294,7 +294,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                         if (RedisOption.Instance.FailedIsError)
                             await client.LPushAsync(errList, id);
                         break;
-                    case MessageState.NoSupper:
+                    case MessageState.NonSupport:
                         if (RedisOption.Instance.NoSupperIsError)
                             await client.LPushAsync(errList, id);
                         break;

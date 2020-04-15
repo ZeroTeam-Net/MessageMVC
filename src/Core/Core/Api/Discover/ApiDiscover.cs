@@ -808,7 +808,7 @@ namespace {serviceInfo.Type.Namespace}.UnitTest
 ? $"\"{Guid.NewGuid()}\""
 : $"\"{type.Example.Replace("\"", "\"\"")}\"",
                 "DateTime" => string.IsNullOrEmpty(type.Example)
-? $"\"{DateTime.Today:yyyy-MM-DD}\""
+? $"\"{DateTime.Today:yyyy-MM-dd}\""
 : $"\"{type.Example.Replace("\"", "\"\"")}\"",
                 _ => string.IsNullOrEmpty(type.Example)
 ? "0"

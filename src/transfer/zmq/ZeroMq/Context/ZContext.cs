@@ -363,7 +363,7 @@ namespace ZeroTeam.ZeroMQ
             {
                 return true;
             }
-            LogRecorder.SystemLog("Terminate the ZeroTeam.ZeroMQ context.");
+            LogRecorder.Information("Terminate the ZeroTeam.ZeroMQ context.");
             
             var ptr = _contextPtr;
             _contextPtr = IntPtr.Zero;
@@ -374,7 +374,7 @@ namespace ZeroTeam.ZeroMQ
 
             foreach (var alive in array)
             {
-                LogRecorder.SystemLog($"Endpoint : {alive.Endpoint}");
+                LogRecorder.Information($"Endpoint : {alive.Endpoint}");
                 alive.Dispose();
             }
             if (zmq.ctx_shutdown(ptr) != -1)

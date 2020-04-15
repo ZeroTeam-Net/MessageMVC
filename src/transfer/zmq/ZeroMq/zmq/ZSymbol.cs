@@ -77,7 +77,7 @@
 		public static IEnumerable<ZSymbol> Find(string ns, int num)
 		{
 			return ZsymbolToName
-				.Where(s => s.Value != null && (s.Value.StartsWith(ns) && s.Key.Number == num)).Select(x => x.Key);
+				.Where(s => s.Value != null && s.Value.StartsWith(ns) && s.Key.Number == num).Select(x => x.Key);
 		}
 
 		public override bool Equals(object obj)

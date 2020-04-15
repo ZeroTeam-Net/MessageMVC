@@ -9,7 +9,7 @@ namespace ZeroTeam.MessageMVC.Web
         /// <summary>
         /// 使用WebSocket的文件夹
         /// </summary>
-        public List<string> Folders { get; set; }
+        public string[] Folders { get; set; }
 
     }
 }

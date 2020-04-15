@@ -12,6 +12,11 @@ namespace ZeroTeam.MessageMVC.Messages
     public interface IInlineMessage : IMessageItem
     {
         /// <summary>
+        /// 是否外部访问
+        /// </summary>
+        bool IsOutAccess { get; }
+
+        /// <summary>
         /// 服务名称,即Topic
         /// </summary>
         string ServiceName => Topic;
@@ -61,55 +66,72 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         public IOperatorStatus RuntimeStatus { get; set; }
 
-        #region 状态
 
+        #region 返回值处理
+
+        /// <summary>
+        ///     返回值序列化对象
+        /// </summary>
+        ISerializeProxy ResultSerializer { get; set; }
+
+
+        /// <summary>
+        ///     返回值构造对象
+        /// </summary>
+        Func<int, string, object> ResultCreater { get; set; }
+
+        /// <summary>
+        /// 复制构造一个返回值对象
+        /// </summary>
+        /// <returns></returns>
+        IMessageResult ToMessageResult() => new MessageResult
+        {
+            ID = ID,
+            State = State,
+            Trace = Trace,
+            Result = Result,
+            ResultData = ResultData,
+            RuntimeStatus = RuntimeStatus
+        };
 
         /// <summary>
         /// 重置
         /// </summary>
-        void Reset()
+        void CopyResult(IMessageResult message)
         {
-            Result = null;
-            ResultData = null;
-            RuntimeStatus = null;
-            ResultOutdated = false;
-            State = MessageState.None;
-        }
-
-        /// <summary>
-        /// 重置
-        /// </summary>
-        void CopyResult(IInlineMessage message)
-        {
-            if (message == this)
-                return;
-            Dictionary = message.Dictionary;
-            ArgumentData = message.ArgumentData;
-            ResultData = message.ResultData;
             Result = message.Result;
             ResultData = message.ResultData;
+            ResultOutdated = ResultData != null;
             RuntimeStatus = message.RuntimeStatus;
             State = message.State;
             Trace = message.Trace;
         }
+
 
         /// <summary>
         /// 取得返回值
         /// </summary>
         /// <param name="serialize"></param>
         /// <returns></returns>
-        string GetResult(ISerializeProxy serialize)
+        IInlineMessage OfflineResult(ISerializeProxy serialize)
         {
             if (!ResultOutdated)
-                return Result;
-            if (ResultData == null && this.RuntimeStatus != null)
-                ResultData = this.RuntimeStatus;
+                return this;
             ResultOutdated = false;
-            if (ResultData == null)
-                return Result;
             if (ResultSerializer != null)
                 serialize = ResultSerializer;
-            return Result = serialize.ToString(this.ResultData);
+            if (ResultData != null)
+            {
+                Result = serialize.ToString(this.ResultData);
+                return this;
+            }
+            if (ResultCreater == null)
+                Result = null;
+            else
+                Result = serialize.ToString(RuntimeStatus == null
+                    ? ResultCreater(DefaultErrorCode.Unknow, "未知结果")
+                    : ResultCreater(this.RuntimeStatus.Code, this.RuntimeStatus.Message));
+            return this;
         }
 
         /// <summary>
@@ -133,9 +155,44 @@ namespace ZeroTeam.MessageMVC.Messages
                     ResultOutdated = false;
                     Result = serialize.ToString(this.ResultData);
                 }
-                return serialize.ToObject<TRes>(Result);
+                if (Result != null)
+                    return serialize.ToObject<TRes>(Result);
+            }
+            else if (this.RuntimeStatus is TRes res2)
+                return res2;
+            else if (this.RuntimeStatus != null)
+            {
+                if (ResultOutdated)
+                {
+                    ResultOutdated = false;
+                    if (ResultCreater == null)
+                        Result = null;
+                    else
+                        Result = serialize.ToString(RuntimeStatus == null
+                            ? ResultCreater(DefaultErrorCode.Unknow, "未知结果")
+                            : ResultCreater(this.RuntimeStatus.Code, this.RuntimeStatus.Message));
+                }
+                if (Result != null)
+                    return serialize.ToObject<TRes>(Result);
             }
             return default;
+        }
+
+        #endregion
+
+        #region 状态
+
+
+        /// <summary>
+        /// 重置
+        /// </summary>
+        void Reset()
+        {
+            Result = null;
+            ResultData = null;
+            RuntimeStatus = null;
+            ResultOutdated = true;
+            State = MessageState.None;
         }
 
         /// <summary>
@@ -159,53 +216,12 @@ namespace ZeroTeam.MessageMVC.Messages
         {
             if (ArgumentOutdated)
             {
-                //BUG:会多次调用参数序列化
                 Content = ArgumentData == null
                     ? null
                     : (ResultSerializer ?? serialize).ToString(ArgumentData ?? Dictionary);
             }
-            GetResult(serialize);
+            OfflineResult(serialize);
             return this;
-        }
-
-        /// <summary>
-        /// 返回值转为离线序列化文本
-        /// </summary>
-        /// <returns></returns>
-        IMessageItem OfflineResult(ISerializeProxy serialize)
-        {
-            GetResult(serialize);
-            return this;
-        }
-        /// <summary>
-        ///     返回值序列化对象
-        /// </summary>
-        ISerializeProxy ResultSerializer { get; set; }
-
-
-        /// <summary>
-        ///     返回值构造对象
-        /// </summary>
-        Func<int, string, object> ResultCreater { get; set; }
-
-        /// <summary>
-        /// 如果未上线且还原参数为字典,否则什么也不做
-        /// </summary>
-        Task Inline(ISerializeProxy serialize, Type type, ISerializeProxy resultSerializer, Func<int, string, object> errResultCreater)
-        {
-            if (resultSerializer != null)
-                ResultSerializer = resultSerializer;
-            if (errResultCreater != null)
-                ResultCreater = errResultCreater;
-            if (!IsInline)
-            {
-                IsInline = true;
-                if (type == null || type.IsBaseType())
-                    Dictionary = serialize.ToObject<Dictionary<string, string>>(Content);
-                else
-                    ArgumentData = serialize.ToObject(Content, type);
-            }
-            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -217,8 +233,31 @@ namespace ZeroTeam.MessageMVC.Messages
             return Task.CompletedTask;
         }
 
+
+        /// <summary>
+        /// 如果未上线且还原参数为字典,否则什么也不做
+        /// </summary>
+        Task Inline(ISerializeProxy serialize, Type type, ISerializeProxy resultSerializer, Func<int, string, object> errResultCreater)
+        {
+            ResultOutdated = true;
+            if (resultSerializer != null)
+                ResultSerializer = resultSerializer;
+            if (errResultCreater != null)
+                ResultCreater = errResultCreater;
+            if (!IsInline)
+            {
+                IsInline = true;
+                if (type == null || type.IsBaseType())
+                    Dictionary = serialize.ToObject<Dictionary<string, string>>(Content);
+                else
+                    ArgumentData = serialize.ToObject(Content, type);
+                ArgumentOutdated = false;
+            }
+            return Task.CompletedTask;
+        }
         #endregion
-        #region 方法 
+
+        #region 取参数值 
 
 
         /// <summary>
@@ -264,8 +303,32 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <param name="serialize">序列化器</param>
         /// <param name="type">序列化对象</param>
         /// <returns>值</returns>
-        object GetValueArgument(string name, int scope, int serializeType, ISerializeProxy serialize, Type type);
+        object GetValueArgument(string name, int scope, int serializeType, ISerializeProxy serialize, Type type)
+        {
+            if (Dictionary == null || !Dictionary.TryGetValue(name, out var value))
+                return null;
+            return value;
+        }
 
+        /// <summary>
+        /// 取参数值(动态IL代码调用)
+        /// </summary>
+        /// <param name="name">名称</param>
+        /// <param name="scope">参数范围</param>
+        /// <param name="serializeType">序列化类型</param>
+        /// <param name="serialize">序列化器</param>
+        /// <param name="type">序列化对象</param>
+        /// <returns>值</returns>
+        object FrameGetValueArgument(string name, int scope, int serializeType, ISerializeProxy serialize, Type type)
+        {
+            if (Dictionary == null || !Dictionary.TryGetValue(name, out var value))
+            {
+                if (type != typeof(string))
+                    throw new MessageArgumentNullException(name);
+                return null;
+            }
+            return value;
+        }
         #endregion
     }
 }

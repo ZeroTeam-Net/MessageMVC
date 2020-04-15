@@ -9,7 +9,9 @@ namespace Newtonsoft.Json
     {
         /// <inheritdoc />
         public override bool CanRead => true;
-
+        /// <inheritdoc />
+        public override bool CanWrite => true;
+        
         /// <inheritdoc />
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
@@ -20,7 +22,9 @@ namespace Newtonsoft.Json
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
             JsonSerializer serializer)
         {
-            return Enum.Parse(objectType, existingValue?.ToString() ?? "0");
+            if(reader.Value is string str) 
+                return Enum.Parse(objectType, str);
+            return existingValue;
         }
 
         /// <inheritdoc />

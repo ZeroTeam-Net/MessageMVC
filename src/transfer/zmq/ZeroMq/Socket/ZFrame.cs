@@ -184,7 +184,7 @@ namespace ZeroTeam.ZeroMQ
             {
                 var error = ZError.GetLastErr();
 
-                if ((error.IsError(ZError.Code.EINTR)))
+                if (error.IsError(ZError.Code.EINTR))
                 {
                     continue;
                 }

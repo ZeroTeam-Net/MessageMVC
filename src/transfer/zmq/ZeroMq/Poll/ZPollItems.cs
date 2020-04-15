@@ -201,7 +201,7 @@ namespace ZeroTeam.ZeroMQ
 			var readyCount = 0;
 
 			var send = messages != null && ((pollEvents & ZPollEvent.Out) == ZPollEvent.Out);
-			var receive = ((pollEvents & ZPollEvent.In) == ZPollEvent.In);
+			var receive = (pollEvents & ZPollEvent.In) == ZPollEvent.In;
 
 			ZMessage[] incoming = null;
 			if (receive)

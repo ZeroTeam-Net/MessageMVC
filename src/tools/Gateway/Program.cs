@@ -20,7 +20,7 @@ namespace ZeroTeam.MessageMVC.Http
                     webBuilder
                         .UseConfiguration(ConfigurationManager.Root)
                         .UseUrls(ConfigurationManager.Root.GetSection("Kestrel.Endpoints.Http.Url").Value)
-                        .ConfigureKestrel(KestrelUnixSock.OnOption)
+                        //.ConfigureKestrel(KestrelUnixSock.OnOption)
                         .UseKestrel((ctx, opt) =>
                         {
                             opt.Configure(ctx.Configuration.GetSection("Kestrel"));

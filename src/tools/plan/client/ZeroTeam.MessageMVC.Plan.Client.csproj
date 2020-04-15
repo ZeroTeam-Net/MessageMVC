@@ -14,12 +14,12 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Authors>Agebull</Authors>
     <Company>ZeroTeam</Company>
-    <Version>1.0.0.34-bate</Version>
+    <Version>1.0.0.37-bate</Version>
     <PackageReleaseNotes></PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Producer\IPlanProducer.cs" />
+    <Compile Remove="Poster\IPlanProducer.cs" />
   </ItemGroup>
 
   <ItemGroup>

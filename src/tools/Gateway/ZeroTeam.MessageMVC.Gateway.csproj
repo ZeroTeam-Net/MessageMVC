@@ -19,17 +19,31 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <PlatformTarget>x64</PlatformTarget>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Cache\**" />
     <Compile Remove="config\**" />
+    <Compile Remove="Security\**" />
+    <Compile Remove="WxPay\**" />
+    <Content Remove="Cache\**" />
     <Content Remove="config\**" />
+    <Content Remove="Security\**" />
+    <Content Remove="WxPay\**" />
+    <EmbeddedResource Remove="Cache\**" />
     <EmbeddedResource Remove="config\**" />
+    <EmbeddedResource Remove="Security\**" />
+    <EmbeddedResource Remove="WxPay\**" />
+    <None Remove="Cache\**" />
     <None Remove="config\**" />
+    <None Remove="Security\**" />
+    <None Remove="WxPay\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Cache\CacheEventProcess.cs" />
+    <Compile Remove="GatewayOption.cs" />
+    <Compile Remove="KestrelUnixSock.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -45,8 +59,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\tools\Tools\ZeroTeam.MessageMVC.Tools.csproj" />
     <ProjectReference Include="..\..\transfer\Http\ZeroTeam.MessageMVC.Http.csproj" />
-    <ProjectReference Include="..\..\transfer\Kafka\ZeroTeam.MessageMVC.Kafka.csproj" />
-    <ProjectReference Include="..\..\tools\plan\client\ZeroTeam.MessageMVC.Plan.Client.csproj" />
+    <ProjectReference Include="..\..\transfer\kafka\ZeroTeam.MessageMVC.Kafka.csproj" />
     <ProjectReference Include="..\..\transfer\Redis\RedisMQ\ZeroTeam.MessageMVC.RedisMQ.csproj" />
     <ProjectReference Include="..\ConfigSync\Client\ZeroTeam.MessageMVC.ConfigSync.csproj" />
     <ProjectReference Include="..\Contract\ZeroTeam.MessageMVC.ApiContract.csproj" />

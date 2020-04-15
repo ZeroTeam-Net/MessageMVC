@@ -321,7 +321,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             ilGenerator.Emit(OpCodes.Ldc_I4, serializeType);
             ilGenerator.Emit(OpCodes.Ldarg, 1);
             ilGenerator.Emit(OpCodes.Ldloc, typ);
-            ilGenerator.Emit(OpCodes.Callvirt, typeof(IInlineMessage).GetMethod(nameof(IInlineMessage.GetValueArgument)));
+            ilGenerator.Emit(OpCodes.Callvirt, typeof(IInlineMessage).GetMethod(nameof(IInlineMessage.FrameGetValueArgument)));
             //object arg = 
             var obj = ilGenerator.DeclareLocal(typeof(object));
             ilGenerator.Emit(OpCodes.Stloc, obj);
