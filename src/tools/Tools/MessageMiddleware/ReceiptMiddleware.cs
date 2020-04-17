@@ -15,7 +15,7 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <summary>
         /// 当前处理器
         /// </summary>
-        public MessageProcessor Processor { get; set; }
+        MessageProcessor IMessageMiddleware.Processor { get; set; }
 
         /// <summary>
         /// 层级
@@ -34,23 +34,12 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <returns></returns>
         async Task IMessageMiddleware.OnEnd(IInlineMessage message)
         {
-            string re = null;
-            var vl = GlobalContext.CurrentNoLazy?.Option?.TryGetValue("Receipt", out re) ?? false;
-            if (!vl || string.Equals(re, "true", StringComparison.OrdinalIgnoreCase))
+            if (!GlobalContext.IsOptionTrue("Receipt"))
             {
                 return;
             }
-
-            var json = JsonHelper.SerializeObject(message);
-            var rep = MessagePoster.GetService(ToolsOption.Instance.ReceiptService);
-            if (rep == null)
-            {
-                LogRecorder.Debug($"回执服务未注册,无法处理异常发送结果\r\n{json}");
-                return;
-            }
-            message.OfflineResult(null);
-            var receipt = MessageHelper.Simple(message.ID, ToolsOption.Instance.ReceiptService, ToolsOption.Instance.ReceiptApi, json);
-            await rep.Post(receipt);
+            var receipt = MessageHelper.Simple(message.ID, ToolsOption.Instance.ReceiptService, ToolsOption.Instance.ReceiptApi, message.ToJson());
+            await MessagePoster.Post(receipt);
         }
     }
 }

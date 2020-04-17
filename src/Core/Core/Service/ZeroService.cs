@@ -20,7 +20,7 @@ namespace ZeroTeam.MessageMVC.Services
     {
         #region 基础信息
 
-        string IZeroMiddleware.Name => ServiceName;
+        string IZeroDependency.Name => ServiceName;
 
         /// <summary>
         /// 等级,用于确定中间件优先级
@@ -89,7 +89,15 @@ namespace ZeroTeam.MessageMVC.Services
         /// <summary>
         /// 重置状态机,请谨慎使用
         /// </summary>
-        public void ResetStateMachine()
+        void IService.ResetStateMachine()
+        {
+            ResetStateMachine();
+        }
+
+        /// <summary>
+        /// 重置状态机,请谨慎使用
+        /// </summary>
+        void ResetStateMachine()
         {
             switch (ConfigState)
             {
@@ -110,7 +118,6 @@ namespace ZeroTeam.MessageMVC.Services
             }
             logger.Information(() => $"[ConfigState] {ConfigState} [StateMachine] {StateMachine.GetTypeName()}");
         }
-
         /// <summary>
         /// 取消标记
         /// </summary>
@@ -137,7 +144,7 @@ namespace ZeroTeam.MessageMVC.Services
         /// <summary>
         /// 初始化
         /// </summary>
-        internal void Initialize()
+        void Initialize()
         {
             logger ??= DependencyHelper.LoggerFactory.CreateLogger($"ZeroService({ServiceName})");
 
@@ -161,7 +168,7 @@ namespace ZeroTeam.MessageMVC.Services
                     ConfigState = StationStateType.Initialized;
                 }
             }
-            ResetStateMachine();
+            ((IService)this).ResetStateMachine();
         }
 
         /// <summary>
@@ -204,12 +211,12 @@ namespace ZeroTeam.MessageMVC.Services
             RealState = StationState.BeginRun;
             if (!await LoopBegin())
             {
-                ResetStateMachine();
+                ((IService)this).ResetStateMachine();
                 return;
             }
             RealState = StationState.Run;
 
-            ResetStateMachine();
+            ((IService)this).ResetStateMachine();
             logger.Information("[Run]");
             using (ManualResetEventSlimScope.Scope(eventSlim))
             {
@@ -245,13 +252,13 @@ namespace ZeroTeam.MessageMVC.Services
                     else
                     {
                         ConfigState = StationStateType.Failed;
-                        ResetStateMachine();
+                        ((IService)this).ResetStateMachine();
                         await Task.Delay(100);
                         _ = Task.Factory.StartNew(StateMachine.Start);
                         return;
                     }
                 }
-                ResetStateMachine();
+                ((IService)this).ResetStateMachine();
             }
             GC.Collect();
         }
@@ -322,7 +329,7 @@ namespace ZeroTeam.MessageMVC.Services
         }
         #endregion
 
-        #region IAppMiddleware
+        #region IFlowMiddleware
 
 
         void IFlowMiddleware.Initialize()
@@ -382,7 +389,7 @@ namespace ZeroTeam.MessageMVC.Services
 
                 RealState = StationState.Failed;
 
-                ResetStateMachine();
+                ((IService)this).ResetStateMachine();
                 ZeroFlowControl.OnObjectFailed(this);
                 return Task.FromResult(false);
             }
@@ -447,7 +454,7 @@ namespace ZeroTeam.MessageMVC.Services
         /// </summary>
         /// <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
         /// <param name="info">反射信息</param>
-        public void RegistAction(string name, ApiActionInfo info)
+        void IService.RegistAction(string name, ApiActionInfo info)
         {
             var action = new ApiAction
             {

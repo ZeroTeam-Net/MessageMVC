@@ -2094,11 +2094,6 @@
                 依赖注入代理
             </summary>
         </member>
-        <member name="F:Agebull.Common.Ioc.DependencyHelper.Local">
-            <summary>
-            活动实例
-            </summary>
-        </member>
         <member name="P:Agebull.Common.Ioc.DependencyHelper.ServiceProvider">
             <summary>
                 依赖注入代理
@@ -2121,17 +2116,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Agebull.Common.Ioc.DependencyHelper.CreateScope">
-            <summary>
-               生成范围对象
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Agebull.Common.Ioc.DependencyHelper.DisposeScope">
-            <summary>
-                析构此依赖范围(主动释放,否则要等到GC回收,资源使用率不可控)
-            </summary>
-        </member>
         <member name="M:Agebull.Common.Ioc.DependencyHelper.Create``1">
             <summary>
                 生成接口实例
@@ -2144,14 +2128,6 @@
                 生成接口实例
             </summary>
             <typeparam name="TInterface"></typeparam>
-            <returns></returns>
-        </member>
-        <member name="M:Agebull.Common.Ioc.DependencyHelper.CreateBut``2">
-            <summary>
-                生成接口实例(如果没有注册则使用默认实现)
-            </summary>
-            <typeparam name="TInterface"></typeparam>
-            <typeparam name="TDefault"></typeparam>
             <returns></returns>
         </member>
         <member name="M:Agebull.Common.Ioc.DependencyHelper.AddTransient(System.Type,System.Type)">
@@ -2417,11 +2393,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Agebull.Common.Ioc.DependencyScope.OnDispose">
-            <summary>
-            清理资源
-            </summary>
-        </member>
         <member name="F:Agebull.Common.Ioc.DependencyScope.Local">
             <summary>
             活动实例
@@ -2452,6 +2423,11 @@
             附件内容
             </summary>
         </member>
+        <member name="T:Agebull.Common.Ioc.FromServicesAttribute">
+            <summary>
+            表示来自依赖构造的对象
+            </summary>
+        </member>
         <member name="T:Agebull.Common.Ioc.ScopeData">
             <summary>
             范围数据
@@ -2475,11 +2451,6 @@
         <member name="F:Agebull.Common.Ioc.ScopeData.Dependency">
             <summary>
             附件内容
-            </summary>
-        </member>
-        <member name="T:Agebull.Common.Ioc.FromServicesAttribute">
-            <summary>
-            表示来自依赖构造的对象
             </summary>
         </member>
         <member name="T:Agebull.Common.ByteHelper">
@@ -4427,9 +4398,6 @@
             <summary>
                 对象依赖字典
             </summary>
-            <remarks>
-                依赖对象都为IgnoreDataMember属性,即不可网络序列化
-            </remarks>
         </member>
         <member name="M:Agebull.EntityModel.Common.DependencyObjects.Remove``1">
             <summary>

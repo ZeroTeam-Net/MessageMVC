@@ -13,7 +13,7 @@ namespace MicroZero.Kafka.QueueStation
             DependencyHelper.ServiceCollection.UseKafka();
             await DependencyHelper.ServiceCollection.UseFlow(typeof(Program).Assembly, false);
 
-            _ = Task.Run(Test);
+            //_ = Task.Run(Test);
 
             Console.ReadKey();
             Console.WriteLine("Bye bye.");

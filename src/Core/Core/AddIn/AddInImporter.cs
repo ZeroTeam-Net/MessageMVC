@@ -26,7 +26,7 @@ namespace ZeroTeam.MessageMVC.AddIn
         /// <summary>
         /// 实例名称
         /// </summary>
-        string IZeroMiddleware.Name => "AddInImporter";
+        string IZeroDependency.Name => nameof(AddInImporter);
 
         /// <summary>
         /// 等级

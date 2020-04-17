@@ -294,7 +294,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 }
             }
             //自动注册RPC服务
-            MessagePoster.RegistPoster<ZeroRPCPoster>(station.Name, station.ShortName);
+            MessagePoster.RegistPoster(ZeroRPCPoster.Instance, station.Name, station.ShortName);
             if (raiseEvent)
             {
                 ZeroRpcFlow.InvokeEvent(ZeroNetEventType.CenterStationUpdate, station.Group, null, station, true);

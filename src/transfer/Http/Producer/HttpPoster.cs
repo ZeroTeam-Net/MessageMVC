@@ -1,15 +1,12 @@
 using Agebull.Common.Configuration;
 using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
 
@@ -18,14 +15,9 @@ namespace ZeroTeam.MessageMVC.Http
     /// <summary>
     ///     Http生产者
     /// </summary>
-    public class HttpPoster : NewtonJsonSerializeProxy, IMessagePoster
+    public class HttpPoster : MessagePostBase, IMessagePoster
     {
-        #region IMessagePoster
-
-        /// <summary>
-        /// 运行状态
-        /// </summary>
-        public StationStateType State { get; set; }
+        #region HttpClientFactory
 
         /// <summary>
         /// 服务到HttpClientName的查找表.
@@ -36,14 +28,6 @@ namespace ZeroTeam.MessageMVC.Http
 
 
         private readonly Dictionary<string, HttpClientOption> Options = new Dictionary<string, HttpClientOption>();
-
-        /// <summary>
-        ///     初始化
-        /// </summary>
-        void IMessagePoster.Initialize()
-        {
-            ConfigurationManager.RegistOnChange("MessageMVC:HttpClient", LoadOption, true);
-        }
 
         void LoadOption()
         {
@@ -77,6 +61,31 @@ namespace ZeroTeam.MessageMVC.Http
             }
             httpClientFactory = DependencyHelper.Create<IHttpClientFactory>();
 
+        }
+        #endregion
+
+        #region IMessagePoster
+
+        /// <summary>
+        /// 名称
+        /// </summary>
+        string IZeroDependency.Name => nameof(HttpPoster);
+
+        StationStateType state;
+
+        /// <summary>
+        /// 运行状态
+        /// </summary>
+        StationStateType IMessagePoster.State { get => state; set => state = value; }
+
+        /// <summary>
+        ///     初始化
+        /// </summary>
+        void IMessagePoster.Initialize()
+        {
+            Initialize();
+            state = StationStateType.Run;
+            ConfigurationManager.RegistOnChange("MessageMVC:HttpClient", LoadOption, true);
         }
 
         /// <summary>
@@ -125,11 +134,13 @@ namespace ZeroTeam.MessageMVC.Http
                 }
                 else if (JsonHelper.TryDeserializeObject<MessageResult>(json, out var re2))
                 {
+                    re2.DataState = MessageDataState.ResultOffline;
                     result = re2;
                 }
                 else
                 {
                     result.State = MessageState.NetworkError;
+                    result.RuntimeStatus = ApiResultHelper.Error(DefaultErrorCode.NetworkError); ;
                 }
                 LogRecorder.MonitorTrace(result.Result);
                 return result;

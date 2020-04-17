@@ -3,7 +3,7 @@
     /// <summary>
     /// HttpClient预定义服务映射配置
     /// </summary>
-    public class HttpClientOption
+    internal class HttpClientOption
     {
         /// <summary>
         /// 别名

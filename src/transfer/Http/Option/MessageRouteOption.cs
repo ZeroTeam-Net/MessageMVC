@@ -6,7 +6,7 @@ namespace ZeroTeam.MessageMVC.Http
     /// <summary>
     ///     路由配置
     /// </summary>
-    public class MessageRouteOption
+    internal class MessageRouteOption
     {
         /// <summary>
         /// 标识内部调用的代理名称

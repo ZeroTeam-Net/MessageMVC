@@ -1,8 +1,6 @@
 using Agebull.Common;
-using Agebull.Common.Logging;
-using System;
-using System.Threading;
 using System.Threading.Tasks;
+using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
@@ -37,16 +35,50 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         internal async Task<MessageResult> CallAsync()
         {
             var req = GlobalContext.CurrentNoLazy?.Trace;
+            var offline = new MessageItem
+            {
+                Trace = Message.Trace,
+                State = Message.State
+            };
+            if(offline.Trace != null)
+            {
+                offline.Trace.Context = null;
+                offline.Trace.TraceId = null;
+                offline.Trace.CallMachine = null;
+                offline.Trace.CallId = null;
+                offline.Trace.CallMachine = null;
+            }
+
             return await ZeroPostProxy.Instance.CallZero(this,
                  CallDescription,
-                 Message.ApiName.ToBytes(),
-                 Message.Argument.ToBytes(),
-                 req == null ? ByteHelper.EmptyBytes : req.TraceId.ToBytes(),
-                 Message.ID.ToBytes(),
-                 req == null ? ByteHelper.EmptyBytes : req.LocalId.ToBytes(),
+                 Message.ApiName.ToBytes(),//Command
+                 Message.Argument.ToBytes(),//Argument
+                 offline.ToJson().ToBytes(),//TextContent
+                 req == null ? ByteHelper.EmptyBytes : req.LocalId.ToBytes(),//Context
+                 req == null ? ByteHelper.EmptyBytes : req.TraceId.ToBytes(),//RequestId
+                 Message.ID.ToBytes(),//CallId
+                 ZeroAppOption.Instance.TraceName.ToBytes(),//Requester
                  GlobalContext.CurrentNoLazy.ToJsonBytes());
 
         }
+
+        /// <summary>
+        ///     请求格式说明
+        /// </summary>
+        private static readonly byte[] CallDescription =
+        {
+            8,
+            (byte)ZeroByteCommand.General,
+            ZeroFrameType.Command,
+            ZeroFrameType.Argument,
+            ZeroFrameType.TextContent,
+            ZeroFrameType.Context,
+            ZeroFrameType.CallId,
+            ZeroFrameType.RequestId,
+            ZeroFrameType.Requester,
+            ZeroFrameType.SerivceKey,
+            ZeroFrameType.End
+        };
 
         /// <summary>
         ///     检查在非成功状态下的返回值
@@ -157,28 +189,6 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     break;
             }
         }
-
-        #endregion
-
-        #region Socket
-
-        /// <summary>
-        ///     请求格式说明
-        /// </summary>
-        private static readonly byte[] CallDescription =
-        {
-            8,
-            (byte)ZeroByteCommand.General,
-            ZeroFrameType.Command,
-            ZeroFrameType.Argument,
-            ZeroFrameType.RequestId,
-            ZeroFrameType.Requester,
-            ZeroFrameType.CallId,
-            ZeroFrameType.Context,
-            ZeroFrameType.SerivceKey,
-            ZeroFrameType.End
-        };
-
 
         #endregion
 

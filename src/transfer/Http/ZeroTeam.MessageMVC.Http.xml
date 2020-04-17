@@ -4,6 +4,26 @@
         <name>ZeroTeam.MessageMVC.Http</name>
     </assembly>
     <members>
+        <member name="T:ZeroTeam.MessageMVC.Http.HttpApp">
+            <summary>
+            Http应用
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpApp.UseHttp(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+                初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpApp.UseHttp(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Type)">
+            <summary>
+                初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpApp.RunMessageMVC(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+                初始化
+            </summary>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Http.HttpMessage">
             <summary>
                 路由数据
@@ -24,19 +44,9 @@
             字典参数
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.IsInline">
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.DataState">
             <summary>
-            是否已在线
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.ArgumentOutdated">
-            <summary>
-            是否已离线
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.ResultOutdated">
-            <summary>
-            返回值已过时
+            数据状态
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.ResultData">
@@ -163,6 +173,17 @@
             <param name="serialize">序列化类型</param>
             <returns>值</returns>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpMessage.FrameGetValueArgument(System.String,System.Int32,System.Int32,ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Type)">
+            <summary>
+            取参数值(动态IL代码调用)  BUG
+            </summary>
+            <param name="name">名称</param>
+            <param name="scope">参数范围</param>
+            <param name="serializeType">序列化类型</param>
+            <param name="serialize">序列化器</param>
+            <param name="type">序列化对象</param>
+            <returns>值</returns>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.Http.HttpMessage.GetValueArgument(System.String,System.Int32,System.Int32,ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Type)">
             <summary>
             取参数值(动态IL代码调用)  BUG
@@ -182,22 +203,16 @@
             <param name="scope">参数范围</param>
             <returns>值</returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpMessage.Offline(ZeroTeam.MessageMVC.Messages.ISerializeProxy)">
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpMessage.ArgumentInline(ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Type,ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Func{System.Int32,System.String,System.Object})">
             <summary>
-            转为离线序列化文本
+            如果未上线且还原参数为字典,否则什么也不做
             </summary>
-            <returns></returns>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Http.HttpMessage.PrepareInline">
             <summary>
             准备在线(框架内调用)
             </summary>
             <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpMessage.Inline(ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Type,ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Func{System.Int32,System.String,System.Object})">
-            <summary>
-            如果未上线且还原参数为字典,否则什么也不做
-            </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Http.HttpProtocol">
             <summary>
@@ -219,19 +234,31 @@
                 返回类型
             </summary>
         </member>
+        <member name="T:ZeroTeam.MessageMVC.Http.HttpReceiver">
+            <summary>
+                Http进站出站的处理类
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpReceiver.#ctor">
+            <summary>
+            构造
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpReceiver.ZeroTeam#MessageMVC#Messages#IMessageReceiver#Close">
+            <summary>
+            关闭
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpReceiver.ZeroTeam#MessageMVC#Messages#IMessageReceiver#OnResult(ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
+            <summary>
+            标明调用结束
+            </summary>
+            <returns>是否发送成功</returns>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Http.HttpRoute">
             <summary>
                 调用映射核心类
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpRoute.Initialize(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
-            <summary>
-                初始化
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpRoute.Initialize(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Type)">
-            <summary>
-                初始化
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Http.HttpRoute.Call(Microsoft.AspNetCore.Http.HttpContext)">
@@ -261,30 +288,6 @@
             </summary>
             <param name="context"></param>
             <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpRoute.TestCall(Microsoft.AspNetCore.Http.HttpContext)">
-            <summary>
-            测试调用
-            </summary>
-            <param name="context"></param>
-            <returns></returns>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.Http.HttpTransfer">
-            <summary>
-                Http进站出站的处理类
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpTransfer.ZeroTeam#MessageMVC#Messages#IMessageReceiver#Close">
-            <summary>
-            关闭
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpTransfer.ZeroTeam#MessageMVC#Messages#IMessageReceiver#OnResult(ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
-            <summary>
-            标明调用结束
-            </summary>
-            <returns>是否发送成功</returns>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Http.HttpClientOption">
             <summary>
@@ -349,14 +352,19 @@
                 Http生产者
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.HttpPoster.State">
-            <summary>
-            运行状态
-            </summary>
-        </member>
         <member name="F:ZeroTeam.MessageMVC.Http.HttpPoster.ServiceMap">
             <summary>
             服务到HttpClientName的查找表.
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpPoster.ZeroTeam#MessageMVC#IZeroDependency#Name">
+            <summary>
+            名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpPoster.ZeroTeam#MessageMVC#Messages#IMessagePoster#State">
+            <summary>
+            运行状态
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Http.HttpPoster.ZeroTeam#MessageMVC#Messages#IMessagePoster#Initialize">

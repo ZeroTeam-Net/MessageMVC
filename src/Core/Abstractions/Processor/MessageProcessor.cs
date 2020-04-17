@@ -29,6 +29,11 @@ namespace ZeroTeam.MessageMVC.Messages
         internal IInlineMessage Message;
 
         /// <summary>
+        /// 是否离线调用
+        /// </summary>
+        private bool IsOffline;
+
+        /// <summary>
         /// 调用的原始内容
         /// </summary>
         internal object Original;
@@ -36,16 +41,18 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 消息处理(异步)
         /// </summary>
-        /// <param name="service"></param>
-        /// <param name="message"></param>
-        /// <param name="original"></param>
-        public static Task OnMessagePush(IService service, IInlineMessage message, object original)
+        /// <param name="service">服务</param>
+        /// <param name="message">消息</param>
+        /// <param name="offline">是否离线消息</param>
+        /// <param name="original">原始透传对象</param>
+        public static Task OnMessagePush(IService service, IInlineMessage message, bool offline, object original)
         {
             var process = new MessageProcessor
             {
                 Service = service,
                 Message = message,
                 Original = original,
+                IsOffline = offline,
                 WaitTask = new TaskCompletionSource<IMessageItem>()
             };
             Task.Factory.StartNew(process.Process);
@@ -79,6 +86,10 @@ namespace ZeroTeam.MessageMVC.Messages
                         middleware.Processor = this;
                     }
                     Message.Reset();
+                    if (IsOffline)
+                    {
+                        Message.DataState = MessageDataState.ArgumentOffline;
+                    }
                     await Message.PrepareInline();
 
                     if (await Prepare() && Message.State == MessageState.None)
@@ -104,8 +115,6 @@ namespace ZeroTeam.MessageMVC.Messages
         private async Task<bool> Prepare()
         {
             var array = middlewares.Where(p => p.Scope.HasFlag(MessageHandleScope.Prepare)).ToArray();
-            if (array.Length == 0)
-                return true;
             foreach (var middleware in array)
             {
                 try
@@ -199,13 +208,11 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         private async Task Write()
         {
-            Message.ResultSerializer ??= Service.Serialize;
-            Message.RuntimeStatus ??= GlobalContext.CurrentNoLazy?.Status?.LastStatus;
-            Message.PrepareOffline();
+            Message.PrepareOffline(Service.Serialize);
 
             if (Original is TaskCompletionSource<IMessageResult> task)//内部自调用,无需处理
             {
-                Message.Offline(Service.Serialize);
+                Message.OfflineResult(Service.Serialize);
                 task.TrySetResult(Message.ToMessageResult());
                 LogRecorder.MonitorTrace(() => $"[MessageProcessor.Write] 内部调用,直接返回Task");
                 return;
@@ -273,7 +280,7 @@ namespace ZeroTeam.MessageMVC.Messages
                 return;
             LogRecorder.BeginStepMonitor("[MessageProcessor.Last]");
             Message.Offline(null);
-            foreach (var middleware in array)
+            foreach (var middleware in array.OrderByDescending(p => p.Level))
             {
                 try
                 {

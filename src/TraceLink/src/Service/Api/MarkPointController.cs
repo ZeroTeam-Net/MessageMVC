@@ -1,35 +1,10 @@
 ﻿#region
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Configuration;
-using System.Data;
-using System.Diagnostics;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Runtime.Serialization;
-using System.IO;
-using Newtonsoft.Json;
-
-using Agebull.Common;
-using Agebull.Common.Ioc;
-
-using Agebull.EntityModel.Common;
-using Agebull.EntityModel.EasyUI;
-using ZeroTeam.MessageMVC.ZeroApis;
-using Agebull.MicroZero.ZeroApis;
-
-
-
-using ZeroTeam.MessageMVC.MessageTraceLink;
-using ZeroTeam.MessageMVC.MessageTraceLink.BusinessLogic;
 using System.Threading.Tasks;
-using ZeroTeam.MessageMVC.Messages;
-using Agebull.Common.Logging;
-using ZeroTeam.MessageMVC.MessageTraceLink.DataAccess;
 using ZeroTeam.MessageMVC.Context;
+using ZeroTeam.MessageMVC.Messages;
+using ZeroTeam.MessageMVC.MessageTraceLink.DataAccess;
+using ZeroTeam.MessageMVC.ZeroApis;
 
 #endregion
 
@@ -51,11 +26,15 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink.WebApi
             var trace = linkMessage.Trace;
             linkMessage.Message.Trace = null;
             if (trace == null)
+            {
                 return;
+            }
+
             var access = new MessageDataAccess();
             await access.InsertAsync(new MessageData
             {
                 TraceId = trace.TraceId,
+                ApiName = $"{linkMessage.Message.Topic}/{linkMessage.Message.Title}",
                 Start = trace.Start ?? DateTime.Now,
                 End = trace.End ?? DateTime.Now,
                 LocalId = trace.LocalId,
@@ -73,26 +52,5 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink.WebApi
             });
 
         }
-    }
-
-    /// <summary>
-    /// 跟踪消息
-    /// </summary>
-    public class TraceLinkMessage
-    {
-        /// <summary>
-        /// 跟踪
-        /// </summary>
-        public TraceInfo Trace { get; set; }
-
-        /// <summary>
-        /// 消息
-        /// </summary>
-        public MessageItem Message { get; set; }
-
-        /// <summary>
-        /// 本地跟踪
-        /// </summary>
-        public TraceStep Root { get; set; }
     }
 }

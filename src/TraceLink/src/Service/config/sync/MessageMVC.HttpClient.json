@@ -1,0 +1,27 @@
+﻿{
+  "MessageMVC" : {
+    "HttpClient" : [
+    
+          {
+            "name": "default",
+            "url": "http://47.103.103.208:8006"
+          },
+    
+          {
+            "name": "HttpSample",
+            "url": "http://47.103.103.208:8006",
+            "services": "PlanTest"
+          },
+          {
+            "name": "ZeroReceipt",
+            "url": "http://47.103.103.208:8005",
+            "services": "TrdReceipt"
+          },
+          {
+            "name": "AuthService",
+            "url": "http://47.103.103.208:8003",
+            "services": "Authority"
+          }
+    ]
+  }
+}

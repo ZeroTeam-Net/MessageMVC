@@ -53,7 +53,6 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// </summary>
         public string Argument { get; set; }
 
-
         /// <summary>
         /// 请求参数
         /// </summary>
@@ -138,6 +137,9 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     return true;
                 case ZeroFrameType.TextContent:
                     item.Extend = GetString(bytes);
+                    return true;
+                case ZeroFrameType.Context:
+                    item.Context = GetString(bytes);
                     return true;
                 case ZeroFrameType.Original1:
                 case ZeroFrameType.Original2:

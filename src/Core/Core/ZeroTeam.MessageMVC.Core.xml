@@ -19,7 +19,7 @@
             运行状态
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.AddIn.AddInImporter.ZeroTeam#MessageMVC#IZeroMiddleware#Name">
+        <member name="P:ZeroTeam.MessageMVC.AddIn.AddInImporter.ZeroTeam#MessageMVC#IZeroDependency#Name">
             <summary>
             实例名称
             </summary>
@@ -255,7 +255,7 @@
                 Api调用器
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.Processor">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Processor">
             <summary>
             当前处理器
             </summary>
@@ -285,7 +285,7 @@
             调用的内容
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.Handle(ZeroTeam.MessageMVC.Services.IService,ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object,System.Func{System.Threading.Tasks.Task})">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Handle(ZeroTeam.MessageMVC.Services.IService,ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object,System.Func{System.Threading.Tasks.Task})">
             <summary>
             处理
             </summary>
@@ -307,7 +307,7 @@
             配置的全局对象
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ConfigMiddleware.ZeroTeam#MessageMVC#IZeroMiddleware#Name">
+        <member name="P:ZeroTeam.MessageMVC.ConfigMiddleware.ZeroTeam#MessageMVC#IZeroDependency#Name">
             <summary>
             实例名称
             </summary>
@@ -541,12 +541,17 @@
                 注销时调用
             </summary>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.InnerIO">
+        <member name="T:ZeroTeam.MessageMVC.InnerReceiver">
             <summary>
                内部生产者
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.InnerIO.ZeroTeam#MessageMVC#Messages#IMessageReceiver#Close">
+        <member name="M:ZeroTeam.MessageMVC.InnerReceiver.#ctor">
+            <summary>
+            构造
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.InnerReceiver.ZeroTeam#MessageMVC#Messages#IMessageReceiver#Close">
             <summary>
             关闭
             </summary>
@@ -752,6 +757,11 @@
                 配置状态
             </summary>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.Services.ZeroService.ZeroTeam#MessageMVC#Services#IService#ResetStateMachine">
+            <summary>
+            重置状态机,请谨慎使用
+            </summary>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.Services.ZeroService.ResetStateMachine">
             <summary>
             重置状态机,请谨慎使用
@@ -843,7 +853,7 @@
             <param name="api"></param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Services.ZeroService.RegistAction(System.String,ZeroTeam.MessageMVC.Documents.ApiActionInfo)">
+        <member name="M:ZeroTeam.MessageMVC.Services.ZeroService.ZeroTeam#MessageMVC#Services#IService#RegistAction(System.String,ZeroTeam.MessageMVC.Documents.ApiActionInfo)">
             <summary>
                 注册方法
             </summary>

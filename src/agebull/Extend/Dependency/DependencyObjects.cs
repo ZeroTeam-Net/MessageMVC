@@ -19,14 +19,11 @@ namespace Agebull.EntityModel.Common
     /// <summary>
     ///     对象依赖字典
     /// </summary>
-    /// <remarks>
-    ///     依赖对象都为IgnoreDataMember属性,即不可网络序列化
-    /// </remarks>
     [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public sealed class DependencyObjects
     {
         [JsonIgnore]
-        private readonly Dictionary<Type, object> _dictionary = new Dictionary<Type, object>();
+        internal readonly Dictionary<Type, object> _dictionary = new Dictionary<Type, object>();
 
         /// <summary>
         ///     删除一种类型对象

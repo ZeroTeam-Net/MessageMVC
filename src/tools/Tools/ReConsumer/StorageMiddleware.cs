@@ -15,7 +15,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 当前处理器
         /// </summary>
-        public MessageProcessor Processor { get; set; }
+        MessageProcessor IMessageMiddleware.Processor { get; set; }
 
         /// <summary>
         /// 层级
@@ -29,7 +29,9 @@ namespace ZeroTeam.MessageMVC.Messages
             ToolsOption.Instance.EnableMessageReConsumer
             ? MessageHandleScope.Prepare | MessageHandleScope.End
             : MessageHandleScope.None;
+
        static readonly string path = IOHelper.CheckPath(ZeroAppOption.Instance.DataFolder, "message");
+
         /// <summary>
         /// 准备
         /// </summary>

@@ -19,7 +19,7 @@ namespace ZeroTeam.MessageMVC.Http
     /// </summary>
     [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     [DataContract]
-    public class HttpMessage : MessageItem, IInlineMessage
+    internal class HttpMessage : MessageItem, IInlineMessage
     {
 
         #region IMessageItem
@@ -40,23 +40,11 @@ namespace ZeroTeam.MessageMVC.Http
         public Dictionary<string, string> Dictionary { get; set; }
 
         /// <summary>
-        /// 是否已在线
+        /// 数据状态
         /// </summary>
-        public bool IsInline { get; set; }
-
-        /// <summary>
-        /// 是否已离线
-        /// </summary>
-        public bool ArgumentOutdated { get; set; }
-
-
-        /// <summary>
-        /// 返回值已过时
-        /// </summary>
-        public bool ResultOutdated { get; set; }
+        public MessageDataState DataState { get; set; }
 
         private object resultData;
-
         /// <summary>
         /// 处理结果,对应状态的解释信息
         /// </summary>
@@ -75,14 +63,32 @@ namespace ZeroTeam.MessageMVC.Http
             set
             {
                 resultData = value;
-                ResultOutdated = true;
+                DataState |= MessageDataState.ResultInline;
+                if (Result == null && value == null && runtimeStatus == null)
+                    DataState |= MessageDataState.ResultOffline;
+                else
+                    DataState &= ~MessageDataState.ResultOffline;
             }
         }
+
+        private IOperatorStatus runtimeStatus;
 
         /// <summary>
         /// 执行状态
         /// </summary>
-        public IOperatorStatus RuntimeStatus { get; set; }
+        public IOperatorStatus RuntimeStatus
+        {
+            get => runtimeStatus;
+            set
+            {
+                runtimeStatus = value;
+                DataState |= MessageDataState.ResultInline;
+                if (Result == null && value == null && resultData == null)
+                    DataState |= MessageDataState.ResultOffline;
+                else
+                    DataState &= ~MessageDataState.ResultOffline;
+            }
+        }
 
         /// <summary>
         ///     返回值序列化对象
@@ -199,6 +205,7 @@ namespace ZeroTeam.MessageMVC.Http
             HttpMethod = request.Method.ToUpper();
             CheckHeaders(context, request);
             //Trace.TraceId = $"{Trace.Token ?? HttpContext.Connection.Id}:{RandomCode.Generate(6)}";
+            DataState = MessageDataState.None;
             return true;
         }
 
@@ -257,6 +264,7 @@ namespace ZeroTeam.MessageMVC.Http
         }
 
         #endregion
+
         #region Inline
 
         /// <summary>
@@ -272,10 +280,6 @@ namespace ZeroTeam.MessageMVC.Http
             var str = GetContent((ArgumentScope)scope, ref serialize);
             if (string.IsNullOrEmpty(str))
                 return null;
-            if (HttpForms.Count > 0)
-                return JsonHelper.SerializeObject(HttpForms);
-            if (HttpArguments.Count > 0)
-                return JsonHelper.SerializeObject(HttpArguments);
             return serialize.ToObject(str, type);
         }
 
@@ -383,6 +387,77 @@ namespace ZeroTeam.MessageMVC.Http
             return null;
         }
 
+        #endregion
+
+        #region 状态
+
+        /// <summary>
+        /// 如果未上线且还原参数为字典,否则什么也不做
+        /// </summary>
+        public Task ArgumentInline(ISerializeProxy serialize, Type type, ISerializeProxy resultSerializer, Func<int, string, object> errResultCreater)
+        {
+            if (resultSerializer != null)
+                ResultSerializer = resultSerializer;
+            if (errResultCreater != null)
+                ResultCreater = errResultCreater;
+
+            try
+            {
+                if (type == null || type.IsBaseType())
+                {
+                    //使用Form与Arguments组合的字典对象
+                    DataState |= MessageDataState.ArgumentInline;
+                    DataState &= ~MessageDataState.ArgumentOffline;
+                }
+                else
+                {
+                    Content = !string.IsNullOrEmpty(HttpContent)
+                         ? HttpContent
+                         : JsonHelper.SerializeObject(Dictionary);
+                    DataState |= MessageDataState.ArgumentOffline;
+
+                    ArgumentData = serialize.ToObject(Content, type);
+                    DataState |= MessageDataState.ArgumentInline;
+                }
+            }
+            catch (Exception e)
+            {
+                LogRecorder.Exception(e);
+                State = MessageState.FormalError;
+                Result = ApiResultHelper.ArgumentErrorJson;
+            }
+            return Task.CompletedTask;
+        }
+        #endregion
+
+        #region 原始参数读取
+
+        /// <summary>
+        /// 准备在线(框架内调用)
+        /// </summary>
+        /// <returns></returns>
+        public async Task PrepareInline()
+        {
+            try
+            {
+                HttpArguments ??= PrepareHttpArgument();
+                Dictionary = PrepareHttpForm();
+                foreach (var kv in HttpArguments)
+                {
+                    Dictionary.TryAdd(kv.Key, kv.Value);
+                }
+                ReadFiles();
+                HttpContent ??= await PrepareContent();
+            }
+            catch (Exception e)
+            {
+                LogRecorder.Exception(e);
+                State = MessageState.FormalError;
+                Result = ApiResultHelper.ArgumentErrorJson;
+            }
+            DataState &= ~(MessageDataState.ArgumentInline | MessageDataState.ArgumentOffline);
+        }
+
         private void ReadFiles()
         {
             if (!MessageRouteOption.Instance.EnableFormFile)
@@ -457,87 +532,6 @@ namespace ZeroTeam.MessageMVC.Http
             {
             }
             return arguments;
-        }
-        #endregion
-
-        #region 状态
-
-        /// <summary>
-        /// 转为离线序列化文本
-        /// </summary>
-        /// <returns></returns>
-        public IMessageItem Offline(ISerializeProxy serialize)
-        {
-            if (ArgumentOutdated)
-            {
-                ArgumentOutdated = false;
-                Content = ArgumentData == null
-                    ? GetContent(ArgumentScope.Content, ref serialize)
-                    : (ResultSerializer ?? serialize).ToString(ArgumentData ?? Dictionary);
-            }
-            ((IInlineMessage)this).OfflineResult(serialize);
-            return this;
-        }
-
-        /// <summary>
-        /// 准备在线(框架内调用)
-        /// </summary>
-        /// <returns></returns>
-        public async Task PrepareInline()
-        {
-            if (IsInline)
-                return;
-            IsInline = true;
-            ArgumentOutdated = true;
-            try
-            {
-                HttpArguments ??= PrepareHttpArgument();
-                if (Dictionary == null)
-                {
-                    Dictionary = PrepareHttpForm();
-                    foreach (var kv in HttpArguments)
-                    {
-                        Dictionary.TryAdd(kv.Key, kv.Value);
-                    }
-                }
-                ReadFiles();
-                HttpContent ??= await PrepareContent();
-            }
-            catch (Exception e)
-            {
-                LogRecorder.Exception(e);
-                State = MessageState.FormalError;
-                Result = ApiResultHelper.ArgumentErrorJson;
-            }
-        }
-        /// <summary>
-        /// 如果未上线且还原参数为字典,否则什么也不做
-        /// </summary>
-        public async Task Inline(ISerializeProxy serialize, Type type, ISerializeProxy resultSerializer, Func<int, string, object> errResultCreater)
-        {
-            if (resultSerializer != null)
-                ResultSerializer = resultSerializer;
-            if (errResultCreater != null)
-                ResultCreater = errResultCreater;
-            if (IsInline)
-                return;
-            await PrepareInline();
-            try
-            {
-                if (type != null && !type.IsBaseType())
-                {
-                    if (!string.IsNullOrEmpty(HttpContent))
-                        ArgumentData = serialize.ToObject(HttpContent, type);
-                    else
-                        ArgumentData = JsonHelper.DeserializeObject(JsonHelper.SerializeObject(Dictionary), type);
-                }
-            }
-            catch (Exception e)
-            {
-                LogRecorder.Exception(e);
-                State = MessageState.FormalError;
-                Result = ApiResultHelper.ArgumentErrorJson;
-            }
         }
         #endregion
     }

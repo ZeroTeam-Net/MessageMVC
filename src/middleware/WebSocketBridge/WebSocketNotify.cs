@@ -23,7 +23,7 @@ namespace ZeroTeam.MessageMVC.Web
         /// <summary>
         /// 当前处理器
         /// </summary>
-        public MessageProcessor Processor { get; set; }
+        MessageProcessor IMessageMiddleware.Processor { get; set; }
 
         /// <summary>
         /// 层级
@@ -44,7 +44,7 @@ namespace ZeroTeam.MessageMVC.Web
         {
             if (Config.Folders.Contains(message.Topic))
             {
-                await Publish(message.Offline(DependencyHelper.Create<IJsonSerializeProxy>()));//BUG
+                await Publish(message.Offline(DependencyHelper.Create<IJsonSerializeProxy>()));
             }
         }
 

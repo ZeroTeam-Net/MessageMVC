@@ -20,7 +20,7 @@ namespace ZeroTeam.MessageMVC
     {
         #region IFlowMiddleware
 
-        string IZeroMiddleware.Name => "MessagePoster";
+        string IZeroDependency.Name => nameof(MessagePoster);
 
         int IZeroMiddleware.Level => 0xFFFF;
 
@@ -96,11 +96,11 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         ///     手动注册
         /// </summary>
-        public static void RegistPoster(object poster, params string[] services)
+        public static void RegistPoster(IMessagePoster poster, params string[] services)
         {
             foreach (var service in services)
             {
-                ServiceMap[service] = poster as IMessagePoster;
+                ServiceMap[service] = poster;
             }
             logger.Information(() => $"服务[{string.Join(',', services)}]注册为使用发布器{poster.GetTypeName()}");
         }
@@ -126,8 +126,9 @@ namespace ZeroTeam.MessageMVC
         /// 投递消息
         /// </summary>
         /// <param name="message">消息</param>
+        /// <param name="autoOffline">是否自动离线</param>
         /// <returns>返回值</returns>
-        public static async Task<(IInlineMessage message, ISerializeProxy serialize)> Post(IMessageItem message)
+        public static async Task<(IInlineMessage message, ISerializeProxy serialize)> Post(IMessageItem message,bool autoOffline=true)
         {
             if (message == null || string.IsNullOrEmpty(message.Topic) || string.IsNullOrEmpty(message.Title))
             {
@@ -137,16 +138,6 @@ namespace ZeroTeam.MessageMVC
             {
                 inline = message.ToInline();
             }
-
-            if (GlobalContext.EnableLinkTrace)
-            {
-                inline.Trace = new TraceInfo
-                {
-                    TraceId = inline.ID,
-                    Start = DateTime.Now,
-                };
-                inline.Trace.CopyFromContext();
-            }
             var producer = GetService(message.Topic);
             if (producer == null)
             {
@@ -155,9 +146,36 @@ namespace ZeroTeam.MessageMVC
                 LogRecorder.MonitorTrace(() => $"服务{message.Topic}不存在");
                 return (inline, null);
             }
-            inline.Offline(producer);
+            inline.Reset();
+            if (GlobalContext.EnableLinkTrace)
+            {
+                inline.Trace = new TraceInfo
+                {
+                    TraceId = inline.ID,
+                    Start = DateTime.Now,
+                };
+                var ctx = GlobalContext.CurrentNoLazy;
+                if (ctx != null)
+                {
+                    inline.Trace.Context = ctx;
+                    inline.Trace.TraceId = ctx.Trace.TraceId;
+                    //远程机器使用,所以Call是本机信息
+                    inline.Trace.CallId = ctx.Trace.LocalId;
+                    inline.Trace.CallApp = ctx.Trace.LocalApp;
+                    inline.Trace.CallMachine = ctx.Trace.LocalMachine;
+                    //层级
+                    inline.Trace.Level = ctx.Trace.Level + 1;
+                    //正常复制
+                    inline.Trace.TraceId = ctx.Trace.TraceId;
+                    inline.Trace.Token = ctx.Trace.Token;
+                    inline.Trace.Headers = ctx.Trace.Headers;
+                }
+            }
+            inline.OfflineArgument(producer);
             var msg = await producer.Post(inline);
             inline.CopyResult(msg);
+            if (autoOffline)
+                inline.OfflineResult(producer);
             LogRecorder.MonitorTrace(() => $"返回 => {msg.ToJson(true)}");
             return (inline, producer);
         }

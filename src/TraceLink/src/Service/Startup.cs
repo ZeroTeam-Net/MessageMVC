@@ -2,8 +2,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using ZeroTeam.MessageMVC.MessageTraceLink.DataAccess;
 using ZeroTeam.MessageMVC.Kafka;
+using ZeroTeam.MessageMVC.MessageTraceLink.DataAccess;
+using ZeroTeam.MessageMVC.MessageTraceLink.WebApi;
 
 namespace ZeroTeam.MessageMVC.Http
 {
@@ -20,7 +21,8 @@ namespace ZeroTeam.MessageMVC.Http
         {
             services.UseKafka();
             DependencyHelper.AddScoped<TraceLinkDatabase>();
-            HttpRoute.Initialize(services);
+            DependencyHelper.AddScoped<IFlowMiddleware, HealthCheckService>();
+            services.UseHttp();
         }
 
         /// <summary>
@@ -32,8 +34,7 @@ namespace ZeroTeam.MessageMVC.Http
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseFileServer();
-
-            app.Run(HttpRoute.Call);
+            app.RunMessageMVC();
         }
     }
 }

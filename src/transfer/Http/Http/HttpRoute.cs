@@ -3,7 +3,6 @@ using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
 using System.Text;
@@ -14,39 +13,12 @@ using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Http
 {
+
     /// <summary>
     ///     调用映射核心类
     /// </summary>
-    public class HttpRoute
+    internal class HttpRoute
     {
-        #region 初始化
-
-        /// <summary>
-        ///     初始化
-        /// </summary>
-        public static void Initialize(IServiceCollection services)
-        {
-
-            services.AddTransient<IMessagePoster, HttpPoster>();
-
-            services.AddTransient<IServiceTransfer, HttpTransfer>();
-
-            services.UseFlowByAutoDiscover();
-        }
-
-        /// <summary>
-        ///     初始化
-        /// </summary>
-        public static void Initialize(IServiceCollection services, Type type)
-        {
-            services.AddTransient<IMessagePoster, HttpPoster>();
-
-            services.AddTransient<IServiceTransfer, HttpTransfer>();
-
-            services.UseFlow(type.Assembly, false);
-        }
-        #endregion
-
         #region 基本调用
 
         /// <summary>
@@ -125,11 +97,11 @@ namespace ZeroTeam.MessageMVC.Http
                      new ZeroService
                      {
                          ServiceName = "***",
-                         Receiver = new HttpTransfer(),
+                         Receiver = new HttpReceiver(),
                          Serialize = DependencyHelper.Create<JsonSerializeProxy>()
                      };
 
-                await MessageProcessor.OnMessagePush(service, message, context);
+                await MessageProcessor.OnMessagePush(service, message, true, context);
             }
             catch (Exception e)
             {
@@ -180,10 +152,10 @@ namespace ZeroTeam.MessageMVC.Http
                          new ZeroService
                          {
                              ServiceName = "***",
-                             Receiver = new HttpTransfer(),
+                             Receiver = new HttpReceiver(),
                              Serialize = DependencyHelper.Create<JsonSerializeProxy>()
                          };
-                    await MessageProcessor.OnMessagePush(service, data, context);
+                    await MessageProcessor.OnMessagePush(service, data, false, context);
                 }
                 else
                 {
@@ -207,42 +179,5 @@ namespace ZeroTeam.MessageMVC.Http
 
         #endregion
 
-
-        #region 测试调用
-
-        /// <summary>
-        /// 测试调用
-        /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        private static async Task TestCall(HttpContext context)
-        {
-            HttpProtocol.CrosCall(context.Response);
-            var uri = context.Request.GetUri();
-            if (uri.AbsolutePath == "/")
-            {
-                //response.Redirect("/index.html");
-                await context.Response.WriteAsync("Wecome MessageMVC,Lucky every day!", Encoding.UTF8);
-                return;
-            }
-            HttpProtocol.FormatResponse(context.Request, context.Response);
-            //命令
-            var data = new HttpMessage();
-            //开始调用
-            if (data.CheckRequest(context))
-            {
-                var service = ZeroFlowControl.GetService(data.ApiHost);
-                if (service == null)
-                {
-                    data.Result = ApiResultHelper.NoFindJson;
-                    return;
-                }
-                await data.PrepareInline();
-                var (msg, sei) = await MessagePoster.Post(data);
-                await context.Response.WriteAsync(msg.Result, Encoding.UTF8);
-            }
-        }
-
-        #endregion
     }
 }

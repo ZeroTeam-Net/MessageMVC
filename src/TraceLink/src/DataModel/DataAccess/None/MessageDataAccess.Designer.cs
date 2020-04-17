@@ -1,4 +1,4 @@
-﻿/*此标记表明此文件可被设计器更新,如果不允许此操作,请删除此行代码.design by:agebull designer date:2020/4/15 16:45:24*/
+﻿/*此标记表明此文件可被设计器更新,如果不允许此操作,请删除此行代码.design by:agebull designer date:2020/4/16 23:46:23*/
 #region
 using System;
 using System.Collections.Generic;
@@ -89,6 +89,8 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink.DataAccess
                 return @"
     `id` AS `Id`,
     `trace_id` AS `TraceId`,
+    `level` AS `Level`,
+    `api_name` AS `ApiName`,
     `start` AS `Start`,
     `end` AS `End`,
     `local_id` AS `LocalId`,
@@ -101,8 +103,7 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink.DataAccess
     `token` AS `Token`,
     `headers` AS `Headers`,
     `message` AS `Message`,
-    `flow_step` AS `FlowStep`,
-    `level` AS `Level`";
+    `flow_step` AS `FlowStep`";
             }
         }
 
@@ -119,6 +120,8 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink.DataAccess
 INSERT INTO `{ContextWriteTable}`
 (
     `trace_id`,
+    `level`,
+    `api_name`,
     `start`,
     `end`,
     `local_id`,
@@ -131,12 +134,13 @@ INSERT INTO `{ContextWriteTable}`
     `token`,
     `headers`,
     `message`,
-    `flow_step`,
-    `level`
+    `flow_step`
 )
 VALUES
 (
     ?TraceId,
+    ?Level,
+    ?ApiName,
     ?Start,
     ?End,
     ?LocalId,
@@ -149,8 +153,7 @@ VALUES
     ?Token,
     ?Headers,
     ?Message,
-    ?FlowStep,
-    ?Level
+    ?FlowStep
 );
 SELECT @@IDENTITY;";
             }
@@ -166,6 +169,8 @@ SELECT @@IDENTITY;";
                 return $@"
 UPDATE `{ContextWriteTable}` SET
        `trace_id` = ?TraceId,
+       `level` = ?Level,
+       `api_name` = ?ApiName,
        `start` = ?Start,
        `end` = ?End,
        `local_id` = ?LocalId,
@@ -178,8 +183,7 @@ UPDATE `{ContextWriteTable}` SET
        `token` = ?Token,
        `headers` = ?Headers,
        `message` = ?Message,
-       `flow_step` = ?FlowStep,
-       `level` = ?Level
+       `flow_step` = ?FlowStep
  WHERE `id` = ?Id;";
             }
         }
@@ -196,6 +200,12 @@ UPDATE `{ContextWriteTable}` SET
             //全局请求标识
             if (data.__EntityStatus.ModifiedProperties[MessageData._DataStruct_.Real_TraceId] > 0)
                 sql.AppendLine("       `trace_id` = ?TraceId");
+            //调用层级
+            if (data.__EntityStatus.ModifiedProperties[MessageData._DataStruct_.Real_Level] > 0)
+                sql.AppendLine("       `level` = ?Level");
+            //接口名称
+            if (data.__EntityStatus.ModifiedProperties[MessageData._DataStruct_.Real_ApiName] > 0)
+                sql.AppendLine("       `api_name` = ?ApiName");
             //开始时间
             if (data.__EntityStatus.ModifiedProperties[MessageData._DataStruct_.Real_Start] > 0)
                 sql.AppendLine("       `start` = ?Start");
@@ -235,9 +245,6 @@ UPDATE `{ContextWriteTable}` SET
             //流程步骤记录
             if (data.__EntityStatus.ModifiedProperties[MessageData._DataStruct_.Real_FlowStep] > 0)
                 sql.AppendLine("       `flow_step` = ?FlowStep");
-            //调用层级
-            if (data.__EntityStatus.ModifiedProperties[MessageData._DataStruct_.Real_Level] > 0)
-                sql.AppendLine("       `level` = ?Level");
             sql.Append(" WHERE `id` = ?Id;");
             return sql.ToString();
         }*/
@@ -250,7 +257,7 @@ UPDATE `{ContextWriteTable}` SET
         /// <summary>
         ///  所有字段
         /// </summary>
-        static string[] _fields = new string[]{ "Id","TraceId","Start","End","LocalId","LocalApp","LocalMachine","CallId","CallApp","CallMachine","Context","Token","Headers","Message","FlowStep","Level" };
+        static string[] _fields = new string[]{ "Id","TraceId","Level","ApiName","Start","End","LocalId","LocalApp","LocalMachine","CallId","CallApp","CallMachine","Context","Token","Headers","Message","FlowStep" };
 
         /// <summary>
         ///  所有字段
@@ -271,6 +278,9 @@ UPDATE `{ContextWriteTable}` SET
             { "Id" , "id" },
             { "TraceId" , "trace_id" },
             { "trace_id" , "trace_id" },
+            { "Level" , "level" },
+            { "ApiName" , "api_name" },
+            { "api_name" , "api_name" },
             { "Start" , "start" },
             { "End" , "end" },
             { "LocalId" , "local_id" },
@@ -290,8 +300,7 @@ UPDATE `{ContextWriteTable}` SET
             { "Headers" , "headers" },
             { "Message" , "message" },
             { "FlowStep" , "flow_step" },
-            { "flow_step" , "flow_step" },
-            { "Level" , "level" }
+            { "flow_step" , "flow_step" }
         };
 
         /// <summary>
@@ -317,33 +326,35 @@ UPDATE `{ContextWriteTable}` SET
             if (!reader.IsDBNull(1))
                 entity._traceId = reader.GetString(1);
             if (!reader.IsDBNull(2))
-                try{entity._start = reader.GetMySqlDateTime(2).Value;}catch{}
+                entity._level = (int)reader.GetInt32(2);
             if (!reader.IsDBNull(3))
-                try{entity._end = reader.GetMySqlDateTime(3).Value;}catch{}
+                entity._apiName = reader.GetString(3);
             if (!reader.IsDBNull(4))
-                entity._localId = reader.GetString(4);
+                try{entity._start = reader.GetMySqlDateTime(4).Value;}catch{}
             if (!reader.IsDBNull(5))
-                entity._localApp = reader.GetString(5);
+                try{entity._end = reader.GetMySqlDateTime(5).Value;}catch{}
             if (!reader.IsDBNull(6))
-                entity._localMachine = reader.GetString(6);
+                entity._localId = reader.GetString(6);
             if (!reader.IsDBNull(7))
-                entity._callId = reader.GetString(7);
+                entity._localApp = reader.GetString(7);
             if (!reader.IsDBNull(8))
-                entity._callApp = reader.GetString(8);
+                entity._localMachine = reader.GetString(8);
             if (!reader.IsDBNull(9))
-                entity._callMachine = reader.GetString(9);
+                entity._callId = reader.GetString(9);
             if (!reader.IsDBNull(10))
-                entity._context = reader.GetString(10).ToString();
+                entity._callApp = reader.GetString(10);
             if (!reader.IsDBNull(11))
-                entity._token = reader.GetString(11);
+                entity._callMachine = reader.GetString(11);
             if (!reader.IsDBNull(12))
-                entity._headers = reader.GetString(12);
+                entity._context = reader.GetString(12).ToString();
             if (!reader.IsDBNull(13))
-                entity._message = reader.GetString(13).ToString();
+                entity._token = reader.GetString(13);
             if (!reader.IsDBNull(14))
-                entity._flowStep = reader.GetString(14).ToString();
+                entity._headers = reader.GetString(14);
             if (!reader.IsDBNull(15))
-                entity._level = (int)reader.GetInt32(15);
+                entity._message = reader.GetString(15).ToString();
+            if (!reader.IsDBNull(16))
+                entity._flowStep = reader.GetString(16).ToString();
         }
 
         /// <summary>
@@ -360,6 +371,12 @@ UPDATE `{ContextWriteTable}` SET
                     return MySqlDbType.Int64;
                 case "trace_id":
                 case "TraceId":
+                    return MySqlDbType.VarString;
+                case "level":
+                case "Level":
+                    return MySqlDbType.Int32;
+                case "api_name":
+                case "ApiName":
                     return MySqlDbType.VarString;
                 case "start":
                 case "Start":
@@ -400,9 +417,6 @@ UPDATE `{ContextWriteTable}` SET
                 case "flow_step":
                 case "FlowStep":
                     return MySqlDbType.Text;
-                case "level":
-                case "Level":
-                    return MySqlDbType.Int32;
             }
             return MySqlDbType.VarChar;
         }
@@ -426,7 +440,17 @@ UPDATE `{ContextWriteTable}` SET
             else
                 parameter.Value = entity.TraceId;
             cmd.Parameters.Add(parameter);
-            //04:开始时间(Start)
+            //04:调用层级(Level)
+            cmd.Parameters.Add(new MySqlParameter("Level",MySqlDbType.Int32){ Value = entity.Level});
+            //05:接口名称(ApiName)
+            isNull = string.IsNullOrWhiteSpace(entity.ApiName);
+            parameter = new MySqlParameter("ApiName",MySqlDbType.VarString , isNull ? 10 : (entity.ApiName).Length);
+            if(isNull)
+                parameter.Value = DBNull.Value;
+            else
+                parameter.Value = entity.ApiName;
+            cmd.Parameters.Add(parameter);
+            //06:开始时间(Start)
             isNull = entity.Start.Year < 1900;
             parameter = new MySqlParameter("Start",MySqlDbType.DateTime);
             if(isNull)
@@ -434,7 +458,7 @@ UPDATE `{ContextWriteTable}` SET
             else
                 parameter.Value = entity.Start;
             cmd.Parameters.Add(parameter);
-            //05:结束时间(End)
+            //07:结束时间(End)
             isNull = entity.End.Year < 1900;
             parameter = new MySqlParameter("End",MySqlDbType.DateTime);
             if(isNull)
@@ -442,7 +466,7 @@ UPDATE `{ContextWriteTable}` SET
             else
                 parameter.Value = entity.End;
             cmd.Parameters.Add(parameter);
-            //06:本地的全局标识(LocalId)
+            //08:本地的全局标识(LocalId)
             isNull = string.IsNullOrWhiteSpace(entity.LocalId);
             parameter = new MySqlParameter("LocalId",MySqlDbType.VarString , isNull ? 10 : (entity.LocalId).Length);
             if(isNull)
@@ -450,7 +474,7 @@ UPDATE `{ContextWriteTable}` SET
             else
                 parameter.Value = entity.LocalId;
             cmd.Parameters.Add(parameter);
-            //07:本地的应用(LocalApp)
+            //09:本地的应用(LocalApp)
             isNull = string.IsNullOrWhiteSpace(entity.LocalApp);
             parameter = new MySqlParameter("LocalApp",MySqlDbType.VarString , isNull ? 10 : (entity.LocalApp).Length);
             if(isNull)
@@ -458,7 +482,7 @@ UPDATE `{ContextWriteTable}` SET
             else
                 parameter.Value = entity.LocalApp;
             cmd.Parameters.Add(parameter);
-            //08:本地的机器(LocalMachine)
+            //10:本地的机器(LocalMachine)
             isNull = string.IsNullOrWhiteSpace(entity.LocalMachine);
             parameter = new MySqlParameter("LocalMachine",MySqlDbType.VarString , isNull ? 10 : (entity.LocalMachine).Length);
             if(isNull)
@@ -466,7 +490,7 @@ UPDATE `{ContextWriteTable}` SET
             else
                 parameter.Value = entity.LocalMachine;
             cmd.Parameters.Add(parameter);
-            //09:请求方跟踪标识(CallId)
+            //11:请求方跟踪标识(CallId)
             isNull = string.IsNullOrWhiteSpace(entity.CallId);
             parameter = new MySqlParameter("CallId",MySqlDbType.VarString , isNull ? 10 : (entity.CallId).Length);
             if(isNull)
@@ -474,7 +498,7 @@ UPDATE `{ContextWriteTable}` SET
             else
                 parameter.Value = entity.CallId;
             cmd.Parameters.Add(parameter);
-            //10:请求应用(CallApp)
+            //12:请求应用(CallApp)
             isNull = string.IsNullOrWhiteSpace(entity.CallApp);
             parameter = new MySqlParameter("CallApp",MySqlDbType.VarString , isNull ? 10 : (entity.CallApp).Length);
             if(isNull)
@@ -482,7 +506,7 @@ UPDATE `{ContextWriteTable}` SET
             else
                 parameter.Value = entity.CallApp;
             cmd.Parameters.Add(parameter);
-            //11:请求机器(CallMachine)
+            //13:请求机器(CallMachine)
             isNull = string.IsNullOrWhiteSpace(entity.CallMachine);
             parameter = new MySqlParameter("CallMachine",MySqlDbType.VarString , isNull ? 10 : (entity.CallMachine).Length);
             if(isNull)
@@ -490,7 +514,7 @@ UPDATE `{ContextWriteTable}` SET
             else
                 parameter.Value = entity.CallMachine;
             cmd.Parameters.Add(parameter);
-            //12:上下文信息(Context)
+            //14:上下文信息(Context)
             isNull = string.IsNullOrWhiteSpace(entity.Context);
             parameter = new MySqlParameter("Context",MySqlDbType.Text , isNull ? 10 : (entity.Context).Length);
             if(isNull)
@@ -498,7 +522,7 @@ UPDATE `{ContextWriteTable}` SET
             else
                 parameter.Value = entity.Context;
             cmd.Parameters.Add(parameter);
-            //13:身份令牌(Token)
+            //15:身份令牌(Token)
             isNull = string.IsNullOrWhiteSpace(entity.Token);
             parameter = new MySqlParameter("Token",MySqlDbType.VarString , isNull ? 10 : (entity.Token).Length);
             if(isNull)
@@ -506,7 +530,7 @@ UPDATE `{ContextWriteTable}` SET
             else
                 parameter.Value = entity.Token;
             cmd.Parameters.Add(parameter);
-            //14:请求头信息(Headers)
+            //16:请求头信息(Headers)
             isNull = string.IsNullOrWhiteSpace(entity.Headers);
             parameter = new MySqlParameter("Headers",MySqlDbType.VarString , isNull ? 10 : (entity.Headers).Length);
             if(isNull)
@@ -514,7 +538,7 @@ UPDATE `{ContextWriteTable}` SET
             else
                 parameter.Value = entity.Headers;
             cmd.Parameters.Add(parameter);
-            //15:消息序列化文本(Message)
+            //17:消息序列化文本(Message)
             isNull = string.IsNullOrWhiteSpace(entity.Message);
             parameter = new MySqlParameter("Message",MySqlDbType.Text , isNull ? 10 : (entity.Message).Length);
             if(isNull)
@@ -522,7 +546,7 @@ UPDATE `{ContextWriteTable}` SET
             else
                 parameter.Value = entity.Message;
             cmd.Parameters.Add(parameter);
-            //16:流程步骤记录(FlowStep)
+            //18:流程步骤记录(FlowStep)
             isNull = string.IsNullOrWhiteSpace(entity.FlowStep);
             parameter = new MySqlParameter("FlowStep",MySqlDbType.Text , isNull ? 10 : (entity.FlowStep).Length);
             if(isNull)
@@ -530,8 +554,6 @@ UPDATE `{ContextWriteTable}` SET
             else
                 parameter.Value = entity.FlowStep;
             cmd.Parameters.Add(parameter);
-            //17:调用层级(Level)
-            cmd.Parameters.Add(new MySqlParameter("Level",MySqlDbType.Int32){ Value = entity.Level});
         }
 
 

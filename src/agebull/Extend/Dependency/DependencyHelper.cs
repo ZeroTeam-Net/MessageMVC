@@ -14,12 +14,6 @@ namespace Agebull.Common.Ioc
     /// </summary>
     public static class DependencyHelper
     {
-        internal class ScopeData
-        {
-            public IServiceProvider Provider;
-            public IServiceScope Scope;
-        }
-
         #region ServiceCollection
 
         static ILoggerFactory loggerFactory;
@@ -33,7 +27,7 @@ namespace Agebull.Common.Ioc
             {
                 if (loggerFactory != null)
                     return loggerFactory;
-                return loggerFactory =DependencyHelper.Create< ILoggerFactory >() ??  new LoggerFactory();
+                return loggerFactory = DependencyHelper.Create<ILoggerFactory>() ?? new LoggerFactory();
             }
             set
             {
@@ -50,14 +44,9 @@ namespace Agebull.Common.Ioc
         public static IServiceProvider RootProvider => _rootProvider ??= ServiceCollection.BuildServiceProvider();
 
         /// <summary>
-        /// 活动实例
-        /// </summary>
-        internal static readonly AsyncLocal<ScopeData> Local = new AsyncLocal<ScopeData>();
-
-        /// <summary>
         ///     依赖注入代理
         /// </summary>
-        public static IServiceProvider ServiceProvider => Local.Value?.Provider ?? RootProvider;
+        public static IServiceProvider ServiceProvider => RootProvider;
 
         /// <summary>
         ///     全局依赖
@@ -104,46 +93,7 @@ namespace Agebull.Common.Ioc
         {
             loggerFactory = null;
             _rootProvider = null;
-            //lock (Local)
-            {
-                if (Local.Value != null && Local.Value.Scope == null)
-                {
-                    Local.Value = null;
-                }
-            }
             return _rootProvider = ServiceCollection.BuildServiceProvider();
-        }
-
-        #endregion
-
-        #region Scope
-
-        /// <summary>
-        ///    生成范围对象
-        /// </summary>
-        /// <returns></returns>
-        internal static IServiceScope CreateScope()
-        {
-            var provider = ServiceCollection.BuildServiceProvider(true);
-            var scope = provider.GetService<IServiceScopeFactory>().CreateScope();
-            Local.Value = new ScopeData
-            {
-                Provider = scope.ServiceProvider,
-                Scope = scope
-            };
-            return scope;
-        }
-
-        /// <summary>
-        ///     析构此依赖范围(主动释放,否则要等到GC回收,资源使用率不可控)
-        /// </summary>
-        internal static void DisposeScope()
-        {
-            if (Local.Value == null)
-                return;
-            Local.Value.Scope = null;
-            Local.Value.Provider = null;
-            Local.Value = null;
         }
 
         #endregion
@@ -156,7 +106,6 @@ namespace Agebull.Common.Ioc
         /// <typeparam name="TInterface"></typeparam>
         /// <returns></returns>
         public static TInterface Create<TInterface>()
-            //where TInterface : class
         {
             return ServiceProvider.GetService<TInterface>();
         }
@@ -166,29 +115,47 @@ namespace Agebull.Common.Ioc
         /// </summary>
         /// <typeparam name="TInterface"></typeparam>
         /// <returns></returns>
-        public static IEnumerable<TInterface>  GetServices<TInterface>()
-        //where TInterface : class
+        public static IEnumerable<TInterface> GetServices<TInterface>()
         {
             return ServiceProvider.GetServices<TInterface>();
         }
-        /// <summary>
-        ///     生成接口实例(如果没有注册则使用默认实现)
-        /// </summary>
-        /// <typeparam name="TInterface"></typeparam>
-        /// <typeparam name="TDefault"></typeparam>
-        /// <returns></returns>
-        public static TInterface CreateBut<TInterface, TDefault>()
-            //where TInterface : class
-            where TDefault : class, TInterface, new()
-        {
-            return ServiceProvider.GetService<TInterface>() ?? new TDefault();
-        }
-
 
         #endregion
 
         #region 拿来主义
 
+        /*// <summary>
+        /// 注册一个服务依赖注册的扩展事件
+        /// </summary>
+        /// <param name="action"></param>
+        public static void RegistJoinEvent(Action<Type> action)
+        {
+            if (!ServiceJoinEvents.Contains(action))
+            {
+                ServiceJoinEvents.Add(action);
+                foreach (var type in Types)
+                {
+                    action(type);
+                }
+            }
+        }
+
+        static readonly List<Action<Type>> ServiceJoinEvents = new List<Action<Type>>();
+
+        static readonly List<Type> Types = new List<Type>();
+
+        static void //JoinEvents(Type type)
+        {
+            if (!Types.Contains(type))
+            {
+                Types.Add(type);
+                foreach (var action in ServiceJoinEvents)
+                {
+                    action(type);
+                }
+            }
+        }
+        */
         /// <summary>
         ///     Adds a transient service of the type specified in <paramref name="serviceType" /> with an
         ///     implementation of the type specified in <paramref name="implementationType" /> to the
@@ -200,8 +167,10 @@ namespace Agebull.Common.Ioc
         /// <seealso cref="F:Microsoft.Extensions.DependencyInjection.ServiceLifetime.Transient" />
         public static IServiceCollection AddTransient(Type serviceType, Type implementationType)
         {
-            //DisposeScope();
-            return ServiceCollection.AddTransient(serviceType, implementationType);
+
+            ServiceCollection.AddTransient(serviceType, implementationType);
+            //JoinEvents(implementationType);
+            return ServiceCollection;
         }
 
         /// <summary>
@@ -216,7 +185,6 @@ namespace Agebull.Common.Ioc
         public static IServiceCollection AddTransient(Type serviceType,
             Func<IServiceProvider, object> implementationFactory)
         {
-            //DisposeScope();
             return ServiceCollection.AddTransient(serviceType, implementationFactory);
         }
 
@@ -232,9 +200,9 @@ namespace Agebull.Common.Ioc
         public static IServiceCollection AddTransient<TService, TImplementation>() where TService : class
             where TImplementation : class, TService
         {
-            //DisposeScope();
-
-            return ServiceCollection.AddTransient<TService, TImplementation>();
+            ServiceCollection.AddTransient<TService, TImplementation>();
+            //JoinEvents(typeof(TImplementation));
+            return ServiceCollection;
         }
 
         /// <summary>
@@ -246,9 +214,9 @@ namespace Agebull.Common.Ioc
         /// <seealso cref="F:Microsoft.Extensions.DependencyInjection.ServiceLifetime.Transient" />
         public static IServiceCollection AddTransient(Type serviceType)
         {
-            //DisposeScope();
-
-            return ServiceCollection.AddTransient(serviceType);
+            ServiceCollection.AddTransient(serviceType);
+            //JoinEvents(serviceType);
+            return ServiceCollection;
         }
 
         /// <summary>
@@ -260,9 +228,9 @@ namespace Agebull.Common.Ioc
         /// <seealso cref="F:Microsoft.Extensions.DependencyInjection.ServiceLifetime.Transient" />
         public static IServiceCollection AddTransient<TService>() where TService : class
         {
-            //DisposeScope();
-
-            return ServiceCollection.AddTransient<TService>();
+            ServiceCollection.AddTransient<TService>();
+            //JoinEvents(typeof(TService));
+            return ServiceCollection;
         }
 
         /// <summary>
@@ -277,8 +245,6 @@ namespace Agebull.Common.Ioc
         public static IServiceCollection AddTransient<TService>(Func<IServiceProvider, TService> implementationFactory)
             where TService : class
         {
-            //DisposeScope();
-
             return ServiceCollection.AddTransient(implementationFactory);
         }
 
@@ -297,9 +263,9 @@ namespace Agebull.Common.Ioc
             Func<IServiceProvider, TImplementation> implementationFactory) where TService : class
             where TImplementation : class, TService
         {
-            //DisposeScope();
-
-            return ServiceCollection.AddTransient(implementationFactory);
+            ServiceCollection.AddTransient(implementationFactory);
+            //JoinEvents(typeof(TImplementation));
+            return ServiceCollection;
         }
 
         /// <summary>
@@ -313,9 +279,9 @@ namespace Agebull.Common.Ioc
         /// <seealso cref="F:Microsoft.Extensions.DependencyInjection.ServiceLifetime.Scoped" />
         public static IServiceCollection AddScoped(Type serviceType, Type implementationType)
         {
-            //DisposeScope();
-
-            return ServiceCollection.AddScoped(serviceType, implementationType);
+            ServiceCollection.AddScoped(serviceType, implementationType);
+            //JoinEvents(implementationType);
+            return ServiceCollection;
         }
 
         /// <summary>
@@ -330,8 +296,6 @@ namespace Agebull.Common.Ioc
         public static IServiceCollection AddScoped(Type serviceType,
             Func<IServiceProvider, object> implementationFactory)
         {
-            //DisposeScope();
-
             return ServiceCollection.AddScoped(serviceType, implementationFactory);
         }
 
@@ -347,9 +311,9 @@ namespace Agebull.Common.Ioc
         public static IServiceCollection AddScoped<TService, TImplementation>() where TService : class
             where TImplementation : class, TService
         {
-            //DisposeScope();
-
-            return ServiceCollection.AddScoped<TService, TImplementation>();
+            ServiceCollection.AddScoped<TService, TImplementation>();
+            //JoinEvents(typeof(TImplementation));
+            return ServiceCollection;
         }
 
         /// <summary>
@@ -361,9 +325,9 @@ namespace Agebull.Common.Ioc
         /// <seealso cref="F:Microsoft.Extensions.DependencyInjection.ServiceLifetime.Scoped" />
         public static IServiceCollection AddScoped(Type serviceType)
         {
-            //DisposeScope();
-
-            return ServiceCollection.AddScoped(serviceType);
+            ServiceCollection.AddScoped(serviceType);
+            //JoinEvents(serviceType);
+            return ServiceCollection;
         }
 
         /// <summary>
@@ -375,9 +339,9 @@ namespace Agebull.Common.Ioc
         /// <seealso cref="F:Microsoft.Extensions.DependencyInjection.ServiceLifetime.Scoped" />
         public static IServiceCollection AddScoped<TService>() where TService : class
         {
-            //DisposeScope();
-
-            return ServiceCollection.AddScoped<TService>();
+            ServiceCollection.AddScoped<TService>();
+            //JoinEvents(typeof(TService));
+            return ServiceCollection;
         }
 
         /// <summary>
@@ -410,9 +374,9 @@ namespace Agebull.Common.Ioc
             Func<IServiceProvider, TImplementation> implementationFactory) where TService : class
             where TImplementation : class, TService
         {
-            //DisposeScope();
-
-            return ServiceCollection.AddScoped(implementationFactory);
+            ServiceCollection.AddScoped(implementationFactory);
+            //JoinEvents(typeof(TImplementation));
+            return ServiceCollection;
         }
 
         /// <summary>
@@ -426,9 +390,9 @@ namespace Agebull.Common.Ioc
         /// <seealso cref="F:Microsoft.Extensions.DependencyInjection.ServiceLifetime.Singleton" />
         public static IServiceCollection AddSingleton(Type serviceType, Type implementationType)
         {
-            //DisposeScope();
-
-            return ServiceCollection.AddSingleton(serviceType, implementationType);
+            ServiceCollection.AddSingleton(serviceType, implementationType);
+            //JoinEvents(implementationType);
+            return ServiceCollection;
         }
 
         /// <summary>
@@ -443,8 +407,6 @@ namespace Agebull.Common.Ioc
         public static IServiceCollection AddSingleton(Type serviceType,
             Func<IServiceProvider, object> implementationFactory)
         {
-            //DisposeScope();
-
             return ServiceCollection.AddSingleton(serviceType, implementationFactory);
         }
 
@@ -460,9 +422,9 @@ namespace Agebull.Common.Ioc
         public static IServiceCollection AddSingleton<TService, TImplementation>() where TService : class
             where TImplementation : class, TService
         {
-            //DisposeScope();
-
-            return ServiceCollection.AddSingleton<TService, TImplementation>();
+            ServiceCollection.AddSingleton<TService, TImplementation>();
+            //JoinEvents(typeof(TImplementation));
+            return ServiceCollection;
         }
 
         /// <summary>
@@ -474,9 +436,9 @@ namespace Agebull.Common.Ioc
         /// <seealso cref="F:Microsoft.Extensions.DependencyInjection.ServiceLifetime.Singleton" />
         public static IServiceCollection AddSingleton(Type serviceType)
         {
-            //DisposeScope();
-
-            return ServiceCollection.AddSingleton(serviceType);
+            ServiceCollection.AddSingleton(serviceType);
+            //JoinEvents(serviceType);
+            return ServiceCollection;
         }
 
         /// <summary>
@@ -488,9 +450,9 @@ namespace Agebull.Common.Ioc
         /// <seealso cref="F:Microsoft.Extensions.DependencyInjection.ServiceLifetime.Singleton" />
         public static IServiceCollection AddSingleton<TService>() where TService : class
         {
-            //DisposeScope();
-
-            return ServiceCollection.AddSingleton<TService>();
+            ServiceCollection.AddSingleton<TService>();
+            //JoinEvents(typeof(TService));
+            return ServiceCollection;
         }
 
         /// <summary>
@@ -505,8 +467,6 @@ namespace Agebull.Common.Ioc
         public static IServiceCollection AddSingleton<TService>(Func<IServiceProvider, TService> implementationFactory)
             where TService : class
         {
-            //DisposeScope();
-
             return ServiceCollection.AddSingleton(implementationFactory);
         }
 
@@ -525,9 +485,9 @@ namespace Agebull.Common.Ioc
             Func<IServiceProvider, TImplementation> implementationFactory) where TService : class
             where TImplementation : class, TService
         {
-            //DisposeScope();
-
-            return ServiceCollection.AddSingleton(implementationFactory);
+            ServiceCollection.AddSingleton(implementationFactory);
+            //JoinEvents(typeof(TImplementation));
+            return ServiceCollection;
         }
 
         /// <summary>
@@ -541,8 +501,6 @@ namespace Agebull.Common.Ioc
         /// <seealso cref="F:Microsoft.Extensions.DependencyInjection.ServiceLifetime.Singleton" />
         public static IServiceCollection AddSingleton(Type serviceType, object implementationInstance)
         {
-            //DisposeScope();
-
             return ServiceCollection.AddSingleton(serviceType, implementationInstance);
         }
 
@@ -556,9 +514,9 @@ namespace Agebull.Common.Ioc
         /// <seealso cref="F:Microsoft.Extensions.DependencyInjection.ServiceLifetime.Singleton" />
         public static IServiceCollection AddSingleton<TService>(TService implementationInstance) where TService : class
         {
-            //DisposeScope();
-
-            return ServiceCollection.AddSingleton(typeof(TService), implementationInstance);
+            ServiceCollection.AddSingleton(typeof(TService), implementationInstance);
+            //JoinEvents(typeof(TService));
+            return ServiceCollection;
         }
 
         #endregion

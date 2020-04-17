@@ -12,9 +12,30 @@ namespace ZeroTeam.MessageMVC.Messages
     public class InlineMessage : MessageItem, IInlineMessage
     {
         /// <summary>
+        /// 服务名称,即Topic
+        /// </summary>
+        public string ServiceName { get => Topic; set => Topic = value; }
+
+        /// <summary>
+        /// 接口名称,即Title
+        /// </summary>
+        public string ApiName { get => Title; set => Title = value; }
+
+        /// <summary>
+        /// 接口参数,即Content
+        /// </summary>
+        public string Argument { get => Content; set => Content = value; }
+
+
+        /// <summary>
         /// 是否外部访问
         /// </summary>
         public bool IsOutAccess => false;
+
+        /// <summary>
+        /// 数据状态
+        /// </summary>
+        public MessageDataState DataState { get; set; }
 
         /// <summary>
         /// 字典参数
@@ -29,9 +50,12 @@ namespace ZeroTeam.MessageMVC.Messages
             get => dictionary;
             set
             {
-                IsInline = true;
-                ArgumentOutdated = true;
                 dictionary = value;
+                DataState |= MessageDataState.ArgumentInline;
+                if (Content == null && value == null && argumentData==null)
+                    DataState |= MessageDataState.ArgumentOffline;
+                else
+                    DataState &= ~MessageDataState.ArgumentOffline;
             }
         }
 
@@ -45,29 +69,16 @@ namespace ZeroTeam.MessageMVC.Messages
             get => argumentData;
             set
             {
-                IsInline = true;
-                ArgumentOutdated = true;
                 argumentData = value;
+                DataState |= MessageDataState.ArgumentInline;
+                if (Content == null && value == null && dictionary == null)
+                    DataState |= MessageDataState.ArgumentOffline;
+                else
+                    DataState &= ~MessageDataState.ArgumentOffline;
             }
         }
 
-        /// <summary>
-        /// 是否已在线
-        /// </summary>
-        public bool IsInline { get; set; }
-
-        /// <summary>
-        /// 是否已离线
-        /// </summary>
-        public bool ArgumentOutdated { get; set; }
-
-        /// <summary>
-        /// 返回值已过时
-        /// </summary>
-        public bool ResultOutdated { get; set; }
-
         private object resultData;
-
         /// <summary>
         /// 处理结果,对应状态的解释信息
         /// </summary>
@@ -86,14 +97,32 @@ namespace ZeroTeam.MessageMVC.Messages
             set
             {
                 resultData = value;
-                ResultOutdated = true;
+                DataState |= MessageDataState.ResultInline;
+                if (Result == null && value == null && runtimeStatus == null)
+                    DataState |= MessageDataState.ResultOffline;
+                else
+                    DataState &= ~MessageDataState.ResultOffline;
             }
         }
+
+        private IOperatorStatus runtimeStatus;
 
         /// <summary>
         /// 执行状态
         /// </summary>
-        public IOperatorStatus RuntimeStatus { get; set; }
+        public IOperatorStatus RuntimeStatus
+        {
+            get => runtimeStatus;
+            set
+            {
+                runtimeStatus = value;
+                DataState |= MessageDataState.ResultInline;
+                if (Result == null && value == null && resultData == null)
+                    DataState |= MessageDataState.ResultOffline;
+                else
+                    DataState &= ~MessageDataState.ResultOffline;
+            }
+        }
 
 
         /// <summary>
@@ -106,23 +135,6 @@ namespace ZeroTeam.MessageMVC.Messages
         ///     返回值构造对象
         /// </summary>
         public Func<int, string, object> ResultCreater { get; set; }
-
-
-        /// <summary>
-        /// 服务名称,即Topic
-        /// </summary>
-        public string ServiceName { get => Topic; set => Topic = value; }
-
-        /// <summary>
-        /// 接口名称,即Title
-        /// </summary>
-        public string ApiName { get => Title; set => Title = value; }
-
-        /// <summary>
-        /// 接口参数,即Content
-        /// </summary>
-        public string Argument { get => Content; set => Content = value; }
-
 
         /// <summary>
         /// 取参数值

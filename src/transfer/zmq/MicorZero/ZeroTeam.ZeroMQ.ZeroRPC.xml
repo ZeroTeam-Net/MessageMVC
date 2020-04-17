@@ -506,6 +506,11 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroCaller.CallDescription">
+            <summary>
+                请求格式说明
+            </summary>
+        </member>
         <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroCaller.GetOperatorStatus(ZeroTeam.ZeroMQ.ZeroRPC.ZeroOperatorStateType)">
             <summary>
                 检查在非成功状态下的返回值
@@ -516,17 +521,12 @@
                 消息状态
             </summary>
         </member>
-        <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroCaller.CallDescription">
-            <summary>
-                请求格式说明
-            </summary>
-        </member>
         <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroPostProxy">
             <summary>
                 API客户端代理
             </summary>
         </member>
-        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroPostProxy.ZeroTeam#MessageMVC#IZeroMiddleware#Name">
+        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroPostProxy.ZeroTeam#MessageMVC#IZeroDependency#Name">
             <summary>
             实例名称
             </summary>
@@ -536,7 +536,7 @@
             等级
             </summary>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroPostProxy.Initialize">
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroPostProxy.ZeroTeam#MessageMVC#IFlowMiddleware#Initialize">
             <summary>
             初始化
             </summary>
@@ -561,7 +561,7 @@
             所有代理
             </summary>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroPostProxy.Start">
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroPostProxy.ZeroTeam#MessageMVC#IFlowMiddleware#Start">
             <summary>
             构造
             </summary>
@@ -572,7 +572,7 @@
             </summary>
             <returns>返回False表明需要重启</returns>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroPostProxy.End">
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroPostProxy.ZeroTeam#MessageMVC#IFlowMiddleware#End">
             <summary>
             关闭时的处理
             </summary>
@@ -623,7 +623,12 @@
                 ZMQ生产者
             </summary>
         </member>
-        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCPoster.State">
+        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCPoster.ZeroTeam#MessageMVC#IZeroDependency#Name">
+            <summary>
+            实例名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCPoster.ZeroTeam#MessageMVC#Messages#IMessagePoster#State">
             <summary>
             运行状态
             </summary>
@@ -638,7 +643,7 @@
             构造
             </summary>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCPoster.Post(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCPoster.ZeroTeam#MessageMVC#Messages#IMessagePoster#Post(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
             <summary>
             生产消息
             </summary>
@@ -670,12 +675,17 @@
              ZeroMQ实现的RPC
             </summary>
         </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcReceiver.#ctor">
+            <summary>
+            构造
+            </summary>
+        </member>
         <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcReceiver.ZeroTeam#MessageMVC#Messages#IMessageReceiver#Prepare">
             <summary>
             初始化
             </summary>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcReceiver.Loop(System.Threading.CancellationToken)">
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcReceiver.ZeroTeam#MessageMVC#Messages#IMessageReceiver#Loop(System.Threading.CancellationToken)">
             <summary>
             轮询
             </summary>

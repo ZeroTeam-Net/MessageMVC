@@ -93,9 +93,9 @@ namespace ZeroTeam.MessageMVC
         {
             if (Interlocked.Increment(ref isInitialized) == 1)
             {
-                services.TryAddTransient<IServiceTransfer, InnerIO>();
-                services.TryAddTransient<IMessageConsumer, InnerIO>();
-                services.TryAddTransient<INetEvent, InnerIO>();
+                services.TryAddTransient<IServiceReceiver, InnerReceiver>();
+                services.TryAddTransient<IMessageConsumer, InnerReceiver>();
+                services.TryAddTransient<INetEvent, InnerReceiver>();
                 CheckOption(services);
                 if (assembly != null)
                     ZeroFlowControl.Discove(assembly);

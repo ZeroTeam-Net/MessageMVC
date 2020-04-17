@@ -9,6 +9,11 @@
             RedisMQ消息队列
             </summary>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.#ctor">
+            <summary>
+            构造
+            </summary>
+        </member>
         <member name="F:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.client">
             <summary>
             本地代理
@@ -67,6 +72,11 @@
         <member name="T:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue">
             <summary>
             RedisMQ消费者
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.#ctor">
+            <summary>
+            构造
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.client">
@@ -140,11 +150,6 @@
                 Redis生产者
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.Instance">
-            <summary>
-            单例
-            </summary>
-        </member>
         <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.ReQueueErrorMessage(System.String)">
             <summary>
             还原发送异常文件
@@ -152,19 +157,24 @@
             <param name="path"></param>
             <returns></returns>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.State">
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.ZeroTeam#MessageMVC#Messages#IMessagePoster#State">
             <summary>
             运行状态
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.Post(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.ZeroTeam#MessageMVC#Messages#IMessagePoster#Post(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
             <summary>
             生产消息
             </summary>
             <param name="message">消息</param>
             <returns></returns>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.ZeroTeam#MessageMVC#IZeroMiddleware#Name">
+        <member name="F:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.Instance">
+            <summary>
+            单例
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.ZeroTeam#MessageMVC#IZeroDependency#Name">
             <summary>
             实例名称
             </summary>
@@ -174,39 +184,44 @@
             等级
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.Initialize">
-            <summary>
-                初始化
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.Start">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.ZeroTeam#MessageMVC#IFlowMiddleware#Start">
             <summary>
             关闭
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.Close">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.ZeroTeam#MessageMVC#IFlowMiddleware#Close">
             <summary>
             关闭
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.End">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.ZeroTeam#MessageMVC#IFlowMiddleware#End">
             <summary>
             注销时调用
             </summary>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.RedisMQ.RedisMQHelper">
+        <member name="T:ZeroTeam.MessageMVC.RedisMQ.RedisApp">
             <summary>
             RedisMQ
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisMQHelper.UseCsRedis(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisApp.UseCsRedis(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             使用RedisMQ
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisMQHelper.UseRedisPoster(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisApp.UseRedisPoster(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             使用RedisMQ
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisApp.UseRedisQueue(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            使用Redis消息队列
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisApp.UseRedisEvent(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            使用Redis事件
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.RedisMQ.RedisOption">

@@ -1,0 +1,169 @@
+﻿html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.42857143;
+    overflow: hidden;
+    background-color: white;
+    color: black;
+}
+
+a {
+    color: black;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+    a:hover {
+        color: blue;
+        text-decoration: none;
+    }
+
+    a:link, a:visited {
+        text-decoration: none;
+    }
+
+
+
+.tiled {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+ul, ol {
+    margin: 0;
+}
+
+.el-submenu__title {
+    padding: 0 10px;
+}
+
+.el-header {
+    padding: 6px;
+    box-sizing: border-box;
+    border-bottom: 0.6px solid silver;
+    font-size: 18px;
+    line-height: 20px;
+    color: #666;
+    word-break: break-word;
+    margin: 0;
+    background-color: #ebebeb;
+}
+
+.work-body {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+}
+
+.el-footer {
+    text-align: center;
+    line-height: 30px;
+    padding: 5px
+}
+
+.el-aside {
+    border-right: 0.6px solid silver;
+    border-bottom: 0.6px solid silver;
+    padding: -1px;
+    margin: 0;
+    background-color: #fff;
+    overflow: hidden;
+}
+
+.el-main {
+    color: #333;
+    text-align: left;
+}
+
+[v-cloak] {
+    display: none
+}
+
+.el-menu-item {
+    background-color: #fff;
+    font-size: 16px;
+}
+
+.el-submenu {
+    background-color: #fff;
+}
+
+    .el-submenu span {
+        font-family: PingFangSC-Medium;
+        font-size: 16px;
+        color: #000000;
+    }
+
+    .el-submenu i {
+        font-family: PingFangSC-Medium;
+        font-size: 16px;
+        color: #000000;
+    }
+
+    .el-submenu .is-active {
+        background-color: #ebf3ff;
+        color: white;
+    }
+
+
+.el-table tr th{
+    background-color: whitesmoke
+}
+.el-table__expanded-cell {
+    background-color: #ecf5ff
+}
+.el-dialog__body_form {
+    background-color: white;
+    border: solid 1px silver;
+    border-radius: 2px;
+    width: 830px;
+    padding: 10px 10px 10px 0
+}
+.el-form-item {
+    padding-left: 10px;
+    display: inline-block;
+    width: 400px
+}
+.el-form-item--large {
+    padding-left: 10px;
+    display: block;
+    width: 813px
+}
+.el-form-item__label{
+    font-weight:bold
+}
+.el-dialog {
+    margin: 0 auto 10px;
+    margin-top: 0px;
+    width: 910px;
+}
+
+.el-dialog__body {
+    width: 860px;
+    padding: 0 20px 10px 20px
+}
+.input-with-select{
+    width:520px;
+}
+.input-with-select .el-input-group__prepend {
+    background-color: #fff;
+}
+.description {
+    padding: 5px;
+    box-sizing: border-box;
+    border: 1px solid #ebebeb;
+    border-radius: 3px 3px 0 0;
+    font-size: 18px;
+    line-height: 22px;
+    color: #666;
+    word-break: break-word;
+    margin: 3px;
+    background-color: #fff;
+}

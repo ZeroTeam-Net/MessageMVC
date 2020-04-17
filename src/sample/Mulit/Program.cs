@@ -13,7 +13,7 @@ namespace MicroZero.Kafka.QueueStation
         static async Task Main()
         {
             DependencyHelper.AddTransient<IFlowMiddleware, ZeroRpcFlow>();
-            DependencyHelper.AddSingleton<IServiceTransfer, ZeroRpcReceiver>();
+            DependencyHelper.AddSingleton<IServiceReceiver, ZeroRpcReceiver>();
 
             DependencyHelper.ServiceCollection.UseKafka();
             await DependencyHelper.ServiceCollection.UseFlow(typeof(Program).Assembly, false);

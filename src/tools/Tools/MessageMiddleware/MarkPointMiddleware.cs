@@ -16,12 +16,12 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <summary>
         /// 当前处理器
         /// </summary>
-        public MessageProcessor Processor { get; set; }
+        MessageProcessor IMessageMiddleware.Processor { get; set; }
 
         /// <summary>
         /// 层级
         /// </summary>
-        int IMessageMiddleware.Level => int.MinValue;
+        int IMessageMiddleware.Level => -0xFFFFFF;
 
         /// <summary>
         /// 消息中间件的处理范围

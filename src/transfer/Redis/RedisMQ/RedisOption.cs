@@ -5,7 +5,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
     /// <summary>
     /// Redis的配置项
     /// </summary>
-    public class RedisOption
+    internal  class RedisOption
     {
         /// <summary>
         /// 连接字符串

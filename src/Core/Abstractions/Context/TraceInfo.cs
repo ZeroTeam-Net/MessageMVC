@@ -116,27 +116,6 @@ namespace ZeroTeam.MessageMVC.Context
             };
         }
 
-        /// <summary>
-        /// 复制上下文信息
-        /// </summary>
-        public void CopyFromContext()
-        {
-            var ctx = GlobalContext.CurrentNoLazy;
-            if (ctx != null)
-            {
-                //远程机器使用,所以Call是本机信息
-                CallId = ctx.Trace.LocalId;
-                CallApp = ctx.Trace.LocalApp;
-                CallMachine = ctx.Trace.LocalMachine;
-                //层级
-                Level = ctx.Trace.Level + 1;
-                //正常复制
-                TraceId = ctx.Trace.TraceId;
-                Token = ctx.Trace.Token;
-                Headers = ctx.Trace.Headers;
-            }
-            Context = ctx;
-        }
     }
 }
 

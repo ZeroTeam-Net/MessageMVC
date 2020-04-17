@@ -153,8 +153,8 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             });
             msg.OfflineResult(ser);
             Console.WriteLine(msg.Result);
-            var res = msg.ResultData as IApiResult;
-            Assert.IsTrue(res.Code == DefaultErrorCode.ArgumentError, msg.Result);
+
+            Assert.IsTrue(msg.RuntimeStatus != null && msg.RuntimeStatus.Code == DefaultErrorCode.ArgumentError, msg.Result);
         }
 
 
@@ -173,7 +173,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             msg.OfflineResult(ser);
             Console.WriteLine(msg.Result);
             var res = msg.ResultData as IApiResult;
-            Assert.IsTrue(res.Success, msg.Result);
+            Assert.IsTrue(res != null && res.Success, msg.Result);
         }
 
 
@@ -269,8 +269,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
                 ApiName = "v1/exception"
             });
             msg.OfflineResult(ser);
-            var res = msg.ResultData as IApiResult;
-            Assert.IsTrue(res.Code == DefaultErrorCode.BusinessException, msg.Result);
+            Assert.IsTrue(msg.RuntimeStatus != null && msg.RuntimeStatus.Code == DefaultErrorCode.BusinessException, msg.Result);
         }
 
 

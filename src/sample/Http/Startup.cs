@@ -17,12 +17,8 @@ namespace ZeroTeam.MessageMVC.Http
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.UseCsRedis();
-            //services.AddSingleton<IFlowMiddleware, KafkaPoster>();//Kafka环境
-            //services.AddSingleton<IMessagePoster, KafkaPoster>();//采用Kafka生产端
-            services.AddSingleton<IFlowMiddleware, CsRedisPoster>();//采用Redis生产端
-            services.AddSingleton<IMessagePoster, CsRedisPoster>();//采用Redis生产端
-            HttpRoute.Initialize(services);
+            services.UseRedisPoster();//采用Redis生产端
+            services.UseHttp();
         }
 
         /// <summary>
@@ -31,7 +27,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// <param name="app"></param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment _)
         {
-            app.Run(HttpRoute.Call); 
+            app.RunMessageMVC(); 
         }
     }
 }

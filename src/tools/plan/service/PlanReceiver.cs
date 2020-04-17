@@ -1,6 +1,4 @@
-﻿using Agebull.Common;
-using Agebull.Common.Configuration;
-using Agebull.Common.Logging;
+﻿using Agebull.Common.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +13,13 @@ namespace ZeroTeam.MessageMVC.PlanTasks
     /// </summary>
     internal class PlanReceiver : MessageReceiverBase, IMessageReceiver
     {
+        /// <summary>
+        /// 构造
+        /// </summary>
+        public PlanReceiver() : base(nameof(PlanReceiver))
+        {
+        }
+
         #region IMessageReceiver
 
         /// <summary>
@@ -69,7 +74,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
 
                             Interlocked.Increment(ref wait);
                             item.Message.Reset();
-                            await MessageProcessor.OnMessagePush(Service, item.Message, item);
+                            await MessageProcessor.OnMessagePush(Service, item.Message, true, item);
                         }
                     }
                     catch (Exception ex)
@@ -98,9 +103,6 @@ namespace ZeroTeam.MessageMVC.PlanTasks
             PlanItem.logger.Information("Plan queue loop complete.");
         }
 
-        public void Dispose()
-        {
-        }
         #endregion
 
         #region 计划执行
@@ -196,14 +198,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// </summary>
         async Task CheckReceipt(CancellationToken token)
         {
-            var rep = MessagePoster.GetService(ToolsOption.Instance.ReceiptService);
-            if (rep == null)
-            {
-                PlanItem.logger.Error("回执服务未注册,无法处理异常回执确认");
-                return;
-            }
             await Task.Yield();
-
             string pre = null;
             PlanItem.logger.Error("回执检查已启动");
             while (!token.IsCancellationRequested)
@@ -266,7 +261,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                     }
                     await RedisHelper.LRemAsync(PlanItem.planErrorKey, 0, id);
 
-                    await rep.Post(MessageHelper.Simple(id, ToolsOption.Instance.ReceiptService, "receipt/v1/remove", id));
+                    await MessagePoster.Post(MessageHelper.Simple(id, ToolsOption.Instance.ReceiptService, "receipt/v1/remove", id));
                 }
                 catch (Exception ex)
                 {

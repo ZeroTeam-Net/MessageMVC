@@ -1,8 +1,7 @@
+using Agebull.Common.Ioc;
+using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
-using NUnit.Framework;
-using Agebull.Common.Ioc;
-using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.MessageTraceLink.DataAccess;
 using ZeroTeam.MessageMVC.ZeroApis;
@@ -38,12 +37,12 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink.WebApi.Entity.UnitTest
                 ServiceName = "trace_link",
                 ApiName = "message/v1/flow",
                 Content =
-@"{
-    ""traceId"" : ""01FE83E44DFD4B0DB84A17E39E806B62""
-}"
+$@"{{
+    ""traceId"" : ""{traceId}""
+}}"
             });
             var res = msg.ResultData as IApiResult<string>;
-            Assert.IsTrue(msg.State != MessageState.Success, res.ResultData);
+            Assert.IsTrue(msg.State == MessageState.Success, res.ResultData);
         }
 
 
@@ -58,16 +57,16 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink.WebApi.Entity.UnitTest
             {
                 ServiceName = "trace_link",
                 ApiName = "message/v1/edit/list",
-                Content = 
-@"{
+                Content =
+$@"{{
     ""page"" : 0,
     ""rows"" : 0
-}"
+}}"
             });
-            Assert.IsTrue(msg.State == MessageState.Success , msg.Result);
+            Assert.IsTrue(msg.State == MessageState.Success, msg.Result);
         }
 
-
+        private string traceId;
 
         /// <summary>
         /// 
@@ -75,14 +74,15 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink.WebApi.Entity.UnitTest
         [Test]
         public async Task message_v1_edit_first()
         {
+            traceId = Guid.NewGuid().ToString("N");
             var (msg, _) = await MessagePoster.Post(new InlineMessage
             {
                 ServiceName = "trace_link",
                 ApiName = "message/v1/edit/first",
-                Content = 
-@"{
-    ""Id"" : 0,
-    ""TraceId"" : ""测试文本"",
+                Content =
+$@"{{
+    ""Id"" : {id},
+    ""TraceId"" : ""{traceId}"",
     ""Start"" : ""2020-04-01"",
     ""End"" : ""2020-04-01"",
     ""LocalId"" : ""测试文本"",
@@ -95,9 +95,9 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink.WebApi.Entity.UnitTest
     ""Token"" : ""测试文本"",
     ""Headers"" : ""测试文本"",
     ""Message"" : ""测试文本""
-}"
+}}"
             });
-            Assert.IsTrue(msg.State == MessageState.Success , msg.Result);
+            Assert.IsTrue(msg.State == MessageState.Success, msg.Result);
         }
 
 
@@ -112,15 +112,15 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink.WebApi.Entity.UnitTest
             {
                 ServiceName = "trace_link",
                 ApiName = "message/v1/edit/details",
-                Content = 
-@"{
-    ""id"" : ""1""
-}"
+                Content =
+$@"{{
+    ""id"" : ""{id}""
+}}"
             });
-            Assert.IsTrue(msg.State == MessageState.Success , msg.Result);
+            Assert.IsTrue(msg.State == MessageState.Success, msg.Result);
         }
 
-
+        private static long id;
 
         /// <summary>
         /// 
@@ -132,10 +132,9 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink.WebApi.Entity.UnitTest
             {
                 ServiceName = "trace_link",
                 ApiName = "message/v1/edit/addnew",
-                Content = 
-@"{
-    ""Id"" : 0,
-    ""TraceId"" : ""测试文本"",
+                Content =
+$@"{{
+    ""TraceId"" : ""{traceId}"",
     ""Start"" : ""2020-04-01"",
     ""End"" : ""2020-04-01"",
     ""LocalId"" : ""测试文本"",
@@ -148,9 +147,11 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink.WebApi.Entity.UnitTest
     ""Token"" : ""测试文本"",
     ""Headers"" : ""测试文本"",
     ""Message"" : ""测试文本""
-}"
+}}"
             });
-            Assert.IsTrue(msg.State == MessageState.Success , msg.Result);
+            var data = msg.ResultData as IApiResult<MessageData>;
+            id = data.ResultData.Id;
+            Assert.IsTrue(msg.State == MessageState.Success, msg.Result);
         }
 
 
@@ -165,10 +166,10 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink.WebApi.Entity.UnitTest
             {
                 ServiceName = "trace_link",
                 ApiName = "message/v1/edit/update",
-                Content = 
-@"{
-    ""Id"" : 1,
-    ""TraceId"" : ""测试文本"",
+                Content =
+$@"{{
+    ""Id"" : {id},
+    ""TraceId"" : ""{traceId}"",
     ""Start"" : ""2020-04-01"",
     ""End"" : ""2020-04-01"",
     ""LocalId"" : ""1"",
@@ -181,9 +182,9 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink.WebApi.Entity.UnitTest
     ""Token"" : ""测试文本"",
     ""Headers"" : ""测试文本"",
     ""Message"" : ""测试文本""
-}"
+}}"
             });
-            Assert.IsTrue(msg.State == MessageState.Success , msg.Result);
+            Assert.IsTrue(msg.State == MessageState.Success, msg.Result);
         }
 
 
@@ -192,18 +193,18 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink.WebApi.Entity.UnitTest
         /// 
         /// </summary>
         [Test]
-        public async Task message_v1_edit_delete()
+        public async Task message_v1_xedit_delete()
         {
             var (msg, _) = await MessagePoster.Post(new InlineMessage
             {
                 ServiceName = "trace_link",
                 ApiName = "message/v1/edit/delete",
-                Content = 
-@"{
-    ""selects"" : ""1""
-}"
+                Content =
+$@"{{
+    ""selects"" : ""{id}""
+}}"
             });
-            Assert.IsTrue(msg.State == MessageState.Success , msg.Result);
+            Assert.IsTrue(msg.State == MessageState.Success, msg.Result);
         }
 
     }

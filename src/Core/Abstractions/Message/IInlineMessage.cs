@@ -6,6 +6,7 @@ using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Messages
 {
+
     /// <summary>
     /// 在线消息参数
     /// </summary>
@@ -42,21 +43,6 @@ namespace ZeroTeam.MessageMVC.Messages
         Dictionary<string, string> Dictionary { get; set; }
 
         /// <summary>
-        /// 返回值已过时
-        /// </summary>
-        bool ResultOutdated { get; set; }
-
-        /// <summary>
-        /// 是否已在线
-        /// </summary>
-        bool IsInline { get; set; }
-
-        /// <summary>
-        /// 是否已离线
-        /// </summary>
-        bool ArgumentOutdated { get; set; }
-
-        /// <summary>
         /// 返回值
         /// </summary>
         public object ResultData { get; set; }
@@ -65,7 +51,6 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 执行状态
         /// </summary>
         public IOperatorStatus RuntimeStatus { get; set; }
-
 
         #region 返回值处理
 
@@ -84,29 +69,152 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 复制构造一个返回值对象
         /// </summary>
         /// <returns></returns>
-        IMessageResult ToMessageResult() => new MessageResult
+        IMessageResult ToMessageResult()
         {
-            ID = ID,
-            State = State,
-            Trace = Trace,
-            Result = Result,
-            ResultData = ResultData,
-            RuntimeStatus = RuntimeStatus
-        };
+            OfflineResult(null);
+            return new MessageResult
+            {
+                ID = ID,
+                State = State,
+                Trace = Trace,
+                Result = Result,
+                ResultData = ResultData,
+                RuntimeStatus = RuntimeStatus,
+                DataState = DataState & (MessageDataState.ResultInline | MessageDataState.ResultOffline)
+            };
+        }
 
         /// <summary>
-        /// 重置
+        /// 复制返回值
         /// </summary>
         void CopyResult(IMessageResult message)
         {
             Result = message.Result;
             ResultData = message.ResultData;
-            ResultOutdated = ResultData != null;
             RuntimeStatus = message.RuntimeStatus;
             State = message.State;
             Trace = message.Trace;
+
+            if (Result == null && ResultData == null && RuntimeStatus == null)
+            {
+                DataState |= MessageDataState.ResultOffline | MessageDataState.ResultInline;
+            }
+            else
+            {
+                if (message.DataState.HasFlag(MessageDataState.ResultOffline))
+                    DataState |= MessageDataState.ResultOffline;
+                else
+                    DataState &= ~MessageDataState.ResultOffline;
+
+                if (message.DataState.HasFlag(MessageDataState.ResultInline))
+                    DataState |= MessageDataState.ResultInline;
+                else
+                    DataState &= ~MessageDataState.ResultInline;
+            }
         }
 
+        #endregion
+
+        #region 状态
+
+        /// <summary>
+        /// 数据状态
+        /// </summary>
+        MessageDataState DataState { get; set; }
+
+        /// <summary>
+        /// 重置
+        /// </summary>
+        void Reset()
+        {
+            Result = null;
+            ResultData = null;
+            RuntimeStatus = null;
+            State = MessageState.None;
+
+            DataState = MessageDataState.None;
+            if (Content != null)
+            {
+                DataState |= MessageDataState.ArgumentOffline;
+            }
+            if (ArgumentData != null || Dictionary != null)
+            {
+                DataState |= MessageDataState.ArgumentInline;
+            }
+        }
+
+        /// <summary>
+        /// 准备在线(框架内调用)
+        /// </summary>
+        /// <returns></returns>
+        Task PrepareInline()
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// 数据设置为上线状态
+        /// </summary>
+        Task ArgumentInline(ISerializeProxy serialize, Type type, ISerializeProxy resultSerializer, Func<int, string, object> errResultCreater)
+        {
+            if (resultSerializer != null)
+                ResultSerializer = resultSerializer;
+            if (errResultCreater != null)
+                ResultCreater = errResultCreater;
+
+            if (!DataState.AnyFlags(MessageDataState.ArgumentInline))
+            {
+                if (type == null || type.IsBaseType())
+                    Dictionary = serialize.ToObject<Dictionary<string, string>>(Content);
+                else
+                    ArgumentData = serialize.ToObject(Content, type);
+                DataState |= MessageDataState.ArgumentInline;
+            }
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// 准备离线(框架内调用)
+        /// </summary>
+        /// <returns></returns>
+        void PrepareOffline(ISerializeProxy serialize)
+        {
+            this.ResultSerializer ??= serialize;
+            this.RuntimeStatus ??= GlobalContext.CurrentNoLazy?.Status?.LastStatus;
+
+            if (GlobalContext.CurrentNoLazy?.Trace != null)
+                this.Trace = GlobalContext.CurrentNoLazy.Trace;
+
+            if (this.Trace != null)
+                this.Trace.End = DateTime.Now;
+        }
+
+        /// <summary>
+        /// 转为离线序列化文本
+        /// </summary>
+        /// <returns></returns>
+        void OfflineArgument(ISerializeProxy serialize)
+        {
+            if (!DataState.HasFlag(MessageDataState.ArgumentOffline))
+            {
+                if (DataState.HasFlag(MessageDataState.ArgumentInline))
+                    Content = (ResultSerializer ?? serialize).ToString(ArgumentData ?? Dictionary);
+                else if (Dictionary != null)
+                    Content = (ResultSerializer ?? serialize).ToString(Dictionary);
+                DataState |= MessageDataState.ArgumentOffline;
+            }
+        }
+
+        /// <summary>
+        /// 转为离线序列化文本
+        /// </summary>
+        /// <returns></returns>
+        IMessageItem Offline(ISerializeProxy serialize)
+        {
+            OfflineArgument(serialize);
+            OfflineResult(serialize);
+            return this;
+        }
 
         /// <summary>
         /// 取得返回值
@@ -115,9 +223,9 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <returns></returns>
         IInlineMessage OfflineResult(ISerializeProxy serialize)
         {
-            if (!ResultOutdated)
+            if (DataState.HasFlag(MessageDataState.ResultOffline))
                 return this;
-            ResultOutdated = false;
+            DataState |= MessageDataState.ResultOffline;
             if (ResultSerializer != null)
                 serialize = ResultSerializer;
             if (ResultData != null)
@@ -142,119 +250,44 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <returns></returns>
         TRes GetResultData<TRes>(ISerializeProxy serialize)
         {
-            if (this.ResultData is TRes res)
-                return res;
             if (ResultSerializer != null)
                 serialize = ResultSerializer;
-            if (!ResultOutdated)
-                return serialize.ToObject<TRes>(this.Result);
-            if (this.ResultData != null)
+
+            if (DataState.HasFlag(MessageDataState.ResultInline))
             {
-                if (ResultOutdated)
+                if (this.ResultData is TRes res)
+                    return res;
+                if (!DataState.HasFlag(MessageDataState.ResultOffline))
                 {
-                    ResultOutdated = false;
+                    DataState |= MessageDataState.ResultOffline;
                     Result = serialize.ToString(this.ResultData);
                 }
-                if (Result != null)
-                    return serialize.ToObject<TRes>(Result);
+                return serialize.ToObject<TRes>(Result);
             }
-            else if (this.RuntimeStatus is TRes res2)
+            if (DataState.HasFlag(MessageDataState.ResultOffline))
+            {
+                var res = serialize.ToObject<TRes>(Result);
+                ResultData = res;
+                DataState |= MessageDataState.ResultInline;
+                return res;
+            }
+            //RuntimeStatus不可改变Result与ResultData的状态,但可以影响到返回值
+            if (this.RuntimeStatus is TRes res2)
+            {
                 return res2;
-            else if (this.RuntimeStatus != null)
-            {
-                if (ResultOutdated)
-                {
-                    ResultOutdated = false;
-                    if (ResultCreater == null)
-                        Result = null;
-                    else
-                        Result = serialize.ToString(RuntimeStatus == null
-                            ? ResultCreater(DefaultErrorCode.Unknow, "未知结果")
-                            : ResultCreater(this.RuntimeStatus.Code, this.RuntimeStatus.Message));
-                }
-                if (Result != null)
-                    return serialize.ToObject<TRes>(Result);
             }
-            return default;
+
+            string str;
+            if (ResultCreater == null)
+                str = null;
+            else
+                str = serialize.ToString(RuntimeStatus == null
+                    ? ResultCreater(DefaultErrorCode.Unknow, "未知结果")
+                    : ResultCreater(this.RuntimeStatus.Code, this.RuntimeStatus.Message));
+
+            return serialize.ToObject<TRes>(str);
         }
 
-        #endregion
-
-        #region 状态
-
-
-        /// <summary>
-        /// 重置
-        /// </summary>
-        void Reset()
-        {
-            Result = null;
-            ResultData = null;
-            RuntimeStatus = null;
-            ResultOutdated = true;
-            State = MessageState.None;
-        }
-
-        /// <summary>
-        /// 准备离线(框架内调用)
-        /// </summary>
-        /// <returns></returns>
-        void PrepareOffline()
-        {
-            Trace ??= GlobalContext.CurrentNoLazy?.Trace;
-            if (Trace != null)
-                Trace.End = DateTime.Now;
-
-            RuntimeStatus ??= GlobalContext.CurrentNoLazy?.Status?.LastStatus;
-        }
-
-        /// <summary>
-        /// 转为离线序列化文本
-        /// </summary>
-        /// <returns></returns>
-        IMessageItem Offline(ISerializeProxy serialize)
-        {
-            if (ArgumentOutdated)
-            {
-                Content = ArgumentData == null
-                    ? null
-                    : (ResultSerializer ?? serialize).ToString(ArgumentData ?? Dictionary);
-            }
-            OfflineResult(serialize);
-            return this;
-        }
-
-        /// <summary>
-        /// 准备在线(框架内调用)
-        /// </summary>
-        /// <returns></returns>
-        Task PrepareInline()
-        {
-            return Task.CompletedTask;
-        }
-
-
-        /// <summary>
-        /// 如果未上线且还原参数为字典,否则什么也不做
-        /// </summary>
-        Task Inline(ISerializeProxy serialize, Type type, ISerializeProxy resultSerializer, Func<int, string, object> errResultCreater)
-        {
-            ResultOutdated = true;
-            if (resultSerializer != null)
-                ResultSerializer = resultSerializer;
-            if (errResultCreater != null)
-                ResultCreater = errResultCreater;
-            if (!IsInline)
-            {
-                IsInline = true;
-                if (type == null || type.IsBaseType())
-                    Dictionary = serialize.ToObject<Dictionary<string, string>>(Content);
-                else
-                    ArgumentData = serialize.ToObject(Content, type);
-                ArgumentOutdated = false;
-            }
-            return Task.CompletedTask;
-        }
         #endregion
 
         #region 取参数值 

@@ -5,6 +5,7 @@ using CSRedis;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,13 +17,133 @@ namespace ZeroTeam.MessageMVC.RedisMQ
     /// <summary>
     ///     Redis生产者
     /// </summary>
-    public class CsRedisPoster : NewtonJsonSerializeProxy, IMessagePoster, IFlowMiddleware
+    internal class CsRedisPoster : MessagePostBase,IMessagePoster, IFlowMiddleware, IHealthCheck
     {
-        /// <summary>
-        /// 单例
-        /// </summary>
-        public static CsRedisPoster Instance = new CsRedisPoster();
+        #region IHealthCheck
 
+        async Task<HealthInfo> IHealthCheck.Check()
+        {
+            var info = new HealthInfo
+            {
+                ItemName = nameof(CsRedisPoster),
+                Items = new List<HealthItem>()
+            };
+
+            info.Items.Add(await SetTest());
+            info.Items.Add(await GetTest());
+            info.Items.Add(await DelTest());
+            return info;
+        }
+
+        private async Task<HealthItem> SetTest()
+        {
+            HealthItem item = new HealthItem
+            {
+                ItemName = "Set"
+            };
+            try
+            {
+                DateTime start = DateTime.Now;
+                if(!await client.SetAsync("_HealthCheck_", "c", 10))
+                {
+                    item.Value = (DateTime.Now - start).TotalMilliseconds;
+                    item.Level = 0;
+                }
+                else
+                {
+                    item.Value = (DateTime.Now - start).TotalMilliseconds;
+                    if (item.Value < 10)
+                        item.Level = 5;
+                    else if (item.Value < 100)
+                        item.Level = 4;
+                    else if (item.Value < 500)
+                        item.Level = 3;
+                    else if (item.Value < 3000)
+                        item.Level = 2;
+                    else item.Level = 1;
+                }
+            }
+            catch (Exception ex)
+            {
+                item.Level = -1;
+                item.Details = ex.Message;
+            }
+            return item;
+        }
+
+        private async Task<HealthItem> GetTest()
+        {
+            HealthItem item = new HealthItem
+            {
+                ItemName = "Get"
+            };
+            try
+            {
+                DateTime start = DateTime.Now;
+                if (await client.GetAsync("_HealthCheck_") != "c")
+                {
+                    item.Value = (DateTime.Now - start).TotalMilliseconds;
+                    item.Level = 0;
+                }
+                else
+                {
+                    item.Value = (DateTime.Now - start).TotalMilliseconds;
+                    if (item.Value < 10)
+                        item.Level = 5;
+                    else if (item.Value < 100)
+                        item.Level = 4;
+                    else if (item.Value < 500)
+                        item.Level = 3;
+                    else if (item.Value < 3000)
+                        item.Level = 2;
+                    else item.Level = 1;
+                }
+            }
+            catch (Exception ex)
+            {
+                item.Level = -1;
+                item.Details = ex.Message;
+            }
+            return item;
+        }
+        private async Task<HealthItem> DelTest()
+        {
+            HealthItem item = new HealthItem
+            {
+                ItemName = "Del"
+            };
+            try
+            {
+                DateTime start = DateTime.Now;
+                if (await client.DelAsync("_HealthCheck_") != 1)
+                {
+                    item.Value = (DateTime.Now - start).TotalMilliseconds;
+                    item.Level = 0;
+                }
+                else
+                {
+                    item.Value = (DateTime.Now - start).TotalMilliseconds;
+                    if (item.Value < 10)
+                        item.Level = 5;
+                    else if (item.Value < 100)
+                        item.Level = 4;
+                    else if (item.Value < 500)
+                        item.Level = 3;
+                    else if (item.Value < 3000)
+                        item.Level = 2;
+                    else item.Level = 1;
+                }
+                await client.DelAsync("_HealthCheck_");
+            }
+            catch (Exception ex)
+            {
+                item.Level = -1;
+                item.Details = ex.Message;
+            }
+            return item;
+        }
+
+        #endregion
 
         #region 消息可靠性
 
@@ -35,7 +156,6 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             public string FileName { get; set; }
             public int Try { get; set; }
         }
-        ILogger logger;
         private static readonly ConcurrentQueue<RedisQueueItem> redisQueues = new ConcurrentQueue<RedisQueueItem>();
         private static readonly SemaphoreSlim semaphore = new SemaphoreSlim(0);
         private CancellationTokenSource tokenSource;
@@ -194,23 +314,25 @@ namespace ZeroTeam.MessageMVC.RedisMQ
 
         #region IMessagePoster
 
+        StationStateType state;
+
         /// <summary>
         /// 运行状态
         /// </summary>
-        public StationStateType State { get; set; }
+        StationStateType IMessagePoster.State { get => state; set => state = value; }
 
         /// <summary>
         /// 生产消息
         /// </summary>
         /// <param name="message">消息</param>
         /// <returns></returns>
-        public Task<IMessageResult> Post(IInlineMessage message)
+        Task<IMessageResult> IMessagePoster.Post(IInlineMessage message)
         {
             var item = new RedisQueueItem
             {
                 ID = message.ID,
                 Channel = message.Topic,
-                Message = ToString(message, false)
+                Message = serializer.ToString(message, false)
             };
             LogRecorder.MonitorTrace("[CsRedisPoster.Post] 消息已投入发送队列,将在后台静默发送直到成功");
             redisQueues.Enqueue(item);
@@ -225,9 +347,14 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         #region IFlowMiddleware
 
         /// <summary>
+        /// 单例
+        /// </summary>
+        public static CsRedisPoster Instance = new CsRedisPoster();
+
+        /// <summary>
         /// 实例名称
         /// </summary>
-        string IZeroMiddleware.Name => "RedisProducer";
+        string IZeroDependency.Name => nameof(CsRedisPoster);
 
         /// <summary>
         /// 等级
@@ -235,22 +362,14 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         int IZeroMiddleware.Level => 0;
 
         private CSRedisClient client;
-        /// <summary>
-        ///     初始化
-        /// </summary>
-        public void Initialize()
-        {
-            logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(CsRedisPoster));
-        }
 
         /// <summary>
         /// 关闭
         /// </summary>
-        public void Start()
+        void IFlowMiddleware.Start()
         {
-
             client = new CSRedisClient(RedisOption.Instance.ConnectionString);
-            State = StationStateType.Run;
+            state = StationStateType.Run;
             tokenSource = new CancellationTokenSource();
             _ = AsyncPostQueue();
         }
@@ -258,23 +377,24 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <summary>
         /// 关闭
         /// </summary>
-        public void Close()
+        void IFlowMiddleware.Close()
         {
             tokenSource?.Cancel();
             tokenSource.Dispose();
             tokenSource = null;
-            State = StationStateType.Closed;
+            state = StationStateType.Closed;
         }
 
         /// <summary>
         /// 注销时调用
         /// </summary>
-        public void End()
+        void IFlowMiddleware.End()
         {
             client.Dispose();
         }
 
         #endregion
+
     }
 }
 /*

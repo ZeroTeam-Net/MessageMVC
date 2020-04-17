@@ -8,6 +8,7 @@ namespace ZeroTeam.MessageMVC.Messages
     /// </summary>
     public interface IMessageResult
     {
+
         /// <summary>
         /// 标识
         /// </summary>
@@ -46,5 +47,11 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 执行状态
         /// </summary>
         IOperatorStatus RuntimeStatus { get; set; }
+
+        /// <summary>
+        /// 数据状态
+        /// </summary>
+        public MessageDataState DataState { get; set; }
+
     }
 }

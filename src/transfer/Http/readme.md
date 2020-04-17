@@ -147,7 +147,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// <param name="app"></param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment _)
         {
-            app.Run(HttpRoute.Call); 
+            app.RunMessageMVC(); 
         }
     }
 }

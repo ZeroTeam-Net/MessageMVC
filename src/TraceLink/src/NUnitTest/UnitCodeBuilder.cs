@@ -1,7 +1,6 @@
 using Agebull.Common;
 using Agebull.Common.Ioc;
 using NUnit.Framework;
-using System.Diagnostics;
 using System.IO;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.MessageTraceLink.WebApi.Entity;
@@ -27,7 +26,7 @@ namespace DiscoverTest
         [Test]
         public void CreateUnitCode()
         {
-            var path = 
+            var path =
                 Path.GetDirectoryName(
                 Path.GetDirectoryName(
                 Path.GetDirectoryName(

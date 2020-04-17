@@ -12,8 +12,22 @@ namespace ZeroTeam.MessageMVC.Messages
     /// <remarks>
     /// 实现了IMessagePoster自注册,可以做到本进程调用不会提升到网络层面
     /// </remarks>
-    public class MessageReceiverBase
+    public class MessageReceiverBase : IMessagePoster
     {
+        /// <summary>
+        /// 内部构造
+        /// </summary>
+        /// <param name="name"></param>
+        protected MessageReceiverBase(string name)
+        {
+            Name = name;
+        }
+
+        /// <summary>
+        /// 名称
+        /// </summary>
+        public string Name { get; }
+
         /// <summary>
         /// 日志记录器
         /// </summary>
@@ -24,17 +38,21 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         public IService Service { get; set; }
 
+        StationStateType state;
+
         /// <summary>
         /// 运行状态
         /// </summary>
-        public StationStateType State { get; set; }
+        StationStateType IMessagePoster.State { get => state; set => state = value; }
 
         /// <summary>
         /// 初始化
         /// </summary>
-        public void Initialize()
+        void IMessagePoster.Initialize()
         {
-            State = StationStateType.Initialized;
+            if (state >= StationStateType.Initialized)
+                return;
+            state = StationStateType.Initialized;
             MessagePoster.RegistPoster(this, Service.ServiceName);
         }
 
@@ -43,45 +61,45 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         /// <param name="message">消息</param>
         /// <returns></returns>
-        public Task<IMessageResult> Post(IInlineMessage message)
+        Task<IMessageResult> IMessagePoster.Post(IInlineMessage message)
         {
             LogRecorder.MonitorTrace($"[{GetType().GetTypeName()}.Post] 进入本地隧道处理模式");
             //如此做法,避免上下文混乱
             var task = new TaskCompletionSource<IMessageResult>();
-            Task.Factory.StartNew(() => MessageProcessor.OnMessagePush(Service, message, task));
+            Task.Factory.StartNew(() => MessageProcessor.OnMessagePush(Service, message, message.Content != null, task));
             return task.Task;
         }
 
         #region 序列化
 
         ///<inheritdoc/>
-        public object Serialize(object soruce)
+        object ISerializeProxy.Serialize(object soruce)
         {
             return Service.Serialize.Serialize(soruce);
         }
 
         ///<inheritdoc/>
-        public object Deserialize(object soruce, Type type)
+        object ISerializeProxy.Deserialize(object soruce, Type type)
         {
             return Service.Serialize.Deserialize(soruce, type);
         }
 
 
         ///<inheritdoc/>
-        public T ToObject<T>(string soruce)
+        T ISerializeProxy.ToObject<T>(string soruce)
         {
             return Service.Serialize.ToObject<T>(soruce);
         }
 
 
         ///<inheritdoc/>
-        public object ToObject(string soruce, Type type)
+        object ISerializeProxy.ToObject(string soruce, Type type)
         {
             return Service.Serialize.ToObject(soruce, type);
         }
 
         ///<inheritdoc/>
-        public string ToString(object obj, bool indented)
+        string ISerializeProxy.ToString(object obj, bool indented)
         {
             return Service.Serialize.ToString(obj, indented);
         }

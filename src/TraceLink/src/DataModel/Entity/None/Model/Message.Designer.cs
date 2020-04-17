@@ -1,4 +1,4 @@
-﻿/*此标记表明此文件可被设计器更新,如果不允许此操作,请删除此行代码.design by:agebull designer date:2020/4/15 16:45:24*/
+﻿/*此标记表明此文件可被设计器更新,如果不允许此操作,请删除此行代码.design by:agebull designer date:2020/4/16 23:46:23*/
 #region
 using System;
 using System.Collections.Generic;
@@ -135,6 +135,84 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink
                 OnTraceIdSeted();
                 this.OnPropertyChanged(_DataStruct_.Real_TraceId);
                 this.OnPropertyChanged(nameof(TraceId));
+            }
+        }
+        /// <summary>
+        /// 调用层级
+        /// </summary>
+        [IgnoreDataMember,JsonIgnore]
+        public int _level;
+
+        partial void OnLevelGet();
+
+        partial void OnLevelSet(ref int value);
+
+        partial void OnLevelSeted();
+
+        
+        /// <summary>
+        ///  调用层级
+        /// </summary>
+        /// <example>
+        ///     0
+        /// </example>
+        [DataRule(CanNull = true)]
+        [DataMember , JsonProperty("Level", NullValueHandling = NullValueHandling.Ignore, DefaultValueHandling= DefaultValueHandling.Ignore) , DisplayName(@"调用层级")]
+        public  int Level
+        {
+            get
+            {
+                OnLevelGet();
+                return this._level;
+            }
+            set
+            {
+                if(this._level == value)
+                    return;
+                OnLevelSet(ref value);
+                this._level = value;
+                OnLevelSeted();
+                this.OnPropertyChanged(_DataStruct_.Real_Level);
+                this.OnPropertyChanged(nameof(Level));
+            }
+        }
+        /// <summary>
+        /// 接口名称
+        /// </summary>
+        [IgnoreDataMember,JsonIgnore]
+        public string _apiName;
+
+        partial void OnApiNameGet();
+
+        partial void OnApiNameSet(ref string value);
+
+        partial void OnApiNameSeted();
+
+        
+        /// <summary>
+        ///  接口名称
+        /// </summary>
+        /// <value>
+        ///     可存储200个字符.合理长度应不大于200.
+        /// </value>
+        [DataRule(CanNull = true)]
+        [DataMember , JsonProperty("ApiName", NullValueHandling = NullValueHandling.Ignore, DefaultValueHandling= DefaultValueHandling.Ignore) , DisplayName(@"接口名称")]
+        public  string ApiName
+        {
+            get
+            {
+                OnApiNameGet();
+                return this._apiName;
+            }
+            set
+            {
+                if(this._apiName == value)
+                    return;
+                OnApiNameSet(ref value);
+                this._apiName = value;
+                OnApiNameSeted();
+                this.OnPropertyChanged(_DataStruct_.Real_ApiName);
+                this.OnPropertyChanged(nameof(ApiName));
             }
         }
         /// <summary>
@@ -635,45 +713,6 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink
                 this.OnPropertyChanged(nameof(FlowStep));
             }
         }
-        /// <summary>
-        /// 调用层级
-        /// </summary>
-        [IgnoreDataMember,JsonIgnore]
-        public int _level;
-
-        partial void OnLevelGet();
-
-        partial void OnLevelSet(ref int value);
-
-        partial void OnLevelSeted();
-
-        
-        /// <summary>
-        ///  调用层级
-        /// </summary>
-        /// <example>
-        ///     0
-        /// </example>
-        [DataRule(CanNull = true)]
-        [DataMember , JsonProperty("Level", NullValueHandling = NullValueHandling.Ignore, DefaultValueHandling= DefaultValueHandling.Ignore) , DisplayName(@"调用层级")]
-        public  int Level
-        {
-            get
-            {
-                OnLevelGet();
-                return this._level;
-            }
-            set
-            {
-                if(this._level == value)
-                    return;
-                OnLevelSet(ref value);
-                this._level = value;
-                OnLevelSeted();
-                this.OnPropertyChanged(_DataStruct_.Real_Level);
-                this.OnPropertyChanged(nameof(Level));
-            }
-        }
 
         #region 接口属性
 
@@ -710,6 +749,19 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink
                 return false;
             case "traceid":
                 this.TraceId = string.IsNullOrWhiteSpace(value) ? null : value;
+                return true;
+            case "level":
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    if (int.TryParse(value, out var vl))
+                    {
+                        this.Level = vl;
+                        return true;
+                    }
+                }
+                return false;
+            case "apiname":
+                this.ApiName = string.IsNullOrWhiteSpace(value) ? null : value;
                 return true;
             case "start":
                 if (!string.IsNullOrWhiteSpace(value))
@@ -764,16 +816,6 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink
             case "flowstep":
                 this.FlowStep = string.IsNullOrWhiteSpace(value) ? null : value;
                 return true;
-            case "level":
-                if (!string.IsNullOrWhiteSpace(value))
-                {
-                    if (int.TryParse(value, out var vl))
-                    {
-                        this.Level = vl;
-                        return true;
-                    }
-                }
-                return false;
             }
             return false;
         }
@@ -795,6 +837,12 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink
                 return;
             case "traceid":
                 this.TraceId = value == null ? null : value.ToString();
+                return;
+            case "level":
+                this.Level = (int)Convert.ToDecimal(value);
+                return;
+            case "apiname":
+                this.ApiName = value == null ? null : value.ToString();
                 return;
             case "start":
                 this.Start = Convert.ToDateTime(value);
@@ -835,9 +883,6 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink
             case "flowstep":
                 this.FlowStep = value == null ? null : value.ToString();
                 return;
-            case "level":
-                this.Level = (int)Convert.ToDecimal(value);
-                return;
             }
 
             //System.Diagnostics.Trace.WriteLine(property + @"=>" + value);
@@ -860,6 +905,12 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink
                 return;
             case _DataStruct_.TraceId:
                 this.TraceId = value == null ? null : value.ToString();
+                return;
+            case _DataStruct_.Level:
+                this.Level = Convert.ToInt32(value);
+                return;
+            case _DataStruct_.ApiName:
+                this.ApiName = value == null ? null : value.ToString();
                 return;
             case _DataStruct_.Start:
                 this.Start = Convert.ToDateTime(value);
@@ -900,9 +951,6 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink
             case _DataStruct_.FlowStep:
                 this.FlowStep = value == null ? null : value.ToString();
                 return;
-            case _DataStruct_.Level:
-                this.Level = Convert.ToInt32(value);
-                return;
             }
         }
 
@@ -919,6 +967,10 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink
                 return this.Id;
             case "traceid":
                 return this.TraceId;
+            case "level":
+                return this.Level;
+            case "apiname":
+                return this.ApiName;
             case "start":
                 return this.Start;
             case "end":
@@ -945,8 +997,6 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink
                 return this.Message;
             case "flowstep":
                 return this.FlowStep;
-            case "level":
-                return this.Level;
             }
 
             return null;
@@ -965,6 +1015,10 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink
                     return this.Id;
                 case _DataStruct_.TraceId:
                     return this.TraceId;
+                case _DataStruct_.Level:
+                    return this.Level;
+                case _DataStruct_.ApiName:
+                    return this.ApiName;
                 case _DataStruct_.Start:
                     return this.Start;
                 case _DataStruct_.End:
@@ -991,8 +1045,6 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink
                     return this.Message;
                 case _DataStruct_.FlowStep:
                     return this.FlowStep;
-                case _DataStruct_.Level:
-                    return this.Level;
             }
 
             return null;
@@ -1016,6 +1068,8 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink
                 return;
             this._id = sourceEntity._id;
             this._traceId = sourceEntity._traceId;
+            this._level = sourceEntity._level;
+            this._apiName = sourceEntity._apiName;
             this._start = sourceEntity._start;
             this._end = sourceEntity._end;
             this._localId = sourceEntity._localId;
@@ -1029,7 +1083,6 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink
             this._headers = sourceEntity._headers;
             this._message = sourceEntity._message;
             this._flowStep = sourceEntity._flowStep;
-            this._level = sourceEntity._level;
             CopyExtendValue(sourceEntity);
             this.__status.IsModified = true;
         }
@@ -1042,6 +1095,8 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink
         {
                 this.Id = source.Id;
                 this.TraceId = source.TraceId;
+                this.Level = source.Level;
+                this.ApiName = source.ApiName;
                 this.Start = source.Start;
                 this.End = source.End;
                 this.LocalId = source.LocalId;
@@ -1055,7 +1110,6 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink
                 this.Headers = source.Headers;
                 this.Message = source.Message;
                 this.FlowStep = source.FlowStep;
-                this.Level = source.Level;
         }
         #endregion
 
@@ -1076,6 +1130,8 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink
             {
                 OnIdModified(subsist,false);
                 OnTraceIdModified(subsist,false);
+                OnLevelModified(subsist,false);
+                OnApiNameModified(subsist,false);
                 OnStartModified(subsist,false);
                 OnEndModified(subsist,false);
                 OnLocalIdModified(subsist,false);
@@ -1089,13 +1145,14 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink
                 OnHeadersModified(subsist,false);
                 OnMessageModified(subsist,false);
                 OnFlowStepModified(subsist,false);
-                OnLevelModified(subsist,false);
                 return;
             }
             else if (subsist == EntitySubsist.Adding || subsist == EntitySubsist.Added)
             {
                 OnIdModified(subsist,true);
                 OnTraceIdModified(subsist,true);
+                OnLevelModified(subsist,true);
+                OnApiNameModified(subsist,true);
                 OnStartModified(subsist,true);
                 OnEndModified(subsist,true);
                 OnLocalIdModified(subsist,true);
@@ -1109,13 +1166,14 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink
                 OnHeadersModified(subsist,true);
                 OnMessageModified(subsist,true);
                 OnFlowStepModified(subsist,true);
-                OnLevelModified(subsist,true);
                 return;
             }
-            else if(modifieds != null && modifieds[16] > 0)
+            else if(modifieds != null && modifieds[17] > 0)
             {
                 OnIdModified(subsist,modifieds[_DataStruct_.Real_Id] == 1);
                 OnTraceIdModified(subsist,modifieds[_DataStruct_.Real_TraceId] == 1);
+                OnLevelModified(subsist,modifieds[_DataStruct_.Real_Level] == 1);
+                OnApiNameModified(subsist,modifieds[_DataStruct_.Real_ApiName] == 1);
                 OnStartModified(subsist,modifieds[_DataStruct_.Real_Start] == 1);
                 OnEndModified(subsist,modifieds[_DataStruct_.Real_End] == 1);
                 OnLocalIdModified(subsist,modifieds[_DataStruct_.Real_LocalId] == 1);
@@ -1129,7 +1187,6 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink
                 OnHeadersModified(subsist,modifieds[_DataStruct_.Real_Headers] == 1);
                 OnMessageModified(subsist,modifieds[_DataStruct_.Real_Message] == 1);
                 OnFlowStepModified(subsist,modifieds[_DataStruct_.Real_FlowStep] == 1);
-                OnLevelModified(subsist,modifieds[_DataStruct_.Real_Level] == 1);
             }
         }
 
@@ -1152,6 +1209,26 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink
         /// 对关联的属性的更改,请自行保存,否则可能丢失
         /// </remarks>
         partial void OnTraceIdModified(EntitySubsist subsist,bool isModified);
+
+        /// <summary>
+        /// 调用层级修改的后期处理(保存前)
+        /// </summary>
+        /// <param name="subsist">当前对象状态</param>
+        /// <param name="isModified">是否被修改</param>
+        /// <remarks>
+        /// 对关联的属性的更改,请自行保存,否则可能丢失
+        /// </remarks>
+        partial void OnLevelModified(EntitySubsist subsist,bool isModified);
+
+        /// <summary>
+        /// 接口名称修改的后期处理(保存前)
+        /// </summary>
+        /// <param name="subsist">当前对象状态</param>
+        /// <param name="isModified">是否被修改</param>
+        /// <remarks>
+        /// 对关联的属性的更改,请自行保存,否则可能丢失
+        /// </remarks>
+        partial void OnApiNameModified(EntitySubsist subsist,bool isModified);
 
         /// <summary>
         /// 开始时间修改的后期处理(保存前)
@@ -1282,16 +1359,6 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink
         /// 对关联的属性的更改,请自行保存,否则可能丢失
         /// </remarks>
         partial void OnFlowStepModified(EntitySubsist subsist,bool isModified);
-
-        /// <summary>
-        /// 调用层级修改的后期处理(保存前)
-        /// </summary>
-        /// <param name="subsist">当前对象状态</param>
-        /// <param name="isModified">是否被修改</param>
-        /// <remarks>
-        /// 对关联的属性的更改,请自行保存,否则可能丢失
-        /// </remarks>
-        partial void OnLevelModified(EntitySubsist subsist,bool isModified);
         #endregion
 
         #region 数据结构
@@ -1337,7 +1404,7 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink
             /// <summary>
             /// 主键的数字标识
             /// </summary>
-            public const int Id = 1;
+            public const int Id = 0;
             
             /// <summary>
             /// 主键的实时记录顺序
@@ -1347,7 +1414,7 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink
             /// <summary>
             /// 全局请求标识的数字标识
             /// </summary>
-            public const int TraceId = 2;
+            public const int TraceId = 1;
             
             /// <summary>
             /// 全局请求标识的实时记录顺序
@@ -1355,144 +1422,154 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink
             public const int Real_TraceId = 1;
 
             /// <summary>
-            /// 开始时间的数字标识
-            /// </summary>
-            public const int Start = 3;
-            
-            /// <summary>
-            /// 开始时间的实时记录顺序
-            /// </summary>
-            public const int Real_Start = 2;
-
-            /// <summary>
-            /// 结束时间的数字标识
-            /// </summary>
-            public const int End = 4;
-            
-            /// <summary>
-            /// 结束时间的实时记录顺序
-            /// </summary>
-            public const int Real_End = 3;
-
-            /// <summary>
-            /// 本地的全局标识的数字标识
-            /// </summary>
-            public const int LocalId = 5;
-            
-            /// <summary>
-            /// 本地的全局标识的实时记录顺序
-            /// </summary>
-            public const int Real_LocalId = 4;
-
-            /// <summary>
-            /// 本地的应用的数字标识
-            /// </summary>
-            public const int LocalApp = 6;
-            
-            /// <summary>
-            /// 本地的应用的实时记录顺序
-            /// </summary>
-            public const int Real_LocalApp = 5;
-
-            /// <summary>
-            /// 本地的机器的数字标识
-            /// </summary>
-            public const int LocalMachine = 7;
-            
-            /// <summary>
-            /// 本地的机器的实时记录顺序
-            /// </summary>
-            public const int Real_LocalMachine = 6;
-
-            /// <summary>
-            /// 请求方跟踪标识的数字标识
-            /// </summary>
-            public const int CallId = 8;
-            
-            /// <summary>
-            /// 请求方跟踪标识的实时记录顺序
-            /// </summary>
-            public const int Real_CallId = 7;
-
-            /// <summary>
-            /// 请求应用的数字标识
-            /// </summary>
-            public const int CallApp = 9;
-            
-            /// <summary>
-            /// 请求应用的实时记录顺序
-            /// </summary>
-            public const int Real_CallApp = 8;
-
-            /// <summary>
-            /// 请求机器的数字标识
-            /// </summary>
-            public const int CallMachine = 10;
-            
-            /// <summary>
-            /// 请求机器的实时记录顺序
-            /// </summary>
-            public const int Real_CallMachine = 9;
-
-            /// <summary>
-            /// 上下文信息的数字标识
-            /// </summary>
-            public const int Context = 11;
-            
-            /// <summary>
-            /// 上下文信息的实时记录顺序
-            /// </summary>
-            public const int Real_Context = 10;
-
-            /// <summary>
-            /// 身份令牌的数字标识
-            /// </summary>
-            public const int Token = 12;
-            
-            /// <summary>
-            /// 身份令牌的实时记录顺序
-            /// </summary>
-            public const int Real_Token = 11;
-
-            /// <summary>
-            /// 请求头信息的数字标识
-            /// </summary>
-            public const int Headers = 13;
-            
-            /// <summary>
-            /// 请求头信息的实时记录顺序
-            /// </summary>
-            public const int Real_Headers = 12;
-
-            /// <summary>
-            /// 消息序列化文本的数字标识
-            /// </summary>
-            public const int Message = 14;
-            
-            /// <summary>
-            /// 消息序列化文本的实时记录顺序
-            /// </summary>
-            public const int Real_Message = 13;
-
-            /// <summary>
-            /// 流程步骤记录的数字标识
-            /// </summary>
-            public const int FlowStep = 15;
-            
-            /// <summary>
-            /// 流程步骤记录的实时记录顺序
-            /// </summary>
-            public const int Real_FlowStep = 14;
-
-            /// <summary>
             /// 调用层级的数字标识
             /// </summary>
-            public const int Level = 16;
+            public const int Level = 2;
             
             /// <summary>
             /// 调用层级的实时记录顺序
             /// </summary>
-            public const int Real_Level = 15;
+            public const int Real_Level = 2;
+
+            /// <summary>
+            /// 接口名称的数字标识
+            /// </summary>
+            public const int ApiName = 3;
+            
+            /// <summary>
+            /// 接口名称的实时记录顺序
+            /// </summary>
+            public const int Real_ApiName = 3;
+
+            /// <summary>
+            /// 开始时间的数字标识
+            /// </summary>
+            public const int Start = 4;
+            
+            /// <summary>
+            /// 开始时间的实时记录顺序
+            /// </summary>
+            public const int Real_Start = 4;
+
+            /// <summary>
+            /// 结束时间的数字标识
+            /// </summary>
+            public const int End = 5;
+            
+            /// <summary>
+            /// 结束时间的实时记录顺序
+            /// </summary>
+            public const int Real_End = 5;
+
+            /// <summary>
+            /// 本地的全局标识的数字标识
+            /// </summary>
+            public const int LocalId = 6;
+            
+            /// <summary>
+            /// 本地的全局标识的实时记录顺序
+            /// </summary>
+            public const int Real_LocalId = 6;
+
+            /// <summary>
+            /// 本地的应用的数字标识
+            /// </summary>
+            public const int LocalApp = 7;
+            
+            /// <summary>
+            /// 本地的应用的实时记录顺序
+            /// </summary>
+            public const int Real_LocalApp = 7;
+
+            /// <summary>
+            /// 本地的机器的数字标识
+            /// </summary>
+            public const int LocalMachine = 8;
+            
+            /// <summary>
+            /// 本地的机器的实时记录顺序
+            /// </summary>
+            public const int Real_LocalMachine = 8;
+
+            /// <summary>
+            /// 请求方跟踪标识的数字标识
+            /// </summary>
+            public const int CallId = 9;
+            
+            /// <summary>
+            /// 请求方跟踪标识的实时记录顺序
+            /// </summary>
+            public const int Real_CallId = 9;
+
+            /// <summary>
+            /// 请求应用的数字标识
+            /// </summary>
+            public const int CallApp = 10;
+            
+            /// <summary>
+            /// 请求应用的实时记录顺序
+            /// </summary>
+            public const int Real_CallApp = 10;
+
+            /// <summary>
+            /// 请求机器的数字标识
+            /// </summary>
+            public const int CallMachine = 11;
+            
+            /// <summary>
+            /// 请求机器的实时记录顺序
+            /// </summary>
+            public const int Real_CallMachine = 11;
+
+            /// <summary>
+            /// 上下文信息的数字标识
+            /// </summary>
+            public const int Context = 12;
+            
+            /// <summary>
+            /// 上下文信息的实时记录顺序
+            /// </summary>
+            public const int Real_Context = 12;
+
+            /// <summary>
+            /// 身份令牌的数字标识
+            /// </summary>
+            public const int Token = 13;
+            
+            /// <summary>
+            /// 身份令牌的实时记录顺序
+            /// </summary>
+            public const int Real_Token = 13;
+
+            /// <summary>
+            /// 请求头信息的数字标识
+            /// </summary>
+            public const int Headers = 14;
+            
+            /// <summary>
+            /// 请求头信息的实时记录顺序
+            /// </summary>
+            public const int Real_Headers = 14;
+
+            /// <summary>
+            /// 消息序列化文本的数字标识
+            /// </summary>
+            public const int Message = 15;
+            
+            /// <summary>
+            /// 消息序列化文本的实时记录顺序
+            /// </summary>
+            public const int Real_Message = 15;
+
+            /// <summary>
+            /// 流程步骤记录的数字标识
+            /// </summary>
+            public const int FlowStep = 16;
+            
+            /// <summary>
+            /// 流程步骤记录的实时记录顺序
+            /// </summary>
+            public const int Real_FlowStep = 16;
 
             /// <summary>
             /// 实体结构
@@ -1540,6 +1617,42 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink
                             CanImport    = false,
                             CanExport    = false,
                             Description  = @"全局请求标识"
+                        }
+                    },
+                    {
+                        Real_Level,
+                        new PropertySturct
+                        {
+                            Index        = Level,
+                            Name         = "Level",
+                            Caption      = @"调用层级",
+                            JsonName     = "Level",
+                            ColumnName   = "level",
+                            PropertyType = typeof(int),
+                            CanNull      = false,
+                            ValueType    = PropertyValueType.Value,
+                            DbType       = 3,
+                            CanImport    = false,
+                            CanExport    = false,
+                            Description  = @"调用层级"
+                        }
+                    },
+                    {
+                        Real_ApiName,
+                        new PropertySturct
+                        {
+                            Index        = ApiName,
+                            Name         = "ApiName",
+                            Caption      = @"接口名称",
+                            JsonName     = "ApiName",
+                            ColumnName   = "api_name",
+                            PropertyType = typeof(string),
+                            CanNull      = false,
+                            ValueType    = PropertyValueType.String,
+                            DbType       = 15,
+                            CanImport    = false,
+                            CanExport    = false,
+                            Description  = @"接口名称"
                         }
                     },
                     {
@@ -1774,24 +1887,6 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink
                             CanImport    = false,
                             CanExport    = false,
                             Description  = @"流程步骤记录"
-                        }
-                    },
-                    {
-                        Real_Level,
-                        new PropertySturct
-                        {
-                            Index        = Level,
-                            Name         = "Level",
-                            Caption      = @"调用层级",
-                            JsonName     = "Level",
-                            ColumnName   = "level",
-                            PropertyType = typeof(int),
-                            CanNull      = false,
-                            ValueType    = PropertyValueType.Value,
-                            DbType       = 3,
-                            CanImport    = false,
-                            CanExport    = false,
-                            Description  = @"调用层级"
                         }
                     }
                 }

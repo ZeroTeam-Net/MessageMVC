@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using Agebull.Common.Base;
 using Agebull.EntityModel.Common;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,16 +11,19 @@ namespace Agebull.Common.Ioc
     /// <summary>
     /// IOC范围对象,内部框架使用
     /// </summary>
-    public class DependencyScope : ScopeBase
+    public class DependencyScope : IDisposable, IAsyncDisposable
     {
-        private IServiceScope _scope;
+        private readonly IServiceScope scope;
+        private readonly ServiceProvider provider;
         /// <summary>
         /// 生成一个范围
         /// </summary>
         /// <returns></returns>
         private DependencyScope(string name = null)
         {
-            _scope = DependencyHelper.CreateScope();
+            provider = DependencyHelper.ServiceCollection.BuildServiceProvider(true);
+            scope = provider.GetService<IServiceScopeFactory>().CreateScope();
+
             Local.Value = new ScopeData
             {
                 Name = name ?? "Scope"
@@ -33,38 +37,6 @@ namespace Agebull.Common.Ioc
         public static IDisposable CreateScope(string name = null)
         {
             return new DependencyScope(name);
-        }
-
-        /// <summary>
-        /// 清理资源
-        /// </summary>
-        protected override void OnDispose()
-        {
-            if (DisposeFunc != null)
-            {
-                foreach (var func in DisposeFunc)
-                {
-                    try
-                    {
-                        func();
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e);
-                    }
-                }
-                Local.Value = null;
-            }
-            try
-            {
-                DependencyHelper.DisposeScope();
-                _scope.Dispose();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-            GC.Collect();
         }
 
         /// <summary>
@@ -104,43 +76,76 @@ namespace Agebull.Common.Ioc
         /// 附件内容
         /// </summary>
         public static DependencyObjects Dependency => LocalValue.Dependency;
-    }
-    /// <summary>
-    /// 范围数据
-    /// </summary>
-    public class ScopeData
-    {
-        string name;
-        /// <summary>
-        /// 范围名称
-        /// </summary>
-        public string Name
+
+        #region 清理资源
+
+        void DoDisposeAction()
         {
-            set
+            if (!(Local.Value is ScopeData data))
+                return;
+            Local.Value = null;
+            foreach (var func in data.DisposeFunc)
             {
-                name = value;
-                Logger = DependencyHelper.LoggerFactory.CreateLogger(Name);
+                try
+                {
+                    func();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
             }
-            get => name;
+            foreach(var den in data.Dependency._dictionary.Values)
+            {
+                if (den is IDisposable disposable)
+                    disposable.Dispose();
+            }
         }
+        // 检测冗余调用
+        private bool disposedValue = false;
 
-        /// <summary>
-        /// 日志记录器
-        /// </summary>
-        public ILogger Logger
+        // 添加此代码以正确实现可处置模式。
+        void IDisposable.Dispose()
         {
-            get;
-            set;
+            if (disposedValue)
+            {
+                return;
+            }
+            disposedValue = true;
+
+            DoDisposeAction();
+            try
+            {
+                scope.Dispose();
+                provider.Dispose();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            GC.Collect();
         }
 
-        /// <summary>
-        /// 析构方法
-        /// </summary>
-        public List<Action> DisposeFunc = new List<Action>();
+        async ValueTask IAsyncDisposable.DisposeAsync()
+        {
+            if (disposedValue)
+            {
+                return;
+            }
+            disposedValue = true;
 
-        /// <summary>
-        /// 附件内容
-        /// </summary>
-        public DependencyObjects Dependency = new DependencyObjects();
+            DoDisposeAction();
+            try
+            {
+                scope.Dispose();
+                await provider.DisposeAsync();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            GC.Collect();
+        }
+        #endregion
     }
 }

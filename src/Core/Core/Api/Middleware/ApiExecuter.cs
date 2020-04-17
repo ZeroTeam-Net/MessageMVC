@@ -18,7 +18,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// 当前处理器
         /// </summary>
-        public MessageProcessor Processor { get; set; }
+        MessageProcessor IMessageMiddleware.Processor { get; set; }
 
         /// <summary>
         /// 层级
@@ -57,7 +57,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <param name="tag"></param>
         /// <param name="next">下一个处理方法</param>
         /// <returns></returns>
-        public async Task Handle(IService service, IInlineMessage message, object tag, Func<Task> next)
+        async Task IMessageMiddleware.Handle(IService service, IInlineMessage message, object tag, Func<Task> next)
         {
             Service = service;
             Message = message;
@@ -150,7 +150,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         private bool ArgumentPrepare(IApiAction action)
         {
             //还原参数
-            Message.Inline(action.ArgumentSerializer ?? Service.Serialize,
+            Message.ArgumentInline(action.ArgumentSerializer ?? Service.Serialize,
                 action.Access.HasFlag(ApiAccessOption.DictionaryArgument) ? null : action.ArgumentType,
                 action.ResultSerializer,
                 action.ResultCreater);

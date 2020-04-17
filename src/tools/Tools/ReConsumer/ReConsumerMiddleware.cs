@@ -16,7 +16,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 实例名称
         /// </summary>
-        string IZeroMiddleware.Name => "ReConsumerMiddleware";
+        string IZeroDependency.Name => nameof(ReConsumerMiddleware);
 
         /// <summary>
         /// 等级
@@ -61,7 +61,7 @@ namespace ZeroTeam.MessageMVC.Messages
         {
             var service = new ZeroService
             {
-                Receiver = new InnerIO()
+                Receiver = new InnerReceiver()
             };
             await Task.Yield();
             foreach (var file in files)
@@ -77,7 +77,7 @@ namespace ZeroTeam.MessageMVC.Messages
                     var json = File.ReadAllText(file);
                     var item = JsonHelper.DeserializeObject<InlineMessage>(json);
                     service.ServiceName = item.ServiceName;
-                    await MessageProcessor.OnMessagePush(service, item, null);
+                    await MessageProcessor.OnMessagePush(service, item, true, null);
                 }
                 catch (Exception e)
                 {

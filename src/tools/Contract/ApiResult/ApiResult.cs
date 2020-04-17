@@ -15,11 +15,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         public ApiResult()
         {
-            if (GlobalContext.EnableLinkTrace)
-            {
-                Trace = new OperatorTrace();
-            }
-
+            Trace = new OperatorTrace();
             Success = true;
         }
 

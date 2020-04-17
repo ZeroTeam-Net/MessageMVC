@@ -19,7 +19,7 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 实例名称
         /// </summary>
-        string IZeroMiddleware.Name => nameof(ConfigMiddleware);
+        string IZeroDependency.Name => nameof(ConfigMiddleware);
 
         /// <summary>
         /// 等级

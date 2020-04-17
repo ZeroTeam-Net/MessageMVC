@@ -1,4 +1,6 @@
+using Agebull.Common.Configuration;
 using Agebull.Common.Ioc;
+using CSRedis;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
@@ -14,8 +16,8 @@ namespace ZeroTeam.MessageMVC.Http
 
         public static async Task Main(string[] args)
         {
-            RedisHelper.Initialization(new CSRedis.CSRedisClient(RedisOption.Instance.ConnectionString));
-
+            var con = ConfigurationManager.Root.GetSection("MessageMVC:Redis:ConnectionString").Value;
+            RedisHelper.Initialization(new CSRedisClient(con));
             ZeroFlowControl.RegistService(new ZeroService
             {
                 ServiceName = "PlanManager",

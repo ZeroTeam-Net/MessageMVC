@@ -6,10 +6,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Agebull.EntityModel.ModelApi" Version="4.0.0.27-bata" />
-    <PackageReference Include="ZeroTeam.MessageMVC.ApiContract" Version="1.0.0.37-bate" />
-    <PackageReference Include="ZeroTeam.MessageMVC.Http" Version="1.0.0.37-bate" />
-    <PackageReference Include="ZeroTeam.MessageMVC.Kafka" Version="1.0.0.37-bate" />
+    <Compile Remove="config\**" />
+    <Content Remove="config\**" />
+    <EmbeddedResource Remove="config\**" />
+    <None Remove="config\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Agebull.EntityModel.ModelApi" Version="4.0.0.31-bata" />
+    <PackageReference Include="ZeroTeam.MessageMVC.ApiContract" Version="1.0.0.54-bate" />
+    <PackageReference Include="ZeroTeam.MessageMVC.ConfigSync" Version="1.0.0.54-bate" />
+    <PackageReference Include="ZeroTeam.MessageMVC.Http" Version="1.0.0.54-bate" />
+    <PackageReference Include="ZeroTeam.MessageMVC.Kafka" Version="1.0.0.54-bate" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,5 +31,11 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\新文件夹\" />
+  </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
 </Project>

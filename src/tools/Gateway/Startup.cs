@@ -18,7 +18,7 @@ namespace ZeroTeam.MessageMVC.Http
         public void ConfigureServices(IServiceCollection services)
         {
             services.UseCsRedis();
-            services.UseKafka(); 
+            services.UseKafka();
             //if (GatewayOption.Instance.EnableSecurityChecker)
             //    services.AddTransient<IMessageMiddleware, SecurityChecker>();
             //if (GatewayOption.Instance.EnableCache)
@@ -26,7 +26,7 @@ namespace ZeroTeam.MessageMVC.Http
             //if (GatewayOption.Instance.EnableWxPay)
             //    services.AddTransient<IMessageMiddleware, WxPayRouter>();
 
-            HttpRoute.Initialize(services);
+            services.UseHttp();
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace ZeroTeam.MessageMVC.Http
             app.UseStaticFiles();
             app.UseFileServer();
 
-            app.Run(HttpRoute.Call);
+            app.RunMessageMVC(); 
         }
     }
 }

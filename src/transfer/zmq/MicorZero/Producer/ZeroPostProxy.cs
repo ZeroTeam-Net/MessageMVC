@@ -23,7 +23,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         /// 实例名称
         /// </summary>
-        string IZeroMiddleware.Name => "ZeroRPCProxy";
+        string IZeroDependency.Name => nameof(ZeroPostProxy);
 
         /// <summary>
         /// 等级
@@ -35,7 +35,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         /// 初始化
         /// </summary>
-        public void Initialize()
+        void IFlowMiddleware.Initialize()
         {
             logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(ZeroPostProxy));
             ZeroRpcFlow.ZeroNetEvents.Add(OnZeroNetEvent);
@@ -103,7 +103,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         /// 构造
         /// </summary>
-        public void Start()
+        void IFlowMiddleware.Start()
         {
             Task.Run(Loop);
         }
@@ -117,13 +117,13 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             Prepare();
 
             logger.Information("Run");
-            ZeroRPCPoster.Instance.State = StationStateType.Run;
+            ((IMessagePoster)ZeroRPCPoster.Instance).State = StationStateType.Run;
             while (CanLoopEx)
             {
                 Listen();
             }
             logger.Information("Close");
-            ZeroRPCPoster.Instance.State = StationStateType.Closed;
+            ((IMessagePoster)ZeroRPCPoster.Instance).State = StationStateType.Closed;
             return true;
         }
 
@@ -131,7 +131,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// 关闭时的处理
         /// </summary>
         /// <returns></returns>
-        public void End()
+        void IFlowMiddleware.End()
         {
             logger.Information("End");
             _proxyServiceSocket.Dispose();
@@ -451,6 +451,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
             if (JsonHelper.TryDeserializeObject<MessageResult>(json, out var result))
             {
+                result.DataState = MessageDataState.ResultOffline;
                 result.Result = src.Caller.Message.Result;
             }
             else

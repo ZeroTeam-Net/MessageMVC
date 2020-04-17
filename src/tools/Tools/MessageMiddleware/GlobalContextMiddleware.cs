@@ -1,7 +1,4 @@
-﻿using Agebull.Common;
-using Agebull.Common.Ioc;
-using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.Services;
 using ZeroTeam.MessageMVC.Tools;
@@ -22,14 +19,12 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         /// 消息中间件的处理范围
         /// </summary>
-        MessageHandleScope IMessageMiddleware.Scope => ToolsOption.Instance.EnableLinkTrace
-                ? MessageHandleScope.Handle
-                : MessageHandleScope.None;
+        MessageHandleScope IMessageMiddleware.Scope => MessageHandleScope.Prepare;
 
         /// <summary>
         /// 当前处理器
         /// </summary>
-        public MessageProcessor Processor { get; set; }
+        MessageProcessor IMessageMiddleware.Processor { get; set; }
 
         /// <summary>
         /// 准备
@@ -37,9 +32,8 @@ namespace ZeroTeam.MessageMVC.Context
         /// <param name="service">当前服务</param>
         /// <param name="message">当前消息</param>
         /// <param name="tag">扩展信息</param>
-        /// <param name="next">下一个处理方法</param>
         /// <returns></returns>
-        async Task IMessageMiddleware.Handle(IService service, IInlineMessage message, object tag, Func<Task> next)
+        Task<bool> IMessageMiddleware.Prepare(IService service, IInlineMessage message, object tag)
         {
             if (message.Trace?.Context != null)
             {
@@ -86,8 +80,7 @@ namespace ZeroTeam.MessageMVC.Context
             {
                 GlobalContext.Current.Trace = TraceInfo.New(message.ID);
             }
-            await next();
-
+            return Task.FromResult(true);
         }
     }
 }

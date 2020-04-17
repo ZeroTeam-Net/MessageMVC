@@ -14,8 +14,15 @@ namespace ZeroTeam.MessageMVC.RedisMQ
     /// <summary>
     /// RedisMQ消息队列
     /// </summary>
-    public class CSRedisConsumer : MessageReceiverBase, INetEvent
+    internal class CSRedisConsumer : MessageReceiverBase, INetEvent
     {
+        /// <summary>
+        /// 构造
+        /// </summary>
+        public CSRedisConsumer() : base(nameof(CSRedisConsumer))
+        {
+        }
+
         ILogger logger;
 
         /// <summary>
@@ -32,9 +39,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// </summary>
         void IMessagePoster.Initialize()
         {
-            this.Initialize();
             logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(CSRedisConsumer));
-
         }
 
         /// <summary>
@@ -194,7 +199,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             item.Trace ??= new TraceInfo();
             item.Trace.TraceId = id;
             item.Topic = Service.ServiceName;
-            await MessageProcessor.OnMessagePush(Service, item, null);//BUG:应该配置化同步或异步
+            await MessageProcessor.OnMessagePush(Service, item, true, null);//BUG:应该配置化同步或异步
 
             return true;
         }

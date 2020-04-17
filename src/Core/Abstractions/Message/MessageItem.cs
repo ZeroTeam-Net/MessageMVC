@@ -13,7 +13,6 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         ///     是否正常
         /// </summary>
-
         public bool IsSucceed => State == MessageState.Success;
 
         /// <summary>

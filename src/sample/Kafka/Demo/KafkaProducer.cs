@@ -12,7 +12,7 @@ namespace KafkaTest
 
         private static readonly ProducerConfig conf = new ProducerConfig { BootstrapServers = "47.111.0.73:9092" };
         private static readonly string pushTopic = "test1";
-        private static IProducer<Null, string> p = new ProducerBuilder<Null, string>(conf).Build();
+        private static readonly IProducer<Null, string> p = new ProducerBuilder<Null, string>(conf).Build();
         private static int num = 0;
         private static async Task ProduceAsync(string str)
         {

@@ -90,7 +90,7 @@ namespace Agebull.Common.Configuration
                 Builder.AddJsonFile(jsonFile, true, true);
             Flush();
         }
-        static List<NameValue<string, Action>> actions = new List<NameValue<string, Action>>();
+        static readonly List<NameValue<string, Action>> actions = new List<NameValue<string, Action>>();
         /// <summary>
         /// 注册更新处理器
         /// </summary>

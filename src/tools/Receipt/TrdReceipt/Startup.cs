@@ -18,11 +18,9 @@ namespace ZeroTeam.MessageMVC.Http
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
-            Console.WriteLine(Environment.CurrentDirectory);
             var con = ConfigurationManager.Root.GetSection("MessageMVC:Redis:ConnectionString").Value;
             RedisHelper.Initialization(new CSRedisClient(con));
-
-            HttpRoute.Initialize(services);
+            services.UseHttp();
         }
 
         /// <summary>
@@ -31,7 +29,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// <param name="app"></param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment _)
         {
-            app.Run(HttpRoute.Call);
+            app.RunMessageMVC(); 
         }
     }
 }

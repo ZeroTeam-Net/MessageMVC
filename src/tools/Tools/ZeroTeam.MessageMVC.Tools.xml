@@ -34,27 +34,107 @@
             消息中间件的处理范围
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Context.GlobalContextMiddleware.Processor">
+        <member name="P:ZeroTeam.MessageMVC.Context.GlobalContextMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Processor">
             <summary>
             当前处理器
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Context.GlobalContextMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Handle(ZeroTeam.MessageMVC.Services.IService,ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object,System.Func{System.Threading.Tasks.Task})">
+        <member name="M:ZeroTeam.MessageMVC.Context.GlobalContextMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Prepare(ZeroTeam.MessageMVC.Services.IService,ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
             <summary>
             准备
             </summary>
             <param name="service">当前服务</param>
             <param name="message">当前消息</param>
             <param name="tag">扩展信息</param>
-            <param name="next">下一个处理方法</param>
             <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Tools.HealthCheckMiddleware">
+            <summary>
+            健康检查中间件
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.HealthCheckMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Processor">
+            <summary>
+            当前处理器
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.HealthCheckMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Level">
+            <summary>
+            层级
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.HealthCheckMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Scope">
+            <summary>
+            消息中间件的处理范围
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Tools.HealthCheckMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Prepare(ZeroTeam.MessageMVC.Services.IService,ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
+            <summary>
+            准备
+            </summary>
+            <param name="service">当前服务</param>
+            <param name="message">当前消息</param>
+            <param name="tag">扩展信息</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Tools.HealthCheckMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#OnEnd(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
+            <summary>
+            结束
+            </summary>
+            <param name="message">当前消息</param>
+            <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Tools.ApiCollection">
+            <summary>
+            API统计
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.ApiCollection.Start">
+            <summary>
+            开始时间
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.ApiCollection.End">
+            <summary>
+            结束时间
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Tools.ApiCollection.Count">
+            <summary>
+            请求总数
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Tools.ApiCollection.State">
+            <summary>
+            状态统计
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Tools.ApiCollection.TimeLevel">
+            <summary>
+            状态统计
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Tools.CollectionItem">
+            <summary>
+            统计节点
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.CollectionItem.Count">
+            <summary>
+            总数
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Tools.CollectionItem.Apis">
+            <summary>
+            相关接口
+            </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Tools.MarkPointMiddleware">
             <summary>
             埋点发出中间件
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Tools.MarkPointMiddleware.Processor">
+        <member name="P:ZeroTeam.MessageMVC.Tools.MarkPointMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Processor">
             <summary>
             当前处理器
             </summary>
@@ -90,7 +170,7 @@
             回执服务中间件
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Tools.ReceiptMiddleware.Processor">
+        <member name="P:ZeroTeam.MessageMVC.Tools.ReceiptMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Processor">
             <summary>
             当前处理器
             </summary>
@@ -117,7 +197,7 @@
             反向代理中间件
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Tools.ReverseProxyMiddleware.Processor">
+        <member name="P:ZeroTeam.MessageMVC.Tools.ReverseProxyMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Processor">
             <summary>
             当前处理器
             </summary>
@@ -197,7 +277,7 @@
             重新消费未正确处理消息的中间件
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.ReConsumerMiddleware.ZeroTeam#MessageMVC#IZeroMiddleware#Name">
+        <member name="P:ZeroTeam.MessageMVC.Messages.ReConsumerMiddleware.ZeroTeam#MessageMVC#IZeroDependency#Name">
             <summary>
             实例名称
             </summary>
@@ -232,7 +312,7 @@
             消息存储中间件
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.StorageMiddleware.Processor">
+        <member name="P:ZeroTeam.MessageMVC.Messages.StorageMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Processor">
             <summary>
             当前处理器
             </summary>

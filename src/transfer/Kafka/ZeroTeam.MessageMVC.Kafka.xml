@@ -4,34 +4,25 @@
         <name>ZeroTeam.MessageMVC.Kafka</name>
     </assembly>
     <members>
+        <member name="T:ZeroTeam.MessageMVC.Kafka.KafkaApp">
+            <summary>
+            KafkaMvc
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaApp.UseKafka(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            使用KafkaMVC
+            </summary>
+            <param name="services"></param>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Kafka.KafkaConsumer">
             <summary>
             Kafka消息队列消费者
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.CallCount">
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.#ctor">
             <summary>
-            调用计数
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.WaitCount">
-            <summary>
-            调用计数
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.ErrorCount">
-            <summary>
-            调用计数
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.SuccessCount">
-            <summary>
-            调用计数
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.ZeroTeam#MessageMVC#Messages#IMessageReceiver#Prepare">
-            <summary>
-            初始化
+            构造
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.OnMessagePush(Confluent.Kafka.ConsumeResult{Confluent.Kafka.Ignore,System.String})">
@@ -58,28 +49,47 @@
             </summary>
             <returns>是否发送成功</returns>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.Kafka.KafkaMessageMVC">
+        <member name="T:ZeroTeam.MessageMVC.Kafka.KafkaOption">
             <summary>
-            KafkaMvc
+            Kafka配置
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaMessageMVC.UseKafka(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaOption.BootstrapServers">
             <summary>
-            使用KafkaMVC
+            服务地址
             </summary>
-            <param name="services"></param>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaOption.TestTopic">
+            <summary>
+            测试主题
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Kafka.KafkaOption.Consumer">
+            <summary>
+            消费配置
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Kafka.KafkaOption.Producer">
+            <summary>
+            服务地址
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Kafka.KafkaOption.Instance">
+            <summary>
+             唯一实例 
+            </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Kafka.KafkaPoster">
             <summary>
                 Kafka消息发布
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaPoster.State">
+        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#Messages#IMessagePoster#State">
             <summary>
             运行状态
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#IZeroMiddleware#Name">
+        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#IZeroDependency#Name">
             <summary>
             实例名称
             </summary>
@@ -94,14 +104,19 @@
                 初始化
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.Start">
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#IFlowMiddleware#Start">
             <summary>
             关闭
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.Close">
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#IFlowMiddleware#Close">
             <summary>
             关闭
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Kafka.KafkaPoster.Instance">
+            <summary>
+            单例
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ReQueueErrorMessage(System.String)">
@@ -111,12 +126,27 @@
             <param name="path"></param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.Post(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#Messages#IMessagePoster#Post(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
             <summary>
             生产消息
             </summary>
             <param name="message">消息</param>
             <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#Messages#ISerializeProxy#Serialize(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#Messages#ISerializeProxy#Deserialize(System.Object,System.Type)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#Messages#ISerializeProxy#ToObject``1(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#Messages#ISerializeProxy#ToObject(System.String,System.Type)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#Messages#ISerializeProxy#ToString(System.Object,System.Boolean)">
+            <inheritdoc/>
         </member>
     </members>
 </doc>

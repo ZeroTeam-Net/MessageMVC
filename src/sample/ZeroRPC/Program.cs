@@ -13,7 +13,7 @@ namespace MicroZero.Kafka.QueueStation
         {
             DependencyHelper.AddSingleton<IFlowMiddleware, ZeroRpcFlow>();
             DependencyHelper.AddSingleton<IFlowMiddleware>(ZeroPostProxy.Instance);
-            DependencyHelper.AddSingleton<IServiceTransfer, ZeroRpcReceiver>();
+            DependencyHelper.AddSingleton<IServiceReceiver, ZeroRpcReceiver>();
             DependencyHelper.AddSingleton<IMessagePoster, ZeroRPCPoster>();
 
 

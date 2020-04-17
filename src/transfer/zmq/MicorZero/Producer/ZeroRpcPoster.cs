@@ -8,14 +8,21 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
     /// <summary>
     ///     ZMQ生产者
     /// </summary>
-    public class ZeroRPCPoster : JsonSerializeProxy, IMessagePoster
+    public class ZeroRPCPoster : MessagePostBase, IMessagePoster
     {
         #region Properties
 
         /// <summary>
+        /// 实例名称
+        /// </summary>
+        string IZeroDependency.Name => nameof(ZeroRPCPoster);
+
+        StationStateType state;
+
+        /// <summary>
         /// 运行状态
         /// </summary>
-        public StationStateType State { get; set; }
+        StationStateType IMessagePoster.State { get => state; set => state = value; }
 
         /// <summary>
         /// 实例
@@ -25,7 +32,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         /// 构造
         /// </summary>
-        public ZeroRPCPoster()
+        private ZeroRPCPoster()
         {
             Instance = this;
         }
@@ -39,7 +46,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// </summary>
         /// <param name="message">消息</param>
         /// <returns></returns>
-        public async Task<IMessageResult> Post(IInlineMessage message)
+        async Task<IMessageResult> IMessagePoster.Post(IInlineMessage message)
         {
             LogRecorder.MonitorTrace("[ZeroRPCPoster.Post] 开始发送");
             return await new ZeroCaller

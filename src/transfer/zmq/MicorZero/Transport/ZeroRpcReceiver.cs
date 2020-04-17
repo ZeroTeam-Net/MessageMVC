@@ -1,14 +1,13 @@
 using Agebull.Common;
 using Agebull.Common.Logging;
 using Agebull.EntityModel.Common;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
+using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.Services;
 using ZeroTeam.MessageMVC.ZeroApis;
 using ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant;
 
@@ -17,8 +16,14 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
     /// <summary>
     ///  ZeroMQ实现的RPC
     /// </summary>
-    public sealed class ZeroRpcReceiver : MessageReceiverBase, IServiceTransfer
+    public sealed class ZeroRpcReceiver : MessageReceiverBase, IServiceReceiver
     {
+        /// <summary>
+        /// 构造
+        /// </summary>
+        public ZeroRpcReceiver() : base(nameof(ZeroRpcReceiver))
+        {
+        }
         #region 控制反转
 
         /// <summary>
@@ -34,7 +39,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// 轮询
         /// </summary>
         /// <returns>返回False表明需要重启</returns>
-        public Task<bool> Loop(CancellationToken token)
+        Task<bool> IMessageReceiver.Loop(CancellationToken token)
         {
             RunTaskCancel = token;
             while (CanLoop)
@@ -237,12 +242,12 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     if (Service.ConfigState >= StationStateType.Stop)
                     {
                         Service.ConfigState = StationStateType.Initialized;
-                        ((ZeroService)Service).ResetStateMachine();
+                        Service.ResetStateMachine();
                     }
                     break;
                 case ZeroNetEventType.CenterStationJoin:
                     Service.ConfigState = StationStateType.Initialized;
-                    ((ZeroService)Service).ResetStateMachine();
+                    Service.ResetStateMachine();
                     Service.Start();
                     break;
                 case ZeroNetEventType.CenterStationResume:
@@ -375,11 +380,25 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
 
         private void OnCall(ApiCallItem callItem)
         {
-            var messageItem = MessageHelper.Restore(callItem.ApiName, callItem.Station, callItem.Argument, callItem.RequestId, callItem.Context);
+            //var messageItem = MessageHelper.Restore(callItem.ApiName, callItem.Station, callItem.Argument, callItem.RequestId, callItem.Context);
 
-            messageItem.Trace.CallId = callItem.GlobalId;
-            messageItem.Trace.CallMachine = callItem.Requester;
-            messageItem.Trace.LocalId = callItem.LocalId;
+            var item = JsonHelper.DeserializeObject<InlineMessage>(callItem.Extend);
+            var messageItem = new InlineMessage
+            {
+                ID = callItem.RequestId,
+                ServiceName = callItem.Station,
+                ApiName = callItem.ApiName,
+                Argument = callItem.Argument,
+                Trace = item.Trace,
+                State = item.State
+            };
+            if (messageItem.Trace != null)
+            {
+                messageItem.Trace.TraceId = callItem.RequestId;
+                messageItem.Trace.CallId = callItem.GlobalId;
+                messageItem.Trace.CallMachine = callItem.Requester;
+                messageItem.Trace.Context = JsonHelper.DeserializeObject<ZeroContext>(callItem.Context);
+            }
 
             switch (callItem.ApiName[0])
             {
@@ -395,7 +414,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
 
             try
             {
-                _ = MessageProcessor.OnMessagePush(Service, messageItem, callItem);
+                _ = MessageProcessor.OnMessagePush(Service, messageItem, true, callItem);
             }
             catch (Exception e)
             {
@@ -479,10 +498,8 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <param name="item"></param>
         /// <param name="state"></param>
         /// <returns></returns>
-        internal Task<bool> OnExecuestEnd(IInlineMessage message, ApiCallItem item, ZeroOperatorStateType state)
+        private Task<bool> OnExecuestEnd(IInlineMessage message, ApiCallItem item, ZeroOperatorStateType state)
         {
-            message.Offline(this);
-
             var result = message.ToMessageResult();
             result.Result = null;
 
@@ -568,7 +585,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                         Interlocked.Increment(ref SendCount);
                         return true;
                     }
-                   msg = $"Send result err.{error.Text} : {error.Name}";
+                    msg = $"Send result err.{error.Text} : {error.Name}";
                 }
                 catch (Exception e)
                 {

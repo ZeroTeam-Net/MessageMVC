@@ -18,7 +18,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
     {
         #region 配置
 
-        string IZeroMiddleware.Name => nameof(ZeroRpcFlow);
+        string IZeroDependency.Name => nameof(ZeroRpcFlow);
 
         /// <summary>
         /// 等级,用于确定中间件优先级

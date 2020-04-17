@@ -1,4 +1,4 @@
-﻿/*此标记表明此文件可被设计器更新,如果不允许此操作,请删除此行代码.design by:agebull designer date:2020/4/15 16:45:26*/
+﻿/*此标记表明此文件可被设计器更新,如果不允许此操作,请删除此行代码.design by:agebull designer date:2020/4/16 23:46:25*/
 #region
 using System;
 using System.Collections.Generic;
@@ -47,6 +47,7 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink.WebApi.Entity
                 var field = GetString("_field_");
                 if (string.IsNullOrWhiteSpace(field) || field == "_any_")
                     filter.AddAnd(p => p.TraceId.Contains(value)
+                                    || p.ApiName.Contains(value)
                                     || p.LocalId.Contains(value)
                                     || p.LocalApp.Contains(value)
                                     || p.LocalMachine.Contains(value)
@@ -70,6 +71,14 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink.WebApi.Entity
             if(TryGet("TraceId" , out string TraceId))
             {
                 filter.AddAnd(p => p.TraceId.Contains(TraceId));
+            }
+            if(TryGet("Level" , out int Level))
+            {
+                filter.AddAnd(p => p.Level == Level);
+            }
+            if(TryGet("ApiName" , out string ApiName))
+            {
+                filter.AddAnd(p => p.ApiName.Contains(ApiName));
             }
             if(TryGet("Start" , out DateTime Start))
             {
@@ -153,10 +162,6 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink.WebApi.Entity
             {
                 filter.AddAnd(p => p.FlowStep.Contains(FlowStep));
             }
-            if(TryGet("Level" , out int Level))
-            {
-                filter.AddAnd(p => p.Level == Level);
-            }
         }
 
         /// <summary>
@@ -169,6 +174,10 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink.WebApi.Entity
             //普通字段
             if(convert.TryGetValue("TraceId" , out string TraceId))
                 data.TraceId = TraceId;
+            if(convert.TryGetValue("Level" , out int Level))
+                data.Level = Level;
+            if(convert.TryGetValue("ApiName" , out string ApiName))
+                data.ApiName = ApiName;
             if(convert.TryGetValue("Start" , out DateTime Start))
                 data.Start = Start;
             if(convert.TryGetValue("End" , out DateTime End))
@@ -195,8 +204,6 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink.WebApi.Entity
                 data.Message = Message;
             if(convert.TryGetValue("FlowStep" , out string FlowStep))
                 data.FlowStep = FlowStep;
-            if(convert.TryGetValue("Level" , out int Level))
-                data.Level = Level;
         }
 
         #endregion

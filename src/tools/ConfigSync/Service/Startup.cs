@@ -20,7 +20,7 @@ namespace ZeroTeam.MessageMVC.ConfigSync
         public void ConfigureServices(IServiceCollection services)
         {
             services.UseCsRedis();
-            HttpRoute.Initialize(services,typeof(Startup));
+            services.UseHttp(typeof(Startup));
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace ZeroTeam.MessageMVC.ConfigSync
         {
             app.UseStaticFiles();
             app.UseDefaultFiles("/index.htm");
-            app.Run(HttpRoute.Call); 
+            app.RunMessageMVC(); 
         }
     }
 }

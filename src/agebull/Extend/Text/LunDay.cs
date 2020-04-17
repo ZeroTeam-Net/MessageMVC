@@ -20,13 +20,13 @@ namespace System
         }
 
         //天干
-        private static string[] TianGan =
+        private static readonly string[] TianGan =
                 {
                         "甲" , "乙" , "丙" , "丁" , "戊" , "己" , "庚" , "辛" , "壬" , "癸"
                 } ;
 
         //地支
-        private static string[] DiZhi =
+        private static readonly string[] DiZhi =
                 {
                         "子" , "丑" , "寅" , "卯" , "辰" , "巳" , "午" , "未" , "申" , "酉" , "戌" , "亥"
                 } ;

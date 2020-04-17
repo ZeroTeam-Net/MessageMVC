@@ -12,12 +12,6 @@ namespace ZeroTeam.MessageMVC.Messages
     public class MessageResult : IMessageResult
     {
         /// <summary>
-        /// ID
-        /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public string ID { get; set; }
-
-        /// <summary>
         /// 构造
         /// </summary>
         public MessageResult()
@@ -27,19 +21,10 @@ namespace ZeroTeam.MessageMVC.Messages
         }
 
         /// <summary>
-        /// 处理结果,对应状态的解释信息
+        /// ID
         /// </summary>
-        /// <remarks>
-        /// 未消费:无内容
-        /// 已接受:无内容
-        /// 格式错误 : 无内容
-        /// 无处理方法 : 无内容
-        /// 处理异常 : 异常信息
-        /// 处理失败 : 失败内容或原因
-        /// 处理成功 : 结果信息或无
-        /// </remarks>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public string Result { get; set; }
+        public string ID { get; set; }
 
         /// <summary>
         /// 处理状态
@@ -54,14 +39,52 @@ namespace ZeroTeam.MessageMVC.Messages
         public TraceInfo Trace { get; set; }
 
         /// <summary>
-        /// 返回值
+        /// 数据状态
         /// </summary>
-        public object ResultData { get; set; }
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+        public MessageDataState DataState { get; set; }
+
+        private string result;
+        /// <summary>
+        /// 处理结果,对应状态的解释信息
+        /// </summary>
+        /// <remarks>
+        /// 未消费:无内容
+        /// 已接受:无内容
+        /// 格式错误 : 无内容
+        /// 无处理方法 : 无内容
+        /// 处理异常 : 异常信息
+        /// 处理失败 : 失败内容或原因
+        /// 处理成功 : 结果信息或无
+        /// </remarks>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+        public string Result
+        {
+            get => result;
+            set
+            {
+                result = value;
+                DataState |= MessageDataState.ResultOffline;
+            }
+        }
+
+        private object resultData;
+        /// <summary>
+        /// 处理结果,对应状态的解释信息
+        /// </summary>
+        public object ResultData
+        {
+            get => resultData;
+            set
+            {
+                resultData = value;
+                DataState |= MessageDataState.ResultInline;
+            }
+        }
 
         /// <summary>
         /// 执行状态
         /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public IOperatorStatus RuntimeStatus { get; set; }
     }
 }

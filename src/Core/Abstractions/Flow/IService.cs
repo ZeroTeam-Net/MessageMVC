@@ -53,5 +53,10 @@ namespace ZeroTeam.MessageMVC.Services
         /// <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
         /// <param name="info">反射信息</param>
         void RegistAction(string name, ApiActionInfo info);
+
+        /// <summary>
+        /// 重置状态机,请谨慎使用
+        /// </summary>
+        void ResetStateMachine();
     }
 }
