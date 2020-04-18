@@ -84,8 +84,7 @@ namespace ZeroTeam.MessageMVC
             if (ApplicationState >= StationState.CheckOption)
                 return;
             ApplicationState = StationState.CheckOption;
-            if (LogRecorder.NoRegist)
-                LogRecorder.DoInitialize();
+            LogRecorder.DoInitialize();
             logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(ZeroFlowControl));
 
             DependencyHelper.Update();
@@ -241,7 +240,7 @@ namespace ZeroTeam.MessageMVC
             waitTask = new TaskCompletionSource<bool>();
             waitTask.Task.Wait();
             Console.CancelKeyPress += OnConsoleOnCancelKeyPress;
-            Console.WriteLine("MicroZero services is runing. Press Ctrl+C to shutdown.");
+            Console.WriteLine("ZeroFlowControl is runing. Press Ctrl+C to shutdown.");
         }
 
         private static TaskCompletionSource<bool> waitTask;
@@ -253,7 +252,7 @@ namespace ZeroTeam.MessageMVC
             await OnZeroStart();
             waitTask = new TaskCompletionSource<bool>();
             Console.CancelKeyPress += OnConsoleOnCancelKeyPress;
-            Console.WriteLine("MicroZero services is runing. Press Ctrl+C to shutdown.");
+            Console.WriteLine("ZeroFlowControl is runing. Press Ctrl+C to shutdown.");
             await waitTask.Task;
         }
 
@@ -295,7 +294,7 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 已注册的对象
         /// </summary>
-        internal static readonly ConcurrentDictionary<string, IService> Services = new ConcurrentDictionary<string, IService>();
+        public static readonly ConcurrentDictionary<string, IService> Services = new ConcurrentDictionary<string, IService>();
 
         /// <summary>
         /// 活动对象(执行中)
@@ -452,7 +451,7 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         ///     系统启动时调用
         /// </summary>
-        internal static void OnZeroInitialize()
+        static void OnZeroInitialize()
         {
             logger.Information("[OnZeroInitialize>>");
             foreach (var mid in Middlewares)
@@ -486,7 +485,7 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         ///     系统启动时调用
         /// </summary>
-        internal static async Task<bool> OnZeroStart()
+        static async Task<bool> OnZeroStart()
         {
             if (ApplicationState >= StationState.BeginRun)
                 return false;
@@ -569,7 +568,7 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         ///     注销时调用
         /// </summary>
-        internal static void OnZeroClose()
+        static void OnZeroClose()
         {
             logger.Information("[OnZeroClose>>");
             foreach (var mid in Middlewares)
@@ -605,7 +604,7 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         ///     注销时调用
         /// </summary>
-        internal static void OnZeroEnd()
+        static void OnZeroEnd()
         {
             logger.Information("[OnZeroEnd>>");
             foreach (var mid in Middlewares)

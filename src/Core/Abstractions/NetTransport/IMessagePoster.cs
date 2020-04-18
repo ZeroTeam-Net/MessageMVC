@@ -5,7 +5,7 @@ namespace ZeroTeam.MessageMVC.Messages
     /// <summary>
     /// 消息投递对象
     /// </summary>
-    public interface IMessagePoster : ISerializeProxy, IZeroDependency
+    public interface IMessagePoster : IZeroDependency
     {
         /// <summary>
         /// 运行状态

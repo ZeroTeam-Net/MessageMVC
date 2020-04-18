@@ -6,15 +6,17 @@ namespace ZeroTeam.MessageMVC
     /// <summary>
     ///     本地站点配置
     /// </summary>
-    [Serializable]
-    [DataContract]
     public class ZeroAppConfig
     {
         /// <summary>
         ///     当前应用名称
         /// </summary>
-
         public string AppName { get; set; }
+
+        /// <summary>
+        ///     当前应用简称
+        /// </summary>
+        public string ShortName { get; set; }
 
         /// <summary>
         ///     开放式访问
@@ -80,7 +82,10 @@ namespace ZeroTeam.MessageMVC
             {
                 AppName = option.AppName;
             }
-
+            if (!string.IsNullOrWhiteSpace(option.ShortName))
+            {
+                ShortName = option.ShortName;
+            }
             if (option.IsolateFolder)
             {
                 IsolateFolder = option.IsolateFolder;
@@ -105,7 +110,6 @@ namespace ZeroTeam.MessageMVC
                 IsOpenAccess = option.IsOpenAccess;
             }
             
-
             if (!string.IsNullOrWhiteSpace(option.AddInPath))
             {
                 AddInPath = option.AddInPath;
@@ -124,6 +128,10 @@ namespace ZeroTeam.MessageMVC
                 return;
             }
 
+            if (string.IsNullOrWhiteSpace(ShortName))
+            {
+                ShortName = option.ShortName;
+            }
             if (string.IsNullOrWhiteSpace(AppName))
             {
                 AppName = option.AppName;

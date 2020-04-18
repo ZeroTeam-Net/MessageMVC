@@ -244,6 +244,11 @@
             构造
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpReceiver.ZeroTeam#MessageMVC#Messages#IMessageReceiver#PosterName">
+            <summary>
+            对应发送器名称
+            </summary>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.Http.HttpReceiver.ZeroTeam#MessageMVC#Messages#IMessageReceiver#Close">
             <summary>
             关闭

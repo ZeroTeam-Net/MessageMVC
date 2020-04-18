@@ -1,8 +1,11 @@
-﻿using CSRedis;
+﻿using Agebull.EntityModel.Common;
+using CSRedis;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.ConfigSync
@@ -85,6 +88,83 @@ namespace ZeroTeam.MessageMVC.ConfigSync
             }
             await MessagePoster.PublishAsync("ConfigSync", "v1/changed", argument);
 
+            return ApiResultHelper.Succees();
+        }
+
+        const string clientKey = "MessageMVC:HttpClient";
+        const string posterKey = "MessageMVC:MessagePoster";
+
+        /// <summary>
+        /// 服务注册
+        /// </summary>
+        /// <returns>所有配置项</returns>
+        [Route("v1/regist")]
+        public async Task<IApiResult> ServiceRegist(List<NameValue> services)
+        {
+            using var redis = new CSRedisClient(ConfigChangOption.Instance.ConnectionString);
+            var posters = await redis.HGetAsync<Dictionary<string, string>>(ConfigChangOption.ConfigRedisKey, posterKey)
+                ?? new Dictionary<string, string>();
+            foreach (var service in services.Where(p => !string.IsNullOrEmpty(p.Value)))
+            {
+                if (posters.TryGetValue(service.Name, out var s) && !string.IsNullOrEmpty(s))
+                {
+                    var ses = s.Split(',').ToList();
+                    ses.AddRange(service.Value.Split(','));
+
+                    posters[service.Name] = string.Join(",", ses.Distinct());
+                }
+                else
+                {
+                    posters[service.Name] = service.Value;
+                }
+            }
+            var json = posters.ToJson(true);
+            await redis.HSetAsync(ConfigChangOption.ConfigRedisKey, posterKey, json);
+
+            await MessagePoster.PublishAsync("ConfigSync", "v1/changed", new ConfigChangedArgument
+            {
+                Key = posterKey,
+                Type = "section",
+                Section = posterKey,
+                Value = json
+            });
+            return ApiResultHelper.Succees();
+        }
+        /// <summary>
+        /// 服务注册
+        /// </summary>
+        /// <returns>所有配置项</returns>
+        [Route("v1/http")]
+        public async Task<IApiResult> HttpRegist(List<HttpClientItem> services)
+        {
+            using var redis = new CSRedisClient(ConfigChangOption.Instance.ConnectionString);
+            var clientItems = await redis.HGetAsync<List<HttpClientItem>>(ConfigChangOption.ConfigRedisKey, clientKey);
+            if (clientItems == null || clientItems.Count == 0)
+                clientItems = services;
+            else
+                foreach (var service in services)
+                {
+                    var old = clientItems.FirstOrDefault(p => p.Services != null && p.Services.Contains(service.Services));
+                    if (old != null)
+                    {
+                        old.Url = service.Url;
+                    }
+                    else
+                    {
+                        clientItems.Add(service);
+                    }
+                }
+
+            var json = clientItems.ToJson(true);
+            await redis.HSetAsync(ConfigChangOption.ConfigRedisKey, clientKey, json);
+
+            await MessagePoster.PublishAsync("ConfigSync", "v1/changed", new ConfigChangedArgument
+            {
+                Key = clientKey,
+                Type = "section",
+                Section = clientKey,
+                Value = json
+            });
             return ApiResultHelper.Succees();
         }
     }

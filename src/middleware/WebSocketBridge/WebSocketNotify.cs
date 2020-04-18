@@ -21,14 +21,9 @@ namespace ZeroTeam.MessageMVC.Web
         #region IMessageMiddleware
 
         /// <summary>
-        /// 当前处理器
-        /// </summary>
-        MessageProcessor IMessageMiddleware.Processor { get; set; }
-
-        /// <summary>
         /// 层级
         /// </summary>
-        int IMessageMiddleware.Level => 0;
+        int IMessageMiddleware.Level => MiddlewareLevel.General;
 
         /// <summary>
         /// 消息中间件的处理范围
@@ -44,7 +39,8 @@ namespace ZeroTeam.MessageMVC.Web
         {
             if (Config.Folders.Contains(message.Topic))
             {
-                await Publish(message.Offline(DependencyHelper.Create<IJsonSerializeProxy>()));
+                message.Offline();
+                await Publish(message);
             }
         }
 

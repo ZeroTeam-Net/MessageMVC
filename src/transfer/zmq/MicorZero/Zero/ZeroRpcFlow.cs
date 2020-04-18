@@ -23,7 +23,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         /// 等级,用于确定中间件优先级
         /// </summary>
-        int IZeroMiddleware.Level => -0xFFF;
+        int IZeroMiddleware.Level => MiddlewareLevel.Framework;
 
         /// <summary>
         ///     站点配置

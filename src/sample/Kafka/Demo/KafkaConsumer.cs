@@ -33,7 +33,7 @@ namespace KafkaTest
                             Thread.Sleep(1000);
                             continue;
                         }
-                        string xmlStr = cr.Value;
+                        string xmlStr = cr.Message.Value;
                         c.Commit();
                         Console.WriteLine($"Consumer:{xmlStr}");
                     }

@@ -6,54 +6,27 @@ namespace ZeroTeam.MessageMVC.Documents
     /// <summary>
     ///     文档节点
     /// </summary>
-    [DataContract]
     [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class DocumentItem : AnnotationsConfig
     {
-
-        [JsonProperty("example", NullValueHandling = NullValueHandling.Ignore)]
-        private string _example;
-
-
-        [JsonProperty("seealso", NullValueHandling = NullValueHandling.Ignore)]
-        private string _seealso;
-
-
-        [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
-        private string _value;
-
         /// <summary>
         ///     参见
         /// </summary>
-        [IgnoreDataMember]
-        [JsonIgnore]
-        public string Seealso
-        {
-            get => _seealso;
-            set => _seealso = value;
-        }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string Seealso { get; set; }
 
         /// <summary>
         ///     示例
         /// </summary>
         [IgnoreDataMember]
         [JsonIgnore]
-        public string Example
-        {
-            get => _example;
-            set => _example = value;
-        }
+        public string Example { get; set; }
 
         /// <summary>
         ///     值描述
         /// </summary>
-        [IgnoreDataMember]
-        [JsonIgnore]
-        public string Value
-        {
-            get => _value;
-            set => _value = value;
-        }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string Value { get; set; }
 
         /// <summary>
         ///     复制

@@ -85,11 +85,10 @@ namespace ZeroTeam.MessageMVC.Http
                 var message = JsonHelper.DeserializeObject<InlineMessage>(json);
                 if (message == null)
                 {
-                    await context.Response.WriteAsync(new MessageResult
+                    await context.Response.WriteAsync(SmartSerializer.ToString(new MessageResult
                     {
-                        State = MessageState.FormalError,
-                        RuntimeStatus = ApiResultHelper.Helper.ArgumentError
-                    }.ToJson(), Encoding.UTF8);
+                        State = MessageState.FormalError
+                    }), Encoding.UTF8);
                     return;
                 }
 
@@ -98,25 +97,23 @@ namespace ZeroTeam.MessageMVC.Http
                      {
                          ServiceName = "***",
                          Receiver = new HttpReceiver(),
-                         Serialize = DependencyHelper.Create<JsonSerializeProxy>()
+                         Serialize = DependencyHelper.Create<ISerializeProxy>()
                      };
 
                 await MessageProcessor.OnMessagePush(service, message, true, context);
             }
             catch (Exception e)
             {
-                LogRecorder.Exception(e);
                 try
                 {
-                    await context.Response.WriteAsync(new MessageResult
+                    await context.Response.WriteAsync(SmartSerializer.ToString(new MessageResult
                     {
-                        State = MessageState.Error,
-                        RuntimeStatus = ApiResultHelper.Helper.UnhandleException
-                    }.ToJson(), Encoding.UTF8);
+                        State = MessageState.FrameworkError
+                    }), Encoding.UTF8);
+                    LogRecorder.Exception(e);
                 }
-                catch (Exception exception)
+                catch
                 {
-                    LogRecorder.Exception(exception);
                 }
             }
         }
@@ -153,7 +150,7 @@ namespace ZeroTeam.MessageMVC.Http
                          {
                              ServiceName = "***",
                              Receiver = new HttpReceiver(),
-                             Serialize = DependencyHelper.Create<JsonSerializeProxy>()
+                             Serialize = DependencyHelper.Create<ISerializeProxy>()
                          };
                     await MessageProcessor.OnMessagePush(service, data, false, context);
                 }

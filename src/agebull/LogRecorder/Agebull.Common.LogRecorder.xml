@@ -157,24 +157,14 @@
                 文本日志的路径,如果不配置,就为:[应用程序的路径]\log\
             </summary>
         </member>
-        <member name="P:Agebull.Common.Logging.LogRecorder.UseBaseLogger">
-            <summary>
-            是否使用基础文本日志记录器
-            </summary>
-        </member>
-        <member name="P:Agebull.Common.Logging.LogRecorder.UseConsoleLogger">
-            <summary>
-            是否使用基础文本日志记录器
-            </summary>
-        </member>
-        <member name="P:Agebull.Common.Logging.LogRecorder.NoRegist">
-            <summary>
-            不注册日志器
-            </summary>
-        </member>
         <member name="P:Agebull.Common.Logging.LogRecorder.LogMonitor">
             <summary>
             是否开启跟踪日志
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Logging.LogRecorder.MonitorIncludeDetails">
+            <summary>
+            跟踪日志是否包含详细信息
             </summary>
         </member>
         <member name="P:Agebull.Common.Logging.LogRecorder.LogDataSql">
@@ -272,7 +262,7 @@
         </member>
         <member name="M:Agebull.Common.Logging.LogRecorder.Error(System.String,System.Object[])">
             <summary>
-              记录错误消息
+              记录提示消息
             </summary>
             <param name="message"> 日志详细信息 </param>
             <param name="formatArgs"> 格式化的参数 </param>
@@ -351,6 +341,36 @@
             结束监视日志步骤
             </summary>
         </member>
+        <member name="M:Agebull.Common.Logging.LogRecorder.MonitorInfomation(System.String)">
+            <summary>
+            加入监视跟踪
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.LogRecorder.MonitorInfomation(System.String,System.Object[])">
+            <summary>
+            加入监视跟踪
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.LogRecorder.MonitorInfomation(System.Func{System.String})">
+            <summary>
+            加入监视跟踪
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.LogRecorder.MonitorDetails(System.Func{System.String})">
+            <summary>
+            加入监视跟踪
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.LogRecorder.MonitorDetails(System.String)">
+            <summary>
+            加入监视跟踪
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.LogRecorder.EndMonitor">
+            <summary>
+            结束监视日志
+            </summary>
+        </member>
         <member name="M:Agebull.Common.Logging.LogRecorder.MonitorTrace(System.String)">
             <summary>
             加入监视跟踪
@@ -364,11 +384,6 @@
         <member name="M:Agebull.Common.Logging.LogRecorder.MonitorTrace(System.Func{System.String})">
             <summary>
             加入监视跟踪
-            </summary>
-        </member>
-        <member name="M:Agebull.Common.Logging.LogRecorder.EndMonitor">
-            <summary>
-            结束监视日志
             </summary>
         </member>
         <member name="M:Agebull.Common.Logging.LogRecorder.TraceMonitor(Agebull.Common.Logging.TraceStep)">

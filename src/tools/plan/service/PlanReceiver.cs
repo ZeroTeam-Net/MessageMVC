@@ -1,7 +1,9 @@
-﻿using Agebull.Common.Logging;
+﻿using Agebull.Common.Ioc;
+using Agebull.Common.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.Tools;
 using ZeroTeam.MessageMVC.ZeroApis;
@@ -19,6 +21,11 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         public PlanReceiver() : base(nameof(PlanReceiver))
         {
         }
+
+        /// <summary>
+        /// 对应发送器名称
+        /// </summary>
+        string IMessageReceiver.PosterName => null;
 
         #region IMessageReceiver
 
@@ -38,7 +45,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// </summary>
         async Task<bool> IMessageReceiver.Loop(CancellationToken token)
         {
-            _= CheckReceipt(token);
+            _ = CheckReceipt(token);
             bool succes = true;
             try
             {
@@ -73,8 +80,13 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                             PlanItem.logger.Trace(() => $"Plan message begin post.{item.Option.plan_id}");
 
                             Interlocked.Increment(ref wait);
-                            item.Message.Reset();
-                            await MessageProcessor.OnMessagePush(Service, item.Message, true, item);
+
+                            //写入回执备查
+                            if (item.Message.Trace.Context == null)
+                                item.Message.Trace.Context = DependencyHelper.Create<IZeroContext>();
+                            item.Message.Trace.Context.Option["Receipt"] = "true";
+
+                            _ = MessageProcessor.OnMessagePush(Service, item.Message, true, item);
                         }
                     }
                     catch (Exception ex)
@@ -125,20 +137,20 @@ namespace ZeroTeam.MessageMVC.PlanTasks
             }
             switch (result.Code)
             {
-                case DefaultErrorCode.ReTry:
-                case DefaultErrorCode.NoReady:
-                case DefaultErrorCode.Unavailable:
+                case OperatorStatusCode.ReTry:
+                case OperatorStatusCode.NoReady:
+                case OperatorStatusCode.Unavailable:
                     item.RealInfo.exec_state = MessageState.Cancel;
                     break;
-                case DefaultErrorCode.NoFind:
+                case OperatorStatusCode.NoFind:
                     item.RealInfo.exec_state = MessageState.NonSupport;
                     break;
-                case DefaultErrorCode.NetworkError:
+                case OperatorStatusCode.NetworkError:
                     item.RealInfo.exec_state = MessageState.NetworkError;
                     break;
-                case DefaultErrorCode.BusinessException:
-                case DefaultErrorCode.UnhandleException:
-                    item.RealInfo.exec_state = MessageState.Error;
+                case OperatorStatusCode.BusinessException:
+                case OperatorStatusCode.UnhandleException:
+                    item.RealInfo.exec_state = MessageState.BusinessError;
                     break;
                 default:
                     item.RealInfo.exec_state = MessageState.Failed;
@@ -157,11 +169,11 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         {
             PlanItem item = (PlanItem)tag;
             Interlocked.Decrement(ref wait);
-            PlanItem.logger.Trace(() => $"Plan post end.state {message.State}");
+            PlanItem.logger.Trace(() => $"计划任务执行结束,消息状态: {message.State}");
 
-            message.OfflineResult(Service.Serialize);
+            //message.OfflineResult(Service.Serialize);全为远程调用,应该不需要
 
-            if (message.State == MessageState.Success)
+            if (message.State.IsEnd())
             {
                 item.RealInfo.exec_state = item.Message.State;
                 item.RealInfo.exec_end_time = PlanItem.NowTime();
@@ -251,7 +263,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                     await item.SaveRealInfo();
 
 
-                    if (message.State == MessageState.Success || message.State == MessageState.Failed)
+                    if (message.State.IsEnd())
                     {
                         await item.CheckNextTime();
                     }

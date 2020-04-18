@@ -99,7 +99,7 @@ namespace ZeroTeam.MessageMVC.Http
                             LoggerProviderOptions.RegisterProviderOptions<TextLoggerOption, TextLoggerProvider>(builder.Services);
                         }
                     })
-                    .UseUrls(ConfigurationManager.Root.GetSection("Kestrel.Endpoints.Http.Url").Value)
+                    .UseUrls(ConfigurationManager.Root.GetSection("Kestrel:Endpoints:Http:Url").Value)
                     .UseKestrel((ctx, opt) =>
                     {
                         opt.Configure(ctx.Configuration.GetSection("Kestrel"));

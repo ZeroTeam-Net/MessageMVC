@@ -14,6 +14,11 @@
             构造
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.ZeroTeam#MessageMVC#Messages#IMessageReceiver#PosterName">
+            <summary>
+            对应发送器名称
+            </summary>
+        </member>
         <member name="F:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.client">
             <summary>
             本地代理
@@ -28,12 +33,6 @@
             <summary>
             初始化
             </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.ZeroTeam#MessageMVC#Messages#IMessageReceiver#LoopBegin">
-            <summary>
-            同步运行状态
-            </summary>
-            <returns></returns>
         </member>
         <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.ZeroTeam#MessageMVC#Messages#IMessageReceiver#Close">
             <summary>
@@ -79,6 +78,11 @@
             构造
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.ZeroTeam#MessageMVC#Messages#IMessageReceiver#PosterName">
+            <summary>
+            对应发送器名称
+            </summary>
+        </member>
         <member name="F:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.client">
             <summary>
             本地代理
@@ -93,12 +97,6 @@
             <summary>
             初始化
             </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.ZeroTeam#MessageMVC#Messages#IMessageReceiver#LoopBegin">
-            <summary>
-            同步运行状态
-            </summary>
-            <returns></returns>
         </member>
         <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.ZeroTeam#MessageMVC#Messages#IMessageReceiver#Close">
             <summary>

@@ -54,6 +54,8 @@ namespace ZeroTeam.MessageMVC.ConfigSync
 
             //健康检查
             services.AddTransient<IMessageMiddleware, HealthCheckMiddleware>();
+            //异常处理
+            services.AddTransient<IMessageMiddleware, ExceptionMiddleware>(); 
         }
 
         /// <summary>

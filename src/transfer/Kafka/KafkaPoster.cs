@@ -9,7 +9,6 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Kafka
 {
@@ -131,7 +130,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <summary>
         /// 等级
         /// </summary>
-        int IZeroMiddleware.Level => 0;
+        int IZeroMiddleware.Level => MiddlewareLevel.Front;
 
         /// <summary>
         /// 关闭
@@ -186,7 +185,7 @@ namespace ZeroTeam.MessageMVC.Kafka
             var path = IOHelper.CheckPath(ZeroAppOption.Instance.DataFolder, "redis");
             var isFailed = ReQueueErrorMessage(path);
 
-            logger.Information("异步消息投递已启动");
+            Logger.Information("异步消息投递已启动");
             while (ZeroFlowControl.IsAlive)
             {
                 if (isFailed)
@@ -202,12 +201,12 @@ namespace ZeroTeam.MessageMVC.Kafka
                     }
                     catch (TaskCanceledException)
                     {
-                        logger.Information("收到系统退出消息,正在退出...");
+                        Logger.Information("收到系统退出消息,正在退出...");
                         return;
                     }
                     catch (Exception ex)
                     {
-                        logger.Warning(() => $"错误信号.{ex.Message}");
+                        Logger.Warning(() => $"错误信号.{ex.Message}");
                         isFailed = true;
                         continue;
                     }
@@ -215,14 +214,14 @@ namespace ZeroTeam.MessageMVC.Kafka
 
                 while (queues.TryPeek(out KafkaQueueItem item))
                 {
-                    if (!await DoPost(logger, path, item))
+                    if (!await DoPost(Logger, path, item))
                     {
                         isFailed = true;
                         break;
                     }
                 }
             }
-            logger.Information("异步消息投递已关闭");
+            Logger.Information("异步消息投递已关闭");
         }
         /// <summary>
         /// 还原发送异常文件
@@ -236,7 +235,7 @@ namespace ZeroTeam.MessageMVC.Kafka
             {
                 return false;
             }
-            logger.Information(() => $"载入发送错误消息,总数{files.Count}");
+            Logger.Information(() => $"载入发送错误消息,总数{files.Count}");
             foreach (var file in files)
             {
                 try
@@ -246,7 +245,7 @@ namespace ZeroTeam.MessageMVC.Kafka
                 }
                 catch (Exception ex)
                 {
-                    logger.Warning(() => $"{file} : 消息载入错误.{ex.Message}");
+                    Logger.Warning(() => $"{file} : 消息载入错误.{ex.Message}");
                 }
             }
 
@@ -323,18 +322,17 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <returns></returns>
         Task<IMessageResult> IMessagePoster.Post(IInlineMessage message)
         {
-            var item = new KafkaQueueItem
+            message.Offline();
+            queues.Enqueue(new KafkaQueueItem
             {
                 ID = message.ID,
                 Topic = message.Topic,
-                Message = serializer.ToString(message, false)
-            };
-            LogRecorder.MonitorTrace("[KafkaPoster.Post] 消息已投入发送队列,将在后台静默发送直到成功");
-            queues.Enqueue(item);
+                Message = SmartSerializer.SerializeMessage(message)
+            });
             semaphore.Release();
-            message.State = MessageState.Accept;
-            message.RuntimeStatus = ApiResultHelper.Helper.Waiting;
-            return Task.FromResult(message.ToMessageResult());
+            message.RealState = MessageState.AsyncQueue;
+            LogRecorder.MonitorDetails(() =>"[KafkaPoster.Post] 消息已投入发送队列,将在后台静默发送直到成功");
+            return Task.FromResult<IMessageResult>(null);//直接使用状态
         }
         #endregion
     }

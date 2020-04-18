@@ -10,7 +10,7 @@ namespace ZeroTeam.MessageMVC.Context
     /// <summary>
     /// 跟踪信息
     /// </summary>
-    [DataContract, Category("跟踪信息"), JsonObject(MemberSerialization.OptIn)]
+    [Category("跟踪信息"), JsonObject(MemberSerialization.OptIn)]
     public class TraceInfo
     {
         /// <summary>
@@ -111,11 +111,32 @@ namespace ZeroTeam.MessageMVC.Context
                 TraceId = id,
                 Start = DateTime.Now,
                 LocalId = id,
-                LocalApp = $"{ZeroAppOption.Instance.AppName}({ZeroAppOption.Instance.AppVersion})",
+                LocalApp = $"{ZeroAppOption.Instance.ShortName ?? ZeroAppOption.Instance.AppName}({ZeroAppOption.Instance.AppVersion})",
                 LocalMachine = $"{ZeroAppOption.Instance.ServiceName}({ZeroAppOption.Instance.LocalIpAddress})"
             };
         }
 
+        /// <summary>
+        /// 构造
+        /// </summary>
+        public TraceInfo Copy()
+        {
+            return new TraceInfo
+            {
+                TraceId = TraceId,
+                Start = Start,
+                LocalId = LocalId,
+                LocalApp = LocalApp,
+                LocalMachine = LocalMachine,
+                CallId = CallId,
+                CallApp = CallApp,
+                CallMachine = CallMachine,
+                Headers = Headers,
+                Token = Token,
+                Context = Context,
+                Level = Level
+            };
+        }
     }
 }
 

@@ -17,7 +17,6 @@ namespace Agebull.Common.Text
     /// <summary>
     ///   多文本的一个集合
     /// </summary>
-    [DataContract]
     public class MulitStringDictionary : Dictionary<string , List<string>>
     {
         /// <summary>

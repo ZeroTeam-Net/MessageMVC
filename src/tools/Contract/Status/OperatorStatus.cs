@@ -1,8 +1,10 @@
 using Newtonsoft.Json;
 using System;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+using ZeroTeam.MessageMVC.ZeroApis;
 
-namespace ZeroTeam.MessageMVC.ZeroApis
+namespace ZeroTeam.MessageMVC.ApiContract
 {
     /// <summary>
     ///     API状态返回接口实现
@@ -14,7 +16,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ///     成功或失败标记
         /// </summary>
         /// <example>true</example>
-        [DataMember, JsonProperty("success")]
+        [DataMember(Name = "success"), JsonPropertyName("success"), JsonProperty("success", NullValueHandling = NullValueHandling.Ignore)]
         public bool Success { get; set; }
 
         /// <summary>
@@ -24,7 +26,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ///     参见 ErrorCode 说明
         /// </remarks>
         /// <example>-1</example>
-        [DataMember, JsonProperty("code")]
+        [DataMember(Name = "code"), JsonPropertyName("code"), JsonProperty("code", NullValueHandling = NullValueHandling.Ignore)]
         public int Code { get; set; }
 
         /// <summary>
@@ -34,19 +36,19 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ///  说明错误的原因
         /// </remarks>
         /// <example>你的数据不正确</example>
-        [DataMember, JsonProperty("message", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [DataMember(Name = "message"), JsonPropertyName("message"), JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
         public string Message { get; set; }
 
         /// <summary>
         ///     内部提示信息
         /// </summary>
-        [IgnoreDataMember]
+        [IgnoreDataMember, System.Text.Json.Serialization.JsonIgnore, Newtonsoft.Json.JsonIgnore]
         public string InnerMessage { get; set; }
 
         /// <summary>
         /// 异常
         /// </summary>
-        [IgnoreDataMember]
+        [IgnoreDataMember, System.Text.Json.Serialization.JsonIgnore, Newtonsoft.Json.JsonIgnore]
         public Exception Exception { get; set; }
 
     }

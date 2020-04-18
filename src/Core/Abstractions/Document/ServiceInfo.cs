@@ -8,7 +8,6 @@ namespace ZeroTeam.MessageMVC.Documents
     /// <summary>
     /// 站点信息
     /// </summary>
-    [DataContract]
     [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class ServiceInfo : ServiceDocument
     {
@@ -22,9 +21,5 @@ namespace ZeroTeam.MessageMVC.Documents
         /// </summary>
         public Func<string, IMessageReceiver> NetBuilder { get; set; }
 
-        /// <summary>
-        /// 序列化类型
-        /// </summary>
-        public SerializeType Serialize { get; set; }
     }
 }

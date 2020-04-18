@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
-using System.Reflection;
 
 namespace ZeroTeam.MessageMVC.AddIn
 {
@@ -18,10 +17,7 @@ namespace ZeroTeam.MessageMVC.AddIn
         /// 单例
         /// </summary>
         public static AddInImporter Instance = new AddInImporter();
-        /// <summary>
-        /// 运行状态
-        /// </summary>
-        public StationStateType State { get; } = StationStateType.Run;
+        
 
         /// <summary>
         /// 实例名称
@@ -31,7 +27,7 @@ namespace ZeroTeam.MessageMVC.AddIn
         /// <summary>
         /// 等级
         /// </summary>
-        int IZeroMiddleware.Level => -0xFFF;
+        int IZeroMiddleware.Level => MiddlewareLevel.Framework;
 
         /// <summary>
         /// 插件对象
@@ -47,7 +43,7 @@ namespace ZeroTeam.MessageMVC.AddIn
             DirectoryCatalog directoryCatalog;
             if (string.IsNullOrEmpty(ZeroAppOption.Instance.AddInPath))
             {
-                directoryCatalog = new DirectoryCatalog(Path.GetDirectoryName(this.GetType().Assembly.Location),
+                directoryCatalog = new DirectoryCatalog(Path.GetDirectoryName(GetType().Assembly.Location),
                     "ZeroTeam.MessageMVC.*.dll");
             }
             else
@@ -99,6 +95,36 @@ namespace ZeroTeam.MessageMVC.AddIn
             foreach (var reg in Registers)
             {
                 reg.Initialize();
+            }
+        }
+
+        /// <summary>
+        /// 初始化
+        /// </summary>
+        void IFlowMiddleware.Start()
+        {
+            if (Registers == null)
+            {
+                return;
+            }
+            foreach (var reg in Registers)
+            {
+                reg.Start();
+            }
+        }
+
+        /// <summary>
+        /// 初始化
+        /// </summary>
+        void IFlowMiddleware.End()
+        {
+            if (Registers == null)
+            {
+                return;
+            }
+            foreach (var reg in Registers)
+            {
+                reg.End();
             }
         }
     }

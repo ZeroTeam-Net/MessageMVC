@@ -13,27 +13,6 @@ namespace ZeroTeam.MessageMVC.Messages
         public Func<object, object> Convert { get; set; }
 
         /// <summary>
-        /// 序列化
-        /// </summary>
-        /// <param name="obj">源对象</param>
-        /// <returns></returns>
-        public object Serialize(object obj)
-        {
-            return obj?.ToString();
-        }
-
-        /// <summary>
-        /// 反序列化
-        /// </summary>
-        /// <param name="obj">源内容(一般都是文本)</param>
-        /// <param name="type">类型</param>
-        /// <returns>结果对象，可能因为格式不良好而产生异常</returns>
-        public object Deserialize(object obj, Type type)
-        {
-            return Convert == null ? obj : Convert(obj);
-        }
-
-        /// <summary>
         /// 反序列化
         /// </summary>
         public T ToObject<T>(string str)

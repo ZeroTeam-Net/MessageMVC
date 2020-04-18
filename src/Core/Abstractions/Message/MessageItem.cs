@@ -11,11 +11,6 @@ namespace ZeroTeam.MessageMVC.Messages
     public class MessageItem : IMessageItem
     {
         /// <summary>
-        ///     是否正常
-        /// </summary>
-        public bool IsSucceed => State == MessageState.Success;
-
-        /// <summary>
         /// 消息标识
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
@@ -46,11 +41,11 @@ namespace ZeroTeam.MessageMVC.Messages
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public string Content { get; set; }
 
-        /// <summary>
+        /*// <summary>
         /// 其他二进制内容
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public Dictionary<string, byte[]> Binary { get; set; }
+        public Dictionary<string, byte[]> Binary { get; set; }*/
 
 
         /// <summary>

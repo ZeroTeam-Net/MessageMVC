@@ -98,32 +98,12 @@ namespace ZeroTeam.MessageMVC.Messages
             {
                 resultData = value;
                 DataState |= MessageDataState.ResultInline;
-                if (Result == null && value == null && runtimeStatus == null)
+                if (Result == null && value == null)
                     DataState |= MessageDataState.ResultOffline;
                 else
                     DataState &= ~MessageDataState.ResultOffline;
             }
         }
-
-        private IOperatorStatus runtimeStatus;
-
-        /// <summary>
-        /// 执行状态
-        /// </summary>
-        public IOperatorStatus RuntimeStatus
-        {
-            get => runtimeStatus;
-            set
-            {
-                runtimeStatus = value;
-                DataState |= MessageDataState.ResultInline;
-                if (Result == null && value == null && resultData == null)
-                    DataState |= MessageDataState.ResultOffline;
-                else
-                    DataState &= ~MessageDataState.ResultOffline;
-            }
-        }
-
 
         /// <summary>
         ///     返回值序列化对象
@@ -137,6 +117,11 @@ namespace ZeroTeam.MessageMVC.Messages
         public Func<int, string, object> ResultCreater { get; set; }
 
         /// <summary>
+        /// 参数序列化器
+        /// </summary>
+        public ISerializeProxy ArgumentSerializer { get; set; }
+
+        /// <summary>
         /// 取参数值
         /// </summary>
         /// <param name="scope">参数范围</param>
@@ -148,7 +133,6 @@ namespace ZeroTeam.MessageMVC.Messages
         {
             return ArgumentData;
         }
-
     }
 }
 

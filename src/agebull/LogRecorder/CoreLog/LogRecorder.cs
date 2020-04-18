@@ -37,24 +37,14 @@ namespace Agebull.Common.Logging
         public static string LogPath { get; set; }
 
         /// <summary>
-        /// 是否使用基础文本日志记录器
-        /// </summary>
-        public static bool UseBaseLogger { get; set; }
-
-        /// <summary>
-        /// 是否使用基础文本日志记录器
-        /// </summary>
-        public static bool UseConsoleLogger { get; set; }
-
-        /// <summary>
-        /// 不注册日志器
-        /// </summary>
-        public static bool NoRegist { get; set; }
-
-        /// <summary>
         /// 是否开启跟踪日志
         /// </summary>
         public static bool LogMonitor { get; set; }
+
+        /// <summary>
+        /// 跟踪日志是否包含详细信息
+        /// </summary>
+        public static bool MonitorIncludeDetails { get; set; }
 
         /// <summary>
         /// 是否开启SQL日志
@@ -93,7 +83,7 @@ namespace Agebull.Common.Logging
         public static void Initialize()
         {
             ReadConfig();
-            if (!NoRegist)
+            if (ConfigurationManager.Root.GetSection("LogRecorder:noRegist")?.Value != "true")
             {
                 DoInitialize();
             }
@@ -110,12 +100,7 @@ namespace Agebull.Common.Logging
             DependencyHelper.ServiceCollection.AddLogging(builder =>
             {
                 builder.AddConfiguration(ConfigurationManager.Root.GetSection("Logging"));
-                if (UseConsoleLogger)
-                {
-                    builder.AddConsole();
-                }
-
-                if (!UseBaseLogger)
+                if (ConfigurationManager.Root.GetSection("LogRecorder:innerLogger")?.Value != "true")
                 {
                     return;
                 }
@@ -125,21 +110,19 @@ namespace Agebull.Common.Logging
 
             });
             DependencyHelper.Update();
-            ConfigurationManager.RegistOnChange("Logging", ReadConfig, false);
+            ConfigurationManager.RegistOnChange("LogRecorder", ReadConfig, false);
         }
         /// <summary>
         /// 读取配置
         /// </summary>
         private static void ReadConfig()
         {
-            var sec = ConfigurationManager.Get("Logging");
+            var sec = ConfigurationManager.Get("LogRecorder");
             if (sec != null)
             {
-                LogMonitor = sec.GetBool("monitor");
+                MonitorIncludeDetails = sec.GetBool("details");
                 LogDataSql = sec.GetBool("sql");
-                UseBaseLogger = sec.GetBool("innerLogger");
-                UseConsoleLogger = sec.GetBool("console");
-                NoRegist = sec.GetBool("noRegist");
+                LogMonitor = sec.GetBool("monitor");
             }
 #if !NETCOREAPP
             if (LogMonitor)
@@ -269,7 +252,7 @@ namespace Agebull.Common.Logging
         }
 
         ///<summary>
-        ///  记录错误消息
+        ///  记录提示消息
         ///</summary>
         ///<param name="message"> 日志详细信息 </param>
         ///<param name="formatArgs"> 格式化的参数 </param>

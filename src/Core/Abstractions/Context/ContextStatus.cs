@@ -84,7 +84,7 @@ namespace ZeroTeam.MessageMVC.Context
         public void ResetStatus()
         {
             _status.Success = true;
-            _status.Code = DefaultErrorCode.Success;
+            _status.Code = OperatorStatusCode.Success;
             _messageBuilder = null;
             _messageChanged = false;
             _status.Message = null;

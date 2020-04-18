@@ -1,6 +1,5 @@
 using Newtonsoft.Json;
 using System;
-using System.Runtime.Serialization;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -12,7 +11,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         ///  异常
         /// </summary>
-        [JsonIgnore,IgnoreDataMember]
         Exception Exception { get; set; }
 
         /// <summary>
@@ -21,7 +19,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         bool Success { get; set; }
 
         /// <summary>
-        ///     错误码（系统定义）
+        ///     状态码（系统定义）
         /// </summary>
         int Code { get; set; }
 
@@ -29,6 +27,5 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ///  信息
         /// </summary>
         string Message { get; set; }
-
     }
 }

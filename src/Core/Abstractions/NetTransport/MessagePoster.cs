@@ -1,5 +1,4 @@
-﻿using Agebull.Common;
-using Agebull.Common.Configuration;
+﻿using Agebull.Common.Configuration;
 using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,7 +8,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC
 {
@@ -22,7 +20,7 @@ namespace ZeroTeam.MessageMVC
 
         string IZeroDependency.Name => nameof(MessagePoster);
 
-        int IZeroMiddleware.Level => 0xFFFF;
+        int IZeroMiddleware.Level => MiddlewareLevel.Last;
 
         #endregion
 
@@ -50,6 +48,18 @@ namespace ZeroTeam.MessageMVC
                 posters.TryAdd(poster.GetTypeName(), poster);
             }
             var sec = ConfigurationManager.Get("MessageMVC:MessagePoster");
+            if (sec == null)
+            {
+                if (posters.TryGetValue("HttpPoster", out Default))
+                {
+                    logger.Information("缺省发布器为HttpPoster.");
+                }
+                else
+                {
+                    logger.Information("无发布器,所有外部请求将失败.");
+                }
+                return;
+            }
             var def = sec.GetStr("default", "");
             if (posters.TryGetValue(def, out Default))
             {
@@ -127,27 +137,71 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         /// <param name="message">消息</param>
         /// <param name="autoOffline">是否自动离线</param>
-        /// <returns>返回值</returns>
-        public static async Task<(IInlineMessage message, ISerializeProxy serialize)> Post(IMessageItem message,bool autoOffline=true)
+        /// <returns>返回值,如果未进行离线交换message返回为空,此时请检查state</returns>
+        public static async Task<(IInlineMessage message, MessageState state)> Post(IMessageItem message, bool autoOffline = true)
         {
             if (message == null || string.IsNullOrEmpty(message.Topic) || string.IsNullOrEmpty(message.Title))
             {
                 throw new NotSupportedException("参数[item]不能为空且[Topic]与[Title]必须为有效值");
             }
-            if (!(message is IInlineMessage inline))
-            {
-                inline = message.ToInline();
-            }
             var producer = GetService(message.Topic);
             if (producer == null)
             {
-                inline.State = MessageState.NonSupport;
-                inline.RuntimeStatus =ApiResultHelper.Helper.NoFind;
-                LogRecorder.MonitorTrace(() => $"服务{message.Topic}不存在");
-                return (inline, null);
+                LogRecorder.MonitorInfomation(() => $"服务{message.Topic}不存在");
+                return (null, MessageState.Unhandled);
             }
-            inline.Reset();
-            if (GlobalContext.EnableLinkTrace)
+            var inline = CheckMessage(message);
+            try
+            {
+                var msg = await producer.Post(inline);
+                if (msg != null)
+                    inline.CopyResult(msg);
+                if (autoOffline)
+                {
+                    inline.OfflineResult();
+                    LogRecorder.MonitorDetails(() => $"返回 => {msg.ToJson(true)}");
+                }
+                return (inline, inline.State);
+            }
+            catch (MessagePostException ex)
+            {
+                logger.Exception(ex);
+                return (null, MessageState.NetworkError);
+            }
+            catch (Exception ex)
+            {
+                logger.Exception(ex);
+                return (null, MessageState.FrameworkError);
+            }
+
+        }
+
+        static IInlineMessage CheckMessage(IMessageItem message)
+        {
+            if (message is IInlineMessage inline)
+            {
+                inline.Reset();
+                inline.State = MessageState.Accept;
+            }
+            else
+            {
+                var dataState = MessageDataState.ArgumentOffline;
+                if (!string.IsNullOrEmpty(message.Result))
+                    dataState |= MessageDataState.ResultOffline;
+                inline = new InlineMessage
+                {
+                    ID = message.ID,
+                    State = MessageState.Accept,
+                    Topic = message.Topic,
+                    Title = message.Title,
+                    Result = message.Result,
+                    Content = message.Content,
+                    Trace = message.Trace,
+                    DataState = dataState
+                };
+            }
+            //保持消息的跟踪不变
+            if (inline.Trace == null && GlobalContext.EnableLinkTrace)
             {
                 inline.Trace = new TraceInfo
                 {
@@ -171,13 +225,7 @@ namespace ZeroTeam.MessageMVC
                     inline.Trace.Headers = ctx.Trace.Headers;
                 }
             }
-            inline.OfflineArgument(producer);
-            var msg = await producer.Post(inline);
-            inline.CopyResult(msg);
-            if (autoOffline)
-                inline.OfflineResult(producer);
-            LogRecorder.MonitorTrace(() => $"返回 => {msg.ToJson(true)}");
-            return (inline, producer);
+            return inline;
         }
 
         #endregion
@@ -193,8 +241,8 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static MessageState Publish<TArg>(string topic, string title, TArg content)
         {
-            var (message, _) = Post(MessageHelper.NewRemote(topic, title, content)).Result;
-            return message.State;
+            var (_, state) = Post(MessageHelper.NewRemote(topic, title, content),false).Result;
+            return state;
         }
 
         /// <summary>
@@ -206,8 +254,8 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static MessageState Publish(string topic, string title, string content)
         {
-            var (message, _) = Post(MessageHelper.NewRemote(topic, title, content)).Result;
-            return message.State;
+            var (_, state) = Post(MessageHelper.NewRemote(topic, title, content), false).Result;
+            return state;
         }
 
         /// <summary>
@@ -219,8 +267,8 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static async Task<MessageState> PublishAsync<TArg>(string topic, string title, TArg content)
         {
-            var (message, _) = await Post(MessageHelper.NewRemote(topic, title, content));
-            return message.State;
+            var (_, state) = await Post(MessageHelper.NewRemote(topic, title, content), false);
+            return state;
         }
 
         /// <summary>
@@ -232,8 +280,8 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static async Task<MessageState> PublishAsync(string topic, string title, string content)
         {
-            var (message, _) = await Post(MessageHelper.NewRemote(topic, title, content));
-            return message.State;
+            var (_, state) = await Post(MessageHelper.NewRemote(topic, title, content), false);
+            return state;
         }
 
         #endregion
@@ -247,10 +295,11 @@ namespace ZeroTeam.MessageMVC
         /// <param name="api">接口名称</param>
         /// <param name="args">接口参数</param>
         /// <returns></returns>
-        public static TRes Call<TArg, TRes>(string service, string api, TArg args)
+        public static (TRes res, MessageState state) Call<TArg, TRes>(string service, string api, TArg args)
+            where TRes : class
         {
-            var (msg, seri) = Post(MessageHelper.NewRemote(service, api, args)).Result;
-            return msg.GetResultData<TRes>(seri);
+            var (msg, state) = Post(MessageHelper.NewRemote(service, api, args)).Result;
+            return (msg?.GetResultData<TRes>(), state);
         }
 
         /// <summary>
@@ -271,10 +320,11 @@ namespace ZeroTeam.MessageMVC
         /// <param name="service">服务名称</param>
         /// <param name="api">接口名称</param>
         /// <returns></returns>
-        public static TRes Call<TRes>(string service, string api)
+        public static (TRes res, MessageState state) Call<TRes>(string service, string api)
+              where TRes : class
         {
-            var (msg, seri) = Post(MessageHelper.NewRemote(service, api)).Result;
-            return msg.GetResultData<TRes>(seri);
+            var (msg, state) = Post(MessageHelper.NewRemote(service, api)).Result;
+            return (msg?.GetResultData<TRes>(), state);
         }
 
         /// <summary>
@@ -284,11 +334,11 @@ namespace ZeroTeam.MessageMVC
         /// <param name="api">接口名称</param>
         /// <param name="args">接口参数</param>
         /// <returns></returns>
-        public static string Call(string service, string api, string args)
+        public static (string res, MessageState state) Call(string service, string api, string args)
         {
-            var (msg, seri) = Post(MessageHelper.NewRemote(service, api, args)).Result;
-            msg.OfflineResult(seri);
-            return msg.Result;
+            var (msg, state) = Post(MessageHelper.NewRemote(service, api, args)).Result;
+            msg?.OfflineResult();
+            return (msg.Result, state);
         }
 
         /// <summary>
@@ -298,10 +348,11 @@ namespace ZeroTeam.MessageMVC
         /// <param name="api">接口名称</param>
         /// <param name="args">接口参数</param>
         /// <returns></returns>
-        public static async Task<TRes> CallAsync<TArg, TRes>(string service, string api, TArg args)
+        public static async Task<(TRes res, MessageState state)> CallAsync<TArg, TRes>(string service, string api, TArg args)
+                     where TRes : class
         {
-            var (msg, seri) = await Post(MessageHelper.NewRemote(service, api, args));
-            return msg.GetResultData<TRes>(seri);
+            var (msg, state) = await Post(MessageHelper.NewRemote(service, api, args));
+            return (msg?.GetResultData<TRes>(), state);
         }
 
         /// <summary>
@@ -311,9 +362,10 @@ namespace ZeroTeam.MessageMVC
         /// <param name="api">接口名称</param>
         /// <param name="args">接口参数</param>
         /// <returns></returns>
-        public static Task CallAsync<TArg>(string service, string api, TArg args)
+        public static async Task<MessageState> CallAsync<TArg>(string service, string api, TArg args)
         {
-            return Post(MessageHelper.NewRemote(service, api, args));
+            var (_, state) = await Post(MessageHelper.NewRemote(service, api, args));
+            return state;
         }
 
         /// <summary>
@@ -322,10 +374,11 @@ namespace ZeroTeam.MessageMVC
         /// <param name="service">服务名称</param>
         /// <param name="api">接口名称</param>
         /// <returns></returns>
-        public static async Task<TRes> CallAsync<TRes>(string service, string api)
+        public static async Task<(TRes res, MessageState state)> CallAsync<TRes>(string service, string api)
+                     where TRes : class
         {
-            var (msg, seri) = await Post(MessageHelper.NewRemote(service, api));
-            return msg.GetResultData<TRes>(seri);
+            var (msg, state) = await Post(MessageHelper.NewRemote(service, api));
+            return (msg?.GetResultData<TRes>(), state);
         }
 
         /// <summary>
@@ -335,11 +388,12 @@ namespace ZeroTeam.MessageMVC
         /// <param name="api">接口名称</param>
         /// <param name="args">接口参数</param>
         /// <returns></returns>
-        public static async Task<string> CallAsync(string service, string api, string args)
+        public static async Task<(string res, MessageState state)> CallAsync(string service, string api, string args)
         {
-            var (msg, seri) = await Post(MessageHelper.NewRemote(service, api, args));
-            msg.OfflineResult(seri);
-            return msg.Result;
+            var (msg, state) = await Post(MessageHelper.NewRemote(service, api, args));
+            msg.OfflineResult();
+            msg?.OfflineResult();
+            return (msg.Result, state);
         }
 
         #endregion

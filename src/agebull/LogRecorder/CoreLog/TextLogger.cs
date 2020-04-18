@@ -336,7 +336,6 @@ namespace Agebull.Common.Logging
                     {
                         WriteFile("warning", Text());
                     }
-
                     break;
                 case LogLevel.Error:
                     WriteFile("error", Text());

@@ -1,6 +1,5 @@
 using Agebull.Common.Logging;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
@@ -16,14 +15,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         #region 对象
 
         /// <summary>
-        /// 当前处理器
-        /// </summary>
-        MessageProcessor IMessageMiddleware.Processor { get; set; }
-
-        /// <summary>
         /// 层级
         /// </summary>
-        int IMessageMiddleware.Level => short.MaxValue;
+        int IMessageMiddleware.Level => MiddlewareLevel.General;
 
         /// <summary>
         /// 消息中间件的处理范围
@@ -62,13 +56,13 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             Service = service;
             Message = message;
             Tag = tag;
+            Message.RealState = MessageState.Processing;
             var action = Service.GetApiAction(Message.Title);
             //1 查找调用方法
             if (action == null)
             {
-                LogRecorder.MonitorTrace("错误: 接口({0})不存在", Message.Title);
-                Message.RuntimeStatus = ApiResultHelper.Error(DefaultErrorCode.NoFind);
-                Message.State = MessageState.NonSupport;
+                LogRecorder.MonitorInfomation("错误: 接口({0})不存在", Message.Title);
+                Message.RealState = MessageState.Unhandled;
                 if (next != null)
                 {
                     await next();
@@ -80,9 +74,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 (!action.Access.AnyFlags(ApiAccessOption.Anymouse) || action.Access.AnyFlags(ApiAccessOption.Authority))
                 && (GlobalContext.User == null || GlobalContext.User.UserId <= UserInfo.SystemOrganizationId))
             {
-                LogRecorder.MonitorTrace("错误: 需要用户登录信息");
-                Message.RuntimeStatus = ApiResultHelper.Error(DefaultErrorCode.DenyAccess, "错误: 需要用户登录信息");
-                Message.State = MessageState.NonSupport;
+                LogRecorder.MonitorInfomation("错误: 需要用户登录信息");
+                Message.RealState = MessageState.Deny;
                 if (next != null)
                 {
                     await next();
@@ -105,31 +98,15 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 Message.State = state;
                 Message.ResultData = result;
             }
-            catch (MessageArgumentNullException b)
-            {
-                Message.State = MessageState.FormalError;
-                Message.RuntimeStatus = ApiResultHelper.Helper.Error(DefaultErrorCode.ArgumentError, $"参数{b.ParamName}不能为空");
-            }
-            catch (OperationCanceledException)
-            {
-                throw;
-            }
-            catch (ThreadInterruptedException)
-            {
-                throw;
-            }
-            catch (MessageBusinessException)
-            {
-                throw;
-            }
             catch (FormatException)
             {
-                Message.State = MessageState.FormalError;
-                Message.RuntimeStatus = ApiResultHelper.Helper.Error(DefaultErrorCode.ArgumentError, "参数转换出错误, 请检查调用参数是否合适");
+                Message.RealState = MessageState.FormalError;
+                Message.Result = "参数转换出错误, 请检查调用参数是否合适";
             }
-            catch (Exception ex)
+            catch (MessageArgumentNullException b)
             {
-               throw new MessageBusinessException($"接口方法({message.ServiceName}/{message.ApiName}) 执行出错.", ex);
+                Message.RealState = MessageState.FormalError;
+                Message.Result = $"参数{b.ParamName}不能为空";
             }
 
             if (next != null)
@@ -150,7 +127,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         private bool ArgumentPrepare(IApiAction action)
         {
             //还原参数
-            Message.ArgumentInline(action.ArgumentSerializer ?? Service.Serialize,
+            Message.ArgumentInline(
                 action.Access.HasFlag(ApiAccessOption.DictionaryArgument) ? null : action.ArgumentType,
                 action.ResultSerializer,
                 action.ResultCreater);
@@ -166,18 +143,18 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 if (!action.RestoreArgument(Message))
                 {
-                    LogRecorder.MonitorTrace("错误 : 无法还原参数");
-                    Message.RuntimeStatus = ApiResultHelper.Error(DefaultErrorCode.ArgumentError, "错误 : 无法还原参数");
-                    Message.State = MessageState.FormalError;
+                    LogRecorder.MonitorInfomation("错误 : 无法还原参数");
+                    Message.Result = "错误 : 无法还原参数";
+                    Message.RealState = MessageState.FormalError;
                     return false;
                 }
             }
             catch (Exception ex)
             {
                 var msg = $"错误 : 还原参数异常{ex.Message}";
-                LogRecorder.MonitorTrace(msg);
-                Message.RuntimeStatus = ApiResultHelper.Error(DefaultErrorCode.ArgumentError, msg);
-                Message.State = MessageState.FormalError;
+                LogRecorder.MonitorInfomation(msg);
+                Message.Result = msg;
+                Message.RealState = MessageState.FormalError;
                 return false;
             }
 
@@ -187,17 +164,18 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 {
                     return true;
                 }
-                LogRecorder.MonitorTrace("参数校验失败 : {0}", info);
-                Message.RuntimeStatus = ApiResultHelper.Error(DefaultErrorCode.ArgumentError, info);
-                Message.State = MessageState.FormalError;
+                var msg = $"参数校验失败 : {info}";
+                LogRecorder.MonitorInfomation(msg);
+                Message.Result = msg;
+                Message.RealState = MessageState.FormalError;
                 return false;
             }
             catch (Exception ex)
             {
                 var msg = $"错误 : 参数校验异常{ex.Message}";
-                LogRecorder.MonitorTrace(msg);
-                Message.RuntimeStatus = ApiResultHelper.Error(DefaultErrorCode.ArgumentError, msg);
-                Message.State = MessageState.FormalError;
+                LogRecorder.MonitorInfomation(msg);
+                Message.Result = msg;
+                Message.RealState = MessageState.FormalError;
                 return false;
             }
         }

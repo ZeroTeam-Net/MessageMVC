@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Http;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Http
 {
@@ -19,7 +19,13 @@ namespace ZeroTeam.MessageMVC.Http
         {
         }
 
+        /// <summary>
+        /// 对应发送器名称
+        /// </summary>
+        string IMessageReceiver.PosterName => nameof(HttpPoster);
+
         private TaskCompletionSource<bool> task;
+
         Task<bool> IMessageReceiver.Loop(CancellationToken token)
         {
             task = new TaskCompletionSource<bool>();
@@ -43,72 +49,57 @@ namespace ZeroTeam.MessageMVC.Http
         async Task<bool> IMessageReceiver.OnResult(IInlineMessage message, object tag)
         {
             var context = (HttpContext)tag;
-            var status = message.RuntimeStatus ?? (message.ResultData as IApiResult);
-
-            if (message.Result == null)
+            //同步HTTP状态码
+            switch (message.State)
             {
-                if (message.ResultData != null)
-                    message.Result = message.ResultData.ToJson();
-                else if (message.RuntimeStatus != null)
-                    message.Result = message.RuntimeStatus.ToJson();
+                default:
+                case MessageState.Failed:
+                case MessageState.Success:
+                    context.Response.StatusCode = (int)HttpStatusCode.OK;
+                    break;
+                case MessageState.NonSupport:
+                    context.Response.StatusCode = (int)HttpStatusCode.MethodNotAllowed;
+                    break;
+                case MessageState.Unhandled:
+                    context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+                    break;
+                case MessageState.FormalError:
+                    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    break;
+                case MessageState.Cancel:
+                    context.Response.StatusCode = (int)HttpStatusCode.RequestTimeout;
+                    break;
+                case MessageState.BusinessError:
+                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                    break;
+                case MessageState.NetworkError:
+                    context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                    break;
+                case MessageState.FrameworkError:
+                    context.Response.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                    break;
+                case MessageState.Deny:
+                    context.Response.StatusCode = (int)HttpStatusCode.NonAuthoritativeInformation;
+                    break;
+                case MessageState.None:
+                case MessageState.Accept:
+                case MessageState.Send:
+                case MessageState.Processing:
+                    context.Response.StatusCode = (int)HttpStatusCode.Accepted;
+                    break;
             }
             // 写入返回
-            message.OfflineResult(this);
-            if (status != null)
-            {
-                switch (status.Code)
-                {
-                    case DefaultErrorCode.NoFind:
-                        context.Response.StatusCode = 404;
-                        break;
-                    case DefaultErrorCode.DenyAccess:
-                    case DefaultErrorCode.TokenUnknow:
-                        context.Response.StatusCode = 407;
-                        break;
-                    case DefaultErrorCode.NoReady:
-                    case DefaultErrorCode.Unavailable:
-                        context.Response.StatusCode = 503;
-                        break;
-                    case DefaultErrorCode.NetworkError:
-                        context.Response.StatusCode = 504;
-                        break;
-                    default:
-                        context.Response.StatusCode = 200;
-                        break;
-                }
-            }
-            else
-            {
-                switch (message.State)
-                {
-                    case MessageState.Failed:
-                    case MessageState.Success:
-                    case MessageState.FormalError:
-                        context.Response.StatusCode = 200;
-                        break;
-                    case MessageState.NonSupport:
-                        context.Response.StatusCode = 404;
-                        break;
-                    case MessageState.NetworkError:
-                    case MessageState.Error:
-                        context.Response.StatusCode = 503;
-                        break;
-                    case MessageState.Cancel:
-                        context.Response.StatusCode = 503;
-                        break;
-                    default:
-                        context.Response.StatusCode = 504;
-                        break;
-                }
-            }
+            string json;
             if (message.IsOutAccess)
             {
-                await context.Response.WriteAsync(message.Result ?? "", Encoding.UTF8);
+                message.OfflineResult();
+                json = message.Result;
             }
             else
             {
-                await context.Response.WriteAsync(message.ToMessageResult().ToJson(), Encoding.UTF8);
+                json = SmartSerializer.ToString(message.ToMessageResult(true, Service.Serialize));
             }
+            await context.Response.WriteAsync(json ?? "", Encoding.UTF8);
             return true;
         }
 

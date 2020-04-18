@@ -20,6 +20,11 @@ namespace ZeroTeam.MessageMVC.Kafka
         {
         }
 
+        /// <summary>
+        /// 对应发送器名称
+        /// </summary>
+        string IMessageReceiver.PosterName => nameof(KafkaPoster);
+
         private IConsumer<Ignore, string> consumer;
 
 
@@ -64,8 +69,8 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <param name="consumeResult"></param>
         private async Task OnMessagePush(ConsumeResult consumeResult)
         {
-            var message = ((IMessagePoster)this).ToObject<InlineMessage>(consumeResult.Value);
-            await MessageProcessor.OnMessagePush(Service, message, true, consumeResult);//BUG:应该配置化同步或异步
+            if (SmartSerializer.TryToMessage(consumeResult.Message.Value,out var message))
+                await MessageProcessor.OnMessagePush(Service, message, true, consumeResult);//BUG:应该配置化同步或异步
         }
 
         private ConsumerBuilder<Ignore, string> builder;
@@ -102,7 +107,8 @@ namespace ZeroTeam.MessageMVC.Kafka
             var consumeResult = (ConsumeResult)tag;
             try
             {
-                consumer.Commit(consumeResult);
+                if (item.State.IsEnd())
+                    consumer.Commit(consumeResult);
                 return Task.FromResult(true);
             }
             catch (KafkaException ex)
@@ -111,6 +117,5 @@ namespace ZeroTeam.MessageMVC.Kafka
                 return Task.FromResult(false);
             }
         }
-
     }
 }

@@ -28,7 +28,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         /// 等级
         /// </summary>
-        int IZeroMiddleware.Level => 0;
+        int IZeroMiddleware.Level => MiddlewareLevel.Front;
 
         ILogger logger;
 
@@ -152,88 +152,75 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         ///     一次请求
         /// </summary>
-        /// <param name="caller"></param>
+        /// <param name="argument"></param>
         /// <param name="description"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        internal Task<MessageResult> CallZero(ZeroCaller caller, byte[] description, params byte[][] args)
+        internal Task<IMessageResult> CallZero(IInlineMessage argument, byte[] description, params byte[][] args)
         {
             var info = new ZeroRPCTaskInfo
             {
-                Caller = caller
+                Argument = new ZeroArgument
+                {
+                    Message = argument
+                }
             };
 
 
-            var socket = CreateProxySocket(caller);
+            var socket = CreateProxySocket(info.Argument);
             if (socket == null)
             {
-                LogRecorder.MonitorTrace(() => $"[ZeroPostProxy.CallZero] 本地Sock构造失败.{caller.Message.State}");
-                return Task.FromResult(new MessageResult
-                {
-                    ID = caller.Message.ID,
-                    State = MessageState.FormalError,
-                    Trace = caller.Message.Trace,
-                    RuntimeStatus = ApiResultHelper.Helper.ArgumentError
-                });
+                LogRecorder.MonitorInfomation(() => $"[ZeroPostProxy.CallZero] 本地Sock构造失败.{argument.ID}");
+                return Task.FromResult(argument.ToStateResult());
             }
-            using var message = new ZMessage
+            using var zMessage = new ZMessage
                 {
-                    new ZFrame(caller.Message.ServiceName),
+                    new ZFrame(argument.ServiceName),
                     new ZFrame(description)
                 };
             if (args != null)
             {
                 foreach (var arg in args)
                 {
-                    message.Add(new ZFrame(arg));
+                    zMessage.Add(new ZFrame(arg));
                 }
-                message.Add(new ZFrame(caller.Config.ServiceKey));
+                zMessage.Add(new ZFrame(info.Argument.Config.ServiceKey));
             }
 
             bool res;
             using (socket)
             {
-                res = socket.Send(message, out ZError _);
+                res = socket.Send(zMessage, out ZError _);
             }
             if (!res)
             {
-                LogRecorder.MonitorTrace(() => $"[ZeroPostProxy.CallZero] 发送到队列失败.{InprocAddress}");
-                return Task.FromResult(new MessageResult
-                {
-                    ID = caller.Message.ID,
-                    Trace = caller.Message.Trace,
-                    State = MessageState.NetworkError,
-                    RuntimeStatus = ApiResultHelper.Helper.NetworkError
-                });
+                LogRecorder.MonitorInfomation(() => $"[ZeroPostProxy.CallZero] 发送到队列失败.{InprocAddress}");
+                argument.RealState = MessageState.NetworkError;
+                return Task.FromResult(argument.ToStateResult());
             }
-            LogRecorder.MonitorTrace(() => $"[ZeroPostProxy.CallZero] 已发送到异步队列");
+            LogRecorder.MonitorDetails(() => $"[ZeroPostProxy.CallZero] 已发送到异步队列");
 
-            ZeroRPCTaskInfo.Tasks.TryAdd(caller.Message.ID, info);
-            info.TaskSource = new TaskCompletionSource<MessageResult>();
+            argument.RealState = MessageState.Send;
+
+            ZeroRPCTaskInfo.Tasks.TryAdd(argument.ID, info);
+            info.TaskSource = new TaskCompletionSource<IMessageResult>();
             return info.TaskSource.Task;
         }
 
-        private ZSocketEx CreateProxySocket(ZeroCaller caller)
+        private ZSocketEx CreateProxySocket(ZeroArgument argument)
         {
-            if (!ZeroRpcFlow.Config.TryGetConfig(caller.Message.ServiceName, out caller.Config))
+            if (!ZeroRpcFlow.Config.TryGetConfig(argument.Message.ServiceName, out argument.Config))
             {
-                caller.Message.RuntimeStatus = ApiResultHelper.Helper.NoFind;
-                caller.Message.State = MessageState.NonSupport;
+                argument.Message.RealState = MessageState.Unhandled;
                 return null;
             }
 
-            if (caller.Config.State != ZeroCenterState.None && caller.Config.State != ZeroCenterState.Run)
+            if (argument.Config.State != ZeroCenterState.None && argument.Config.State != ZeroCenterState.Run)
             {
-                caller.Message.RuntimeStatus = caller.Config.State == ZeroCenterState.Pause
-                    ? ApiResultHelper.Helper.Pause
-                    : ApiResultHelper.Helper.NonSupport;
-                caller.Message.State = MessageState.NonSupport;
+                argument.Message.RealState = MessageState.Unhandled;
                 return null;
             }
-
-            caller.Message.State = MessageState.Accept;
-
-            return ZSocketEx.CreateOnceSocket(InprocAddress, null, caller.Message.ID.ToBytes(), ZSocketType.PAIR);
+            return ZSocketEx.CreateOnceSocket(InprocAddress, null, argument.Message.ID.ToBytes(), ZSocketType.PAIR);
         }
         #endregion
 
@@ -362,22 +349,21 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             string id;
             ZMessage message2;
             StationProxyItem item;
+            ZeroRPCTaskInfo task;
             using (message)
             {
                 id = message[0].ToString();
+                if (!ZeroRPCTaskInfo.Tasks.TryGetValue(id, out task))
+                {
+                    logger.Error("({0})消息格式错乱", id);
+                }
                 var station = message[1].ToString();
                 if (!StationProxy.TryGetValue(station, out item))
                 {
                     logger.Error("({0})站点[{1}]不存在.", id, station);
-                    if (ZeroRPCTaskInfo.Tasks.TryGetValue(id, out var task))
-                    {
-                        task.TaskSource.SetResult(new MessageResult
-                        {
-                            ID = id,
-                            State = MessageState.FormalError,
-                            RuntimeStatus = ApiResultHelper.Helper.ArgumentError
-                        });
-                    }
+                    task.Argument.Message.RealState = MessageState.Unhandled;
+                    task.TaskSource.SetResult(null);//直接使用状态
+                    ZeroRPCTaskInfo.Tasks.TryRemove(id, out _);
                     return;
                 }
                 message2 = message.Duplicate(2);
@@ -393,20 +379,15 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             if (success)
             {
                 logger.Trace("({0})发送到远程服务成功,等待返回", id);
+                task.Argument.Message.RealState = MessageState.Recive;
                 Interlocked.Increment(ref WaitCount);
             }
             else
             {
                 logger.Trace("({0})发送到远程服务失败.{1}", id, error.Text);
-                if (ZeroRPCTaskInfo.Tasks.TryGetValue(id, out var task))
-                {
-                    task.TaskSource.SetResult(new MessageResult
-                    {
-                        ID = id,
-                        State = MessageState.NetworkError,
-                        RuntimeStatus = ApiResultHelper.Helper.NetworkError
-                    });
-                }
+                task.Argument.Message.RealState = MessageState.NetworkError;
+                task.TaskSource.SetResult(null);//直接使用状态
+                ZeroRPCTaskInfo.Tasks.TryRemove(id, out _);
             }
         }
 
@@ -437,39 +418,40 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 return;
             }
 
+            if (!ZeroRPCTaskInfo.Tasks.TryGetValue(zeroResult.Requester, out var task))
+            {
+                logger.Trace("({0})接收到远程返回,原始请求已无效.", zeroResult.Requester);
+                return;
+            }
             if (zeroResult.State == ZeroOperatorStateType.Runing)
             {
+                task.Argument.Message.RealState = MessageState.Recive;
                 logger.Trace("({0}).远程通知正在处理中");
                 return;
             }
 
             Interlocked.Decrement(ref WaitCount);
-            if (!ZeroRPCTaskInfo.Tasks.TryRemove(zeroResult.Requester, out var src))
+            ZeroRPCTaskInfo.Tasks.TryRemove(zeroResult.Requester, out _);
+
+            task.Argument.Message.Result = zeroResult.Result;
+            IMessageResult messageResult;
+            if (JsonHelper.TryDeserializeObject<MessageResult>(json, out var result) && result != null)
             {
-                logger.Trace("({0})接收到远程返回,原始请求者非支.", zeroResult.Requester);
-                return;
-            }
-            if (JsonHelper.TryDeserializeObject<MessageResult>(json, out var result))
-            {
-                result.DataState = MessageDataState.ResultOffline;
-                result.Result = src.Caller.Message.Result;
+                messageResult = result;
+                task.Argument.Message.RealState = result.State;
+                task.Argument.Message.Trace = result.Trace;
             }
             else
             {
-                src.Caller.CheckState(zeroResult.State);
-                result = new MessageResult
-                {
-                    ID = src.Caller.Message.ID,
-                    State = src.Caller.Message.State,
-                    Trace = src.Caller.Message.Trace,
-                    Result = src.Caller.Message.Result,
-                    RuntimeStatus = src.Caller.GetOperatorStatus(zeroResult.State)
-                };
+                task.Argument.Message.RealState = ZeroRPCPoster.GetMessageState(zeroResult.State);
+                messageResult = task.Argument.Message.ToMessageResult(true);
             }
+            result.DataState |= MessageDataState.ResultOffline;
+            result.DataState &= ~MessageDataState.ResultInline;
             logger.Trace("({0})接收到远程返回.{1}", result.Result);
             try
             {
-                if (!src.TaskSource.TrySetResult(result))
+                if (!task.TaskSource.TrySetResult(messageResult))
                 {
                     logger.Trace("({0})接收到远程返回.但等待队列已销毁:", zeroResult.Requester);
                 }

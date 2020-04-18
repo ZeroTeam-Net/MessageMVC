@@ -11,14 +11,19 @@ namespace ZeroTeam.MessageMVC.Messages
     public interface IMessageReceiver : IMessagePoster
     {
         /// <summary>
-        /// 日志记录器
+        /// 对应发送器名称
         /// </summary>
-        ILogger Logger { get; set; }
+        string PosterName { get; }
 
         /// <summary>
         /// 服务
         /// </summary>
         IService Service { get; set; }
+
+        /// <summary>
+        /// 日志记录器
+        /// </summary>
+        ILogger Logger {set; }
 
         /// <summary>
         /// 关闭
@@ -63,13 +68,6 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         /// <returns></returns>
         Task LoopComplete() => Task.CompletedTask;
-
-        /// <summary>
-        /// 表示已成功接收 
-        /// </summary>
-        /// <returns></returns>
-        Task Commit() => Task.CompletedTask;
-
 
         /// <summary>
         /// 发送返回值 

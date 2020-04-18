@@ -12,15 +12,6 @@ namespace ZeroTeam.MessageMVC.Messages
     public class MessageResult : IMessageResult
     {
         /// <summary>
-        /// 构造
-        /// </summary>
-        public MessageResult()
-        {
-            //防止反序列化构造失败
-            RuntimeStatus = DependencyHelper.Create<IOperatorStatus>();
-        }
-
-        /// <summary>
         /// ID
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
@@ -81,10 +72,5 @@ namespace ZeroTeam.MessageMVC.Messages
                 DataState |= MessageDataState.ResultInline;
             }
         }
-
-        /// <summary>
-        /// 执行状态
-        /// </summary>
-        public IOperatorStatus RuntimeStatus { get; set; }
     }
 }

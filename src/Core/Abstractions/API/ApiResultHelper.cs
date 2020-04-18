@@ -79,53 +79,53 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         public static IApiResult Succees() => Helper.Succees();
 
         /// <summary>
-        ///     生成一个包含错误码的标准返回
+        ///     生成一个包含状态码的标准返回
         /// </summary>
-        /// <param name="errCode">错误码</param>
+        /// <param name="code">状态码</param>
         /// <returns></returns>
-        public static IApiResult Error(int errCode) => Helper.Error(errCode);
+        public static IApiResult State(int code) => Helper.State(code);
 
         /// <summary>
-        ///     生成一个包含错误码的标准返回
+        ///     生成一个包含状态码的标准返回
         /// </summary>
-        /// <param name="errCode">错误码</param>
-        /// <param name="message">错误消息</param>
+        /// <param name="code">状态码</param>
+        /// <param name="message">提示消息</param>
         /// <returns></returns>
-        public static IApiResult Error(int errCode, string message) => Helper.Error(errCode, message);
+        public static IApiResult State(int code, string message) => Helper.State(code, message);
 
         /// <summary>
-        ///     生成一个包含错误码的标准返回
+        ///     生成一个包含状态码的标准返回
         /// </summary>
-        /// <param name="errCode">错误码</param>
-        /// <param name="message">错误消息</param>
+        /// <param name="code">状态码</param>
+        /// <param name="message">提示消息</param>
         /// <param name="innerMessage">内部说明</param>
         /// <returns></returns>
-        public static IApiResult Error(int errCode, string message, string innerMessage) => Helper.Error(errCode, message, innerMessage);
+        public static IApiResult State(int code, string message, string innerMessage) => Helper.State(code, message, innerMessage);
 
         /// <summary>
-        ///     生成一个包含错误码的标准返回
+        ///     生成一个包含状态码的标准返回
         /// </summary>
-        /// <param name="errCode">错误码</param>
-        /// <param name="message">错误消息</param>
+        /// <param name="code">状态码</param>
+        /// <param name="message">提示消息</param>
         /// <param name="innerMessage">内部说明</param>
         /// <param name="guide">错误指导</param>
         /// <param name="describe">错误解释</param>
         /// <returns></returns>
-        public static IApiResult Error(int errCode, string message, string innerMessage, string guide, string describe)
-             => Helper.Error(errCode, message, innerMessage, guide, describe);
+        public static IApiResult State(int code, string message, string innerMessage, string guide, string describe)
+             => Helper.State(code, message, innerMessage, guide, describe);
 
         /// <summary>
-        ///     生成一个包含错误码的标准返回
+        ///     生成一个包含状态码的标准返回
         /// </summary>
-        /// <param name="errCode">错误码</param>
-        /// <param name="message">错误消息</param>
+        /// <param name="code">状态码</param>
+        /// <param name="message">提示消息</param>
         /// <param name="innerMessage">内部说明</param>
         /// <param name="point">错误点</param>
         /// <param name="guide">错误指导</param>
         /// <param name="describe">错误解释</param>
         /// <returns></returns>
-        public static IApiResult Error(int errCode, string message, string innerMessage, string point, string guide, string describe)
-             => Helper.Error(errCode, message, innerMessage, point, guide, describe);
+        public static IApiResult State(int code, string message, string innerMessage, string point, string guide, string describe)
+             => Helper.State(code, message, innerMessage, point, guide, describe);
 
         /// <summary>
         ///     生成一个成功的标准返回
@@ -134,53 +134,53 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         public static IApiResult<TData> Succees<TData>(TData data) => Helper.Succees<TData>(data);
 
         /// <summary>
-        ///     生成一个包含错误码的标准返回
+        ///     生成一个包含状态码的标准返回
         /// </summary>
-        /// <param name="errCode">错误码</param>
+        /// <param name="code">状态码</param>
         /// <returns></returns>
-        public static IApiResult<TData> Error<TData>(int errCode) => Helper.Error<TData>(errCode);
+        public static IApiResult<TData> State<TData>(int code) => Helper.State<TData>(code);
 
         /// <summary>
-        ///     生成一个包含错误码的标准返回
+        ///     生成一个包含状态码的标准返回
         /// </summary>
-        /// <param name="errCode">错误码</param>
+        /// <param name="code">状态码</param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public static IApiResult<TData> Error<TData>(int errCode, string message) => Helper.Error<TData>(errCode, message);
+        public static IApiResult<TData> State<TData>(int code, string message) => Helper.State<TData>(code, message);
 
         /// <summary>
-        ///     生成一个包含错误码的标准返回
+        ///     生成一个包含状态码的标准返回
         /// </summary>
-        /// <param name="errCode">错误码</param>
-        /// <param name="message">错误消息</param>
+        /// <param name="code">状态码</param>
+        /// <param name="message">提示消息</param>
         /// <param name="innerMessage">内部说明</param>
         /// <returns></returns>
-        public static IApiResult<TData> Error<TData>(int errCode, string message, string innerMessage) => Helper.Error<TData>(errCode, message, innerMessage);
+        public static IApiResult<TData> State<TData>(int code, string message, string innerMessage) => Helper.State<TData>(code, message, innerMessage);
 
         /// <summary>
-        ///     生成一个包含错误码的标准返回
+        ///     生成一个包含状态码的标准返回
         /// </summary>
-        /// <param name="errCode">错误码</param>
-        /// <param name="message">错误消息</param>
+        /// <param name="code">状态码</param>
+        /// <param name="message">提示消息</param>
         /// <param name="innerMessage">内部说明</param>
         /// <param name="guide">错误指导</param>
         /// <param name="describe">错误解释</param>
         /// <returns></returns>
-        public static IApiResult<TData> Error<TData>(int errCode, string message, string innerMessage, string guide, string describe)
-             => Helper.Error<TData>(errCode, message, innerMessage, guide, describe);
+        public static IApiResult<TData> State<TData>(int code, string message, string innerMessage, string guide, string describe)
+             => Helper.State<TData>(code, message, innerMessage, guide, describe);
 
         /// <summary>
-        ///     生成一个包含错误码的标准返回
+        ///     生成一个包含状态码的标准返回
         /// </summary>
-        /// <param name="errCode">错误码</param>
-        /// <param name="message">错误消息</param>
+        /// <param name="code">状态码</param>
+        /// <param name="message">提示消息</param>
         /// <param name="innerMessage">内部说明</param>
         /// <param name="point">错误点</param>
         /// <param name="guide">错误指导</param>
         /// <param name="describe">错误解释</param>
         /// <returns></returns>
-        public static IApiResult<TData> Error<TData>(int errCode, string message, string innerMessage, string point, string guide, string describe)
-             => Helper.Error<TData>(errCode, message, point, innerMessage, guide, describe);
+        public static IApiResult<TData> State<TData>(int code, string message, string innerMessage, string point, string guide, string describe)
+             => Helper.State<TData>(code, message, point, innerMessage, guide, describe);
 
 
         #endregion
@@ -193,7 +193,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <returns></returns>
         public static IApiResult<TData> FromContext<TData>()
         {
-            return Helper.Error<TData>(GlobalContext.Current.Status.LastStatus.Code,
+            return Helper.State<TData>(GlobalContext.Current.Status.LastStatus.Code,
                 GlobalContext.Current.Status.LastStatus.Message);
         }
 
@@ -203,7 +203,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <returns></returns>
         public static IApiResult FromContext()
         {
-            return Helper.Error(GlobalContext.Current.Status.LastStatus.Code,
+            return Helper.State(GlobalContext.Current.Status.LastStatus.Code,
                 GlobalContext.Current.Status.LastStatus.Message);
         }
 

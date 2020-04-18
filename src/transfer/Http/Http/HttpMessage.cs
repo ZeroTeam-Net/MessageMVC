@@ -18,7 +18,6 @@ namespace ZeroTeam.MessageMVC.Http
     ///     路由数据
     /// </summary>
     [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
-    [DataContract]
     internal class HttpMessage : MessageItem, IInlineMessage
     {
 
@@ -245,17 +244,13 @@ namespace ZeroTeam.MessageMVC.Http
             var words = Uri.Split('/', StringSplitOptions.RemoveEmptyEntries);
             if (words.Length <= 1)
             {
-                //UserState = UserOperatorStateType.FormalError;
-                //ZeroState = ZeroOperatorStateType.ArgumentInvalid;
-                Result = ApiResultHelper.ArgumentErrorJson;
+                State = MessageState.NonSupport;
                 return false;
             }
             MessageRouteOption.Instance.HostPaths.TryGetValue(words[0], out var idx);
             if (words.Length <= idx + 1)
             {
-                //UserState = UserOperatorStateType.FormalError;
-                //ZeroState = ZeroOperatorStateType.ArgumentInvalid;
-                Result = ApiResultHelper.ArgumentErrorJson;
+                State = MessageState.NonSupport;
                 return false;
             }
             ApiHost = words[idx];
@@ -424,7 +419,6 @@ namespace ZeroTeam.MessageMVC.Http
             {
                 LogRecorder.Exception(e);
                 State = MessageState.FormalError;
-                Result = ApiResultHelper.ArgumentErrorJson;
             }
             return Task.CompletedTask;
         }
@@ -453,33 +447,32 @@ namespace ZeroTeam.MessageMVC.Http
             {
                 LogRecorder.Exception(e);
                 State = MessageState.FormalError;
-                Result = ApiResultHelper.ArgumentErrorJson;
             }
             DataState &= ~(MessageDataState.ArgumentInline | MessageDataState.ArgumentOffline);
         }
 
         private void ReadFiles()
         {
-            if (!MessageRouteOption.Instance.EnableFormFile)
-            {
-                return;
-            }
-            Binary = new Dictionary<string, byte[]>();
-            var request = HttpContext.Request;
-            var files = request.Form?.Files;
-            if (files == null || files.Count <= 0)
-            {
-                return;
-            }
-            foreach (var file in files)
-            {
-                var bytes = new byte[file.Length];
-                using (var stream = file.OpenReadStream())
-                {
-                    stream.Read(bytes, 0, (int)file.Length);
-                }
-                Binary.TryAdd(file.Name, bytes);
-            }
+            //if (!MessageRouteOption.Instance.EnableFormFile)
+            //{
+            //    return;
+            //}
+            //Binary = new Dictionary<string, byte[]>();
+            //var request = HttpContext.Request;
+            //var files = request.Form?.Files;
+            //if (files == null || files.Count <= 0)
+            //{
+            //    return;
+            //}
+            //foreach (var file in files)
+            //{
+            //    var bytes = new byte[file.Length];
+            //    using (var stream = file.OpenReadStream())
+            //    {
+            //        stream.Read(bytes, 0, (int)file.Length);
+            //    }
+            //    Binary.TryAdd(file.Name, bytes);
+            //}
         }
 
 

@@ -19,6 +19,16 @@
             初始化
             </summary>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.AddIn.IAutoRegister.Start">
+            <summary>
+            开始
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.AddIn.IAutoRegister.End">
+            <summary>
+            结束
+            </summary>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiResultHelper">
             <summary>API返回基类</summary>
         </member>
@@ -87,47 +97,47 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiResultHelper.Error(System.Int32)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiResultHelper.State(System.Int32)">
             <summary>
-                生成一个包含错误码的标准返回
+                生成一个包含状态码的标准返回
             </summary>
-            <param name="errCode">错误码</param>
+            <param name="code">状态码</param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiResultHelper.Error(System.Int32,System.String)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiResultHelper.State(System.Int32,System.String)">
             <summary>
-                生成一个包含错误码的标准返回
+                生成一个包含状态码的标准返回
             </summary>
-            <param name="errCode">错误码</param>
-            <param name="message">错误消息</param>
+            <param name="code">状态码</param>
+            <param name="message">提示消息</param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiResultHelper.Error(System.Int32,System.String,System.String)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiResultHelper.State(System.Int32,System.String,System.String)">
             <summary>
-                生成一个包含错误码的标准返回
+                生成一个包含状态码的标准返回
             </summary>
-            <param name="errCode">错误码</param>
-            <param name="message">错误消息</param>
+            <param name="code">状态码</param>
+            <param name="message">提示消息</param>
             <param name="innerMessage">内部说明</param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiResultHelper.Error(System.Int32,System.String,System.String,System.String,System.String)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiResultHelper.State(System.Int32,System.String,System.String,System.String,System.String)">
             <summary>
-                生成一个包含错误码的标准返回
+                生成一个包含状态码的标准返回
             </summary>
-            <param name="errCode">错误码</param>
-            <param name="message">错误消息</param>
+            <param name="code">状态码</param>
+            <param name="message">提示消息</param>
             <param name="innerMessage">内部说明</param>
             <param name="guide">错误指导</param>
             <param name="describe">错误解释</param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiResultHelper.Error(System.Int32,System.String,System.String,System.String,System.String,System.String)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiResultHelper.State(System.Int32,System.String,System.String,System.String,System.String,System.String)">
             <summary>
-                生成一个包含错误码的标准返回
+                生成一个包含状态码的标准返回
             </summary>
-            <param name="errCode">错误码</param>
-            <param name="message">错误消息</param>
+            <param name="code">状态码</param>
+            <param name="message">提示消息</param>
             <param name="innerMessage">内部说明</param>
             <param name="point">错误点</param>
             <param name="guide">错误指导</param>
@@ -140,47 +150,47 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiResultHelper.Error``1(System.Int32)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiResultHelper.State``1(System.Int32)">
             <summary>
-                生成一个包含错误码的标准返回
+                生成一个包含状态码的标准返回
             </summary>
-            <param name="errCode">错误码</param>
+            <param name="code">状态码</param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiResultHelper.Error``1(System.Int32,System.String)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiResultHelper.State``1(System.Int32,System.String)">
             <summary>
-                生成一个包含错误码的标准返回
+                生成一个包含状态码的标准返回
             </summary>
-            <param name="errCode">错误码</param>
+            <param name="code">状态码</param>
             <param name="message"></param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiResultHelper.Error``1(System.Int32,System.String,System.String)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiResultHelper.State``1(System.Int32,System.String,System.String)">
             <summary>
-                生成一个包含错误码的标准返回
+                生成一个包含状态码的标准返回
             </summary>
-            <param name="errCode">错误码</param>
-            <param name="message">错误消息</param>
+            <param name="code">状态码</param>
+            <param name="message">提示消息</param>
             <param name="innerMessage">内部说明</param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiResultHelper.Error``1(System.Int32,System.String,System.String,System.String,System.String)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiResultHelper.State``1(System.Int32,System.String,System.String,System.String,System.String)">
             <summary>
-                生成一个包含错误码的标准返回
+                生成一个包含状态码的标准返回
             </summary>
-            <param name="errCode">错误码</param>
-            <param name="message">错误消息</param>
+            <param name="code">状态码</param>
+            <param name="message">提示消息</param>
             <param name="innerMessage">内部说明</param>
             <param name="guide">错误指导</param>
             <param name="describe">错误解释</param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiResultHelper.Error``1(System.Int32,System.String,System.String,System.String,System.String,System.String)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiResultHelper.State``1(System.Int32,System.String,System.String,System.String,System.String,System.String)">
             <summary>
-                生成一个包含错误码的标准返回
+                生成一个包含状态码的标准返回
             </summary>
-            <param name="errCode">错误码</param>
-            <param name="message">错误消息</param>
+            <param name="code">状态码</param>
+            <param name="message">提示消息</param>
             <param name="innerMessage">内部说明</param>
             <param name="point">错误点</param>
             <param name="guide">错误指导</param>
@@ -198,103 +208,6 @@
                 取出上下文中的返回
             </summary>
             <returns></returns>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.DefaultErrorCode">
-            <summary>
-                系统错误代码
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.DefaultErrorCode.Success">
-            <summary>
-                正确
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.DefaultErrorCode.ArgumentError">
-            <summary>
-                参数错误
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.DefaultErrorCode.BusinessError">
-            <summary>
-                发生处理业务错误
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.DefaultErrorCode.BusinessException">
-            <summary>
-                发生未处理业务异常
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.DefaultErrorCode.UnhandleException">
-            <summary>
-                发生未处理系统异常
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.DefaultErrorCode.NetworkError">
-            <summary>
-                网络错误
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.DefaultErrorCode.TimeOut">
-            <summary>
-                执行超时
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.DefaultErrorCode.DenyAccess">
-            <summary>
-                拒绝访问
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.DefaultErrorCode.TokenUnknow">
-            <summary>
-                未知的Token
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.DefaultErrorCode.TokenTimeOut">
-            <summary>
-                令牌过期
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.DefaultErrorCode.NoReady">
-            <summary>
-                系统未就绪
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.DefaultErrorCode.Ignore">
-            <summary>
-                客户端应中止请求
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.DefaultErrorCode.ReTry">
-            <summary>
-                客户端应重新请求
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.DefaultErrorCode.NoFind">
-            <summary>
-                方法不存在
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.DefaultErrorCode.Unavailable">
-            <summary>
-                服务不可用
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.DefaultErrorCode.Queue">
-            <summary>
-                正在排队
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.DefaultErrorCode.Unknow">
-            <summary>
-                未知结果
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.DefaultErrorCode.GetMessage(System.Int32)">
-            <summary>
-                取得错误码对应的消息文本
-            </summary>
-            <param name="eid">错误码</param>
-            <returns>消息文本</returns>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.IApiAction">
             <summary>
@@ -455,37 +368,37 @@
             <summary>生成一个成功的标准返回</summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiResultHelper.Error(System.Int32)">
-            <summary>生成一个包含错误码的标准返回</summary>
-            <param name="errCode">错误码</param>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiResultHelper.State(System.Int32)">
+            <summary>生成一个包含状态码的标准返回</summary>
+            <param name="code">状态码</param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiResultHelper.Error(System.Int32,System.String)">
-            <summary>生成一个包含错误码的标准返回</summary>
-            <param name="errCode">错误码</param>
-            <param name="message">错误消息</param>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiResultHelper.State(System.Int32,System.String)">
+            <summary>生成一个包含状态码的标准返回</summary>
+            <param name="code">状态码</param>
+            <param name="message">提示消息</param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiResultHelper.Error(System.Int32,System.String,System.String)">
-            <summary>生成一个包含错误码的标准返回</summary>
-            <param name="errCode">错误码</param>
-            <param name="message">错误消息</param>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiResultHelper.State(System.Int32,System.String,System.String)">
+            <summary>生成一个包含状态码的标准返回</summary>
+            <param name="code">状态码</param>
+            <param name="message">提示消息</param>
             <param name="innerMessage">内部说明</param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiResultHelper.Error(System.Int32,System.String,System.String,System.String,System.String)">
-            <summary>生成一个包含错误码的标准返回</summary>
-            <param name="errCode">错误码</param>
-            <param name="message">错误消息</param>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiResultHelper.State(System.Int32,System.String,System.String,System.String,System.String)">
+            <summary>生成一个包含状态码的标准返回</summary>
+            <param name="code">状态码</param>
+            <param name="message">提示消息</param>
             <param name="innerMessage">内部说明</param>
             <param name="guide">错误指导</param>
             <param name="describe">错误解释</param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiResultHelper.Error(System.Int32,System.String,System.String,System.String,System.String,System.String)">
-            <summary>生成一个包含错误码的标准返回</summary>
-            <param name="errCode">错误码</param>
-            <param name="message">错误消息</param>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiResultHelper.State(System.Int32,System.String,System.String,System.String,System.String,System.String)">
+            <summary>生成一个包含状态码的标准返回</summary>
+            <param name="code">状态码</param>
+            <param name="message">提示消息</param>
             <param name="innerMessage">内部说明</param>
             <param name="point">错误点</param>
             <param name="guide">错误指导</param>
@@ -496,49 +409,41 @@
             <summary>生成一个成功的标准返回</summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiResultHelper.Error``1(System.Int32)">
-            <summary>生成一个包含错误码的标准返回</summary>
-            <param name="errCode">错误码</param>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiResultHelper.State``1(System.Int32)">
+            <summary>生成一个包含状态码的标准返回</summary>
+            <param name="code">状态码</param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiResultHelper.Error``1(System.Int32,System.String)">
-            <summary>生成一个包含错误码的标准返回</summary>
-            <param name="errCode">错误码</param>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiResultHelper.State``1(System.Int32,System.String)">
+            <summary>生成一个包含状态码的标准返回</summary>
+            <param name="code">状态码</param>
             <param name="message"></param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiResultHelper.Error``1(System.Int32,System.String,System.String)">
-            <summary>生成一个包含错误码的标准返回</summary>
-            <param name="errCode">错误码</param>
-            <param name="message">错误消息</param>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiResultHelper.State``1(System.Int32,System.String,System.String)">
+            <summary>生成一个包含状态码的标准返回</summary>
+            <param name="code">状态码</param>
+            <param name="message">提示消息</param>
             <param name="innerMessage">内部说明</param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiResultHelper.Error``1(System.Int32,System.String,System.String,System.String,System.String)">
-            <summary>生成一个包含错误码的标准返回</summary>
-            <param name="errCode">错误码</param>
-            <param name="message">错误消息</param>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiResultHelper.State``1(System.Int32,System.String,System.String,System.String,System.String)">
+            <summary>生成一个包含状态码的标准返回</summary>
+            <param name="code">状态码</param>
+            <param name="message">提示消息</param>
             <param name="innerMessage">内部说明</param>
             <param name="guide">错误指导</param>
             <param name="describe">错误解释</param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiResultHelper.Error``1(System.Int32,System.String,System.String,System.String,System.String,System.String)">
-            <summary>生成一个包含错误码的标准返回</summary>
-            <param name="errCode">错误码</param>
-            <param name="message">错误消息</param>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiResultHelper.State``1(System.Int32,System.String,System.String,System.String,System.String,System.String)">
+            <summary>生成一个包含状态码的标准返回</summary>
+            <param name="code">状态码</param>
+            <param name="message">提示消息</param>
             <param name="innerMessage">内部说明</param>
             <param name="point">错误点</param>
             <param name="guide">错误指导</param>
             <param name="describe">错误解释</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiResultHelper.Error">
-            <summary>生成一个成功的标准返回</summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiResultHelper.Error``1">
-            <summary>生成一个成功的标准返回</summary>
             <returns></returns>
         </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.IApiResultHelper.Ok">
@@ -608,7 +513,7 @@
         </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.IOperatorStatus.Code">
             <summary>
-                错误码（系统定义）
+                状态码（系统定义）
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.IOperatorStatus.Message">
@@ -653,6 +558,103 @@
             内部使用:详细说明错误内容
             </remarks>
             <example>系统未就绪</example>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode">
+            <summary>
+                操作状态码
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.Queue">
+            <summary>
+                正在排队
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.Success">
+            <summary>
+                正确
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.ArgumentError">
+            <summary>
+                参数错误
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.BusinessError">
+            <summary>
+                发生处理业务错误
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.BusinessException">
+            <summary>
+                发生未处理业务异常
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.UnhandleException">
+            <summary>
+                发生未处理系统异常
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.NetworkError">
+            <summary>
+                网络错误
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.TimeOut">
+            <summary>
+                执行超时
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.DenyAccess">
+            <summary>
+                拒绝访问
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.TokenUnknow">
+            <summary>
+                未知的Token
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.TokenTimeOut">
+            <summary>
+                令牌过期
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.NoReady">
+            <summary>
+                系统未就绪
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.Ignore">
+            <summary>
+                异常中止
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.ReTry">
+            <summary>
+                重试
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.NoFind">
+            <summary>
+                方法不存在
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.Unavailable">
+            <summary>
+                服务不可用
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.Unknow">
+            <summary>
+                未知结果
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.GetMessage(System.Int32)">
+            <summary>
+                取得错误码对应的消息文本
+            </summary>
+            <param name="eid">错误码</param>
+            <returns>消息文本</returns>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption">
             <summary>
@@ -834,6 +836,46 @@
             <param name="name">发现的服务名称</param>
             <returns>传输对象构造器</returns>
         </member>
+        <member name="T:ZeroTeam.MessageMVC.MiddlewareLevel">
+            <summary>
+            中间件优先级预定义常量
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.MiddlewareLevel.Basic">
+            <summary>
+            基础级别(1)
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.MiddlewareLevel.Framework">
+            <summary>
+            框架级别(2)
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.MiddlewareLevel.Front">
+            <summary>
+            高级别(3)
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.MiddlewareLevel.General">
+            <summary>
+            普通级别(4)
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.MiddlewareLevel.Back">
+            <summary>
+            低级别(5)
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.MiddlewareLevel.Last">
+            <summary>
+            收尾级别(6)
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.MiddlewareLevel.End">
+            <summary>
+            最后级别(7)
+            </summary>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.StationState">
             <summary>
             站点状态
@@ -954,6 +996,11 @@
         <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.AppName">
             <summary>
                 当前应用名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.ShortName">
+            <summary>
+                当前应用简称
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.IsOpenAccess">
@@ -1358,6 +1405,11 @@
             构造
             </summary>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.Context.TraceInfo.Copy">
+            <summary>
+            构造
+            </summary>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Context.TraceLinkMessage">
             <summary>
             跟踪消息
@@ -1418,21 +1470,6 @@
                 自注释配置对象
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Documents.AnnotationsConfig._caption">
-            <summary>
-                标题
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Documents.AnnotationsConfig._description">
-            <summary>
-                说明
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Documents.AnnotationsConfig._name">
-            <summary>
-                名称
-            </summary>
-        </member>
         <member name="P:ZeroTeam.MessageMVC.Documents.AnnotationsConfig.Name">
             <summary>
                 名称
@@ -1467,40 +1504,15 @@
         <member name="F:ZeroTeam.MessageMVC.Documents.ApiActionInfo.ResultType">
             <summary>是否有调用参数</summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Documents.ApiActionInfo.Controller">
-            <summary>
-                所在控制器类型
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Documents.ApiActionInfo.HaseArgument">
-            <summary>
-                是否有调用参数
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Documents.ApiActionInfo.IsAsync">
-            <summary>
-                是否异步任务
-            </summary>
-        </member>
         <member name="F:ZeroTeam.MessageMVC.Documents.ApiActionInfo.Action">
             <summary>有参方法</summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Documents.ApiActionInfo.ArgumentSerializeType">
-            <summary>
-            反序列化类型
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Documents.ApiActionInfo.ResultSerializeType">
-            <summary>
-            序列化类型
-            </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Documents.ApiDocument">
             <summary>
                 Api方法的信息
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Documents.ApiDocument.AccessOption">
+        <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.AccessOption">
             <summary>
                 访问设置
             </summary>
@@ -1510,22 +1522,22 @@
                 参数名称
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Documents.ApiDocument.ArgumentInfo">
+        <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.ArgumentInfo">
             <summary>
                 参数说明
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Documents.ApiDocument.Arguments">
+        <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.Arguments">
             <summary>
                 参数说明
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Documents.ApiDocument.Category">
+        <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.Category">
             <summary>
                 分类
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Documents.ApiDocument.ResultInfo">
+        <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.ResultInfo">
             <summary>
                 返回值说明
             </summary>
@@ -1535,9 +1547,34 @@
                 Api名称
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Documents.ApiDocument.PageUrl">
+        <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.PageUrl">
             <summary>
                 承载页面
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.Controller">
+            <summary>
+                所在控制器类型
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.HaseArgument">
+            <summary>
+                是否有调用参数
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.IsAsync">
+            <summary>
+                是否异步任务
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.ArgumentSerializeType">
+            <summary>
+            反序列化类型
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.ResultSerializeType">
+            <summary>
+            序列化类型
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Documents.DocumentItem">
@@ -1596,9 +1633,9 @@
                 Api方法的信息
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Documents.ServiceDocument.aips">
+        <member name="P:ZeroTeam.MessageMVC.Documents.ServiceDocument.Serialize">
             <summary>
-                Api方法
+            序列化类型
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Documents.ServiceDocument.IsLocal">
@@ -1626,42 +1663,32 @@
             消息接收对象构造器
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Documents.ServiceInfo.Serialize">
-            <summary>
-            序列化类型
-            </summary>
-        </member>
         <member name="T:ZeroTeam.MessageMVC.Documents.TypeDocument">
             <summary>
                 Api结构的信息
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Documents.TypeDocument.ClassName">
+        <member name="P:ZeroTeam.MessageMVC.Documents.TypeDocument.ClassName">
             <summary>
                 类型
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Documents.TypeDocument.fields">
-            <summary>
-                字段
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Documents.TypeDocument.IsEnum">
+        <member name="P:ZeroTeam.MessageMVC.Documents.TypeDocument.IsEnum">
             <summary>
                 枚举
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Documents.TypeDocument.JsonName">
+        <member name="P:ZeroTeam.MessageMVC.Documents.TypeDocument.JsonName">
+            <summary>
+                Json名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Documents.TypeDocument.ObjectType">
             <summary>
                 类型
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Documents.TypeDocument.ObjectType">
-            <summary>
-                类型
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Documents.TypeDocument.TypeName">
+        <member name="P:ZeroTeam.MessageMVC.Documents.TypeDocument.TypeName">
             <summary>
                 类型
             </summary>
@@ -1973,26 +2000,6 @@
             在线消息参数
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.IsOutAccess">
-            <summary>
-            是否外部访问
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.ServiceName">
-            <summary>
-            服务名称,即Topic
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.ApiName">
-            <summary>
-            接口名称,即Title
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.Argument">
-            <summary>
-            接口参数,即Content
-            </summary>
-        </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.ArgumentData">
             <summary>
             实体参数
@@ -2008,30 +2015,9 @@
             返回值
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.RuntimeStatus">
+        <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.RealState">
             <summary>
-            执行状态
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.ResultSerializer">
-            <summary>
-                返回值序列化对象
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.ResultCreater">
-            <summary>
-                返回值构造对象
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.ToMessageResult">
-            <summary>
-            复制构造一个返回值对象
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.CopyResult(ZeroTeam.MessageMVC.Messages.IMessageResult)">
-            <summary>
-            复制返回值
+            过程状态
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.DataState">
@@ -2050,43 +2036,22 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.ArgumentInline(ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Type,ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Func{System.Int32,System.String,System.Object})">
-            <summary>
-            数据设置为上线状态
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.PrepareOffline(ZeroTeam.MessageMVC.Messages.ISerializeProxy)">
-            <summary>
-            准备离线(框架内调用)
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.OfflineArgument(ZeroTeam.MessageMVC.Messages.ISerializeProxy)">
-            <summary>
-            转为离线序列化文本
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.Offline(ZeroTeam.MessageMVC.Messages.ISerializeProxy)">
             <summary>
             转为离线序列化文本
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.OfflineResult(ZeroTeam.MessageMVC.Messages.ISerializeProxy)">
+        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.ArgumentOffline(ZeroTeam.MessageMVC.Messages.ISerializeProxy)">
             <summary>
-            取得返回值
+            转为离线序列化文本
             </summary>
-            <param name="serialize"></param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.GetResultData``1(ZeroTeam.MessageMVC.Messages.ISerializeProxy)">
+        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.ArgumentInline(System.Type,ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Func{System.Int32,System.String,System.Object})">
             <summary>
-            取得返回值
+            数据设置为上线状态
             </summary>
-            <typeparam name="TRes"></typeparam>
-            <param name="serialize"></param>
-            <returns></returns>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.GetArgument(System.Int32,System.Int32,ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Type)">
             <summary>
@@ -2099,13 +2064,6 @@
             <returns>值</returns>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.GetStringArgument(System.String)">
-            <summary>
-            取参数值
-            </summary>
-            <param name="name">名称</param>
-            <returns>值</returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.GetBinaryArgument(System.String)">
             <summary>
             取参数值
             </summary>
@@ -2134,6 +2092,67 @@
             <param name="type">序列化对象</param>
             <returns>值</returns>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.ResultCreater">
+            <summary>
+                返回值构造对象
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.ResultSerializer">
+            <summary>
+                返回值序列化对象
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.OfflineResult(ZeroTeam.MessageMVC.Messages.ISerializeProxy)">
+            <summary>
+            取得返回值
+            </summary>
+            <param name="serialize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.GetResultData``1">
+            <summary>
+            取得返回值
+            </summary>
+            <typeparam name="TRes"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.ToMessageResult(System.Boolean,ZeroTeam.MessageMVC.Messages.ISerializeProxy)">
+            <summary>
+            复制构造一个返回值对象
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.ToStateResult">
+            <summary>
+            复制构造一个返回值对象,仅包含状态
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.CopyResult(ZeroTeam.MessageMVC.Messages.IMessageResult)">
+            <summary>
+            复制返回值
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.IsOutAccess">
+            <summary>
+            是否外部访问
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.ServiceName">
+            <summary>
+            服务名称,即Topic
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.ApiName">
+            <summary>
+            接口名称,即Title
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.Argument">
+            <summary>
+            接口参数,即Content
+            </summary>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Messages.IMessageItem">
             <summary>
             标准消息交互格式
@@ -2159,11 +2178,6 @@
             内容
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.IMessageItem.Binary">
-            <summary>
-            其他二进制内容
-            </summary>
-        </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.IMessageItem.Result">
             <summary>
             处理结果,对应状态的解释信息
@@ -2187,12 +2201,6 @@
             <summary>
                 跟踪信息
             </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageItem.ToInline">
-            <summary>
-            转为在线对象
-            </summary>
-            <returns></returns>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Messages.IMessageResult">
             <summary>
@@ -2231,11 +2239,6 @@
         <member name="P:ZeroTeam.MessageMVC.Messages.IMessageResult.ResultData">
             <summary>
             返回值
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.IMessageResult.RuntimeStatus">
-            <summary>
-            执行状态
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.IMessageResult.DataState">
@@ -2302,11 +2305,6 @@
             处理成功 : 结果信息或无
             </remarks>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.InlineMessage.RuntimeStatus">
-            <summary>
-            执行状态
-            </summary>
-        </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.InlineMessage.ResultSerializer">
             <summary>
                 返回值序列化对象
@@ -2315,6 +2313,11 @@
         <member name="P:ZeroTeam.MessageMVC.Messages.InlineMessage.ResultCreater">
             <summary>
                 返回值构造对象
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.InlineMessage.ArgumentSerializer">
+            <summary>
+            参数序列化器
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.InlineMessage.GetArgument(System.Int32,System.Int32,ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Type)">
@@ -2372,35 +2375,6 @@
             <param name="content">消息内容</param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.MessageHelper.Restore(System.String,System.String,System.String,System.String,System.String)">
-            <summary>
-            恢复
-            </summary>
-            <param name="topic">消息分类</param>
-            <param name="title">消息标题</param>
-            <param name="content">消息内容</param>
-            <param name="id">跟踪标识</param>
-            <param name="context">上下文</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.MessageHelper.NewMessage``1(System.String,System.String,``0)">
-            <summary>
-            构造
-            </summary>
-            <param name="topic">消息分类</param>
-            <param name="title">消息标题</param>
-            <param name="content">消息内容</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.MessageHelper.NewMessage(System.String,System.String,System.String)">
-            <summary>
-            构造
-            </summary>
-            <param name="topic">消息分类</param>
-            <param name="title">消息标题</param>
-            <param name="content">消息内容</param>
-            <returns></returns>
-        </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.MessageHelper.NewRemote``1(System.String,System.String,``0)">
             <summary>
             构造一个远程调用的消息
@@ -2422,11 +2396,6 @@
         <member name="T:ZeroTeam.MessageMVC.Messages.MessageItem">
             <summary>
             消息交互格式
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.MessageItem.IsSucceed">
-            <summary>
-                是否正常
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.MessageItem.ID">
@@ -2454,11 +2423,6 @@
             内容
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.MessageItem.Binary">
-            <summary>
-            其他二进制内容
-            </summary>
-        </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.MessageItem.Result">
             <summary>
             处理结果,对应状态的解释信息
@@ -2481,11 +2445,6 @@
         <member name="T:ZeroTeam.MessageMVC.Messages.MessageResult">
             <summary>
             标准消息返回
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.MessageResult.#ctor">
-            <summary>
-            构造
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.MessageResult.ID">
@@ -2527,11 +2486,6 @@
             处理结果,对应状态的解释信息
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.MessageResult.RuntimeStatus">
-            <summary>
-            执行状态
-            </summary>
-        </member>
         <member name="T:ZeroTeam.MessageMVC.Messages.MessageState">
             <summary>
             表示消息状态
@@ -2547,9 +2501,9 @@
             取消处理
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.FormalError">
+        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.NonSupport">
             <summary>
-            格式错误
+            不支持处理
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.Accept">
@@ -2557,9 +2511,24 @@
             已接受
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.NetworkError">
+        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.Send">
             <summary>
-            消息接收错误
+            已发送
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.Recive">
+            <summary>
+            已接收
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.Processing">
+            <summary>
+            正在处理
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.AsyncQueue">
+            <summary>
+            异步排队
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.Success">
@@ -2567,20 +2536,73 @@
             处理成功
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.NonSupport">
-            <summary>
-            不支持处理
-            </summary>
-        </member>
         <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.Failed">
             <summary>
             处理失败
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.Error">
+        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.Unhandled">
+            <summary>
+            无处理结果
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.Deny">
+            <summary>
+            拒绝处理
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.FormalError">
+            <summary>
+            格式错误
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.NetworkError">
+            <summary>
+            网络错误
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.BusinessError">
             <summary>
             处理错误
             </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.FrameworkError">
+            <summary>
+            框架错误
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Messages.MessageStateHelper">
+            <summary>
+            扩展
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessageStateHelper.ToErrorCode(ZeroTeam.MessageMVC.Messages.MessageState)">
+            <summary>
+            转为标准错误码
+            </summary>
+            <param name="state"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessageStateHelper.IsComplete(ZeroTeam.MessageMVC.Messages.MessageState)">
+            <summary>
+            是否完成操作
+            </summary>
+            <param name="state"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessageStateHelper.IsEnd(ZeroTeam.MessageMVC.Messages.MessageState)">
+            <summary>
+            是否无错误结束(成功失败或进入队列)
+            </summary>
+            <param name="state"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessageStateHelper.IsSuccess(ZeroTeam.MessageMVC.Messages.MessageState)">
+            <summary>
+            是否无错误结束(成功失败或进入队列)
+            </summary>
+            <param name="state"></param>
+            <returns></returns>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Messages.IMessageConsumer">
             <summary>
@@ -2614,14 +2636,19 @@
             表示一个消息接收对象
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.IMessageReceiver.Logger">
+        <member name="P:ZeroTeam.MessageMVC.Messages.IMessageReceiver.PosterName">
             <summary>
-            日志记录器
+            对应发送器名称
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.IMessageReceiver.Service">
             <summary>
             服务
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.IMessageReceiver.Logger">
+            <summary>
+            日志记录器
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.IMessageReceiver.End">
@@ -2658,12 +2685,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageReceiver.Commit">
-            <summary>
-            表示已成功接收 
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.IMessageReceiver.OnResult(ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
             <summary>
             发送返回值 
@@ -2688,7 +2709,7 @@
             消息投递器基类
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.MessagePostBase.logger">
+        <member name="P:ZeroTeam.MessageMVC.Messages.MessagePostBase.Logger">
             <summary>
             日志器
             </summary>
@@ -2697,26 +2718,6 @@
             <summary>
                 初始化
             </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.MessagePostBase.serializer">
-            <summary>
-            序列化器
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.MessagePostBase.ZeroTeam#MessageMVC#Messages#ISerializeProxy#Serialize(System.Object)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.MessagePostBase.ZeroTeam#MessageMVC#Messages#ISerializeProxy#Deserialize(System.Object,System.Type)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.MessagePostBase.ZeroTeam#MessageMVC#Messages#ISerializeProxy#ToObject``1(System.String)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.MessagePostBase.ZeroTeam#MessageMVC#Messages#ISerializeProxy#ToObject(System.String,System.Type)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.MessagePostBase.ZeroTeam#MessageMVC#Messages#ISerializeProxy#ToString(System.Object,System.Boolean)">
-            <inheritdoc/>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Messages.MessagePostException">
             <summary>
@@ -2771,6 +2772,11 @@
             服务
             </summary>
         </member>
+        <member name="F:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.state">
+            <summary>
+            运行状态
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.ZeroTeam#MessageMVC#Messages#IMessagePoster#State">
             <summary>
             运行状态
@@ -2788,21 +2794,6 @@
             <param name="message">消息</param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.ZeroTeam#MessageMVC#Messages#ISerializeProxy#Serialize(System.Object)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.ZeroTeam#MessageMVC#Messages#ISerializeProxy#Deserialize(System.Object,System.Type)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.ZeroTeam#MessageMVC#Messages#ISerializeProxy#ToObject``1(System.String)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.ZeroTeam#MessageMVC#Messages#ISerializeProxy#ToObject(System.String,System.Type)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.ZeroTeam#MessageMVC#Messages#ISerializeProxy#ToString(System.Object,System.Boolean)">
-            <inheritdoc/>
-        </member>
         <member name="T:ZeroTeam.MessageMVC.Messages.IMessageMiddleware">
             <summary>
             消息处理中间件
@@ -2816,11 +2807,6 @@
         <member name="P:ZeroTeam.MessageMVC.Messages.IMessageMiddleware.Scope">
             <summary>
             消息中间件的处理范围
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.IMessageMiddleware.Processor">
-            <summary>
-            当前处理器
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.IMessageMiddleware.Prepare(ZeroTeam.MessageMVC.Services.IService,ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
@@ -2842,12 +2828,13 @@
             <param name="next">下一个处理方法</param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageMiddleware.OnGlobalException(ZeroTeam.MessageMVC.Services.IService,ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
+        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageMiddleware.OnGlobalException(ZeroTeam.MessageMVC.Services.IService,ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Exception,System.Object)">
             <summary>
             全局异常发生时
             </summary>
             <param name="service">当前服务</param>
             <param name="message">当前消息</param>
+            <param name="exception">异常信息</param>
             <param name="tag">扩展信息</param>
             <returns></returns>
         </member>
@@ -2996,21 +2983,6 @@
             Xml序列化装饰器
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.CDataXmlSerializeProxy.Serialize(System.Object)">
-            <summary>
-            序列化
-            </summary>
-            <param name="obj">对象</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.CDataXmlSerializeProxy.Deserialize(System.Object,System.Type)">
-            <summary>
-            反序列化
-            </summary>
-            <param name="obj">源内容(一般都是文本)</param>
-            <param name="type">类型</param>
-            <returns>结果对象，可能因为格式不良好而产生异常</returns>
-        </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.CDataXmlSerializeProxy.ToObject``1(System.String)">
             <summary>
             反序列化
@@ -3037,22 +3009,12 @@
             表示一个序列化代理
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.ISerializeProxy.Serialize(System.Object)">
-            <summary>
-            序列化
-            </summary>
-            <param name="soruce">对象</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.ISerializeProxy.Deserialize(System.Object,System.Type)">
+        <member name="M:ZeroTeam.MessageMVC.Messages.ISerializeProxy.TryDeserialize(System.String,System.Type,System.Object@)">
             <summary>
             反序列化
             </summary>
-            <param name="soruce">文本</param>
-            <param name="type">类型</param>
-            <returns>结果对象，可能因为格式不良好而产生异常</returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.ISerializeProxy.TryDeserialize(System.Object,System.Type,System.Object@)">
+        <member name="M:ZeroTeam.MessageMVC.Messages.ISerializeProxy.TryDeserialize``1(System.String,``0@)">
             <summary>
             反序列化
             </summary>
@@ -3082,21 +3044,6 @@
             Json序列化装饰器
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.JsonSerializeProxy.Serialize(System.Object)">
-            <summary>
-            序列化
-            </summary>
-            <param name="obj">对象</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.JsonSerializeProxy.Deserialize(System.Object,System.Type)">
-            <summary>
-            反序列化
-            </summary>
-            <param name="soruce">源内容(一般都是文本)</param>
-            <param name="type">类型</param>
-            <returns>结果对象，可能因为格式不良好而产生异常</returns>
-        </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.JsonSerializeProxy.ToObject``1(System.String)">
             <summary>
             反序列化
@@ -3112,21 +3059,6 @@
             <summary>
             Json序列化装饰器
             </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.NewtonJsonSerializeProxy.Serialize(System.Object)">
-            <summary>
-            序列化
-            </summary>
-            <param name="obj">对象</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.NewtonJsonSerializeProxy.Deserialize(System.Object,System.Type)">
-            <summary>
-            反序列化
-            </summary>
-            <param name="soruce">源内容(一般都是文本)</param>
-            <param name="type">类型</param>
-            <returns>结果对象，可能因为格式不良好而产生异常</returns>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.NewtonJsonSerializeProxy.ToObject``1(System.String)">
             <summary>
@@ -3148,21 +3080,6 @@
             <summary>
             转换器
             </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.SerializeProxy.Serialize(System.Object)">
-            <summary>
-            序列化
-            </summary>
-            <param name="obj">源对象</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.SerializeProxy.Deserialize(System.Object,System.Type)">
-            <summary>
-            反序列化
-            </summary>
-            <param name="obj">源内容(一般都是文本)</param>
-            <param name="type">类型</param>
-            <returns>结果对象，可能因为格式不良好而产生异常</returns>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.SerializeProxy.ToObject``1(System.String)">
             <summary>
@@ -3230,6 +3147,11 @@
             HTTP的Form
             </summary>
         </member>
+        <member name="F:ZeroTeam.MessageMVC.Messages.ArgumentScope.Dictionary">
+            <summary>
+            取字典内容
+            </summary>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Messages.ArgumentScopeAttribute">
             <summary>
             表示自自定义序列化
@@ -3290,25 +3212,127 @@
             构造
             </summary>
         </member>
+        <member name="T:ZeroTeam.MessageMVC.Messages.SmartSerializer">
+            <summary>
+            智能序列化器
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.SmartSerializer.SerializeMessage(ZeroTeam.MessageMVC.Messages.IMessageItem,ZeroTeam.MessageMVC.Messages.ISerializeProxy)">
+            <summary>
+            自动序列化()
+            </summary>
+            <param name="message">消息</param>
+            <param name="serializer">序列化器</param>
+            <returns>字符</returns>
+            <remarks>
+            基于内部全部使用JSON传输的规则,如序列化器不存在,则为JSON
+            </remarks>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.SmartSerializer.ToMessage(System.String,System.Boolean)">
+            <summary>
+            自动根据字符特点反序列化
+            </summary>
+            <param name="str">文本</param>
+            <param name="trim">执行Trim,以消除空白字符</param>
+            <returns>对象</returns>
+            <remarks>
+            xml以&lt;为第一个字符
+            json以[或{为第一个字符
+            </remarks>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.SmartSerializer.TryToMessage(System.String,ZeroTeam.MessageMVC.Messages.IInlineMessage@,System.Boolean)">
+            <summary>
+            自动根据字符特点反序列化
+            </summary>
+            <param name="str">文本</param>
+            <param name="message">返回的消息</param>
+            <param name="trim">执行Trim,以消除空白字符</param>
+            <returns>是否成功</returns>
+            <remarks>
+            xml以&lt;为第一个字符
+            json以[或{为第一个字符
+            </remarks>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.SmartSerializer.ToString(System.Object,ZeroTeam.MessageMVC.Messages.ISerializeProxy)">
+            <summary>
+            自动序列化()
+            </summary>
+            <param name="obj">对象</param>
+            <param name="serializer">序列化器</param>
+            <returns>字符</returns>
+            <remarks>
+            基于内部全部使用JSON传输的规则,如序列化器不存在,则为JSON
+            </remarks>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.SmartSerializer.ToObject(System.String,System.Type,System.Boolean)">
+            <summary>
+            自动根据字符特点反序列化
+            </summary>
+            <param name="str">文本</param>
+            <param name="type">类型</param>
+            <param name="trim">执行Trim,以消除空白字符</param>
+            <returns>对象</returns>
+            <remarks>
+            xml以&lt;为第一个字符
+            json以[或{为第一个字符
+            </remarks>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.SmartSerializer.ToObject``1(System.String,System.Boolean)">
+            <summary>
+            自动根据字符特点反序列化
+            </summary>
+            <param name="str">文本</param>
+            <param name="trim">执行Trim,以消除空白字符</param>
+            <returns>对象</returns>
+            <remarks>
+            xml以&lt;为第一个字符
+            json以[或{为第一个字符
+            </remarks>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.SmartSerializer.TryDeserialize(System.String,System.Type,System.Object@)">
+            <summary>
+            反序列化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.SmartSerializer.TryDeserialize``1(System.String,``0@)">
+            <summary>
+            反序列化
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Messages.StaticContext">
+            <summary>
+                全局上下文(用于序列化)
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.StaticContext.User">
+            <summary>
+                当前调用的客户信息
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.StaticContext.Option">
+            <summary>
+            上下文配置
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.StaticContext.Message">
+            <summary>
+            当前消息
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.StaticContext.Trace">
+            <summary>
+                跟踪信息
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.StaticContext.Status">
+            <summary>
+            全局状态
+            </summary>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Messages.XmlSerializeProxy">
             <summary>
             Xml序列化装饰器
             </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.XmlSerializeProxy.Serialize(System.Object)">
-            <summary>
-            序列化
-            </summary>
-            <param name="obj">对象</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.XmlSerializeProxy.Deserialize(System.Object,System.Type)">
-            <summary>
-            反序列化
-            </summary>
-            <param name="obj">源内容(一般都是文本)</param>
-            <param name="type">类型</param>
-            <returns>结果对象，可能因为格式不良好而产生异常</returns>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.XmlSerializeProxy.ToObject``1(System.String)">
             <summary>
@@ -3359,7 +3383,7 @@
             </summary>
             <param name="message">消息</param>
             <param name="autoOffline">是否自动离线</param>
-            <returns>返回值</returns>
+            <returns>返回值,如果未进行离线交换message返回为空,此时请检查state</returns>
         </member>
         <member name="M:ZeroTeam.MessageMVC.MessagePoster.Publish``1(System.String,System.String,``0)">
             <summary>

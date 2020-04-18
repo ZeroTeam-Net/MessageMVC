@@ -17,14 +17,9 @@ namespace ZeroTeam.MessageMVC.Tools
     public class HealthCheckMiddleware : IMessageMiddleware
     {
         /// <summary>
-        /// 当前处理器
-        /// </summary>
-        MessageProcessor IMessageMiddleware.Processor { get; set; }
-
-        /// <summary>
         /// 层级
         /// </summary>
-        int IMessageMiddleware.Level => 0xFFFFFF;
+        int IMessageMiddleware.Level => MiddlewareLevel.Front;
 
         /// <summary>
         /// 消息中间件的处理范围
@@ -95,6 +90,7 @@ namespace ZeroTeam.MessageMVC.Tools
                     });
                 }
             }
+            message.RealState = MessageState.Success;
             message.ResultData = ApiResultHelper.Succees(res);
             return false;
         }

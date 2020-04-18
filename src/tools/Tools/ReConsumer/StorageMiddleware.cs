@@ -13,14 +13,9 @@ namespace ZeroTeam.MessageMVC.Messages
     public class StorageMiddleware : IMessageMiddleware
     {
         /// <summary>
-        /// 当前处理器
-        /// </summary>
-        MessageProcessor IMessageMiddleware.Processor { get; set; }
-
-        /// <summary>
         /// 层级
         /// </summary>
-        int IMessageMiddleware.Level => 0xFFFFFF;
+        int IMessageMiddleware.Level => MiddlewareLevel.Last;
 
         /// <summary>
         /// 消息中间件的处理范围
@@ -41,12 +36,14 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <returns></returns>
         async Task<bool> IMessageMiddleware.Prepare(IService service, IInlineMessage message, object tag)
         {
+            if (tag is Task)
+                return true;//本地不序列化
             try
             {
                 var file = Path.Combine(path, $"{message.ID}.msg");
                 if (!File.Exists(file))
                 {
-                    await File.WriteAllTextAsync(file, JsonHelper.SerializeObject(message));
+                    await File.WriteAllTextAsync(file, SmartSerializer.SerializeMessage(message));
                 }
             }
             catch

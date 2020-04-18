@@ -18,5 +18,15 @@ namespace ZeroTeam.MessageMVC.AddIn
         void Initialize() { }
 
 
+        /// <summary>
+        /// 开始
+        /// </summary>
+        void Start() { }
+
+        /// <summary>
+        /// 结束
+        /// </summary>
+        void End() { }
+
     }
 }

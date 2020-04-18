@@ -22,7 +22,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <summary>
         /// 计划类型
         /// </summary>
-        public plan_date_type plan_type;
+        public plan_date_type plan_type { get; set; }
 
         /// <summary>
         /// 类型值

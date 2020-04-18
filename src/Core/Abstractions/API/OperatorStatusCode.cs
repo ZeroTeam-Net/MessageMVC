@@ -3,10 +3,15 @@ using System.Collections.Generic;
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
     /// <summary>
-    ///     系统错误代码
+    ///     操作状态码
     /// </summary>
-    public class DefaultErrorCode
+    public class OperatorStatusCode
     {
+        /// <summary>
+        ///     正在排队
+        /// </summary>
+        public const int Queue = 1;
+
         /// <summary>
         ///     正确
         /// </summary>
@@ -63,34 +68,29 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         public const int NoReady = -0xA;
 
         /// <summary>
-        ///     客户端应中止请求
+        ///     异常中止
         /// </summary>
         public const int Ignore = -0xB;
 
         /// <summary>
-        ///     客户端应重新请求
+        ///     重试
         /// </summary>
         public const int ReTry = -0xC;
 
         /// <summary>
         ///     方法不存在
         /// </summary>
-        public const int NoFind = 0xD;
+        public const int NoFind = -0xD;
 
         /// <summary>
         ///     服务不可用
         /// </summary>
-        public const int Unavailable = 0xE;
-
-        /// <summary>
-        ///     正在排队
-        /// </summary>
-        public const int Queue = 0xF;
+        public const int Unavailable = -0xE;
 
         /// <summary>
         ///     未知结果
         /// </summary>
-        public const int Unknow = 0x10;
+        public const int Unknow = 0xF;
 
         #region 消息字典
 

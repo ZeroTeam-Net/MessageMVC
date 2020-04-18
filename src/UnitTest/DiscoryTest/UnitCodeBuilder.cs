@@ -32,7 +32,7 @@ namespace DiscoverTest
                 Path.GetDirectoryName(
                     System.Environment.CurrentDirectory)));
             ApiDiscover discover = new ApiDiscover();
-            discover.Discover(this.GetType().Assembly);
+            discover.Discover(GetType().Assembly);
             discover.NUnitCode(IOHelper.CheckPath(path, "AutoCode"));
         }
     }

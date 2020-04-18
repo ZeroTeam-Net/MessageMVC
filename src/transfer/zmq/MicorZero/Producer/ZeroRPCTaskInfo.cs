@@ -12,12 +12,12 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         /// TaskCompletionSource
         /// </summary>
-        public TaskCompletionSource<MessageResult> TaskSource;
+        public TaskCompletionSource<IMessageResult> TaskSource;
 
         /// <summary>
-        /// 调用对象
+        /// 调用参数
         /// </summary>
-        public ZeroCaller Caller;
+        public ZeroArgument Argument;
 
         /// <summary>
         /// 当前所有等待队列

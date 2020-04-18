@@ -1,7 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System.Runtime.Serialization;
-
-// ReSharper disable All
 
 
 namespace ZeroTeam.MessageMVC.Documents
@@ -9,55 +6,37 @@ namespace ZeroTeam.MessageMVC.Documents
     /// <summary>
     ///     自注释配置对象
     /// </summary>
-    [DataContract, JsonObject(MemberSerialization.OptIn)]
+    [JsonObject(MemberSerialization.OptIn)]
     public class AnnotationsConfig
     {
         /// <summary>
-        ///     标题
-        /// </summary>
-        [DataMember, JsonProperty("caption", NullValueHandling = NullValueHandling.Ignore)]
-        protected string _caption;
-
-        /// <summary>
-        ///     说明
-        /// </summary>
-        [DataMember, JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
-        protected string _description;
-
-        /// <summary>
         ///     名称
         /// </summary>
-        [DataMember, JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
-        private string _name;
-
-        /// <summary>
-        ///     名称
-        /// </summary>
-        [IgnoreDataMember, JsonIgnore]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Name
         {
-            get => _name;
-            set => _name = value;
+            get;
+            set;
         }
 
         /// <summary>
         ///     标题
         /// </summary>
-        [IgnoreDataMember, JsonIgnore]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Caption
         {
-            get => _caption;
-            set => _caption = value;
+            get;
+            set;
         }
 
         /// <summary>
         ///     说明
         /// </summary>
-        [IgnoreDataMember, JsonIgnore]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Description
         {
-            get => _description;
-            set => _description = value;
+            get;
+            set;
         }
 
         /// <summary>

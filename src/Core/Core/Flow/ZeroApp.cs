@@ -49,6 +49,7 @@ namespace ZeroTeam.MessageMVC
                 services.AddSingleton<IFlowMiddleware>(AddInImporter.Instance);
             }
 
+            services.TryAddSingleton<IInlineMessage, InlineMessage>();
             //IZeroContext构造
             services.TryAddScoped<IZeroContext, ZeroContext>();
             services.TryAddTransient<IUser,UserInfo>();
@@ -93,9 +94,9 @@ namespace ZeroTeam.MessageMVC
         {
             if (Interlocked.Increment(ref isInitialized) == 1)
             {
-                services.TryAddTransient<IServiceReceiver, InnerReceiver>();
-                services.TryAddTransient<IMessageConsumer, InnerReceiver>();
-                services.TryAddTransient<INetEvent, InnerReceiver>();
+                services.TryAddTransient<IServiceReceiver, EmptyReceiver>();
+                services.TryAddTransient<IMessageConsumer, EmptyReceiver>();
+                services.TryAddTransient<INetEvent, EmptyReceiver>();
                 CheckOption(services);
                 if (assembly != null)
                     ZeroFlowControl.Discove(assembly);

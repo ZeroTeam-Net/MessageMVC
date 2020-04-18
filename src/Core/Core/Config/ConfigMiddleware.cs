@@ -24,7 +24,7 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 等级
         /// </summary>
-        int IZeroMiddleware.Level => -0xFFFE;
+        int IZeroMiddleware.Level => MiddlewareLevel.Basic;
 
         /// <summary>
         ///     配置校验,作为第一步
@@ -35,15 +35,12 @@ namespace ZeroTeam.MessageMVC
             DependencyHelper.AddSingleton(config);
             DependencyHelper.Update();
             LogRecorder.GetMachineNameFunc = () => config.TraceName;
-            if (LogRecorder.UseBaseLogger)
+            var opt = ConfigurationManager.Get<TextLoggerOption>("Logging:Text");
+            if (string.IsNullOrWhiteSpace(opt?.path))
             {
-                var opt = ConfigurationManager.Get<TextLoggerOption>("Logging.Text");
-                if (string.IsNullOrWhiteSpace(opt.path))
-                {
-                    LogRecorder.LogPath = config.IsolateFolder
-                         ? IOHelper.CheckPath(config.RootPath, "logs", config.AppName)
-                         : IOHelper.CheckPath(config.RootPath, "logs");
-                }
+                LogRecorder.LogPath = config.IsolateFolder
+                     ? IOHelper.CheckPath(config.RootPath, "logs", config.AppName)
+                     : IOHelper.CheckPath(config.RootPath, "logs");
             }
             //线程数
             if (config.MaxIOThreads > 0 && config.MaxWorkThreads > 0)

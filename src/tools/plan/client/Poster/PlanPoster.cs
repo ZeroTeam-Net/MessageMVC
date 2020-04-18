@@ -81,7 +81,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <returns></returns>
         static async Task<IOperatorStatus> PostToService<TArg>(PlanOption option, string topic, string title, TArg content)
         {
-            if (ToolsOption.Instance.EnableLinkTrace && GlobalContext.CurrentNoLazy != null)
+            if (GlobalContext.EnableLinkTrace)
             {
                 option.trace = GlobalContext.CurrentNoLazy?.Trace;
             }
@@ -97,15 +97,10 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                 }
             };
             option.plan_id = message.ID;
-            var (msg, seri) = await MessagePoster.Post(message);
-            if (msg.State == MessageState.Success)
-            {
-                return ApiResultHelper.Succees();
-            }
-            else
-            {
-                return msg.RuntimeStatus;
-            }
+            var (msg, _) = await MessagePoster.Post(message);
+            return msg.State.IsSuccess()
+                ? ApiResultHelper.State(OperatorStatusCode.Queue,"已进入计划任务队列") 
+                : ApiResultHelper.State(OperatorStatusCode.ReTry);
         }
 
         /// <summary>
@@ -118,7 +113,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <returns></returns>
         static async Task<IOperatorStatus> PostToService(PlanOption option, string topic, string title, string content)
         {
-            if (ToolsOption.Instance.EnableLinkTrace && GlobalContext.CurrentNoLazy != null)
+            if (GlobalContext.EnableLinkTrace)
             {
                 option.trace = GlobalContext.CurrentNoLazy?.Trace;
             }
@@ -134,15 +129,10 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                 }
             };
             option.plan_id = message.ID;
-            var (msg, seri) = await MessagePoster.Post(message);
-            if (msg.State == MessageState.Success)
-            {
-                return ApiResultHelper.Succees();
-            }
-            else
-            {
-                return msg.RuntimeStatus;
-            }
+            var (msg, _) = await MessagePoster.Post(message);
+            return msg.State.IsSuccess()
+                ? ApiResultHelper.State(OperatorStatusCode.Queue,"已进入计划任务队列") 
+                : ApiResultHelper.State(OperatorStatusCode.ReTry);
         }
         #endregion
     }

@@ -1,8 +1,9 @@
 using Newtonsoft.Json;
 using System.Runtime.Serialization;
-using ZeroTeam.MessageMVC.Context;
+using System.Text.Json.Serialization;
+using ZeroTeam.MessageMVC.ZeroApis;
 
-namespace ZeroTeam.MessageMVC.ZeroApis
+namespace ZeroTeam.MessageMVC.ApiContract
 {
     /// <summary>
     ///     API返回基类
@@ -22,8 +23,36 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         ///     执行跟踪
         /// </summary>
-        [DataMember, JsonProperty("trace", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public IOperatorTrace Trace { get; set; }
+        IOperatorTrace IApiResult.Trace
+        {
+            get => Trace;
+            set
+            {
+                if (value == null)
+                {
+                    Trace = null;
+                    return;
+                }
+                if (value is OperatorTrace trace)
+                {
+                    Trace = trace;
+                    return;
+                }
+                Trace = new OperatorTrace
+                {
+                    RequestId = value.RequestId,
+                    Point = value.Point,
+                    Guide = value.Guide,
+                    Describe = value.Describe,
+                };
+            }
+        }
+
+        /// <summary>
+        ///     执行跟踪
+        /// </summary>
+        [DataMember(Name = "trace"), JsonPropertyName("trace"), JsonProperty("trace", NullValueHandling = NullValueHandling.Ignore)]
+        public OperatorTrace Trace { get; set; }
 
     }
 
@@ -37,7 +66,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         ///     返回值
         /// </summary>
-        [DataMember, JsonProperty("data")]
+        [DataMember(Name = "data"), JsonPropertyName("data"), JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
         public TData ResultData { get; set; }
 
     }

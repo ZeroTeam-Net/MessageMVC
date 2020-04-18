@@ -24,7 +24,7 @@ namespace Agebull.Common.Logging
         [Conditional("LogMonitor")]
         public static void BeginMonitor(string title)
         {
-            if (!LogMonitor || !Logger.IsEnabled(LogLevel.Information))
+            if (!LogMonitor)
             {
                 return;
             }
@@ -77,7 +77,7 @@ namespace Agebull.Common.Logging
         /// 加入监视跟踪
         /// </summary>
         [Conditional("LogMonitor")]
-        public static void MonitorTrace(string message)
+        public static void MonitorInfomation(string message)
         {
             if (!LogMonitor)
             {
@@ -98,7 +98,7 @@ namespace Agebull.Common.Logging
         /// 加入监视跟踪
         /// </summary>
         [Conditional("LogMonitor")]
-        public static void MonitorTrace(string message, params object[] args)
+        public static void MonitorInfomation(string message, params object[] args)
         {
             if (!LogMonitor || message == null)
             {
@@ -119,7 +119,7 @@ namespace Agebull.Common.Logging
         /// 加入监视跟踪
         /// </summary>
         [Conditional("LogMonitor")]
-        public static void MonitorTrace(Func<string> message)
+        public static void MonitorInfomation(Func<string> message)
         {
             if (!LogMonitor)
             {
@@ -133,6 +133,49 @@ namespace Agebull.Common.Logging
             }
 
             item.Trace(message());
+            return;
+        }
+
+
+        /// <summary>
+        /// 加入监视跟踪
+        /// </summary>
+        [Conditional("LogMonitor")]
+        public static void MonitorDetails(Func<string> message)
+        {
+            if (!MonitorIncludeDetails || !LogMonitor)
+            {
+                return;
+            }
+
+            var item = MonitorItem;
+            if (item == null || !item.InMonitor)
+            {
+                return;
+            }
+
+            item.Trace(message());
+            return;
+        }
+
+
+
+        /// <summary>
+        /// 加入监视跟踪
+        /// </summary>
+        [Conditional("LogMonitor")]
+        public static void MonitorDetails(string message)
+        {
+            if (!MonitorIncludeDetails || !LogMonitor)
+            {
+                return;
+            }
+            var item = MonitorItem;
+            if (item == null || !item.InMonitor)
+            {
+                return;
+            }
+            item.Trace(message);
             return;
         }
 
@@ -150,7 +193,72 @@ namespace Agebull.Common.Logging
             item.End();
             return item.Stack.FixValue;
         }
+        #region 兼容
 
+        /// <summary>
+        /// 加入监视跟踪
+        /// </summary>
+        [Obsolete,Conditional("LogMonitor")]
+        public static void MonitorTrace(string message)
+        {
+            if (!LogMonitor)
+            {
+                return;
+            }
+
+            var item = MonitorItem;
+            if (item == null || !item.InMonitor)
+            {
+                return;
+            }
+
+            item.Trace(message);
+            return;
+        }
+
+        /// <summary>
+        /// 加入监视跟踪
+        /// </summary>
+        [Obsolete, Conditional("LogMonitor")]
+        public static void MonitorTrace(string message, params object[] args)
+        {
+            if (!LogMonitor || message == null)
+            {
+                return;
+            }
+
+            var item = MonitorItem;
+            if (item == null || !item.InMonitor)
+            {
+                return;
+            }
+
+            item.Trace(string.Format(message, args));
+            return;
+        }
+
+        /// <summary>
+        /// 加入监视跟踪
+        /// </summary>
+        [Obsolete, Conditional("LogMonitor")]
+        public static void MonitorTrace(Func<string> message)
+        {
+            if (!LogMonitor)
+            {
+                return;
+            }
+
+            var item = MonitorItem;
+            if (item == null || !item.InMonitor)
+            {
+                return;
+            }
+
+            item.Trace(message());
+            return;
+        }
+
+        #endregion
         #region 表格输出
 
         /// <summary>

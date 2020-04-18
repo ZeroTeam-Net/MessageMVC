@@ -17,6 +17,7 @@ namespace ZeroTeam.MessageMVC.Messages
     public class MessageProcessor
     {
         #region 处理入口
+
         TaskCompletionSource<IMessageItem> WaitTask;
         /// <summary>
         /// 当前站点
@@ -47,6 +48,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <param name="original">原始透传对象</param>
         public static Task OnMessagePush(IService service, IInlineMessage message, bool offline, object original)
         {
+            message.RealState = MessageState.Recive;
             var process = new MessageProcessor
             {
                 Service = service,
@@ -81,18 +83,15 @@ namespace ZeroTeam.MessageMVC.Messages
                 try
                 {
                     middlewares = DependencyHelper.ServiceProvider.GetServices<IMessageMiddleware>().OrderBy(p => p.Level).ToArray();
-                    foreach (var middleware in middlewares)
-                    {
-                        middleware.Processor = this;
-                    }
+
                     Message.Reset();
                     if (IsOffline)
                     {
                         Message.DataState = MessageDataState.ArgumentOffline;
                     }
                     await Message.PrepareInline();
-
-                    if (await Prepare() && Message.State == MessageState.None)
+                    //BUG:Prepare处理需要检查
+                    if (await Prepare() && Message.State <= MessageState.Processing)
                     {
                         index = 0;
                         await DoHandle();
@@ -119,20 +118,23 @@ namespace ZeroTeam.MessageMVC.Messages
             {
                 try
                 {
-                    LogRecorder.MonitorTrace(() => $"[MessageProcessor.Prepare>{middleware.GetTypeName()}.Prepare]");
+                    LogRecorder.MonitorDetails(() => $"[MessageProcessor.Prepare>{middleware.GetTypeName()}.Prepare]");
                     if (!await middleware.Prepare(Service, Message, Original))
                         return false;
                 }
                 catch (Exception ex)
                 {
-                    LogRecorder.MonitorTrace(() => $"[MessageProcessor.Prepare>{middleware.GetTypeName()}.Prepare]  发生异常.{ ex.Message}.");
+                    LogRecorder.MonitorInfomation(() => $"[MessageProcessor.Prepare>{middleware.GetTypeName()}.Prepare]  发生异常.{ ex.Message}.");
                     LogRecorder.Exception(ex);
-                    Message.State = MessageState.Error;
+                    Message.RealState = MessageState.FrameworkError;
                     return false;
                 }
             }
             if (GlobalContext.CurrentNoLazy == null)
+            {
                 GlobalContext.Current.Message = Message;
+                GlobalContext.Current.Trace = Message.Trace;
+            }
             return true;
         }
 
@@ -147,34 +149,8 @@ namespace ZeroTeam.MessageMVC.Messages
             {
                 await Handle();
             }
-            catch (OperationCanceledException ex)
-            {
-                Message.State = MessageState.Cancel;
-                Message.RuntimeStatus = ApiResultHelper.Error(DefaultErrorCode.Ignore);
-                await OnMessageError(ex);
-            }
-            catch (ThreadInterruptedException ex)
-            {
-                Message.State = MessageState.Cancel;
-                Message.RuntimeStatus = ApiResultHelper.Error(DefaultErrorCode.Ignore);
-                await OnMessageError(ex);
-            }
-            catch (MessageBusinessException ex)
-            {
-                Message.State = MessageState.Error;
-                Message.RuntimeStatus = ApiResultHelper.Error(DefaultErrorCode.BusinessException);
-                await OnMessageError(ex);
-            }
-            catch (MessageReceiveException ex)
-            {
-                Message.State = MessageState.Error;
-                Message.RuntimeStatus = ApiResultHelper.Error(DefaultErrorCode.NetworkError);
-                await OnMessageError(ex);
-            }
             catch (Exception ex)
             {
-                Message.State = MessageState.Error;
-                Message.RuntimeStatus = ApiResultHelper.Error(DefaultErrorCode.UnhandleException);
                 await OnMessageError(ex);
             }
             LogRecorder.EndStepMonitor();
@@ -193,7 +169,7 @@ namespace ZeroTeam.MessageMVC.Messages
                 {
                     continue;
                 }
-                LogRecorder.MonitorTrace(() => $"[{next.GetTypeName()}.Handle]");
+                LogRecorder.MonitorDetails(() => $"[{next.GetTypeName()}.Handle]");
                 await next.Handle(Service, Message, Original, Handle);
                 return;
             }
@@ -208,23 +184,31 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         private async Task Write()
         {
-            Message.PrepareOffline(Service.Serialize);
+            Message.Trace ??= GlobalContext.CurrentNoLazy?.Trace;
+            if (Message.Trace != null)
+                Message.Trace.End = DateTime.Now;
 
             if (Original is TaskCompletionSource<IMessageResult> task)//内部自调用,无需处理
             {
-                Message.OfflineResult(Service.Serialize);
-                task.TrySetResult(Message.ToMessageResult());
-                LogRecorder.MonitorTrace(() => $"[MessageProcessor.Write] 内部调用,直接返回Task");
+                try
+                {
+                    LogRecorder.MonitorDetails(() => $"[MessageProcessor.Write] 内部调用,直接返回Task");
+                    task.TrySetResult(null);//本地直接使用消息
+                }
+                catch
+                {
+                    LogRecorder.MonitorInfomation(() => $"[MessageProcessor.Write] 内部调用,直接返回Task时,原始调用Task已析构.");
+                }
                 return;
             }
             try
             {
-                LogRecorder.MonitorTrace(() => $"[MessageProcessor.Write>{Service.Receiver.GetTypeName()}.OnResult] 写入返回值");
+                LogRecorder.MonitorDetails(() => $"[MessageProcessor.Write>{Service.Receiver.GetTypeName()}.OnResult] 写入返回值");
                 await Service.Receiver.OnResult(Message, Original);
             }
             catch (Exception ex)
             {
-                LogRecorder.MonitorTrace(() => $"[MessageProcessor.Write>{Service.Receiver.GetTypeName()}.OnResult] 发生异常.{ ex.Message}.");
+                LogRecorder.MonitorInfomation(() => $"[MessageProcessor.Write>{Service.Receiver.GetTypeName()}.OnResult] 发生异常.{ ex.Message}.");
                 LogRecorder.Exception(ex);
             }
         }
@@ -241,30 +225,30 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </remarks>
         private async Task OnMessageError(Exception ex)
         {
-            Message.RuntimeStatus.Exception = ex;
             LogRecorder.Exception(ex);
-            LogRecorder.MonitorTrace(() => $"发生未处理异常.[{Message.RuntimeStatus.Code}]{Message.RuntimeStatus.Message}");
+            LogRecorder.MonitorInfomation(() => $"发生未处理异常.[{Message.State}]{Message.Result}");
 
+            Message.RealState = MessageState.FrameworkError;
             var array = middlewares.Where(p => p.Scope.HasFlag(MessageHandleScope.Exception)).ToArray();
-            if (array.Length == 0)
+            if (array.Length != 0)
             {
-                LogRecorder.BeginStepMonitor("[MessageProcessor.OnMessageError]");
-                foreach (var middleware in array)
-                {
-                    try
-                    {
-                        LogRecorder.MonitorTrace(() => $"[{middleware.GetTypeName()}.OnGlobalException]");
-                        await middleware.OnGlobalException(Service, Message, Original);
-                    }
-                    catch (Exception e)
-                    {
-                        LogRecorder.MonitorTrace(() => $"[{middleware.GetTypeName()}.OnGlobalException] 发生异常.{ ex.Message}.");
-                        LogRecorder.Exception(e);
-                    }
-                }
-                LogRecorder.EndStepMonitor();
+                return;
             }
-            Message.RuntimeStatus ??= ApiResultHelper.Error(DefaultErrorCode.UnhandleException, ex.Message);
+            LogRecorder.BeginStepMonitor("[MessageProcessor.OnMessageError]");
+            foreach (var middleware in array)
+            {
+                try
+                {
+                    LogRecorder.MonitorDetails(() => $"[{middleware.GetTypeName()}.OnGlobalException]");
+                    await middleware.OnGlobalException(Service, Message, ex, Original);
+                }
+                catch (Exception e)
+                {
+                    LogRecorder.MonitorInfomation(() => $"[{middleware.GetTypeName()}.OnGlobalException] 发生异常.{ ex.Message}.");
+                    LogRecorder.Exception(e);
+                }
+            }
+            LogRecorder.EndStepMonitor();
         }
         #endregion
 
@@ -284,12 +268,12 @@ namespace ZeroTeam.MessageMVC.Messages
             {
                 try
                 {
-                    LogRecorder.MonitorTrace(() => $"[{middleware.GetTypeName()}.OnEnd]");
+                    LogRecorder.MonitorDetails(() => $"[{middleware.GetTypeName()}.OnEnd]");
                     await middleware.OnEnd(Message);
                 }
                 catch (Exception ex)
                 {
-                    LogRecorder.MonitorTrace(() => $"[{middleware.GetTypeName()}.OnEnd] 发生异常.{ ex.Message}.");
+                    LogRecorder.MonitorInfomation(() => $"[{middleware.GetTypeName()}.OnEnd] 发生异常.{ ex.Message}.");
                     LogRecorder.Exception(ex);
                 }
             }

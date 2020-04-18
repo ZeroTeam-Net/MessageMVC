@@ -23,6 +23,11 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         {
         }
 
+        /// <summary>
+        /// 对应发送器名称
+        /// </summary>
+        string IMessageReceiver.PosterName => nameof(CsRedisPoster);
+
         ILogger logger;
 
         /// <summary>
@@ -42,39 +47,26 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(CSRedisConsumer));
         }
 
-        /// <summary>
-        /// 同步运行状态
-        /// </summary>
-        /// <returns></returns>
-        Task<bool> IMessageReceiver.LoopBegin()
-        {
-            try
-            {
-                client = new CSRedisClient(RedisOption.Instance.ConnectionString);
-                var redis = client as IRedisClient;
-                return Task.FromResult(client != null);
-            }
-            catch (Exception ex)
-            {
-                logger.Error(() => $"LoopBegin error.{ex.Message}");
-                return Task.FromResult(false);
-            }
-        }
-
         private TaskCompletionSource<bool> loopTask;
         private CancellationToken token;
         async Task<bool> IMessageReceiver.Loop(CancellationToken t)
         {
             token = t;
-            try
+            while (!token.IsCancellationRequested)
             {
-                subscribeObject = client.Subscribe((Service.ServiceName, OnMessagePush));
-            }
-            catch (Exception ex)
-            {
-                logger.Error(() => $"Loop error.{ex.Message}");
-                await Task.Delay(3000);
-                return false;
+                try
+                {
+                    client = new CSRedisClient(RedisOption.Instance.ConnectionString);
+                    if (client == null)
+                        continue;
+                    subscribeObject = client.Subscribe((Service.ServiceName, OnMessagePush));
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    logger.Error(() => $"启动订阅失败.{ex.Message}");
+                    await Task.Delay(3000);
+                }
             }
             loopTask = new TaskCompletionSource<bool>();
             await loopTask.Task;
@@ -185,22 +177,25 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                 await client.DelAsync(key);
                 return true;
             }
-            InlineMessage item;
             try
             {
-                item = JsonHelper.DeserializeObject<InlineMessage>(str);
+                if (SmartSerializer.TryToMessage(str, out var message))
+                {
+                    message.Trace ??= TraceInfo.New(message.ID);
+                    message.Trace.TraceId = id;
+                    message.Topic = Service.ServiceName;
+                    await MessageProcessor.OnMessagePush(Service, message, true, null);//BUG:应该配置化同步或异步}
+                }
+                else
+                {
+                    logger.Warning(() => $"列表({key})内容错误,自动删除. =>{str}");
+                    await client.DelAsync(key);
+                }
             }
             catch (Exception ex)
             {
-                logger.Warning(() => $"ReadList deserialize error.{ex.Message }.{key} =>{str}");
-                await client.DelAsync(key);
-                return true;
+                LogRecorder.Exception(ex);
             }
-            item.Trace ??= new TraceInfo();
-            item.Trace.TraceId = id;
-            item.Topic = Service.ServiceName;
-            await MessageProcessor.OnMessagePush(Service, item, true, null);//BUG:应该配置化同步或异步
-
             return true;
         }
 

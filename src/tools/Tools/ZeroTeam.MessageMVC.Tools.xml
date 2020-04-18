@@ -19,43 +19,44 @@
             初始化
             </summary>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.Context.GlobalContextMiddleware">
+        <member name="T:ZeroTeam.MessageMVC.Tools.ExceptionMiddleware">
             <summary>
-            上下文对象
+            反向代理中间件
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Context.GlobalContextMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Level">
+        <member name="F:ZeroTeam.MessageMVC.Tools.ExceptionMiddleware.ResourceExceptions">
+            <summary>
+            代表资源相关的异常
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Tools.ExceptionMiddleware.RegistResourceException``1(System.String,ZeroTeam.MessageMVC.Messages.MessageState)">
+            <summary>
+            注册代表资源相关的异常
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.ExceptionMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Level">
             <summary>
             层级
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Context.GlobalContextMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Scope">
+        <member name="P:ZeroTeam.MessageMVC.Tools.ExceptionMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Scope">
             <summary>
             消息中间件的处理范围
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Context.GlobalContextMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Processor">
+        <member name="M:ZeroTeam.MessageMVC.Tools.ExceptionMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#OnGlobalException(ZeroTeam.MessageMVC.Services.IService,ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Exception,System.Object)">
             <summary>
-            当前处理器
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Context.GlobalContextMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Prepare(ZeroTeam.MessageMVC.Services.IService,ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
-            <summary>
-            准备
+            全局异常发生时
             </summary>
             <param name="service">当前服务</param>
             <param name="message">当前消息</param>
+            <param name="exception">异常信息</param>
             <param name="tag">扩展信息</param>
             <returns></returns>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Tools.HealthCheckMiddleware">
             <summary>
             健康检查中间件
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Tools.HealthCheckMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Processor">
-            <summary>
-            当前处理器
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Tools.HealthCheckMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Level">
@@ -134,11 +135,6 @@
             埋点发出中间件
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Tools.MarkPointMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Processor">
-            <summary>
-            当前处理器
-            </summary>
-        </member>
         <member name="P:ZeroTeam.MessageMVC.Tools.MarkPointMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Level">
             <summary>
             层级
@@ -170,11 +166,6 @@
             回执服务中间件
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Tools.ReceiptMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Processor">
-            <summary>
-            当前处理器
-            </summary>
-        </member>
         <member name="P:ZeroTeam.MessageMVC.Tools.ReceiptMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Level">
             <summary>
             层级
@@ -195,11 +186,6 @@
         <member name="T:ZeroTeam.MessageMVC.Tools.ReverseProxyMiddleware">
             <summary>
             反向代理中间件
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Tools.ReverseProxyMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Processor">
-            <summary>
-            当前处理器
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Tools.ReverseProxyMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Level">
@@ -229,7 +215,7 @@
         </member>
         <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.EnableLinkTrace">
             <summary>
-                启用调用链跟踪(使用IZeroContext全局上下文)
+                启用调用链跟踪
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.EnableMonitorLog">
@@ -272,6 +258,30 @@
             重新载入并更新
             </summary>
         </member>
+        <member name="T:ZeroTeam.MessageMVC.Context.GlobalContextMiddleware">
+            <summary>
+            上下文对象
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.GlobalContextMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Level">
+            <summary>
+            层级
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.GlobalContextMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Scope">
+            <summary>
+            消息中间件的处理范围
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Context.GlobalContextMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Prepare(ZeroTeam.MessageMVC.Services.IService,ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
+            <summary>
+            准备
+            </summary>
+            <param name="service">当前服务</param>
+            <param name="message">当前消息</param>
+            <param name="tag">扩展信息</param>
+            <returns></returns>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Messages.ReConsumerMiddleware">
             <summary>
             重新消费未正确处理消息的中间件
@@ -285,11 +295,6 @@
         <member name="P:ZeroTeam.MessageMVC.Messages.ReConsumerMiddleware.ZeroTeam#MessageMVC#IZeroMiddleware#Level">
             <summary>
             等级
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.ReConsumerMiddleware.ZeroTeam#MessageMVC#IFlowMiddleware#Close">
-            <summary>
-                关闭
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.ReConsumerMiddleware.ZeroTeam#MessageMVC#IFlowMiddleware#CheckOption(ZeroTeam.MessageMVC.ZeroAppOption)">
@@ -310,11 +315,6 @@
         <member name="T:ZeroTeam.MessageMVC.Messages.StorageMiddleware">
             <summary>
             消息存储中间件
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.StorageMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Processor">
-            <summary>
-            当前处理器
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.StorageMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Level">

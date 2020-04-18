@@ -11,14 +11,12 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
     ///     站点配置
     /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
-    [DataContract]
-    [Serializable]
     public class StationConfig : AnnotationsConfig
     {
         /// <summary>
         ///     所在组
         /// </summary>
-        [IgnoreDataMember, JsonIgnore]
+        [JsonIgnore]
         public string Group
         {
             get;
@@ -28,13 +26,13 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         ///     站点名称
         /// </summary>
-        [IgnoreDataMember, JsonIgnore]
+        [JsonIgnore]
         public byte[] ServiceKey { get; set; }
 
         /// <summary>
         ///     站点名称
         /// </summary>
-        [IgnoreDataMember, JsonIgnore]
+        [JsonIgnore]
         public string StationName
         {
             get => Name;
@@ -60,7 +58,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         ///     是否系统支撑站点
         /// </summary>
         /// <remarks></remarks>
-        [IgnoreDataMember, JsonIgnore]
+        [JsonIgnore]
         public bool IsSystem => StationType == ZeroStationType.Dispatcher ||
                                 StationType == ZeroStationType.Trace ||
                                 StationType == ZeroStationType.Proxy ||
@@ -70,7 +68,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         ///     是否接口站点
         /// </summary>
-        [IgnoreDataMember, JsonIgnore]
+        [JsonIgnore]
         public bool IsApi => StationType == ZeroStationType.Api ||
                              StationType == ZeroStationType.RouteApi ||
                              StationType == ZeroStationType.Vote ||
@@ -79,7 +77,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         ///     是否广播站点
         /// </summary>
-        [IgnoreDataMember, JsonIgnore]
+        [JsonIgnore]
         public bool IsNotify => StationType == ZeroStationType.Notify ||
                                 StationType == ZeroStationType.Queue ||
                                 StationType == ZeroStationType.Dispatcher ||
@@ -89,7 +87,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         ///     是否普通站点（区别于基础站点）
         /// </summary>
         /// <remarks></remarks>
-        [IgnoreDataMember, JsonIgnore]
+        [JsonIgnore]
         public bool IsGeneral => StationType == ZeroStationType.Api ||
                                  StationType == ZeroStationType.RouteApi ||
                                  StationType == ZeroStationType.Vote ||

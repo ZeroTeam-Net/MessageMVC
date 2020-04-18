@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.ConfigSync
@@ -17,6 +16,7 @@ namespace ZeroTeam.MessageMVC.ConfigSync
         [Route("v1/changed")]
         public async Task OnChanged(ConfigChangedArgument argument)
         {
+             
             if (argument.Type == "section")
             {
                 await ConfigHelper.SaveToFile(argument.Section);

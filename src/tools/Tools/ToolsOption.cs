@@ -9,7 +9,7 @@ namespace ZeroTeam.MessageMVC.Tools
     {
 
         /// <summary>
-        ///     启用调用链跟踪(使用IZeroContext全局上下文)
+        ///     启用调用链跟踪
         /// </summary>
 
         public bool EnableLinkTrace { get; set; }

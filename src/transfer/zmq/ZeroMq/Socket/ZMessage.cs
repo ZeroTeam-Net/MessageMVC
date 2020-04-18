@@ -482,7 +482,7 @@ namespace ZeroTeam.ZeroMQ
         public ZMessage Duplicate(int start)
         {
             var message = new ZMessage();
-            for (var index = start; index < this.Count; index++)
+            for (var index = start; index < Count; index++)
             {
                 var frame = this[index];
                 message.Add(frame.Duplicate());

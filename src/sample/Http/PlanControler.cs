@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System;
 using ZeroTeam.MessageMVC.PlanTasks;
+using ZeroTeam.MessageMVC.ApiContract;
 
 namespace ZeroTeam.MessageMVC.Sample.Controllers
 {

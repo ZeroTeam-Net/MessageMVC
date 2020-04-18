@@ -49,7 +49,11 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// HTTP的Form
         /// </summary>
-        HttpForm
+        HttpForm,
+        /// <summary>
+        /// 取字典内容
+        /// </summary>
+        Dictionary = HttpForm
     }
 
     /// <summary>

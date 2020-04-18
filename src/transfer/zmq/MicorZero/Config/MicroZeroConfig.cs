@@ -13,8 +13,6 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
     /// <summary>
     ///     本地站点配置
     /// </summary>
-    [Serializable]
-    [DataContract]
     public class ZeroRpcConfig : ZeroStationOption
     {
         /// <summary>
@@ -22,17 +20,6 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// </summary>
 
         public List<ZeroItem> ZeroGroup { get; set; }
-
-
-        /// <summary>
-        ///   线程池最大工作线程数
-        /// </summary>
-        public int MaxWorkThreads;
-
-        /// <summary>
-        ///   线程池最大IO线程数
-        /// </summary>
-        public int MaxIOThreads;
 
         /// <summary>
         ///   是否需要发出事件

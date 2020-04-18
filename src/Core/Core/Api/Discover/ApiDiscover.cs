@@ -429,7 +429,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 }
                 _typeDocs.Add(type, new TypeDocument
                 {
-                    fields = typeDocument.fields?.ToDictionary(p => p.Key, p => p.Value)
+                    Fields = typeDocument.Fields?.ToDictionary(p => p.Key, p => p.Value)
                 });
                 typeDocument.Copy(XmlMember.Find(type));
                 return;
@@ -457,7 +457,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
             _typeDocs.Add(type, new TypeDocument
             {
-                fields = typeDocument.fields?.ToDictionary(p => p.Key, p => p.Value)
+                Fields = typeDocument.Fields?.ToDictionary(p => p.Key, p => p.Value)
             });
             typeDocument.Copy(XmlMember.Find(type));
         }

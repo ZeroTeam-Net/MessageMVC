@@ -36,6 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\tools\ConfigSync\Client\ZeroTeam.MessageMVC.ConfigSync.csproj" />
     <ProjectReference Include="..\..\tools\Contract\ZeroTeam.MessageMVC.ApiContract.csproj" />
     <ProjectReference Include="..\..\tools\Tools\ZeroTeam.MessageMVC.Tools.csproj" />
     <ProjectReference Include="..\..\transfer\Http\ZeroTeam.MessageMVC.Http.csproj" />

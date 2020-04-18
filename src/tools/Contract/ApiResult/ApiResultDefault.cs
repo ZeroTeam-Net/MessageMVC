@@ -1,11 +1,12 @@
 using Agebull.Common.Ioc;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
+using ZeroTeam.MessageMVC.ZeroApis;
 
-namespace ZeroTeam.MessageMVC.ZeroApis
+namespace ZeroTeam.MessageMVC.ApiContract
 {
     /// <summary>API返回基类</summary>
-    internal class ApiResultDefault : IApiResultHelper
+    public class ApiResultDefault : IApiResultHelper
     {
         #region 序列化
 
@@ -57,69 +58,69 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         #region 基本定义
 
         /// <summary>
-        ///     生成一个包含错误码的标准返回
+        ///     生成一个包含状态码的标准返回
         /// </summary>
-        /// <param name="errCode">错误码</param>
-        /// <param name="message">错误消息</param>
+        /// <param name="code">状态码</param>
+        /// <param name="message">提示消息</param>
         /// <returns></returns>
-        public IApiResult Generate(int errCode, string message = null)
+        public IApiResult Generate(int code, string message = null)
         {
             return new ApiResult
             {
-                Success = errCode == DefaultErrorCode.Success,
-                Code = errCode,
-                Message = message ?? DefaultErrorCode.GetMessage(errCode)
+                Success = code == OperatorStatusCode.Success || code == OperatorStatusCode.Queue,
+                Code = code,
+                Message = message ?? OperatorStatusCode.GetMessage(code)
             };
         }
-        
+
         ///<inheritdoc/>
-        IApiResult IApiResultHelper.Waiting => Generate(DefaultErrorCode.Queue);
+        IApiResult IApiResultHelper.Waiting => Generate(OperatorStatusCode.Queue);
 
 
         /// <summary>成功</summary>
         /// <remarks>成功</remarks>
-        IApiResult IApiResultHelper.Ok => Generate(DefaultErrorCode.Success);
+        IApiResult IApiResultHelper.Ok => Generate(OperatorStatusCode.Success);
 
         /// <summary>页面不存在</summary>
-        IApiResult IApiResultHelper.NoFind => Generate(DefaultErrorCode.NoFind, "*页面不存在*");
+        IApiResult IApiResultHelper.NoFind => Generate(OperatorStatusCode.NoFind, "*页面不存在*");
 
         /// <summary>不支持的操作</summary>
-        IApiResult IApiResultHelper.NonSupport => Generate(DefaultErrorCode.Ignore, "*不支持的操作*");
+        IApiResult IApiResultHelper.NonSupport => Generate(OperatorStatusCode.Ignore, "*不支持的操作*");
 
         /// <summary>参数错误字符串</summary>
-        IApiResult IApiResultHelper.ArgumentError => Generate(DefaultErrorCode.ArgumentError, "参数错误");
+        IApiResult IApiResultHelper.ArgumentError => Generate(OperatorStatusCode.ArgumentError, "参数错误");
 
         /// <summary>拒绝访问</summary>
-        IApiResult IApiResultHelper.DenyAccess => Generate(DefaultErrorCode.DenyAccess);
+        IApiResult IApiResultHelper.DenyAccess => Generate(OperatorStatusCode.DenyAccess);
 
         /// <summary>系统未就绪</summary>
-        IApiResult IApiResultHelper.NoReady => Generate(DefaultErrorCode.NoReady);
+        IApiResult IApiResultHelper.NoReady => Generate(OperatorStatusCode.NoReady);
 
         /// <summary>暂停服务</summary>
-        IApiResult IApiResultHelper.Pause => Generate(DefaultErrorCode.NoReady, "暂停服务");
+        IApiResult IApiResultHelper.Pause => Generate(OperatorStatusCode.NoReady, "暂停服务");
 
         /// <summary>逻辑错误</summary>
-        IApiResult IApiResultHelper.BusinessError => Generate(DefaultErrorCode.BusinessError, "逻辑错误");
+        IApiResult IApiResultHelper.BusinessError => Generate(OperatorStatusCode.BusinessError, "逻辑错误");
         /// <summary>
         /// 服务异常
         /// </summary>
-        IApiResult IApiResultHelper.BusinessException => Generate(DefaultErrorCode.BusinessException, "服务异常");
+        IApiResult IApiResultHelper.BusinessException => Generate(OperatorStatusCode.BusinessException, "服务异常");
 
-        IApiResult IApiResultHelper.UnhandleException => Generate(DefaultErrorCode.UnhandleException, "系统异常");
+        IApiResult IApiResultHelper.UnhandleException => Generate(OperatorStatusCode.UnhandleException, "系统异常");
 
         /// <summary>网络错误</summary>
-        IApiResult IApiResultHelper.NetworkError => Generate(DefaultErrorCode.NetworkError);
+        IApiResult IApiResultHelper.NetworkError => Generate(OperatorStatusCode.NetworkError);
 
         /// <summary>网络超时</summary>
         /// <remarks>调用其它Api时时抛出未处理异常</remarks>
-        IApiResult IApiResultHelper.NetTimeOut => Generate(DefaultErrorCode.NetworkError, "网络超时");
+        IApiResult IApiResultHelper.NetTimeOut => Generate(OperatorStatusCode.NetworkError, "网络超时");
 
         /// <summary>执行超时</summary>
         /// <remarks>Api执行超时</remarks>
-        IApiResult IApiResultHelper.ExecTimeOut => Generate(DefaultErrorCode.TimeOut, "执行超时");
+        IApiResult IApiResultHelper.ExecTimeOut => Generate(OperatorStatusCode.TimeOut, "执行超时");
 
         /// <summary>服务不可用</summary>
-        IApiResult IApiResultHelper.Unavailable => Generate(DefaultErrorCode.Unavailable, "服务不可用");
+        IApiResult IApiResultHelper.Unavailable => Generate(OperatorStatusCode.Unavailable, "服务不可用");
 
         #endregion
 
@@ -138,69 +139,69 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         }
 
         /// <summary>
-        ///     生成一个包含错误码的标准返回
+        ///     生成一个包含状态码的标准返回
         /// </summary>
-        /// <param name="errCode">错误码</param>
+        /// <param name="code">状态码</param>
         /// <returns></returns>
-        IApiResult IApiResultHelper.Error(int errCode)
+        IApiResult IApiResultHelper.State(int code)
         {
             return new ApiResult
             {
-                Success = false,
-                Code = errCode,
-                Message = DefaultErrorCode.GetMessage(errCode)
+                Success = code == OperatorStatusCode.Success || code == OperatorStatusCode.Queue,
+                Code = code,
+                Message = OperatorStatusCode.GetMessage(code)
             };
         }
 
         /// <summary>
-        ///     生成一个包含错误码的标准返回
+        ///     生成一个包含状态码的标准返回
         /// </summary>
-        /// <param name="errCode">错误码</param>
-        /// <param name="message">错误消息</param>
+        /// <param name="code">状态码</param>
+        /// <param name="message">提示消息</param>
         /// <returns></returns>
-        IApiResult IApiResultHelper.Error(int errCode, string message)
+        IApiResult IApiResultHelper.State(int code, string message)
         {
             return new ApiResult
             {
-                Success = errCode == DefaultErrorCode.Success,
-                Code = errCode,
-                Message = message ?? DefaultErrorCode.GetMessage(errCode)
+                Success = code == OperatorStatusCode.Success || code == OperatorStatusCode.Queue,
+                Code = code,
+                Message = message ?? OperatorStatusCode.GetMessage(code)
             };
         }
 
         /// <summary>
-        ///     生成一个包含错误码的标准返回
+        ///     生成一个包含状态码的标准返回
         /// </summary>
-        /// <param name="errCode">错误码</param>
-        /// <param name="message">错误消息</param>
+        /// <param name="code">状态码</param>
+        /// <param name="message">提示消息</param>
         /// <param name="innerMessage">内部说明</param>
         /// <returns></returns>
-        IApiResult IApiResultHelper.Error(int errCode, string message, string innerMessage)
+        IApiResult IApiResultHelper.State(int code, string message, string innerMessage)
         {
             return new ApiResult
             {
-                Success = errCode == DefaultErrorCode.Success,
-                Code = errCode,
-                Message = message ?? DefaultErrorCode.GetMessage(errCode),
+                Success = code == OperatorStatusCode.Success || code == OperatorStatusCode.Queue,
+                Code = code,
+                Message = message ?? OperatorStatusCode.GetMessage(code),
                 InnerMessage = innerMessage
             };
         }
         /// <summary>
-        ///     生成一个包含错误码的标准返回
+        ///     生成一个包含状态码的标准返回
         /// </summary>
-        /// <param name="errCode">错误码</param>
-        /// <param name="message">错误消息</param>
+        /// <param name="code">状态码</param>
+        /// <param name="message">提示消息</param>
         /// <param name="innerMessage">内部说明</param>
         /// <param name="guide">错误指导</param>
         /// <param name="describe">错误解释</param>
         /// <returns></returns>
-        IApiResult IApiResultHelper.Error(int errCode, string message, string innerMessage, string guide, string describe)
+        IApiResult IApiResultHelper.State(int code, string message, string innerMessage, string guide, string describe)
         {
             return new ApiResult
             {
-                Success = errCode == DefaultErrorCode.Success,
-                Code = errCode,
-                Message = message ?? DefaultErrorCode.GetMessage(errCode),
+                Success = code == OperatorStatusCode.Success || code == OperatorStatusCode.Queue,
+                Code = code,
+                Message = message ?? OperatorStatusCode.GetMessage(code),
                 InnerMessage = innerMessage,
                 Trace = new OperatorTrace
                 {
@@ -211,22 +212,22 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         }
 
         /// <summary>
-        ///     生成一个包含错误码的标准返回
+        ///     生成一个包含状态码的标准返回
         /// </summary>
-        /// <param name="errCode">错误码</param>
-        /// <param name="message">错误消息</param>
+        /// <param name="code">状态码</param>
+        /// <param name="message">提示消息</param>
         /// <param name="innerMessage">内部说明</param>
         /// <param name="point">错误点</param>
         /// <param name="guide">错误指导</param>
         /// <param name="describe">错误解释</param>
         /// <returns></returns>
-        IApiResult IApiResultHelper.Error(int errCode, string message, string innerMessage, string point, string guide, string describe)
+        IApiResult IApiResultHelper.State(int code, string message, string innerMessage, string point, string guide, string describe)
         {
             return new ApiResult
             {
-                Success = errCode == DefaultErrorCode.Success,
-                Code = errCode,
-                Message = message ?? DefaultErrorCode.GetMessage(errCode),
+                Success = code == OperatorStatusCode.Success || code == OperatorStatusCode.Queue,
+                Code = code,
+                Message = message ?? OperatorStatusCode.GetMessage(code),
                 InnerMessage = innerMessage,
                 Trace = new OperatorTrace
                 {
@@ -251,70 +252,70 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         }
 
         /// <summary>
-        ///     生成一个包含错误码的标准返回
+        ///     生成一个包含状态码的标准返回
         /// </summary>
-        /// <param name="errCode">错误码</param>
+        /// <param name="code">状态码</param>
         /// <returns></returns>
-        public IApiResult<TData> Error<TData>(int errCode)
+        public IApiResult<TData> State<TData>(int code)
         {
             return new ApiResult<TData>
             {
                 Success = false,
-                Code = errCode,
-                Message = DefaultErrorCode.GetMessage(errCode)
+                Code = code,
+                Message = OperatorStatusCode.GetMessage(code)
             };
         }
 
         /// <summary>
-        ///     生成一个包含错误码的标准返回
+        ///     生成一个包含状态码的标准返回
         /// </summary>
-        /// <param name="errCode">错误码</param>
+        /// <param name="code">状态码</param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public IApiResult<TData> Error<TData>(int errCode, string message)
+        public IApiResult<TData> State<TData>(int code, string message)
         {
             return new ApiResult<TData>
             {
                 Success = false,
-                Code = errCode,
-                Message = message ?? DefaultErrorCode.GetMessage(errCode)
+                Code = code,
+                Message = message ?? OperatorStatusCode.GetMessage(code)
             };
         }
 
         /// <summary>
-        ///     生成一个包含错误码的标准返回
+        ///     生成一个包含状态码的标准返回
         /// </summary>
-        /// <param name="errCode">错误码</param>
-        /// <param name="message">错误消息</param>
+        /// <param name="code">状态码</param>
+        /// <param name="message">提示消息</param>
         /// <param name="innerMessage">内部说明</param>
         /// <returns></returns>
-        public IApiResult<TData> Error<TData>(int errCode, string message, string innerMessage)
+        public IApiResult<TData> State<TData>(int code, string message, string innerMessage)
         {
             return new ApiResult<TData>
             {
-                Success = errCode == DefaultErrorCode.Success,
-                Code = errCode,
-                Message = message ?? DefaultErrorCode.GetMessage(errCode),
+                Success = code == OperatorStatusCode.Success || code == OperatorStatusCode.Queue,
+                Code = code,
+                Message = message ?? OperatorStatusCode.GetMessage(code),
                 InnerMessage = innerMessage
             };
         }
 
         /// <summary>
-        ///     生成一个包含错误码的标准返回
+        ///     生成一个包含状态码的标准返回
         /// </summary>
-        /// <param name="errCode">错误码</param>
-        /// <param name="message">错误消息</param>
+        /// <param name="code">状态码</param>
+        /// <param name="message">提示消息</param>
         /// <param name="innerMessage">内部说明</param>
         /// <param name="guide">错误指导</param>
         /// <param name="describe">错误解释</param>
         /// <returns></returns>
-        public IApiResult<TData> Error<TData>(int errCode, string message, string innerMessage, string guide, string describe)
+        public IApiResult<TData> State<TData>(int code, string message, string innerMessage, string guide, string describe)
         {
             return new ApiResult<TData>
             {
-                Success = errCode == DefaultErrorCode.Success,
-                Code = errCode,
-                Message = message ?? DefaultErrorCode.GetMessage(errCode),
+                Success = code == OperatorStatusCode.Success || code == OperatorStatusCode.Queue,
+                Code = code,
+                Message = message ?? OperatorStatusCode.GetMessage(code),
                 InnerMessage = innerMessage,
                 Trace = new OperatorTrace
                 {
@@ -325,22 +326,22 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         }
 
         /// <summary>
-        ///     生成一个包含错误码的标准返回
+        ///     生成一个包含状态码的标准返回
         /// </summary>
-        /// <param name="errCode">错误码</param>
-        /// <param name="message">错误消息</param>
+        /// <param name="code">状态码</param>
+        /// <param name="message">提示消息</param>
         /// <param name="innerMessage">内部说明</param>
         /// <param name="point">错误点</param>
         /// <param name="guide">错误指导</param>
         /// <param name="describe">错误解释</param>
         /// <returns></returns>
-        public IApiResult<TData> Error<TData>(int errCode, string message, string innerMessage, string point, string guide, string describe)
+        public IApiResult<TData> State<TData>(int code, string message, string innerMessage, string point, string guide, string describe)
         {
             return new ApiResult<TData>
             {
-                Success = errCode == DefaultErrorCode.Success,
-                Code = errCode,
-                Message = message ?? DefaultErrorCode.GetMessage(errCode),
+                Success = code == OperatorStatusCode.Success || code == OperatorStatusCode.Queue,
+                Code = code,
+                Message = message ?? OperatorStatusCode.GetMessage(code),
                 InnerMessage = innerMessage,
                 Trace = new OperatorTrace
                 {
@@ -349,42 +350,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     Describe = describe
                 }
             };
-        }
-        /// <summary>
-        ///     生成一个成功的标准返回
-        /// </summary>
-        /// <returns></returns>
-        IApiResult IApiResultHelper.Error()
-        {
-            var result = new ApiResult
-            {
-                Success = false
-            };
-            if (GlobalContext.CurrentNoLazy?.Status != null)
-            {
-                result.Code = GlobalContext.Current.Status.LastStatus.Code;
-                result.Message = GlobalContext.Current.Status.LastStatus.Message;
-            }
-            return result;
-        }
-
-        /// <summary>
-        ///     生成一个成功的标准返回
-        /// </summary>
-        /// <returns></returns>
-        public IApiResult<TData> Error<TData>()
-        {
-            var result = new ApiResult<TData>
-            {
-                Success = false
-            };
-            if (GlobalContext.CurrentNoLazy?.Status != null)
-            {
-                result.Success = GlobalContext.Current.Status.LastStatus.Success;
-                result.Code = GlobalContext.Current.Status.LastStatus.Code;
-                result.Message = GlobalContext.Current.Status.LastStatus.Message;
-            }
-            return result;
         }
 
         #endregion

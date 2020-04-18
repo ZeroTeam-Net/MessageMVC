@@ -1,6 +1,4 @@
 ﻿using Agebull.Common;
-using Agebull.Common.Logging;
-using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
@@ -13,14 +11,9 @@ namespace ZeroTeam.MessageMVC.Tools
     public class ReceiptMiddleware : IMessageMiddleware
     {
         /// <summary>
-        /// 当前处理器
-        /// </summary>
-        MessageProcessor IMessageMiddleware.Processor { get; set; }
-
-        /// <summary>
         /// 层级
         /// </summary>
-        int IMessageMiddleware.Level => 0;
+        int IMessageMiddleware.Level => MiddlewareLevel.Last;
 
         /// <summary>
         /// 消息中间件的处理范围

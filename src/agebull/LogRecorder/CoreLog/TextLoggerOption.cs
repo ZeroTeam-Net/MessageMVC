@@ -79,11 +79,6 @@ namespace Agebull.Common.Logging
         {
             try
             {
-                if (disable)
-                {
-                    return;
-                }
-
                 if (split <= 0)
                 {
                     split = 10;

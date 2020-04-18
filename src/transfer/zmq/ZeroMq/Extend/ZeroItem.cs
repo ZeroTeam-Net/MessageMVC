@@ -5,8 +5,6 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
     /// <summary>
     ///     分组节点
     /// </summary>
-    [Serializable]
-    [DataContract]
     public class ZeroItem
     {
         /// <summary>

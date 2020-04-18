@@ -182,6 +182,7 @@ namespace System
         {
             return type == faces || type.GetInterface(faces.Name) != null;
         }
+
         /// <summary>
         /// 得到数据类型的接口
         /// </summary>

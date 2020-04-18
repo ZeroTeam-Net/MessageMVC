@@ -24,7 +24,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
             if (!await item.FirstSave())
             {
                 LogRecorder.Error($"校验不通过:{info.ToJson()}");
-                return ApiResultHelper.Error(DefaultErrorCode.ArgumentError);
+                return ApiResultHelper.State(OperatorStatusCode.ArgumentError);
             }
 
             await item.CheckNextTime();

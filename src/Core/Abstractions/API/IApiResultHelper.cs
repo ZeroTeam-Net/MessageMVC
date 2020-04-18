@@ -38,91 +38,83 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <returns></returns>
         IApiResult Succees();
 
-        /// <summary>生成一个包含错误码的标准返回</summary>
-        /// <param name="errCode">错误码</param>
+        /// <summary>生成一个包含状态码的标准返回</summary>
+        /// <param name="code">状态码</param>
         /// <returns></returns>
-        IApiResult Error(int errCode);
+        IApiResult State(int code);
 
-        /// <summary>生成一个包含错误码的标准返回</summary>
-        /// <param name="errCode">错误码</param>
-        /// <param name="message">错误消息</param>
+        /// <summary>生成一个包含状态码的标准返回</summary>
+        /// <param name="code">状态码</param>
+        /// <param name="message">提示消息</param>
         /// <returns></returns>
-        IApiResult Error(int errCode, string message);
+        IApiResult State(int code, string message);
 
-        /// <summary>生成一个包含错误码的标准返回</summary>
-        /// <param name="errCode">错误码</param>
-        /// <param name="message">错误消息</param>
+        /// <summary>生成一个包含状态码的标准返回</summary>
+        /// <param name="code">状态码</param>
+        /// <param name="message">提示消息</param>
         /// <param name="innerMessage">内部说明</param>
         /// <returns></returns>
-        IApiResult Error(int errCode, string message, string innerMessage);
+        IApiResult State(int code, string message, string innerMessage);
 
-        /// <summary>生成一个包含错误码的标准返回</summary>
-        /// <param name="errCode">错误码</param>
-        /// <param name="message">错误消息</param>
+        /// <summary>生成一个包含状态码的标准返回</summary>
+        /// <param name="code">状态码</param>
+        /// <param name="message">提示消息</param>
         /// <param name="innerMessage">内部说明</param>
         /// <param name="guide">错误指导</param>
         /// <param name="describe">错误解释</param>
         /// <returns></returns>
-        IApiResult Error(int errCode, string message, string innerMessage, string guide, string describe);
+        IApiResult State(int code, string message, string innerMessage, string guide, string describe);
 
-        /// <summary>生成一个包含错误码的标准返回</summary>
-        /// <param name="errCode">错误码</param>
-        /// <param name="message">错误消息</param>
+        /// <summary>生成一个包含状态码的标准返回</summary>
+        /// <param name="code">状态码</param>
+        /// <param name="message">提示消息</param>
         /// <param name="innerMessage">内部说明</param>
         /// <param name="point">错误点</param>
         /// <param name="guide">错误指导</param>
         /// <param name="describe">错误解释</param>
         /// <returns></returns>
-        IApiResult Error(int errCode, string message, string innerMessage, string point, string guide, string describe);
+        IApiResult State(int code, string message, string innerMessage, string point, string guide, string describe);
 
         /// <summary>生成一个成功的标准返回</summary>
         /// <returns></returns>
         IApiResult<TData> Succees<TData>(TData data);
 
-        /// <summary>生成一个包含错误码的标准返回</summary>
-        /// <param name="errCode">错误码</param>
+        /// <summary>生成一个包含状态码的标准返回</summary>
+        /// <param name="code">状态码</param>
         /// <returns></returns>
-        IApiResult<TData> Error<TData>(int errCode);
+        IApiResult<TData> State<TData>(int code);
 
-        /// <summary>生成一个包含错误码的标准返回</summary>
-        /// <param name="errCode">错误码</param>
+        /// <summary>生成一个包含状态码的标准返回</summary>
+        /// <param name="code">状态码</param>
         /// <param name="message"></param>
         /// <returns></returns>
-        IApiResult<TData> Error<TData>(int errCode, string message);
+        IApiResult<TData> State<TData>(int code, string message);
 
-        /// <summary>生成一个包含错误码的标准返回</summary>
-        /// <param name="errCode">错误码</param>
-        /// <param name="message">错误消息</param>
+        /// <summary>生成一个包含状态码的标准返回</summary>
+        /// <param name="code">状态码</param>
+        /// <param name="message">提示消息</param>
         /// <param name="innerMessage">内部说明</param>
         /// <returns></returns>
-        IApiResult<TData> Error<TData>(int errCode, string message, string innerMessage);
+        IApiResult<TData> State<TData>(int code, string message, string innerMessage);
 
-        /// <summary>生成一个包含错误码的标准返回</summary>
-        /// <param name="errCode">错误码</param>
-        /// <param name="message">错误消息</param>
+        /// <summary>生成一个包含状态码的标准返回</summary>
+        /// <param name="code">状态码</param>
+        /// <param name="message">提示消息</param>
         /// <param name="innerMessage">内部说明</param>
         /// <param name="guide">错误指导</param>
         /// <param name="describe">错误解释</param>
         /// <returns></returns>
-        IApiResult<TData> Error<TData>(int errCode, string message, string innerMessage, string guide, string describe);
+        IApiResult<TData> State<TData>(int code, string message, string innerMessage, string guide, string describe);
 
-        /// <summary>生成一个包含错误码的标准返回</summary>
-        /// <param name="errCode">错误码</param>
-        /// <param name="message">错误消息</param>
+        /// <summary>生成一个包含状态码的标准返回</summary>
+        /// <param name="code">状态码</param>
+        /// <param name="message">提示消息</param>
         /// <param name="innerMessage">内部说明</param>
         /// <param name="point">错误点</param>
         /// <param name="guide">错误指导</param>
         /// <param name="describe">错误解释</param>
         /// <returns></returns>
-        IApiResult<TData> Error<TData>(int errCode, string message, string innerMessage, string point, string guide, string describe);
-
-        /// <summary>生成一个成功的标准返回</summary>
-        /// <returns></returns>
-        IApiResult Error();
-
-        /// <summary>生成一个成功的标准返回</summary>
-        /// <returns></returns>
-        IApiResult<TData> Error<TData>();
+        IApiResult<TData> State<TData>(int code, string message, string innerMessage, string point, string guide, string describe);
 
         /// <summary>成功</summary>
         /// <remarks>成功</remarks>

@@ -30,10 +30,10 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         string Content { get; set; }
 
-        /// <summary>
+        /*// <summary>
         /// 其他二进制内容
         /// </summary>
-        Dictionary<string, byte[]> Binary { get; set; }
+        Dictionary<string, byte[]> Binary { get; set; }*/
 
         /// <summary>
         /// 处理结果,对应状态的解释信息
@@ -59,29 +59,6 @@ namespace ZeroTeam.MessageMVC.Messages
         ///     跟踪信息
         /// </summary>
         TraceInfo Trace { get; set; }
-
-
-        /// <summary>
-        /// 转为在线对象
-        /// </summary>
-        /// <returns></returns>
-        IInlineMessage ToInline()
-        {
-            if (this is IInlineMessage inline)
-            {
-                return inline;
-            }
-            return new InlineMessage
-            {
-                ID = ID,
-                State = State,
-                Topic = Topic,
-                Title = Title,
-                Result = Result,
-                Content = Content,
-                Trace = Trace
-            }; 
-        }
 
         /*// <summary>
         /// 生产者信息

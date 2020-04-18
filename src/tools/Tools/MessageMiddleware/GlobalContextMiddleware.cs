@@ -13,18 +13,13 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         /// 层级
         /// </summary>
-        int IMessageMiddleware.Level => int.MinValue;
+        int IMessageMiddleware.Level => MiddlewareLevel.Front;
 
 
         /// <summary>
         /// 消息中间件的处理范围
         /// </summary>
         MessageHandleScope IMessageMiddleware.Scope => MessageHandleScope.Prepare;
-
-        /// <summary>
-        /// 当前处理器
-        /// </summary>
-        MessageProcessor IMessageMiddleware.Processor { get; set; }
 
         /// <summary>
         /// 准备

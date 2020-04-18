@@ -62,4 +62,14 @@ namespace ZeroTeam.MessageMVC.ConfigSync
             File.WriteAllText(file, builder.ToString(), Encoding.UTF8);
         }
     }
+
+    /// <summary>
+    /// 服务自动注册
+    /// </summary>
+    public class ServiceRegist : IFlowMiddleware
+    {
+        int IZeroMiddleware.Level =>0;
+
+        string IZeroDependency.Name => nameof(ServiceRegist);
+    }
 }

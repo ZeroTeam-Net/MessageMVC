@@ -77,6 +77,7 @@ namespace ZeroTeam.MessageMVC.Context
             set => enableLinkTrace = value;
             get => enableLinkTrace || IsOptionTrue("EnableLinkTrace");
         }
+
         /// <summary>
         /// 上下文配置指定名称是否配置为true
         /// </summary>

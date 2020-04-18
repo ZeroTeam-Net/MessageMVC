@@ -25,6 +25,11 @@
             构造
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.ZeroTeam#MessageMVC#Messages#IMessageReceiver#PosterName">
+            <summary>
+            对应发送器名称
+            </summary>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.OnMessagePush(Confluent.Kafka.ConsumeResult{Confluent.Kafka.Ignore,System.String})">
             <summary>
             消息处理
@@ -99,11 +104,6 @@
             等级
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.Initialize">
-            <summary>
-                初始化
-            </summary>
-        </member>
         <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#IFlowMiddleware#Start">
             <summary>
             关闭
@@ -132,21 +132,6 @@
             </summary>
             <param name="message">消息</param>
             <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#Messages#ISerializeProxy#Serialize(System.Object)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#Messages#ISerializeProxy#Deserialize(System.Object,System.Type)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#Messages#ISerializeProxy#ToObject``1(System.String)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#Messages#ISerializeProxy#ToObject(System.String,System.Type)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#Messages#ISerializeProxy#ToString(System.Object,System.Boolean)">
-            <inheritdoc/>
         </member>
     </members>
 </doc>

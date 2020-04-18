@@ -14,11 +14,6 @@
             单例
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.AddIn.AddInImporter.State">
-            <summary>
-            运行状态
-            </summary>
-        </member>
         <member name="P:ZeroTeam.MessageMVC.AddIn.AddInImporter.ZeroTeam#MessageMVC#IZeroDependency#Name">
             <summary>
             实例名称
@@ -40,6 +35,16 @@
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.AddIn.AddInImporter.ZeroTeam#MessageMVC#IFlowMiddleware#Initialize">
+            <summary>
+            初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.AddIn.AddInImporter.ZeroTeam#MessageMVC#IFlowMiddleware#Start">
+            <summary>
+            初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.AddIn.AddInImporter.ZeroTeam#MessageMVC#IFlowMiddleware#End">
             <summary>
             初始化
             </summary>
@@ -253,11 +258,6 @@
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter">
             <summary>
                 Api调用器
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Processor">
-            <summary>
-            当前处理器
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Level">
@@ -541,17 +541,17 @@
                 注销时调用
             </summary>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.InnerReceiver">
+        <member name="T:ZeroTeam.MessageMVC.EmptyReceiver">
             <summary>
-               内部生产者
+               空接收器
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.InnerReceiver.#ctor">
+        <member name="M:ZeroTeam.MessageMVC.EmptyReceiver.#ctor">
             <summary>
             构造
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.InnerReceiver.ZeroTeam#MessageMVC#Messages#IMessageReceiver#Close">
+        <member name="M:ZeroTeam.MessageMVC.EmptyReceiver.ZeroTeam#MessageMVC#Messages#IMessageReceiver#Close">
             <summary>
             关闭
             </summary>
@@ -712,7 +712,7 @@
             一个服务
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Services.ZeroService.Level">
+        <member name="P:ZeroTeam.MessageMVC.Services.ZeroService.ZeroTeam#MessageMVC#IZeroMiddleware#Level">
             <summary>
             等级,用于确定中间件优先级
             </summary>
@@ -730,11 +730,6 @@
         <member name="P:ZeroTeam.MessageMVC.Services.ZeroService.IsAutoService">
             <summary>
             是否自动发现对象
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Services.ZeroService.TransportBuilder">
-            <summary>
-            消息接收对象构造器
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.Services.ZeroService._realState">
@@ -770,11 +765,6 @@
         <member name="P:ZeroTeam.MessageMVC.Services.ZeroService.CancelToken">
             <summary>
             取消标记
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Services.ZeroService.CanLoop">
-            <summary>
-            能不能循环处理
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.Services.ZeroService.eventSlim">

@@ -17,5 +17,7 @@ packages
 nuget
 /TestResults
 /publish
-/src/tools/Gateway/config/sync
 *.pubxml
+datas
+logs
+config

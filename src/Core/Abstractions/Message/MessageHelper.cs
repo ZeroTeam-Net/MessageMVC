@@ -30,67 +30,6 @@ namespace ZeroTeam.MessageMVC.Messages
         }
 
         /// <summary>
-        /// 恢复
-        /// </summary>
-        /// <param name="topic">消息分类</param>
-        /// <param name="title">消息标题</param>
-        /// <param name="content">消息内容</param>
-        /// <param name="id">跟踪标识</param>
-        /// <param name="context">上下文</param>
-        /// <returns></returns>
-        public static IInlineMessage Restore(string topic, string title, string content, string id, string context)
-        {
-            return new InlineMessage
-            {
-                Topic = topic,
-                Title = title,
-                Content = content,
-                Trace = new TraceInfo
-                {
-                    TraceId = id,
-                    Context = JsonHelper.DeserializeObject<IZeroContext>(context)
-                }
-            };
-        }
-
-        /// <summary>
-        /// 构造
-        /// </summary>
-        /// <param name="topic">消息分类</param>
-        /// <param name="title">消息标题</param>
-        /// <param name="content">消息内容</param>
-        /// <returns></returns>
-        public static IInlineMessage NewMessage<T>(string topic, string title, T content)
-        {
-            return new InlineMessage
-            {
-                ID = Guid.NewGuid().ToString("N").ToUpper(),
-                Topic = topic,
-                Title = title,
-                ArgumentData = content
-            };
-        }
-
-
-        /// <summary>
-        /// 构造
-        /// </summary>
-        /// <param name="topic">消息分类</param>
-        /// <param name="title">消息标题</param>
-        /// <param name="content">消息内容</param>
-        /// <returns></returns>
-        public static IMessageItem NewMessage(string topic, string title, string content = null)
-        {
-            return new MessageItem
-            {
-                ID = Guid.NewGuid().ToString("N").ToUpper(),
-                Topic = topic,
-                Title = title,
-                Content = content
-            };
-        }
-
-        /// <summary>
         /// 构造一个远程调用的消息
         /// </summary>
         /// <param name="topic">消息分类</param>

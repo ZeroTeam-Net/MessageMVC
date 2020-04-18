@@ -21,13 +21,6 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         MessageHandleScope Scope { get; }
 
-
-        /// <summary>
-        /// 当前处理器
-        /// </summary>
-        MessageProcessor Processor { get; set; }
-
-
         /// <summary>
         /// 准备
         /// </summary>
@@ -60,9 +53,10 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         /// <param name="service">当前服务</param>
         /// <param name="message">当前消息</param>
+        /// <param name="exception">异常信息</param>
         /// <param name="tag">扩展信息</param>
         /// <returns></returns>
-        Task OnGlobalException(IService service, IInlineMessage message, object tag)
+        Task OnGlobalException(IService service, IInlineMessage message,Exception exception, object tag)
         {
             return Task.CompletedTask;
         }

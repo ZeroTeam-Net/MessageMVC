@@ -21,16 +21,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 等级
         /// </summary>
-        int IZeroMiddleware.Level => 0;
-
-
-
-        /// <summary>
-        ///     关闭
-        /// </summary>
-        void IFlowMiddleware.Close()
-        {
-        }
+        int IZeroMiddleware.Level => MiddlewareLevel.Framework;
 
         /// <summary>
         ///     配置校验,作为第一步
@@ -61,7 +52,7 @@ namespace ZeroTeam.MessageMVC.Messages
         {
             var service = new ZeroService
             {
-                Receiver = new InnerReceiver()
+                Receiver = new EmptyReceiver()
             };
             await Task.Yield();
             foreach (var file in files)
@@ -75,13 +66,15 @@ namespace ZeroTeam.MessageMVC.Messages
                 try
                 {
                     var json = File.ReadAllText(file);
-                    var item = JsonHelper.DeserializeObject<InlineMessage>(json);
-                    service.ServiceName = item.ServiceName;
-                    await MessageProcessor.OnMessagePush(service, item, true, null);
+                    if (SmartSerializer.TryToMessage(json, out var message))
+                    {
+                        service.ServiceName = message.ServiceName;
+                        await MessageProcessor.OnMessagePush(service, message, true, null);
+                    }
                 }
                 catch (Exception e)
                 {
-                    LogRecorder.Exception(e, "ReProducerMiddleware.ReProducer");
+                    LogRecorder.Exception(e, "异常消息重新处理出错");
                 }
             }
         }

@@ -31,7 +31,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
             var message = await RedisHelper.GetAsync<InlineMessage>($"receipt:{id}");
             return message != null
                 ? ApiResultHelper.Succees(message)
-                : ApiResultHelper.Error<InlineMessage>(DefaultErrorCode.ArgumentError);
+                : ApiResultHelper.State<InlineMessage>(OperatorStatusCode.ArgumentError);
         }
 
         [Route("v1/remove")]
@@ -41,7 +41,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
             var ab = await RedisHelper.DelAsync($"receipt:{id}");
             return ab == 1
                 ? ApiResultHelper.Succees()
-                : ApiResultHelper.Error(DefaultErrorCode.ArgumentError);
+                : ApiResultHelper.State(OperatorStatusCode.ArgumentError);
         }
     }
 }

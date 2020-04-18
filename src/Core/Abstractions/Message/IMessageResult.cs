@@ -44,11 +44,6 @@ namespace ZeroTeam.MessageMVC.Messages
         public object ResultData { get; set; }
 
         /// <summary>
-        /// 执行状态
-        /// </summary>
-        IOperatorStatus RuntimeStatus { get; set; }
-
-        /// <summary>
         /// 数据状态
         /// </summary>
         public MessageDataState DataState { get; set; }

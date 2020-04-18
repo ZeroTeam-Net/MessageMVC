@@ -53,7 +53,7 @@ namespace ZeroTeam.MessageMVC.Messages
             try
             {
                 t = porxy.ToObject<T>(json);
-                return true;
+                return !Equals(t, default);
             }
             catch
             {

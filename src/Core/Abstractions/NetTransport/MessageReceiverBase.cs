@@ -38,7 +38,10 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         public IService Service { get; set; }
 
-        StationStateType state;
+        /// <summary>
+        /// 运行状态
+        /// </summary>
+        protected StationStateType state;
 
         /// <summary>
         /// 运行状态
@@ -53,6 +56,7 @@ namespace ZeroTeam.MessageMVC.Messages
             if (state >= StationStateType.Initialized)
                 return;
             state = StationStateType.Initialized;
+            Logger.Information(() => $"服务[{Service.ServiceName}] 使用接收器{Name}");
             MessagePoster.RegistPoster(this, Service.ServiceName);
         }
 
@@ -61,48 +65,15 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         /// <param name="message">消息</param>
         /// <returns></returns>
-        Task<IMessageResult> IMessagePoster.Post(IInlineMessage message)
+        async Task<IMessageResult> IMessagePoster.Post(IInlineMessage message)
         {
-            LogRecorder.MonitorTrace($"[{GetType().GetTypeName()}.Post] 进入本地隧道处理模式");
+            LogRecorder.MonitorDetails($"[{GetType().GetTypeName()}.Post] 进入本地隧道处理模式");
             //如此做法,避免上下文混乱
             var task = new TaskCompletionSource<IMessageResult>();
-            Task.Factory.StartNew(() => MessageProcessor.OnMessagePush(Service, message, message.Content != null, task));
-            return task.Task;
+            _ = MessageProcessor.OnMessagePush(Service, message, message.Content != null, task);
+            await task.Task;
+
+            return null;//直接使用原始消息
         }
-
-        #region 序列化
-
-        ///<inheritdoc/>
-        object ISerializeProxy.Serialize(object soruce)
-        {
-            return Service.Serialize.Serialize(soruce);
-        }
-
-        ///<inheritdoc/>
-        object ISerializeProxy.Deserialize(object soruce, Type type)
-        {
-            return Service.Serialize.Deserialize(soruce, type);
-        }
-
-
-        ///<inheritdoc/>
-        T ISerializeProxy.ToObject<T>(string soruce)
-        {
-            return Service.Serialize.ToObject<T>(soruce);
-        }
-
-
-        ///<inheritdoc/>
-        object ISerializeProxy.ToObject(string soruce, Type type)
-        {
-            return Service.Serialize.ToObject(soruce, type);
-        }
-
-        ///<inheritdoc/>
-        string ISerializeProxy.ToString(object obj, bool indented)
-        {
-            return Service.Serialize.ToString(obj, indented);
-        }
-        #endregion
     }
 }

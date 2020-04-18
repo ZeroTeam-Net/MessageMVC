@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.RedisMQ;
 
 namespace ZeroTeam.MessageMVC.Http
@@ -17,6 +16,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
+            services.UseCsRedis();
             services.UseRedisPoster();//采用Redis生产端
             services.UseHttp();
         }

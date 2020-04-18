@@ -17,7 +17,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
     /// <summary>
     ///     Redis生产者
     /// </summary>
-    internal class CsRedisPoster : MessagePostBase,IMessagePoster, IFlowMiddleware, IHealthCheck
+    internal class CsRedisPoster : MessagePostBase, IMessagePoster, IFlowMiddleware, IHealthCheck
     {
         #region IHealthCheck
 
@@ -44,7 +44,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             try
             {
                 DateTime start = DateTime.Now;
-                if(!await client.SetAsync("_HealthCheck_", "c", 10))
+                if (!await client.SetAsync("_HealthCheck_", "c", 10))
                 {
                     item.Value = (DateTime.Now - start).TotalMilliseconds;
                     item.Level = 0;
@@ -162,20 +162,21 @@ namespace ZeroTeam.MessageMVC.RedisMQ
 
         private async Task AsyncPostQueue()
         {
+            await Task.Yield();
             try
             {
                 client.Ping();
             }
             catch (RedisClientException ex)
             {
-                logger.Error(ex.Message);
+                Logger.Error(ex.Message);
             }
             await Task.Yield();
             //还原发送异常文件
             var path = IOHelper.CheckPath(ZeroAppOption.Instance.DataFolder, "redis");
             var isFailed = ReQueueErrorMessage(path);
 
-            logger.Information("异步消息投递已启动");
+            Logger.Information("异步消息投递已启动");
             while (ZeroFlowControl.IsAlive)
             {
                 if (isFailed)
@@ -191,27 +192,27 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                     }
                     catch (TaskCanceledException)
                     {
-                        logger.Information("收到系统退出消息,正在退出...");
+                        Logger.Information("收到系统退出消息,正在退出...");
                         return;
                     }
                     catch (Exception ex)
                     {
-                        logger.Warning(() => $"错误信号.{ex.Message}");
+                        Logger.Warning(() => $"错误信号.{ex.Message}");
                         isFailed = true;
                         continue;
                     }
                 }
 
-                while (redisQueues.TryPeek(out RedisQueueItem item))
+                while (redisQueues.TryDequeue(out RedisQueueItem item))
                 {
-                    if (!await DoPost(logger, path, item))
+                    if (!await DoPost(Logger, path, item))
                     {
                         isFailed = true;
                         break;
                     }
                 }
             }
-            logger.Information("异步消息投递已关闭");
+            Logger.Information("异步消息投递已关闭");
         }
         /// <summary>
         /// 还原发送异常文件
@@ -225,7 +226,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             {
                 return false;
             }
-            logger.Information(() => $"载入发送错误消息,总数{files.Count}");
+            Logger.Information(() => $"载入发送提示消息,总数{files.Count}");
             foreach (var file in files)
             {
                 try
@@ -235,7 +236,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                 }
                 catch (Exception ex)
                 {
-                    logger.Warning(() => $"{file} : 消息载入错误.{ex.Message}");
+                    Logger.Warning(() => $"{file} : 消息载入错误.{ex.Message}");
                 }
             }
 
@@ -262,12 +263,13 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                     await client.PublishAsync(item.Channel, item.ID);
                     item.Step = 3;
                 }
-                redisQueues.TryDequeue(out _);
                 state = true;
             }
             catch (Exception ex)
             {
                 logger.Warning(() => $"[异步消息投递] {item.ID} 发送失败.{ex.Message}");
+                redisQueues.Enqueue(item);
+                state = false;
             }
             if (state)
             {
@@ -328,18 +330,17 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <returns></returns>
         Task<IMessageResult> IMessagePoster.Post(IInlineMessage message)
         {
-            var item = new RedisQueueItem
+            message.Offline();
+            redisQueues.Enqueue(new RedisQueueItem
             {
                 ID = message.ID,
                 Channel = message.Topic,
-                Message = serializer.ToString(message, false)
-            };
-            LogRecorder.MonitorTrace("[CsRedisPoster.Post] 消息已投入发送队列,将在后台静默发送直到成功");
-            redisQueues.Enqueue(item);
+                Message = SmartSerializer.SerializeMessage(message)
+            });
             semaphore.Release();
-            message.State = MessageState.Accept;
-            message.RuntimeStatus = ApiResultHelper.Helper.Waiting;
-            return Task.FromResult(message.ToMessageResult());
+            message.RealState = MessageState.AsyncQueue;
+            LogRecorder.MonitorDetails("[CsRedisPoster.Post] 消息已投入发送队列,将在后台静默发送直到成功");
+            return Task.FromResult<IMessageResult>(null);//直接使用状态
         }
 
         #endregion
@@ -359,7 +360,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <summary>
         /// 等级
         /// </summary>
-        int IZeroMiddleware.Level => 0;
+        int IZeroMiddleware.Level => MiddlewareLevel.Front;
 
         private CSRedisClient client;
 
@@ -380,7 +381,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         void IFlowMiddleware.Close()
         {
             tokenSource?.Cancel();
-            tokenSource.Dispose();
+            tokenSource?.Dispose();
             tokenSource = null;
             state = StationStateType.Closed;
         }

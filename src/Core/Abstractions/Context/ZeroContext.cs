@@ -36,6 +36,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         /// 当前消息
         /// </summary>
+        [System.Text.Json.Serialization.JsonIgnore]
         public IInlineMessage Message { get; set; }
 
         private TraceInfo trace;
@@ -43,12 +44,16 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         ///     跟踪信息
         /// </summary>
-        public TraceInfo Trace { get => trace ??= new TraceInfo(); set => trace = value; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public TraceInfo Trace { get => trace ??= TraceInfo.New(Message?.ID); set => trace = value; }
 
         /// <summary>
         /// 全局状态
         /// </summary>
+        [System.Text.Json.Serialization.JsonIgnore]
         public ContextStatus Status { get; set; }
 
     }
+
+
 }

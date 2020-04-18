@@ -43,6 +43,23 @@ namespace Agebull.EntityModel.Common
     [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class NameValue<TValue> : NameValue<string, TValue>
     {
+        /// <summary>
+        ///     构造
+        /// </summary>
+        public NameValue()
+        {
+        }
+
+        /// <summary>
+        ///     构造
+        /// </summary>
+        /// <param name="n"></param>
+        /// <param name="v"></param>
+        public NameValue(string n, TValue v)
+        {
+            Name = n;
+            Value = v;
+        }
     }
 
     /// <summary>

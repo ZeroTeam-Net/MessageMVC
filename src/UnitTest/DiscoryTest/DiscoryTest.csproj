@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <Compile Remove="Controler\TestControler - 复制.cs" />
+    <Compile Remove="UnitCodeBuilder.cs" />
     <Compile Remove="UnitTest1.cs" />
   </ItemGroup>
 
@@ -37,5 +38,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="http://json-schema.org/draft-04/schema" /></VisualStudio></ProjectExtensions>
 
 </Project>

@@ -4466,6 +4466,18 @@
                 名称内容对象
             </summary>
         </member>
+        <member name="M:Agebull.EntityModel.Common.NameValue`1.#ctor">
+            <summary>
+                构造
+            </summary>
+        </member>
+        <member name="M:Agebull.EntityModel.Common.NameValue`1.#ctor(System.String,`0)">
+            <summary>
+                构造
+            </summary>
+            <param name="n"></param>
+            <param name="v"></param>
+        </member>
         <member name="T:Agebull.EntityModel.Common.NameValue">
             <summary>
                 名称内容对象

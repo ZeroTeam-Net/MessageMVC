@@ -1,4 +1,5 @@
-﻿using Agebull.Common.Logging;
+﻿using Agebull.Common.Ioc;
+using Agebull.Common.Logging;
 using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
@@ -13,14 +14,9 @@ namespace ZeroTeam.MessageMVC.Tools
     public class ReverseProxyMiddleware : IMessageMiddleware
     {
         /// <summary>
-        /// 当前处理器
-        /// </summary>
-        MessageProcessor IMessageMiddleware.Processor { get; set; }
-
-        /// <summary>
         /// 层级
         /// </summary>
-        int IMessageMiddleware.Level => 0;
+        int IMessageMiddleware.Level => MiddlewareLevel.Front;
 
         /// <summary>
         /// 消息中间件的处理范围
@@ -42,22 +38,11 @@ namespace ZeroTeam.MessageMVC.Tools
                 await next();
                 return;
             }
-            LogRecorder.BeginStepMonitor($"通过反向代理调用{message.ServiceName}");
+            LogRecorder.BeginStepMonitor($"通过反向代理调用[{message.ServiceName}/{message.ApiName}]");
             try
             {
-                var (msg,seri) = await MessagePoster.Post(message);
-                if(seri == null)
-                {
-                    message.RuntimeStatus = ApiResultHelper.Helper.NoFind;
-                }
-                else
-                {
-                    msg.OfflineResult(seri);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new MessageReceiveException(nameof(ReverseProxyMiddleware), ex);
+                message.ResultCreater ??= ApiResultHelper.State;
+                await MessagePoster.Post(message, true);
             }
             finally
             {

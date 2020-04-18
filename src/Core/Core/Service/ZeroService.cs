@@ -25,7 +25,7 @@ namespace ZeroTeam.MessageMVC.Services
         /// <summary>
         /// 等级,用于确定中间件优先级
         /// </summary>
-        public int Level { get; set; }
+        int IZeroMiddleware.Level => MiddlewareLevel.General;
 
         /// <summary>
         /// 站点名称
@@ -41,11 +41,6 @@ namespace ZeroTeam.MessageMVC.Services
         /// 是否自动发现对象
         /// </summary>
         public bool IsAutoService { get; set; }
-
-        /// <summary>
-        /// 消息接收对象构造器
-        /// </summary>
-        public Func<string, IMessageReceiver> TransportBuilder { get; set; }
 
         #endregion
 
@@ -123,15 +118,6 @@ namespace ZeroTeam.MessageMVC.Services
         /// </summary>
         protected CancellationTokenSource CancelToken { get; set; }
 
-        /// <summary>
-        /// 能不能循环处理
-        /// </summary>
-        protected internal bool CanLoop => ZeroFlowControl.IsRuning &&
-                                  ConfigState == StationStateType.Run &&
-                                  (RealState == StationState.BeginRun || RealState == StationState.Run) &&
-                                  CancelToken != null && !CancelToken.IsCancellationRequested;
-
-
         #endregion
 
         #region 执行流程
@@ -151,22 +137,19 @@ namespace ZeroTeam.MessageMVC.Services
             eventSlim = new ManualResetEventSlim(true);
             if (ServiceName == null)
             {
+                throw new SystemException("名称为空的服务是非法的");
+            }
+            RealState = StationState.Initialized;
+            Receiver.Service = this;
+            Receiver.Logger = logger;
+            Receiver.Initialize();
+            if (!Receiver.Prepare())
+            {
                 ConfigState = StationStateType.ConfigError;
             }
             else
             {
-                RealState = StationState.Initialized;
-                Receiver.Service = this;
-                Receiver.Logger = logger;
-                Receiver.Initialize();
-                if (!Receiver.Prepare())
-                {
-                    ConfigState = StationStateType.ConfigError;
-                }
-                else
-                {
-                    ConfigState = StationStateType.Initialized;
-                }
+                ConfigState = StationStateType.Initialized;
             }
             ((IService)this).ResetStateMachine();
         }
