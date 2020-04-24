@@ -17,10 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CSRedisCore" Version="3.6.2" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\..\transfer\Http\ZeroTeam.MessageMVC.Http.csproj" />
     <ProjectReference Include="..\..\..\transfer\redis\RedisMQ\ZeroTeam.MessageMVC.RedisMQ.csproj" />
     <ProjectReference Include="..\..\Contract\ZeroTeam.MessageMVC.ApiContract.csproj" />

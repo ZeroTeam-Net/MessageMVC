@@ -128,6 +128,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         {
             //还原参数
             Message.ArgumentInline(
+                action.ArgumentSerializer,
                 action.Access.HasFlag(ApiAccessOption.DictionaryArgument) ? null : action.ArgumentType,
                 action.ResultSerializer,
                 action.ResultCreater);

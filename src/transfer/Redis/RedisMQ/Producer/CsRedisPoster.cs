@@ -232,7 +232,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                 try
                 {
                     var json = File.ReadAllText(file);
-                    redisQueues.Enqueue(JsonHelper.DeserializeObject<RedisQueueItem>(json));
+                    redisQueues.Enqueue(SmartSerializer.ToObject<RedisQueueItem>(json));
                 }
                 catch (Exception ex)
                 {
@@ -302,7 +302,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             logger.Warning(() => $"[异步消息投递] {item.ID} 发送失败,记录异常备份文件,{item.FileName}");
             try
             {
-                File.WriteAllText(item.FileName, JsonHelper.SerializeObject(item));
+                File.WriteAllText(item.FileName, SmartSerializer.ToString(item));
             }
             catch (Exception ex)
             {
@@ -369,6 +369,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// </summary>
         void IFlowMiddleware.Start()
         {
+            Logger.Information("CsRedisPoster >>> Start");
             client = new CSRedisClient(RedisOption.Instance.ConnectionString);
             state = StationStateType.Run;
             tokenSource = new CancellationTokenSource();
@@ -380,6 +381,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// </summary>
         void IFlowMiddleware.Close()
         {
+            Logger.Information("CsRedisPoster >>> Close");
             tokenSource?.Cancel();
             tokenSource?.Dispose();
             tokenSource = null;
@@ -391,6 +393,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// </summary>
         void IFlowMiddleware.End()
         {
+            Logger.Information("CsRedisPoster >>> CheckOption");
             client.Dispose();
         }
 

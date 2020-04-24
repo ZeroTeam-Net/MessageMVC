@@ -91,9 +91,19 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <returns></returns>
         async Task IMessageReceiver.Close()
         {
+            //try
+            //{
+            //    if (!subscribeObject.IsUnsubscribed)
+            //        subscribeObject.Unsubscribe();
+            //}
+            //catch (Exception ex)
+            //{
+            //    logger.Error(() => $"LoopBegin error.{ex.Message}");
+            //}
+
             try
             {
-                subscribeObject?.Unsubscribe();
+                client?.Dispose();
                 while (isBusy > 0)//等处理线程退出
                 {
                     await Task.Delay(10);
@@ -114,7 +124,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <returns></returns>
         Task IMessageReceiver.LoopComplete()
         {
-            subscribeObject?.Dispose();
+            //subscribeObject?.Dispose();
             client?.Dispose();
             return Task.CompletedTask;
         }
@@ -142,7 +152,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             //非正常处理还原
             while (ZeroFlowControl.IsAlive)
             {
-                await Task.Delay(RedisOption.Instance.GuardCheckTime);
+                await Task.Delay(RedisOption.Instance.GuardCheckTime, token);
                 try
                 {
                     var key = await client.LPopAsync(bakList);
@@ -269,7 +279,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                 await client.DelAsync(guard);
                 return true;
             }
-            item.Trace ??= TraceInfo.New(item.ID);
+            //item.Trace ??= TraceInfo.New(item.ID);
             item.Topic = Service.ServiceName;
 
             _ = MessageProcessor.OnMessagePush(Service, item, true, null);

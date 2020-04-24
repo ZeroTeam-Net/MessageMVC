@@ -21,7 +21,7 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <summary>
         /// 消息中间件的处理范围
         /// </summary>
-        MessageHandleScope IMessageMiddleware.Scope => ToolsOption.Instance.EnableMarkPoint
+        MessageHandleScope IMessageMiddleware.Scope => ToolsOption.Instance.EnableMarkPoint | LogRecorder.LogMonitor
                 ? MessageHandleScope.Prepare | MessageHandleScope.End
                 : MessageHandleScope.None;
 
@@ -35,7 +35,7 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <returns></returns>
         Task<bool> IMessageMiddleware.Prepare(IService service, IInlineMessage message, object tag)
         {
-            if (LogRecorder.LogMonitor = ToolsOption.Instance.EnableMarkPoint)
+            if (LogRecorder.LogMonitor)
             {
                 LogRecorder.BeginMonitor(DependencyScope.Name);
                 LogRecorder.MonitorDetails(() => JsonConvert.SerializeObject(message, Formatting.Indented));
@@ -48,7 +48,7 @@ namespace ZeroTeam.MessageMVC.Tools
         /// </summary>
         /// <param name="message">当前消息</param>
         /// <returns></returns>
-        Task IMessageMiddleware.OnEnd(IInlineMessage message)
+        async Task IMessageMiddleware.OnEnd(IInlineMessage message)
         {
             TraceStep root = null;
             if (LogRecorder.LogMonitor)
@@ -64,9 +64,12 @@ namespace ZeroTeam.MessageMVC.Tools
                 root = LogRecorder.EndMonitor();
                 LogRecorder.TraceMonitor(root);
             }
+            if (!ToolsOption.Instance.EnableMarkPoint || (message.Topic == ToolsOption.Instance.MarkPointName && message.ApiName == "post"))
+                return;
             var link = new TraceLinkMessage
             {
                 Root = root,
+                Trace = GlobalContext.CurrentNoLazy?.Trace,
                 Message = new MessageItem
                 {
                     ID = message.ID,
@@ -77,19 +80,16 @@ namespace ZeroTeam.MessageMVC.Tools
                     Result = message.Result
                 }
             };
-            if (GlobalContext.CurrentNoLazy != null)
+            if(link.Trace != null)
             {
-                link.Trace = GlobalContext.Current.Trace;
-                if (link.Trace.Context != null)
+                link.Trace.Context = new StaticContext
                 {
-                    link.Trace.Context.Message = null;
-                    link.Trace.Context.Trace = null;
-                }
-                GlobalContext.Current.Trace = null;
-                GlobalContext.Current.Message = null;
+                    UserJson = SmartSerializer.ToInnerString(GlobalContext.CurrentNoLazy?.User),
+                    Option = GlobalContext.CurrentNoLazy?.Option
+                };
             }
             var json = SmartSerializer.ToString(link);
-            return MessagePoster.PublishAsync(ToolsOption.Instance.MarkPointName, "post", json);
+            await MessagePoster.PublishAsync(ToolsOption.Instance.MarkPointName, "post", json);
         }
     }
 

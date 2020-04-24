@@ -212,7 +212,7 @@ namespace ZeroTeam.MessageMVC.Kafka
                     }
                 }
 
-                while (queues.TryPeek(out KafkaQueueItem item))
+                while (queues.TryDequeue(out KafkaQueueItem item))
                 {
                     if (!await DoPost(Logger, path, item))
                     {
@@ -241,7 +241,7 @@ namespace ZeroTeam.MessageMVC.Kafka
                 try
                 {
                     var json = File.ReadAllText(file);
-                    queues.Enqueue(JsonHelper.DeserializeObject<KafkaQueueItem>(json));
+                    queues.Enqueue(SmartSerializer.ToObject<KafkaQueueItem>(json));
                 }
                 catch (Exception ex)
                 {
@@ -290,6 +290,7 @@ namespace ZeroTeam.MessageMVC.Kafka
                 }
                 return true;
             }
+            queues.Enqueue(item);
             //写入异常文件
             ++item.Try;
             if (item.FileName != null)
@@ -301,7 +302,7 @@ namespace ZeroTeam.MessageMVC.Kafka
             logger.Warning(() => $"[异步消息投递] {item.ID} 发送失败,记录异常备份文件,{item.FileName}");
             try
             {
-                File.WriteAllText(item.FileName, JsonHelper.SerializeObject(item));
+                File.WriteAllText(item.FileName, SmartSerializer.ToString(item));
             }
             catch (Exception ex)
             {

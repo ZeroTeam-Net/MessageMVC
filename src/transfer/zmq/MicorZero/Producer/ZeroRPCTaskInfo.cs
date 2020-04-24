@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
 
@@ -10,14 +11,19 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
     internal class ZeroRPCTaskInfo
     {
         /// <summary>
-        /// TaskCompletionSource
+        /// 调用参数
         /// </summary>
-        public TaskCompletionSource<IMessageResult> TaskSource;
+        public DateTime Start = DateTime.Now;
 
         /// <summary>
         /// 调用参数
         /// </summary>
         public ZeroArgument Argument;
+
+        /// <summary>
+        /// TaskCompletionSource
+        /// </summary>
+        public TaskCompletionSource<IMessageResult> TaskSource;
 
         /// <summary>
         /// 当前所有等待队列

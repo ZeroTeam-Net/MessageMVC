@@ -9,6 +9,8 @@ namespace Agebull.Common.Ioc
     /// </summary>
     public class ScopeData
     {
+        public IDisposable Scope;
+
         string name;
         /// <summary>
         /// 范围名称
@@ -27,6 +29,16 @@ namespace Agebull.Common.Ioc
         /// 日志记录器
         /// </summary>
         public ILogger Logger
+        {
+            get;
+            set;
+        }
+
+
+        /// <summary>
+        /// 内部模式,框架使用
+        /// </summary>
+        public bool InnerModel
         {
             get;
             set;

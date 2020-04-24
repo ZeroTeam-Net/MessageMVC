@@ -22,6 +22,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="config\**" />
+    <Compile Remove="datas\**" />
+    <Content Remove="config\**" />
+    <Content Remove="datas\**" />
+    <EmbeddedResource Remove="config\**" />
+    <EmbeddedResource Remove="datas\**" />
+    <None Remove="config\**" />
+    <None Remove="datas\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="TestControler.cs" />
   </ItemGroup>
 

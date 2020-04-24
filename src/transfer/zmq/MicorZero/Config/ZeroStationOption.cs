@@ -42,12 +42,6 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         public int ApiTimeout { get; set; }
 
         /// <summary>
-        ///     检测到API执行超时是否强行清除资源
-        /// </summary>
-        
-        public bool ApiTimeoutKill { get; set; }
-
-        /// <summary>
         ///     服务名称
         /// </summary>
         
@@ -106,11 +100,6 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             {
                 ApiTimeout = option.ApiTimeout;
             }
-
-            if (!ApiTimeoutKill)
-            {
-                ApiTimeoutKill = option.ApiTimeoutKill;
-            }
         }
 
         /// <summary>
@@ -153,17 +142,6 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             {
                 ApiTimeout = option.ApiTimeout;
             }
-
-            if (option.ApiTimeoutKill)
-            {
-                ApiTimeoutKill = option.ApiTimeoutKill;
-            }
-
-            if (option.ApiTimeoutKill)
-            {
-                ApiTimeoutKill = true;
-            }
         }
-
     }
 }

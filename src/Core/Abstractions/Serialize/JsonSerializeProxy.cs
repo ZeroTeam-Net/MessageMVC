@@ -25,6 +25,8 @@ namespace ZeroTeam.MessageMVC.Messages
             return option;
         }
 
+        static JsonSerializerOptions aOptions = Options(false);
+        static JsonSerializerOptions bOptions = Options(true);
         /// <summary>
         /// 反序列化
         /// </summary>
@@ -63,7 +65,7 @@ namespace ZeroTeam.MessageMVC.Messages
         {
             return obj == null
                 ? null
-                : JsonSerializer.Serialize(obj, Options(indented));
+                : JsonSerializer.Serialize(obj, indented ? bOptions: aOptions);
         }
     }
 }

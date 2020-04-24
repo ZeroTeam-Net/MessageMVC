@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -107,7 +108,7 @@ namespace ZeroTeam.MessageMVC
             Console.WriteLine($@"Wecome ZeroTeam MessageMVC
       AppName : {ZeroAppOption.Instance.AppName}
       Version : {ZeroAppOption.Instance.AppVersion}
-     RunModel : {ConfigurationManager.Root["ASPNETCORE_ENVIRONMENT_"]}
+     RunModel : {(ZeroAppOption.Instance.IsDevelopment ? "Development" : "Production")}
   ServiceName : {ZeroAppOption.Instance.ServiceName}
            OS : {(ZeroAppOption.Instance.IsLinux ? "Linux" : "Windows")}
          Host : {ZeroAppOption.Instance.LocalIpAddress}
@@ -231,29 +232,33 @@ namespace ZeroTeam.MessageMVC
             return OnZeroStart();
         }
 
-        /// <summary>
-        ///     执行并等待
-        /// </summary>
-        public static void RunAwaite()
-        {
-            OnZeroStart().Wait();
-            waitTask = new TaskCompletionSource<bool>();
-            waitTask.Task.Wait();
-            Console.CancelKeyPress += OnConsoleOnCancelKeyPress;
-            Console.WriteLine("ZeroFlowControl is runing. Press Ctrl+C to shutdown.");
-        }
-
         private static TaskCompletionSource<bool> waitTask;
+
         /// <summary>
-        ///     执行并等待
+        ///     等待退出
         /// </summary>
-        public static async Task RunAwaiteAsync()
+        public static async Task WaitEnd()
         {
-            await OnZeroStart();
-            waitTask = new TaskCompletionSource<bool>();
-            Console.CancelKeyPress += OnConsoleOnCancelKeyPress;
-            Console.WriteLine("ZeroFlowControl is runing. Press Ctrl+C to shutdown.");
-            await waitTask.Task;
+            Console.WriteLine("应用已启动.请键入 Ctrl+C 退出.");
+            if (ZeroAppOption.Instance.IsDevelopment)
+            {
+                Console.TreatControlCAsInput = true;
+                while (true)
+                {
+                    var key = Console.ReadKey();
+                    if (key.Key == ConsoleKey.C && key.Modifiers == ConsoleModifiers.Control)
+                        break;
+                }
+                Shutdown();
+            }
+            else
+            {
+                waitTask = new TaskCompletionSource<bool>();
+
+                Console.CancelKeyPress += OnConsoleOnCancelKeyPress;
+
+                await waitTask.Task;
+            }
         }
 
         #endregion
@@ -274,15 +279,19 @@ namespace ZeroTeam.MessageMVC
             {
                 return;
             }
-            logger.Information("Begin shutdown...");
+            Console.WriteLine("开始退出...");
             ApplicationState = StationState.Closing;
             OnZeroClose();
             WaitAllObjectSafeClose();
             ApplicationState = StationState.Closed;
             OnZeroEnd();
             ApplicationState = StationState.Destroy;
-            logger.Information("Application shutdown ,see you late.");
-            waitTask?.TrySetResult(true);
+            DependencyHelper.LoggerFactory.Dispose();
+            DependencyScope.Local.Value?.Scope?.Dispose();
+            Console.WriteLine("已正常退出");
+            //if (waitTask == null)
+            //    return;
+            //waitTask.TrySetResult(true);
         }
 
         #endregion
@@ -504,7 +513,7 @@ namespace ZeroTeam.MessageMVC
                 }
             }
 
-            foreach (var service in Services.Values.ToArray())
+            foreach (var service in Services.Values.OrderBy(p => p.Level).ToArray())
             {
                 try
                 {
@@ -570,35 +579,42 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         static void OnZeroClose()
         {
+            List<Task> tasks = new List<Task>();
             logger.Information("[OnZeroClose>>");
-            foreach (var mid in Middlewares)
-            {
-                try
-                {
-                    logger.Information("[OnZeroClose] {0}", mid.Name);
-                    mid.Close();
-                }
-                catch (Exception e)
-                {
-                    logger.Exception(e, "[OnZeroClose] {0}", mid.Name);
-                }
-            }
 
-            foreach (var service in Services.Values)
+            foreach (var service in Services.Values.OrderByDescending(p => p.Level).ToArray())
             {
                 try
                 {
-                    logger.Information("[OnZeroClose] {0}", service.ServiceName);
-                    service.Close();
+                    logger.Information("[OnZeroClose]  》》》 {0}", service.ServiceName);
+                    var task = Task.Factory.StartNew(service.Close);
+                    tasks.Add(task);
                 }
                 catch (Exception e)
                 {
                     logger.Exception(e, "[OnZeroClose] {0}", service.ServiceName);
                 }
             }
+            Task.WaitAll(tasks.ToArray());
+            tasks.Clear();
+            foreach (var mid in Middlewares.OrderByDescending(p => p.Level).ToArray())
+            {
+                try
+                {
+                    logger.Information("[OnZeroClose] {0}", mid.Name);
+                    var task = Task.Factory.StartNew(mid.Close);
+                    tasks.Add(task);
+                }
+                catch (Exception e)
+                {
+                    logger.Exception(e, "[OnZeroClose] {0}", mid.Name);
+                }
+            }
+            Task.WaitAll(tasks.ToArray());
+            GC.Collect();
+
             logger.Information("<<OnZeroClose]");
 
-            GC.Collect();
         }
 
         /// <summary>
@@ -606,33 +622,39 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         static void OnZeroEnd()
         {
-            logger.Information("[OnZeroEnd>>");
-            foreach (var mid in Middlewares)
-            {
-                try
-                {
-                    logger.Information("[OnZeroEnd]  {0}", mid.Name);
-                    mid.End();
-                }
-                catch (Exception e)
-                {
-                    logger.Exception(e, "[OnZeroEnd]  {0}", mid.Name);
-                }
-            }
-
-            foreach (var service in Services.Values)
+            List<Task> tasks = new List<Task>();
+            logger.Information("》》》OnZeroEnd");
+            foreach (var service in Services.Values.OrderByDescending(p => p.Level).ToArray())
             {
                 try
                 {
                     logger.Information("[OnZeroEnd]  {0}", service.ServiceName);
-                    service.End();
+                    var task = Task.Factory.StartNew(service.End);
+                    tasks.Add(task);
                 }
                 catch (Exception e)
                 {
                     logger.Exception(e, "[OnZeroEnd]  {0}", service.ServiceName);
                 }
             }
-            logger.Information("<<OnZeroEnd]");
+            Task.WaitAll(tasks.ToArray());
+            tasks.Clear();
+            foreach (var mid in Middlewares.OrderByDescending(p => p.Level).ToArray())
+            {
+                try
+                {
+                    logger.Information("[OnZeroEnd]  {0}", mid.Name);
+                    var task = Task.Factory.StartNew(mid.End);
+                    tasks.Add(task);
+                }
+                catch (Exception e)
+                {
+                    logger.Exception(e, "[OnZeroEnd]  {0}", mid.Name);
+                }
+            }
+            Task.WaitAll(tasks.ToArray());
+
+            logger.Information("《《《 OnZeroEnd");
         }
 
         #endregion

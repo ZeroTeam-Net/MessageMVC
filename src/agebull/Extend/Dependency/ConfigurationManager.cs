@@ -55,6 +55,14 @@ namespace Agebull.Common.Configuration
         /// <summary>
         /// Ë¢ÐÂ
         /// </summary>
+        public static bool IsEnable(string key)
+        {
+            return string.Equals(Root.GetSection(key)?.Value, "true", StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// Ë¢ÐÂ
+        /// </summary>
         public static void Flush()
         {
             Root = Builder.Build();

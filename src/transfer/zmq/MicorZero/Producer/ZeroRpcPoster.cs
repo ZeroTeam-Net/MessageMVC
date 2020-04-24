@@ -20,7 +20,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// </summary>
         string IZeroDependency.Name => nameof(ZeroRPCPoster);
 
-        StationStateType state;
+        internal StationStateType state;
 
         /// <summary>
         /// 运行状态
@@ -67,12 +67,12 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     //LocalId = message.Trace.LocalId,
                     //LocalApp = message.Trace.LocalApp,
                     //LocalMachine = message.Trace.LocalMachine,
-                    //CallId = message.Trace.CallId,
+                    CallId = message.Trace.CallId,
                     CallApp = message.Trace.CallApp,
-                    //CallMachine = message.Trace.CallMachine,
+                    CallMachine = message.Trace.CallMachine,
                     Headers = message.Trace.Headers,
                     Token = message.Trace.Token,
-                    //Context= message.Trace.Context,
+                    Context= message.Trace.Context,
                     Level = message.Trace.Level + 1
                 };
             }
@@ -82,12 +82,12 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                  CallDescription,
                  message.ApiName.ToBytes(),//Command
                  message.Argument.ToBytes(),//Argument
-                 SmartSerializer.SerializeMessage(offline).ToBytes(),//TextContent
-                 req == null ? ByteHelper.EmptyBytes : req.LocalId.ToBytes(),//Context
-                 req == null ? ByteHelper.EmptyBytes : req.TraceId.ToBytes(),//RequestId
+                 SmartSerializer.SerializeMessage(offline).ToBytes(),//ExtendText
+                 GlobalContext.CurrentNoLazy.ToJsonBytes(),//Context
                  message.ID.ToBytes(),//CallId
-                 ZeroAppOption.Instance.TraceName.ToBytes(),//Requester
-                 GlobalContext.CurrentNoLazy.ToJsonBytes());
+                 req == null ? ByteHelper.EmptyBytes : req.TraceId.ToBytes(),//RequestId
+                 message.ID.ToBytes()//Requester
+                 );
 
         }
 
@@ -100,7 +100,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             (byte)ZeroByteCommand.General,
             ZeroFrameType.Command,
             ZeroFrameType.Argument,
-            ZeroFrameType.TextContent,
+            ZeroFrameType.ExtendText,
             ZeroFrameType.Context,
             ZeroFrameType.CallId,
             ZeroFrameType.RequestId,

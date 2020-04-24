@@ -408,10 +408,10 @@ namespace ZeroTeam.MessageMVC.Http
                 {
                     Content = !string.IsNullOrEmpty(HttpContent)
                          ? HttpContent
-                         : JsonHelper.SerializeObject(Dictionary);
+                         : SmartSerializer.ToString(Dictionary);
                     DataState |= MessageDataState.ArgumentOffline;
 
-                    ArgumentData = serialize.ToObject(Content, type);
+                    ArgumentData = SmartSerializer.ToObject(Content, type);
                     DataState |= MessageDataState.ArgumentInline;
                 }
             }

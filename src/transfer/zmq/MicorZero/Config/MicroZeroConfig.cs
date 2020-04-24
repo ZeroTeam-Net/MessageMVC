@@ -13,131 +13,29 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
     /// <summary>
     ///     本地站点配置
     /// </summary>
-    public class ZeroRpcConfig : ZeroStationOption
-    {
-        /// <summary>
-        ///   服务中心组，第一个为主
-        /// </summary>
-
-        public List<ZeroItem> ZeroGroup { get; set; }
-
-        /// <summary>
-        ///   是否需要发出事件
-        /// </summary>
-
-        public bool? CanRaiseEvent { get; set; }
-
-        /// <summary>
-        ///     站点数据使用AppName为文件夹
-        /// </summary>
-
-        public bool? IsolateFolder { get; set; }
-
-        /// <summary>
-        /// 如果目标配置存在,则复制之
-        /// </summary>
-        /// <param name="option"></param>
-        internal void CopyByHase(ZeroRpcConfig option)
-        {
-            base.CopyByHase(option);
-            if (option.IsolateFolder != null)
-            {
-                IsolateFolder = option.IsolateFolder;
-            }
-
-            //if (option.TaskCpuMultiple > 0)
-            //    TaskCpuMultiple = option.TaskCpuMultiple;
-            if (option.MaxWait > 0)
-            {
-                MaxWait = option.MaxWait;
-            }
-
-            if (option.CanRaiseEvent != null)
-            {
-                CanRaiseEvent = option.CanRaiseEvent;
-            }
-
-            if (option.ZeroGroup != null && option.ZeroGroup.Count > 0)
-            {
-                if (ZeroGroup == null)
-                {
-                    ZeroGroup = new List<ZeroItem>();
-                }
-
-                foreach (var item in option.ZeroGroup)
-                {
-                    if (ZeroGroup.Any(p => p.Address == item.Address))
-                    {
-                        continue;
-                    }
-
-                    ZeroGroup.Add(item);
-                }
-            }
-            /*
-            if (option.PoolSize > 0)
-                PoolSize = option.PoolSize;
-            if (!string.IsNullOrWhiteSpace(option.ZeroAddress))
-                ZeroAddress = option.ZeroAddress;
-            if (option.ZeroMonitorPort > 0)
-                ZeroMonitorPort = option.ZeroMonitorPort;
-            if (option.ZeroManagePort > 0)
-                ZeroManagePort = option.ZeroManagePort;
-            if (!string.IsNullOrWhiteSpace(option.ServiceKey))
-                ServiceKey = option.ServiceKey;
-
-            BridgeLocalAddress = option.BridgeLocalAddress;
-            BridgeCallAddress = option.BridgeCallAddress;
-            BridgeResultAddress = option.BridgeResultAddress;
-            */
-        }
-
-        /// <summary>
-        /// 如果本配置内容为空则用目标配置补全
-        /// </summary>
-        /// <param name="option"></param>
-        public void CopyByEmpty(ZeroRpcConfig option)
-        {
-            base.CopyByEmpty(option);
-            if (IsolateFolder == null)
-            {
-                IsolateFolder = option.IsolateFolder;
-            }
-
-            if (CanRaiseEvent == null)
-            {
-                CanRaiseEvent = option.CanRaiseEvent;
-            }
-
-            if (ZeroGroup == null)
-            {
-                ZeroGroup = option.ZeroGroup;
-            }
-            else if (option.ZeroGroup != null && option.ZeroGroup.Count > 0)
-            {
-                foreach (var item in option.ZeroGroup)
-                {
-                    if (ZeroGroup.Any(p => p.Address == item.Address))
-                    {
-                        continue;
-                    }
-
-                    ZeroGroup.Add(item);
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    ///     本地站点配置
-    /// </summary>
-    public class ZeroRpcOption : ZeroRpcConfig
+    public class ZeroRpcOption
     {
         /// <summary>
         ///   主服务中心
         /// </summary>
         [IgnoreDataMember]
         public ZeroItem Master { get; set; }
+
+        /// <summary>
+        ///   服务中心组，第一个为主
+        /// </summary>
+
+        public List<ZeroItem> ZeroCenter { get; set; }
+
+        /// <summary>
+        /// 站点配置
+        /// </summary>
+        public ZeroStationOption StationOption { get; set; }
+
+        /// <summary>
+        ///   是否需要发出事件
+        /// </summary>
+        public bool? CanRaiseEvent { get; set; }
 
 
         #region 站点

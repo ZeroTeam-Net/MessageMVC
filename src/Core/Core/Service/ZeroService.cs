@@ -132,7 +132,6 @@ namespace ZeroTeam.MessageMVC.Services
         /// </summary>
         void Initialize()
         {
-            logger ??= DependencyHelper.LoggerFactory.CreateLogger($"ZeroService({ServiceName})");
 
             eventSlim = new ManualResetEventSlim(true);
             if (ServiceName == null)
@@ -173,7 +172,6 @@ namespace ZeroTeam.MessageMVC.Services
                 //可执行
                 //Hearter.HeartJoin(Config.StationName, RealName);
                 //执行主任务
-                CancelToken = new CancellationTokenSource();
                 _ = Task.Factory.StartNew(Run, TaskCreationOptions.DenyChildAttach | TaskCreationOptions.LongRunning);
                 return true;
             }
@@ -198,9 +196,9 @@ namespace ZeroTeam.MessageMVC.Services
                 return;
             }
             RealState = StationState.Run;
-
             ((IService)this).ResetStateMachine();
             logger.Information("[Run]");
+            CancelToken = new CancellationTokenSource();
             using (ManualResetEventSlimScope.Scope(eventSlim))
             {
                 try
@@ -222,6 +220,7 @@ namespace ZeroTeam.MessageMVC.Services
                     await LoopComplete();
                 }
 
+                CancelToken = null;
                 if (ConfigState < StationStateType.Stop)
                 {
                     if (!ZeroFlowControl.IsRuning)
@@ -317,6 +316,8 @@ namespace ZeroTeam.MessageMVC.Services
 
         void IFlowMiddleware.Initialize()
         {
+            logger = DependencyHelper.LoggerFactory.CreateLogger($"ZeroService({ServiceName})");
+            logger.Information("ZeroService >>> Initialize");
             Initialize();
         }
 
@@ -326,11 +327,13 @@ namespace ZeroTeam.MessageMVC.Services
         /// <returns></returns>
         void IFlowMiddleware.Start()
         {
+            logger.Information("ZeroService >>> Start");
             StateMachine.Start();
         }
 
         void IFlowMiddleware.Close()
         {
+            logger.Information("ZeroService >>> Close");
             StateMachine.Close();
         }
 
@@ -338,6 +341,7 @@ namespace ZeroTeam.MessageMVC.Services
         /// <inheritdoc/>
         void IFlowMiddleware.End()
         {
+            logger.Information("ZeroService >>> CheckOption");
             if (_isDisposed)
             {
                 return;
@@ -380,6 +384,7 @@ namespace ZeroTeam.MessageMVC.Services
 
         async Task<bool> IStateMachineControl.DoClose()
         {
+            logger.Information("DoClose  》》》 {0}", ServiceName);
             if (RealState >= StationState.Closing || CancelToken == null || CancelToken.IsCancellationRequested)
             {
                 logger.Warning("[Close] service is closed");

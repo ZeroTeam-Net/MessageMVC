@@ -27,10 +27,9 @@ namespace ZeroTeam.MessageMVC.ConfigSync
             //{
             //    services.AddTransient<IMessageMiddleware, LoggerMiddleware>();
             //}
-            //启用数据埋点
-            if (ToolsOption.Instance.EnableMarkPoint)
+            //启用数据与日志记录埋点
+            if (ToolsOption.Instance.EnableMarkPoint | LogRecorder.LogMonitor)
             {
-                ToolsOption.Instance.EnableLinkTrace = true;
                 services.AddSingleton<IMessageMiddleware, MarkPointMiddleware>();
             }
             //启用调用链跟踪(使用IZeroContext全局上下文)

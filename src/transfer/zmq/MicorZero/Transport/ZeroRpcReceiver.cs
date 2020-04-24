@@ -1,6 +1,8 @@
 using Agebull.Common;
+using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Agebull.EntityModel.Common;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -8,7 +10,6 @@ using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.ZeroApis;
 using ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant;
 
 namespace ZeroTeam.ZeroMQ.ZeroRPC
@@ -28,7 +29,8 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// 对应发送器名称
         /// </summary>
         string IMessageReceiver.PosterName => nameof(ZeroRPCPoster);
-        #region 控制反转
+
+        #region IMessageReceiver
 
         /// <summary>
         /// 初始化
@@ -36,7 +38,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         bool IMessageReceiver.Prepare()
         {
             ZeroRpcFlow.ZeroNetEvents.Add(OnZeroNetEvent);
-            return CheckConfig();
+            return true;
         }
 
         /// <summary>
@@ -46,7 +48,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         Task<bool> IMessageReceiver.Loop(CancellationToken token)
         {
             RunTaskCancel = token;
-            while (CanLoop)
+            while (!token.IsCancellationRequested)
             {
                 Listen(pool);
             }
@@ -79,7 +81,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     return;
                 }
                 Interlocked.Exchange(ref _realState, value);
-                Logger.Information(() => $"{nameof(RealState)} : {StationRealState.Text(_realState)}");
+                Logger.Information(() => $"RealState : {StationRealState.Text(_realState)}");
             }
         }
 
@@ -149,17 +151,18 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             if (Config == null)
             {
                 var mg = new StationConfigManager(ZeroRpcFlow.Config.Master);
-                if (mg.TryInstall(Logger, name, "Api"))
+                if (!mg.TryInstall(Logger, name, "Api"))
                 {
-                    Config = mg.LoadConfig(name);
-                    if (Config == null)
-                    {
-                        Logger.Error("Station no find");
-                        RealState = StationRealState.ConfigError;
-                        return false;
-                    }
+                    return false;
                 }
-                Config.State = ZeroCenterState.Run;
+                Task.Delay(1000).Wait();
+                Config = mg.LoadConfig(name);
+                if (Config == null)
+                {
+                    Logger.Error("Station no find");
+                    RealState = StationRealState.ConfigError;
+                    return false;
+                }
             }
             //Config.OnStateChanged = OnConfigStateChanged;
             switch (Config.State)
@@ -231,6 +234,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 case ZeroNetEventType.ConfigUpdate:
                 case ZeroNetEventType.CenterStationUpdate:
                     Config = e.EventConfig;
+
                     break;
                 case ZeroNetEventType.CenterStationPause:
                     Service.ConfigState = StationStateType.Failed;
@@ -269,7 +273,12 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         /// 代理地址
         /// </summary>
-        private string InprocAddress = "inproc://ApiProxy.req";
+        private string InprocAddress;
+
+
+        /// <summary>
+        /// POOL
+        /// </summary>
         private IZmqPool pool;
 
         /// <summary>
@@ -280,6 +289,10 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         {
             try
             {
+                if(!ZeroRpcFlow.ZerCenterIsRun)
+                    return Task.FromResult(false);
+                if (!CheckConfig())
+                    return Task.FromResult(false);
                 Logger.Information("LoopBegin");
 
                 var pSocket = ZSocketEx.CreatePoolSocket(Config.WorkerCallAddress, Config.ServiceKey, ZSocketType.PULL, Identity);
@@ -331,7 +344,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     Interlocked.Increment(ref CallCount);
                     if (!ApiCallItem.Unpack(message, out var item) || string.IsNullOrWhiteSpace(item.ApiName))
                     {
-                        SendToZeroCenter(new ZMessage
+                        OnResult(pool.Sockets[0], new ZMessage
                         {
                             new ZFrame(item.Caller),
                             new ZFrame(LayoutErrorFrame),
@@ -389,7 +402,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             IInlineMessage messageItem = new InlineMessage
             {
                 ID = callItem.RequestId,
-                ServiceName = callItem.Station,
+                ServiceName = Config.StationName,
                 ApiName = callItem.ApiName,
                 Argument = callItem.Argument
             };
@@ -398,13 +411,13 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 messageItem.Trace = item.Trace;
                 messageItem.State = item.State;
             }
-            if (messageItem.Trace != null)
-            {
-                messageItem.Trace.TraceId = callItem.RequestId;
-                messageItem.Trace.CallId = callItem.GlobalId;
-                messageItem.Trace.CallMachine = callItem.Requester;
-                messageItem.Trace.Context = JsonHelper.DeserializeObject<ZeroContext>(callItem.Context);
-            }
+            //if (messageItem.Trace != null)
+            //{
+            //    messageItem.Trace.TraceId = callItem.RequestId;
+            //    messageItem.Trace.CallId = callItem.GlobalId;
+            //    messageItem.Trace.CallMachine = callItem.Requester;
+            //    messageItem.Trace.Context = SmartSerializer.ToObject<StaticContext>(callItem.Context);
+            //}
 
             try
             {
@@ -456,11 +469,12 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         private void OnResult(ZSocket socket, ZMessage message)
         {
             ZMessage message2;
+            string address;
             using (message)
             {
                 message2 = message.Duplicate(1);
+                address = message[0].ToString();
             }
-
             bool success;
             ZError error;
             using (message2)
@@ -469,7 +483,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
             if (!success)
             {
-                Logger.Error($"Send message err.{error.Name} : {error.Text}");
+                Logger.Error($"发送回复出错,远程地址{address} => {error.Name} : {error.Text}");
             }
         }
 
@@ -482,7 +496,25 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <returns></returns>
         private Task<bool> OnExecuestEnd(IMessageResult result, ApiCallItem item, ZeroOperatorStateType operatorState)
         {
-            var res = result.Result;
+            var frames = CreateFrames(result, item, operatorState);
+            if (!SendToZeroCenter(new ZMessage(frames), out var state))
+            {
+                Interlocked.Increment(ref SendError);
+                Logger.Error(state);
+                LogRecorder.MonitorInfomation(state);
+                return Task.FromResult(false);
+            }
+            else
+            {
+                Interlocked.Increment(ref SendCount);
+                LogRecorder.MonitorDetails(state);
+                return Task.FromResult(true);
+            }
+        }
+
+        private List<byte[]> CreateFrames(IMessageResult result, ApiCallItem item, ZeroOperatorStateType operatorState)
+        {
+            var json = result.Result;
             result.Result = null;
 
             int i = 0;
@@ -503,8 +535,8 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 item.RequestId.ToBytes(),
                 item.CallId.ToBytes(),
                 item.GlobalId.ToBytes(),
-                res.ToBytes(),
-                SmartSerializer.ToString(result).ToBytes()
+                json.ToBytes(),
+                SmartSerializer.SerializeResult(result).ToBytes()
             };
             if (item.EndTag == ZeroFrameType.ResultFileEnd)
             {
@@ -519,8 +551,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             des[i++] = ZeroFrameType.SerivceKey;
             msg.Add(Config.ServiceKey);
             des[i] = item.EndTag > 0 ? item.EndTag : ZeroFrameType.ResultEnd;
-            var state = SendToZeroCenter(new ZMessage(msg));
-            return Task.FromResult(state);
+            return msg;
         }
 
         private static readonly byte[] LayoutErrorFrame = new byte[]
@@ -536,51 +567,44 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// 发送返回值 
         /// </summary>
         /// <param name="message"></param>
+        /// <param name="msg"></param>
         /// <returns></returns>
-        private bool SendToZeroCenter(ZMessage message)
+        private bool SendToZeroCenter(ZMessage message, out string msg)
         {
-            string msg;
             if (!CanLoop)
             {
                 msg = "系统已关闭,发送失败";
+                return false;
             }
-            else
+            using (message)
             {
-                using (message)
+                try
                 {
-                    try
+                    var socket = ZSocketEx.CreateOnceSocket(InprocAddress, null, null, ZSocketType.PAIR);
+                    if (socket == null)
                     {
-                        var socket = ZSocketEx.CreateOnceSocket(InprocAddress, null, null, ZSocketType.PAIR);
-                        if (socket == null)
-                        {
-                            Interlocked.Increment(ref SendError);
-                            return false;
-                        }
-                        ZError error;
-                        bool success;
-                        using (socket)
-                        {
-                            success = socket.Send(message, out error);
-                        }
+                        msg = "无法构造Socket";
+                        return false;
+                    }
+                    ZError error;
+                    bool success;
+                    using (socket)
+                    {
+                        success = socket.Send(message, out error);
+                    }
 
-                        if (success)
-                        {
-                            LogRecorder.MonitorDetails("发送成功");
-                            Interlocked.Increment(ref SendCount);
-                            return true;
-                        }
-                        msg = $"发送错误 {error.Text} : {error.Name}";
-                    }
-                    catch (Exception e)
+                    if (success)
                     {
-                        msg = $"发送异常 {e.Message}";
+                        msg = "发送成功";
+                        return true;
                     }
+                    msg = $"发送错误 {error.Text} : {error.Name}";
+                }
+                catch (Exception e)
+                {
+                    msg = $"发送异常 {e.Message}";
                 }
             }
-
-            Logger.Error(msg);
-            LogRecorder.MonitorInfomation(msg);
-            Interlocked.Increment(ref SendError);
             return false;
         }
 
@@ -589,82 +613,3 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
     }
 }
 
-/*// <summary>
-/// 站点状态变更时调用
-/// </summary>
-void OnStationStateChanged(StationConfig config)
-{
-    while (RealState == StationState.Start || RealState == StationState.BeginRun || RealState == StationState.Closing)
-        Thread.Sleep(10);
-    //#if UseStateMachine
-    switch (config.State)
-    {
-        case ZeroCenterState.Initialize:
-        case ZeroCenterState.Start:
-        case ZeroCenterState.Run:
-        case ZeroCenterState.Pause:
-            break;
-        case ZeroCenterState.Failed:
-            if (!CanLoop)
-                break;
-            //运行状态中，与ZeroCenter一起重启
-            if (RealState == StationState.Run)
-                RealState = StationState.Closing;
-            ConfigState = StationStateType.Failed;
-            return;
-        //以下状态如在运行，均可自动关闭
-        case ZeroCenterState.Closing:
-        case ZeroCenterState.Closed:
-        case ZeroCenterState.Destroy:
-            if (RealState == StationState.Run)
-                RealState = StationState.Closing;
-            ConfigState = StationStateType.Closed;
-            return;
-        case ZeroCenterState.NoFind:
-        case ZeroCenterState.Remove:
-            if (RealState == StationState.Run)
-                RealState = StationState.Closing;
-            ConfigState = StationStateType.Remove;
-            return;
-        default:
-            //case ZeroCenterState.None:
-            //case ZeroCenterState.Stop:
-            if (RealState == StationState.Run)
-                RealState = StationState.Closing;
-            ConfigState = StationStateType.Stop;
-            return;
-    }
-    if (!ZeroApplication.CanDo)
-    {
-        return;
-    }
-    //可启动状态检查是否未运行
-    if (CanLoop)//这是一个可以正常运行的状态，无需要改变
-        return;
-    //是否未进行初始化
-    if (ConfigState == StationStateType.None)
-        Initialize();
-    else
-        ConfigState = StationStateType.Initialized;
-
-    Task.Run(Start);
-    //#else
-    //            ConfigState = config.State;
-    //            if (RealState < StationState.Start || RealState > StationState.Closing)
-    //            {
-    //                if (config.State <= ZeroCenterState.Pause && ZeroApplication.CanDo)
-    //                {
-    //                    ZeroTrace.SystemLog(StationName, $"Start by config state({config.State}) changed");
-    //                    Start();
-    //                }
-    //            }
-    //            else
-    //            {
-    //                if (config.State >= ZeroCenterState.Failed || !ZeroApplication.CanDo)
-    //                {
-    //                    ZeroTrace.SystemLog(StationName, $"Close by config state({config.State}) changed");
-    //                    Close();
-    //                }
-    //            }
-    //#endif
-}*/

@@ -103,12 +103,12 @@ namespace ZeroTeam.ZeroMQ
         /// </summary>
         static SocketOption()
         {
-            ConfigurationManager.RegistOnChange("Zero:socketOption", Instance.Load, true);
+            ConfigurationManager.RegistOnChange("ZeroRPC:SocketOption", Instance.Load, true);
         }
 
         void Load()
         {
-            var option = ConfigurationManager.Get<SocketOption>("Zero:socketOption");
+            var option = ConfigurationManager.Get<SocketOption>("ZeroRPC:SocketOption");
             if (option == null)
                 return;
 

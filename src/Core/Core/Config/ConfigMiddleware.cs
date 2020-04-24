@@ -36,8 +36,11 @@ namespace ZeroTeam.MessageMVC
             DependencyHelper.Update();
             LogRecorder.GetMachineNameFunc = () => config.TraceName;
             var opt = ConfigurationManager.Get<TextLoggerOption>("Logging:Text");
-            if (string.IsNullOrWhiteSpace(opt?.path))
+            if (string.IsNullOrWhiteSpace(opt?.LogPath))
             {
+
+                ConfigurationManager.Root.GetSection("Logging:Text:LogPath").Value =
+
                 LogRecorder.LogPath = config.IsolateFolder
                      ? IOHelper.CheckPath(config.RootPath, "logs", config.AppName)
                      : IOHelper.CheckPath(config.RootPath, "logs");
@@ -64,10 +67,11 @@ namespace ZeroTeam.MessageMVC
             #region 配置组合
 
             bool useZero = !string.IsNullOrEmpty(config.RootPath);
+            config.IsDevelopment = ConfigurationManager.Root["ASPNETCORE_ENVIRONMENT_"] == "Development";
             if (!useZero)
             {
                 bool.TryParse(ConfigurationManager.Root["MessageMVC:Option:UseZero"] ?? "false", out useZero);
-                if (!useZero || ConfigurationManager.Root["ASPNETCORE_ENVIRONMENT_"] == "Development")
+                if (!useZero || config.IsDevelopment)
                 {
                     config.RootPath = Environment.CurrentDirectory;
                 }

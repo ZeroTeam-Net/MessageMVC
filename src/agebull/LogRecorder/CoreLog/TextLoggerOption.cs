@@ -18,59 +18,44 @@ namespace Agebull.Common.Logging
     public class TextLoggerOption
     {
         /// <summary>
-        ///     文本日志的路径,如果不配置,就为:[应用程序的路径]\log\
-        /// </summary>
-        public string path { get; set; }
-
-        /// <summary>
         /// 日志等级
         /// </summary>
         public LogLevel LogLevel { get; set; }
 
         /// <summary>
-        /// 拆分日志的数量
-        /// </summary>
-        public int split { get; set; }
-
-        /// <summary>
         /// 最大文件数量
         /// </summary>
-        public int maxFile { get; set; }
+        public int MaxFile { get; set; }
 
         /// <summary>
         /// 最小可用空间(小于时只记录系统与错误日志)
         /// </summary>
-        public int minFreeSize { get; set; }
+        public int MinFreeSize { get; set; }
 
         /// <summary>
         /// 每日一个文件夹吗
         /// </summary>
-        public bool dayFolder { get; set; }
+        public bool DayFolder { get; set; }
 
         /// <summary>
         /// 是否禁用
         /// </summary>
-        public bool disable { get; set; }
+        public bool Disable { get; set; }
 
         /// <summary>
         ///     文本日志的路径,如果不配置,就为:[应用程序的路径]\log\
         /// </summary>
-        public string LogPath => path;
+        public string LogPath { get; set; }
 
         /// <summary>
         /// 拆分日志的数量
         /// </summary>
-        public int SplitNumber => split;
+        public int SplitNumber { get; set; }
 
         /// <summary>
-        /// 最小可用空间(小于时只记录系统与错误日志)
+        /// 是否开启联机日志
         /// </summary>
-        public int MinFreeSize => minFreeSize;
-
-        /// <summary>
-        /// 每日一个文件夹吗
-        /// </summary>
-        public bool DayFolder => dayFolder;
+        public bool MulitLog { get; set; }
 
         /// <summary>
         ///     初始化
@@ -79,31 +64,31 @@ namespace Agebull.Common.Logging
         {
             try
             {
-                if (split <= 0)
+                if (SplitNumber <= 0)
                 {
-                    split = 10;
+                    SplitNumber = 10;
                 }
 
-                split <<= 20;
-                if (minFreeSize <= 0)
+                SplitNumber <<= 20;
+                if (MinFreeSize <= 0)
                 {
-                    minFreeSize = 1;
+                    MinFreeSize = 1;
                 }
 
-                if (maxFile <= 0)
+                if (MaxFile <= 0)
                 {
-                    maxFile = 999;
+                    MaxFile = 999;
                 }
 
                 if (string.IsNullOrWhiteSpace(LogPath))
                 {
-                    path = LogRecorder.LogPath;
-                    if (string.IsNullOrWhiteSpace(path))
+                    LogPath = LogRecorder.LogPath;
+                    if (string.IsNullOrWhiteSpace(LogPath))
                     {
-                        path = Path.Combine(Environment.CurrentDirectory, "logs");
+                        LogPath = System.IO.Path.Combine(Environment.CurrentDirectory, "logs");
                     }
                 }
-                IOHelper.CheckPath(path);
+                IOHelper.CheckPath(LogPath);
             }
             catch (Exception ex)
             {
@@ -114,7 +99,7 @@ namespace Agebull.Common.Logging
                 var size = IOHelper.FolderDiskInfo(LogPath);
                 if (size.AvailableSize < MinFreeSize)
                 {
-                    disable = true;
+                    Disable = true;
                 }
             }
             catch (Exception ex)

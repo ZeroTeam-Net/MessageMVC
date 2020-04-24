@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using System.ComponentModel;
+using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC.Context
 {
@@ -33,6 +34,11 @@ namespace ZeroTeam.MessageMVC.Context
         /// </summary>
         string OrganizationName { get; set; }
 
+        /// <summary>
+        /// 通过Json来还原用户
+        /// </summary>
+        /// <param name="json"></param>
+        void FormJson(string json);
     }
 
     /// <summary>
@@ -88,5 +94,21 @@ namespace ZeroTeam.MessageMVC.Context
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public string OrganizationName { get; set; }
 
+
+        /// <summary>
+        /// 通过Json来还原用户
+        /// </summary>
+        /// <param name="json"></param>
+        void IUser.FormJson(string json)
+        {
+            if(SmartSerializer.TryDeserialize(json,GetType(),out var dest) && dest is UserInfo user)
+            {
+                UserId = user.UserId;
+                UserCode = user.UserCode;
+                NickName = user.NickName;
+                OrganizationId = user.OrganizationId;
+                OrganizationName = user.OrganizationName;
+            }
+        }
     }
 }

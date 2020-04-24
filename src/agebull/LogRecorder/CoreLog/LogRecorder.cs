@@ -83,7 +83,7 @@ namespace Agebull.Common.Logging
         public static void Initialize()
         {
             ReadConfig();
-            if (ConfigurationManager.Root.GetSection("LogRecorder:noRegist")?.Value != "true")
+            if (!ConfigurationManager.IsEnable("LogRecorder:noRegist"))
             {
                 DoInitialize();
             }
@@ -100,11 +100,11 @@ namespace Agebull.Common.Logging
             DependencyHelper.ServiceCollection.AddLogging(builder =>
             {
                 builder.AddConfiguration(ConfigurationManager.Root.GetSection("Logging"));
-                if (ConfigurationManager.Root.GetSection("LogRecorder:innerLogger")?.Value != "true")
+                builder.AddConsole();
+                if (!ConfigurationManager.IsEnable("LogRecorder:innerLogger"))
                 {
                     return;
                 }
-
                 builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, TextLoggerProvider>());
                 LoggerProviderOptions.RegisterProviderOptions<TextLoggerOption, TextLoggerProvider>(builder.Services);
 
@@ -120,9 +120,9 @@ namespace Agebull.Common.Logging
             var sec = ConfigurationManager.Get("LogRecorder");
             if (sec != null)
             {
+                LogMonitor = sec.GetBool("monitor");
                 MonitorIncludeDetails = sec.GetBool("details");
                 LogDataSql = sec.GetBool("sql");
-                LogMonitor = sec.GetBool("monitor");
             }
 #if !NETCOREAPP
             if (LogMonitor)

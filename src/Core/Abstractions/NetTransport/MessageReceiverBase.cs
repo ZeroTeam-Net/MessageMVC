@@ -18,9 +18,11 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 内部构造
         /// </summary>
         /// <param name="name"></param>
-        protected MessageReceiverBase(string name)
+        /// <param name="localCall"></param>
+        protected MessageReceiverBase(string name,bool localCall=true)
         {
             Name = name;
+            LocalCall = localCall;
         }
 
         /// <summary>
@@ -44,6 +46,11 @@ namespace ZeroTeam.MessageMVC.Messages
         protected StationStateType state;
 
         /// <summary>
+        /// 允许本地调用
+        /// </summary>
+        protected bool LocalCall { get; set; }
+
+        /// <summary>
         /// 运行状态
         /// </summary>
         StationStateType IMessagePoster.State { get => state; set => state = value; }
@@ -56,6 +63,8 @@ namespace ZeroTeam.MessageMVC.Messages
             if (state >= StationStateType.Initialized)
                 return;
             state = StationStateType.Initialized;
+            if (!LocalCall)
+                return;
             Logger.Information(() => $"服务[{Service.ServiceName}] 使用接收器{Name}");
             MessagePoster.RegistPoster(this, Service.ServiceName);
         }

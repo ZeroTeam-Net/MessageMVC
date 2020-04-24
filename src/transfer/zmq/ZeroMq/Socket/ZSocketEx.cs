@@ -129,6 +129,8 @@ namespace ZeroTeam.ZeroMQ
         public static ZSocketEx CreateSubSocket(string address, byte[] serviceKey, byte[] identity, string subscribe)
         {
             var socket = CreateClientSocketInner(address, serviceKey, ZSocketType.SUB, identity, true);
+            if (socket == null)
+                return null;
             if (string.IsNullOrEmpty(subscribe))
                 socket.SubscribeAll();
             else
@@ -147,6 +149,8 @@ namespace ZeroTeam.ZeroMQ
         public static ZSocketEx CreateSubSocket(string address, byte[] serviceKey, byte[] identity, ICollection<string> subscribes)
         {
             var socket = CreateClientSocketInner(address, serviceKey, ZSocketType.SUB, identity, true);
+            if (socket == null)
+                return null;
             if (subscribes == null || subscribes.Count == 0)
                 socket.SubscribeAll();
             else

@@ -4,23 +4,18 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Controler\**" />
-    <EmbeddedResource Remove="Controler\**" />
-    <None Remove="Controler\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="Controler\RpcControler.cs" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\tools\Contract\ZeroTeam.MessageMVC.ApiContract.csproj" />
+    <ProjectReference Include="..\..\tools\Tools\ZeroTeam.MessageMVC.Tools.csproj" />
     <ProjectReference Include="..\..\transfer\zmq\MicorZero\ZeroTeam.ZeroMQ.ZeroRPC.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="libzmq.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="http://json-schema.org/draft-04/schema" /></VisualStudio></ProjectExtensions>
 </Project>

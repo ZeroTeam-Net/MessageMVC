@@ -711,7 +711,7 @@ namespace ZeroTeam.ZeroMQ
             error = _error = ZError.None;
 
             var more = (flags & ZSocketFlags.More) == ZSocketFlags.More;
-            flags = flags | ZSocketFlags.More;
+            flags |= ZSocketFlags.More;
 
             var framesIsList = frames is IList<ZFrame> list && !list.IsReadOnly;
             var array = frames.ToArray();

@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
@@ -41,7 +42,7 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         void IFlowMiddleware.Initialize()
         {
-            logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(MessagePoster));
+            logger ??= DependencyHelper.LoggerFactory.CreateLogger(nameof(MessagePoster));
             posters = new Dictionary<string, IMessagePoster>();
             foreach (var poster in DependencyHelper.RootProvider.GetServices<IMessagePoster>())
             {
@@ -100,6 +101,7 @@ namespace ZeroTeam.MessageMVC
             {
                 ServiceMap[service] = poster;
             }
+            logger ??= DependencyHelper.LoggerFactory.CreateLogger(nameof(MessagePoster));
             logger.Information(() => $"服务[{string.Join(',', services)}]注册为使用发布器{name}");
         }
 
@@ -108,10 +110,11 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public static void RegistPoster(IMessagePoster poster, params string[] services)
         {
-            foreach (var service in services)
+            foreach (var service in services.Where(p => !string.IsNullOrEmpty(p)))
             {
                 ServiceMap[service] = poster;
             }
+            logger ??= DependencyHelper.LoggerFactory.CreateLogger(nameof(MessagePoster));
             logger.Information(() => $"服务[{string.Join(',', services)}]注册为使用发布器{poster.GetTypeName()}");
         }
 
@@ -200,31 +203,36 @@ namespace ZeroTeam.MessageMVC
                     DataState = dataState
                 };
             }
-            //保持消息的跟踪不变
-            if (inline.Trace == null && GlobalContext.EnableLinkTrace)
+            if (inline.Trace != null && !GlobalContext.EnableLinkTrace)
             {
-                inline.Trace = new TraceInfo
-                {
-                    TraceId = inline.ID,
-                    Start = DateTime.Now,
-                };
-                var ctx = GlobalContext.CurrentNoLazy;
-                if (ctx != null)
-                {
-                    inline.Trace.Context = ctx;
-                    inline.Trace.TraceId = ctx.Trace.TraceId;
-                    //远程机器使用,所以Call是本机信息
-                    inline.Trace.CallId = ctx.Trace.LocalId;
-                    inline.Trace.CallApp = ctx.Trace.LocalApp;
-                    inline.Trace.CallMachine = ctx.Trace.LocalMachine;
-                    //层级
-                    inline.Trace.Level = ctx.Trace.Level + 1;
-                    //正常复制
-                    inline.Trace.TraceId = ctx.Trace.TraceId;
-                    inline.Trace.Token = ctx.Trace.Token;
-                    inline.Trace.Headers = ctx.Trace.Headers;
-                }
+                return inline;
             }
+            inline.Trace = new TraceInfo
+            {
+                TraceId = inline.ID,
+                Start = DateTime.Now,
+            };
+            var ctx = GlobalContext.CurrentNoLazy;
+            if (ctx == null)
+            {
+                return inline;
+            }
+            inline.Trace.Context = new StaticContext
+            {
+                Option = ctx.Option,
+                UserJson = SmartSerializer.ToString(ctx.User)
+            };
+            inline.Trace.TraceId = ctx.Trace.TraceId;
+            //远程机器使用,所以Call是本机信息
+            inline.Trace.CallId = ctx.Trace.LocalId;
+            inline.Trace.CallApp = ctx.Trace.LocalApp;
+            inline.Trace.CallMachine = ctx.Trace.LocalMachine;
+            //层级
+            inline.Trace.Level = ctx.Trace.Level + 1;
+            //正常复制
+            inline.Trace.TraceId = ctx.Trace.TraceId;
+            inline.Trace.Token = ctx.Trace.Token;
+            inline.Trace.Headers = ctx.Trace.Headers;
             return inline;
         }
 
@@ -241,7 +249,7 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static MessageState Publish<TArg>(string topic, string title, TArg content)
         {
-            var (_, state) = Post(MessageHelper.NewRemote(topic, title, content),false).Result;
+            var (_, state) = Post(MessageHelper.NewRemote(topic, title, content), false).Result;
             return state;
         }
 

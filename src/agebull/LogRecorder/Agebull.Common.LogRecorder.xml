@@ -459,37 +459,27 @@
             文本日志配置
             </summary>
         </member>
-        <member name="P:Agebull.Common.Logging.TextLoggerOption.path">
-            <summary>
-                文本日志的路径,如果不配置,就为:[应用程序的路径]\log\
-            </summary>
-        </member>
         <member name="P:Agebull.Common.Logging.TextLoggerOption.LogLevel">
             <summary>
             日志等级
             </summary>
         </member>
-        <member name="P:Agebull.Common.Logging.TextLoggerOption.split">
-            <summary>
-            拆分日志的数量
-            </summary>
-        </member>
-        <member name="P:Agebull.Common.Logging.TextLoggerOption.maxFile">
+        <member name="P:Agebull.Common.Logging.TextLoggerOption.MaxFile">
             <summary>
             最大文件数量
             </summary>
         </member>
-        <member name="P:Agebull.Common.Logging.TextLoggerOption.minFreeSize">
+        <member name="P:Agebull.Common.Logging.TextLoggerOption.MinFreeSize">
             <summary>
             最小可用空间(小于时只记录系统与错误日志)
             </summary>
         </member>
-        <member name="P:Agebull.Common.Logging.TextLoggerOption.dayFolder">
+        <member name="P:Agebull.Common.Logging.TextLoggerOption.DayFolder">
             <summary>
             每日一个文件夹吗
             </summary>
         </member>
-        <member name="P:Agebull.Common.Logging.TextLoggerOption.disable">
+        <member name="P:Agebull.Common.Logging.TextLoggerOption.Disable">
             <summary>
             是否禁用
             </summary>
@@ -504,14 +494,9 @@
             拆分日志的数量
             </summary>
         </member>
-        <member name="P:Agebull.Common.Logging.TextLoggerOption.MinFreeSize">
+        <member name="P:Agebull.Common.Logging.TextLoggerOption.MulitLog">
             <summary>
-            最小可用空间(小于时只记录系统与错误日志)
-            </summary>
-        </member>
-        <member name="P:Agebull.Common.Logging.TextLoggerOption.DayFolder">
-            <summary>
-            每日一个文件夹吗
+            是否开启联机日志
             </summary>
         </member>
         <member name="M:Agebull.Common.Logging.TextLoggerOption.Initialize">

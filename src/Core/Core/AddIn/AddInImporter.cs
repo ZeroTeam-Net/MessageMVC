@@ -1,6 +1,7 @@
 ﻿using Agebull.Common;
 using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
@@ -28,7 +29,7 @@ namespace ZeroTeam.MessageMVC.AddIn
         /// 等级
         /// </summary>
         int IZeroMiddleware.Level => MiddlewareLevel.Framework;
-
+        ILogger logger;
         /// <summary>
         /// 插件对象
         /// </summary>
@@ -40,6 +41,8 @@ namespace ZeroTeam.MessageMVC.AddIn
         /// </summary>
         void IFlowMiddleware.CheckOption(ZeroAppOption config)
         {
+            logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(AddInImporter));
+            logger.Information("AddInImporter >>> CheckOption");
             DirectoryCatalog directoryCatalog;
             if (string.IsNullOrEmpty(ZeroAppOption.Instance.AddInPath))
             {
@@ -53,7 +56,6 @@ namespace ZeroTeam.MessageMVC.AddIn
                      : IOHelper.CheckPath(ZeroAppOption.Instance.RootPath, ZeroAppOption.Instance.AddInPath));
             }
 
-            var logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(AddInImporter));
 
             // 通过容器对象将宿主和部件组装到一起。 
             try
@@ -88,6 +90,7 @@ namespace ZeroTeam.MessageMVC.AddIn
         /// </summary>
         void IFlowMiddleware.Initialize()
         {
+            logger.Information("AddInImporter >>> Initialize");
             if (Registers == null)
             {
                 return;
@@ -103,6 +106,7 @@ namespace ZeroTeam.MessageMVC.AddIn
         /// </summary>
         void IFlowMiddleware.Start()
         {
+            logger.Information("AddInImporter >>> Start");
             if (Registers == null)
             {
                 return;
@@ -118,6 +122,7 @@ namespace ZeroTeam.MessageMVC.AddIn
         /// </summary>
         void IFlowMiddleware.End()
         {
+            logger.Information("AddInImporter >>> CheckOption");
             if (Registers == null)
             {
                 return;

@@ -130,6 +130,14 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         Task ArgumentInline(Type argumentType, ISerializeProxy resultSerializer, Func<int, string, object> errResultCreater)
         {
+            return ArgumentInline(null, argumentType, resultSerializer, errResultCreater);
+        }
+
+        /// <summary>
+        /// 数据设置为上线状态
+        /// </summary>
+        Task ArgumentInline(ISerializeProxy argSerializer, Type argumentType, ISerializeProxy resultSerializer, Func<int, string, object> errResultCreater)
+        {
             if (resultSerializer != null)
                 ResultSerializer = resultSerializer;
             if (errResultCreater != null)
@@ -137,10 +145,20 @@ namespace ZeroTeam.MessageMVC.Messages
 
             if (!DataState.AnyFlags(MessageDataState.ArgumentInline))
             {
-                if (argumentType == null || argumentType.IsBaseType())
-                    Dictionary = SmartSerializer.ToObject<Dictionary<string, string>>(Content);
+                if (argSerializer != null)
+                {
+                    if (argumentType == null || argumentType.IsBaseType())
+                        Dictionary = argSerializer.ToObject<Dictionary<string, string>>(Content);
+                    else
+                        ArgumentData = argSerializer.ToObject(Content, argumentType);
+                }
                 else
-                    ArgumentData = SmartSerializer.ToObject(Content, argumentType);
+                {
+                    if (argumentType == null || argumentType.IsBaseType())
+                        Dictionary = SmartSerializer.ToObject<Dictionary<string, string>>(Content);
+                    else
+                        ArgumentData = SmartSerializer.ToObject(Content, argumentType);
+                }
                 DataState |= MessageDataState.ArgumentInline | MessageDataState.ArgumentOffline;
             }
             return Task.CompletedTask;

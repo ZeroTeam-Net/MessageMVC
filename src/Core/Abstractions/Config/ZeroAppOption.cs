@@ -12,15 +12,18 @@ namespace ZeroTeam.MessageMVC
     public class ZeroAppOption : ZeroAppConfig
     {
         /// <summary>
+        /// 是否开发模式
+        /// </summary>
+        public bool IsDevelopment { get; set; }
+
+        /// <summary>
         ///     当前应用版本号
         /// </summary>
-
         public string AppVersion { get; set; }
 
         /// <summary>
         ///     服务器名称
         /// </summary>
-
         public string ServiceName { get; set; }
 
         /// <summary>
@@ -31,7 +34,6 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         ///     应用所在的顶级目录
         /// </summary>
-
         public string RootPath { get; set; }
 
         /// <summary>
@@ -69,5 +71,6 @@ namespace ZeroTeam.MessageMVC
             };
             Instance.CopyByHase(ConfigurationManager.Get<ZeroAppConfig>("MessageMVC:Option"));
         }
+
     }
 }

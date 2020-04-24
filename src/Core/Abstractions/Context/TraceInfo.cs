@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.Serialization;
+using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC.Context
 {
@@ -78,7 +79,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// 上下文信息
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public IZeroContext Context { get; set; }
+        public StaticContext Context { get; set; }
 
         /// <summary>
         /// 身份令牌
@@ -92,14 +93,6 @@ namespace ZeroTeam.MessageMVC.Context
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public Dictionary<string, List<string>> Headers { get; set; }
-
-        /// <summary>
-        /// 构造
-        /// </summary>
-        public TraceInfo()
-        {
-            Context = DependencyHelper.Create<IZeroContext>();//防止反序列化失败
-        }
 
         /// <summary>
         /// 构造
@@ -138,50 +131,26 @@ namespace ZeroTeam.MessageMVC.Context
             };
         }
     }
+
+
+    /// <summary>
+    ///     全局上下文(用于序列化)
+    /// </summary>
+    [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
+    public class StaticContext
+    {
+        /// <summary>
+        ///     当前调用的客户信息
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string UserJson { get; set; }
+
+        /// <summary>
+        /// 上下文配置
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public Dictionary<string, string> Option { get; set; }
+
+    }
 }
 
-/*
- * 
-        /// <summary>
-        /// 参数类型
-        /// </summary>
-        [JsonProperty("argumentType", DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
-        public ArgumentType ArgumentType { get; set; }
-
-        /// <summary>
-        /// 参数类型
-        /// </summary>
-        [JsonProperty("requestType", DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
-        public RequestType RequestType { get; set; }
-
-        /// <summary>
-        /// 请求IP
-        /// </summary>
-        [JsonProperty("ip", DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
-        public string Ip { get; set; }
-
-        /// <summary>
-        /// 请求端口号
-        /// </summary>
-        [JsonProperty("port", DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
-        public string Port { get; set; }
-        /// <summary>
-        ///     当前用户登录到哪个系统（预先定义的系统标识）
-        /// </summary>
-        [JsonProperty("app", NullValueHandling = NullValueHandling.Ignore)]
-        public string App { get; set; }
-
-        /// <summary>
-        /// HTTP的UserAgent
-        /// </summary>
-        [JsonProperty("userAgent", DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
-        public string UserAgent { get; set; }
-
-
-        /// <summary>
-        ///     登录设备的操作系统
-        /// </summary>
-        [JsonProperty("os", NullValueHandling = NullValueHandling.Ignore)]
-        public string Os { get; set; }
- 
-*/

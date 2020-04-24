@@ -338,9 +338,17 @@
             </summary>
             <param name="services"></param>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlow(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Type,System.Boolean)">
+            <summary>
+            启动主流程控制器，发现指定类型所在的程序集的Api，由参数决定是否等待系统退出
+            </summary>
+            <param name="services"></param>
+            <param name="type">需要发现服务的程序集的类型之一</param>
+            <param name="waitEnd"></param>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlow(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly,System.Boolean)">
             <summary>
-            使用主流程控制器
+            启动主流程控制器，发现指定程序集的Api，由参数决定是否等待系统退出
             </summary>
             <param name="services"></param>
             <param name="assembly">需要发现服务的程序集</param>
@@ -348,26 +356,26 @@
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseTest(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly)">
             <summary>
-            使用主流程控制器
+            启动主流程控制器，发现指定程序集的Api，适用于测试的场景
             </summary>
             <param name="services"></param>
             <param name="assembly">需要发现服务的程序集</param>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlow(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
-            使用主流程控制器
+            启动主流程控制器，不发现Api，适用于无Controler的场景
             </summary>
             <param name="services"></param>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlowByAutoDiscover(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
-            使用主流程控制器
+            启动主流程控制器，同时自动发现Api
             </summary>
             <param name="services"></param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlowAsync(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlowAndWait(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
-            使用主流程控制器
+            启动主流程控制器并等待退出，同时自动发现Api
             </summary>
             <param name="services"></param>
         </member>
@@ -446,14 +454,9 @@
                 运行
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.RunAwaite">
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.WaitEnd">
             <summary>
-                执行并等待
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.RunAwaiteAsync">
-            <summary>
-                执行并等待
+                等待退出
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.Shutdown">

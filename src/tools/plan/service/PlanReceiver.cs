@@ -54,7 +54,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                     if (!succes)
                     {
                         succes = true;
-                        await Task.Delay(PlanSystemOption.Instance.LoopIdleTime);
+                        await Task.Delay(PlanSystemOption.Instance.LoopIdleTime, token);
                         if (token.IsCancellationRequested)
                         {
                             return true;
@@ -62,7 +62,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                     }
                     while (wait > PlanSystemOption.Instance.MaxRunTask)
                     {
-                        await Task.Delay(PlanSystemOption.Instance.LoopIdleTime);
+                        await Task.Delay(PlanSystemOption.Instance.LoopIdleTime, token);
                         if (token.IsCancellationRequested)
                         {
                             return true;
@@ -82,8 +82,9 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                             Interlocked.Increment(ref wait);
 
                             //写入回执备查
-                            if (item.Message.Trace.Context == null)
-                                item.Message.Trace.Context = DependencyHelper.Create<IZeroContext>();
+                            item.Message.Trace??= TraceInfo.New(item.Message.ID);
+                            item.Message.Trace.Context ??= new StaticContext();
+                            item.Message.Trace.Context.Option ??= new System.Collections.Generic.Dictionary<string, string>();
                             item.Message.Trace.Context.Option["Receipt"] = "true";
 
                             _ = MessageProcessor.OnMessagePush(Service, item.Message, true, item);
@@ -98,8 +99,8 @@ namespace ZeroTeam.MessageMVC.PlanTasks
             }
             catch (TaskCanceledException)
             {
-                return true;
             }
+            PlanItem.logger.Information("计划任务轮询结束");
             return true;
         }
 
@@ -108,11 +109,11 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// </summary>
         async Task IMessageReceiver.LoopComplete()
         {
+            PlanItem.logger.Information("Plan queue loop complete....");
             while (wait > 0)
             {
                 await Task.Delay(50);
             }
-            PlanItem.logger.Information("Plan queue loop complete.");
         }
 
         #endregion
@@ -212,7 +213,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         {
             await Task.Yield();
             string pre = null;
-            PlanItem.logger.Error("回执检查已启动");
+            PlanItem.logger.Information("计划任务：回执检查已启动");
             while (!token.IsCancellationRequested)
             {
                 try
@@ -220,11 +221,11 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                     var id = await RedisHelper.RPopLPushAsync(PlanItem.planErrorKey, PlanItem.planErrorKey);
                     if (id == null)
                     {
-                        await Task.Delay(PlanSystemOption.idleTime);
+                        await Task.Delay(PlanSystemOption.idleTime,token);
                         continue;
                     }
                     if (id == pre)
-                        await Task.Delay(PlanSystemOption.waitTime);//相同ID多次处理
+                        await Task.Delay(PlanSystemOption.waitTime, token);//相同ID多次处理
                     else
                         pre = id;
                     var item = PlanItem.LoadMessage(id, false);
@@ -280,6 +281,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                     PlanItem.logger.Warning(() => $"检查回执发生异常.{ex.Message}");
                 }
             }
+            PlanItem.logger.Information("计划任务：回执检查已退出");
         }
 
         #endregion

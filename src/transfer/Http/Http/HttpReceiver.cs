@@ -97,7 +97,7 @@ namespace ZeroTeam.MessageMVC.Http
             }
             else
             {
-                json = SmartSerializer.ToString(message.ToMessageResult(true, Service.Serialize));
+                json = SmartSerializer.SerializeResult(message);
             }
             await context.Response.WriteAsync(json ?? "", Encoding.UTF8);
             return true;

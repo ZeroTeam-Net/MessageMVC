@@ -234,11 +234,15 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
                 Start = new DateTime(2020, 3, 12),
                 CallApp = "UnitTest"
             };
-            traceInfo.Context.User.UserId = 20200312;
-            traceInfo.Context.User.NickName = "agebull";
-            traceInfo.Context.User.UserCode = "20200312";
-            //traceInfo.Context.User.OrganizationId = 20200312;
-            traceInfo.Context.User.OrganizationName = "ZeroTeam";
+            traceInfo.Context.UserJson = new UserInfo
+            {
+                UserId = 20200312,
+                NickName = "agebull",
+                UserCode = "20200312",
+                OrganizationId = 20200312,
+                OrganizationName = "ZeroTeam"
+            }.ToJson();
+
             var (msg, _) = await MessagePoster.Post(new InlineMessage
             {
                 ServiceName = "UnitService",

@@ -32,7 +32,7 @@ namespace ZeroTeam.MessageMVC.Context
         {
             if (message.Trace?.Context != null)
             {
-                GlobalContext.SetContext(message.Trace.Context);
+                GlobalContext.SetContext(message);
                 message.Trace.Context = null;
             }
             else

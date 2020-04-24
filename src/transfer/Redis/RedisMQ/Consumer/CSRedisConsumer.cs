@@ -79,21 +79,28 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <returns></returns>
         async Task IMessageReceiver.Close()
         {
+            //try
+            //{
+            //    subscribeObject?.Unsubscribe();
+            //}
+            //catch (Exception ex)
+            //{
+            //    logger.Error(() => $"LoopBegin error.{ex.Message}");
+            //}
+
             try
             {
-                subscribeObject?.Unsubscribe();
+                client?.Dispose();
                 while (isBusy > 0)//等处理线程退出
                 {
                     await Task.Delay(10);
                 }
-
                 loopTask?.SetResult(true);
             }
             catch (Exception ex)
             {
                 logger.Error(() => $"LoopBegin error.{ex.Message}");
             }
-
         }
 
         /// <summary>
@@ -102,7 +109,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <returns></returns>
         Task IMessageReceiver.LoopComplete()
         {
-            subscribeObject?.Dispose();
+            //subscribeObject?.Dispose();
             client?.Dispose();
             return Task.CompletedTask;
         }
@@ -181,8 +188,8 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             {
                 if (SmartSerializer.TryToMessage(str, out var message))
                 {
-                    message.Trace ??= TraceInfo.New(message.ID);
-                    message.Trace.TraceId = id;
+                    //message.Trace ??= TraceInfo.New(message.ID);
+                    //message.Trace.TraceId = id;
                     message.Topic = Service.ServiceName;
                     await MessageProcessor.OnMessagePush(Service, message, true, null);//BUG:应该配置化同步或异步}
                 }

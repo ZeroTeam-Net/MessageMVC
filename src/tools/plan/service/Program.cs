@@ -27,7 +27,7 @@ namespace ZeroTeam.MessageMVC.Http
             services.UseCsRedis();
             services.AddSingleton<IMessageMiddleware, ReverseProxyMiddleware>();//通过反向代理组件处理计划任务消息发送
             services.AddSingleton<IMessagePoster, HttpPoster>();
-            await services.UseFlowAsync();
+            await services.UseFlowAndWait();
         }
     }
 }

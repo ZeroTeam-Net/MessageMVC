@@ -150,9 +150,9 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             {
                 return false;
             }
-            for (int i = 1; i < ZeroRpcFlow.Config.ZeroGroup.Count; i++)
+            for (int i = 1; i < ZeroRpcFlow.Config.ZeroCenter.Count; i++)
             {
-                item = ZeroRpcFlow.Config.ZeroGroup[i];
+                item = ZeroRpcFlow.Config.ZeroCenter[i];
                 cm = new StationConfigManager(item);
                 json = cm.LoadGroupConfig();
                 if (!string.IsNullOrWhiteSpace(json))

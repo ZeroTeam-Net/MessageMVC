@@ -1,6 +1,7 @@
 using Agebull.Common.Ioc;
 using Newtonsoft.Json;
 using System;
+using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC.Context
 {
@@ -26,17 +27,13 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         ///     设置当前上下文（框架内调用，外部误用后果未知）
         /// </summary>
-        /// <param name="context"></param>
-        public static void SetContext(IZeroContext context)
+        public static void SetContext(IInlineMessage message)
         {
-            if (null == context)
-            {
-                DependencyScope.Dependency.Remove<IZeroContext>();
-            }
-            else
-            {
-                DependencyScope.Dependency.Annex(context);
-            }
+            var ctx = DependencyHelper.Create<IZeroContext>();
+            ctx.Message = message;
+            ctx.Trace = message.Trace;
+            ctx.User.FormJson(message.Trace?.Context?.UserJson);
+            DependencyScope.Dependency.Annex(ctx);
         }
 
         /// <summary>

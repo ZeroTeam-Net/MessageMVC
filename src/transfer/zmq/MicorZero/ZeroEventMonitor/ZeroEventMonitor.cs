@@ -34,8 +34,9 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         /// <summary>
         ///     进入系统分布式消息侦听处理
         /// </summary>
-        private async Task Monitor()
+        internal async Task Monitor()
         {
+            await Task.Yield();
             MonitorStateMachine.Logger.Information("Zero center in monitor...");
 
             List<string> subs = new List<string>();
@@ -44,15 +45,24 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
                 subs.Add("system");
                 subs.Add("station");
             }
+            bool success = true;
             while (ZeroRpcFlow.IsAlive)
             {
-                DateTime failed = DateTime.MinValue;
-                using var poll = ZmqPool.CreateZmqPool();
+                if (!success)
+                {
+                    await Task.Delay(1000);
+                }
                 var socket = ZSocketEx.CreateSubSocket(
                     ZeroRpcFlow.Config.Master.MonitorAddress,
                     ZeroRpcFlow.Config.Master.ServiceKey.ToBytes(),
                     ZSocketHelper.CreateIdentity(false, "Monitor"), subs);
-
+                if(socket == null)
+                {
+                    success = false;
+                    continue;
+                }
+                DateTime failed = DateTime.MinValue;
+                using var poll = ZmqPool.CreateZmqPool();
                 poll.Prepare(ZPollEvent.In, socket);
                 while (ZeroRpcFlow.IsAlive)
                 {
@@ -79,7 +89,6 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
                         MonitorStateMachine.Logger.Error("Zero center event monitor failed,there was no message for a long time");
                         ZeroRpcFlow.ZeroCenterState = ZeroCenterState.Failed;
                         ZeroRpcFlow.RaiseEvent(ZeroNetEventType.CenterSystemStop, true);
-                        await Task.Delay(1000);
                         break;
                     }
                 }

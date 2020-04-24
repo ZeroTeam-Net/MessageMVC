@@ -1060,6 +1060,11 @@
                 本地站点配置
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppOption.IsDevelopment">
+            <summary>
+            是否开发模式
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroAppOption.AppVersion">
             <summary>
                 当前应用版本号
@@ -1161,11 +1166,10 @@
                 当前线程的调用上下文(无懒构造)
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Context.GlobalContext.SetContext(ZeroTeam.MessageMVC.Context.IZeroContext)">
+        <member name="M:ZeroTeam.MessageMVC.Context.GlobalContext.SetContext(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
             <summary>
                 设置当前上下文（框架内调用，外部误用后果未知）
             </summary>
-            <param name="context"></param>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Context.GlobalContext.Reset">
             <summary>
@@ -1245,6 +1249,12 @@
                 用户组织名称
             </summary>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.Context.IUser.FormJson(System.String)">
+            <summary>
+            通过Json来还原用户
+            </summary>
+            <param name="json"></param>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Context.UserInfo">
             <summary>
              用户信息
@@ -1294,6 +1304,12 @@
             <summary>
                 用户组织名称
             </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Context.UserInfo.ZeroTeam#MessageMVC#Context#IUser#FormJson(System.String)">
+            <summary>
+            通过Json来还原用户
+            </summary>
+            <param name="json"></param>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Context.IZeroContext">
             <summary>
@@ -1395,11 +1411,6 @@
                 请求头信息
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Context.TraceInfo.#ctor">
-            <summary>
-            构造
-            </summary>
-        </member>
         <member name="M:ZeroTeam.MessageMVC.Context.TraceInfo.New(System.String)">
             <summary>
             构造
@@ -1408,6 +1419,21 @@
         <member name="M:ZeroTeam.MessageMVC.Context.TraceInfo.Copy">
             <summary>
             构造
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Context.StaticContext">
+            <summary>
+                全局上下文(用于序列化)
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.StaticContext.UserJson">
+            <summary>
+                当前调用的客户信息
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.StaticContext.Option">
+            <summary>
+            上下文配置
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Context.TraceLinkMessage">
@@ -2049,6 +2075,11 @@
             <returns></returns>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.ArgumentInline(System.Type,ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Func{System.Int32,System.String,System.Object})">
+            <summary>
+            数据设置为上线状态
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.ArgumentInline(ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Type,ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Func{System.Int32,System.String,System.Object})">
             <summary>
             数据设置为上线状态
             </summary>
@@ -2751,11 +2782,12 @@
             实现了IMessagePoster自注册,可以做到本进程调用不会提升到网络层面
             </remarks>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.#ctor(System.String)">
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.#ctor(System.String,System.Boolean)">
             <summary>
             内部构造
             </summary>
             <param name="name"></param>
+            <param name="localCall"></param>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.Name">
             <summary>
@@ -2775,6 +2807,11 @@
         <member name="F:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.state">
             <summary>
             运行状态
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.LocalCall">
+            <summary>
+            允许本地调用
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.ZeroTeam#MessageMVC#Messages#IMessagePoster#State">
@@ -3217,12 +3254,31 @@
             智能序列化器
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.SmartSerializer.SerializeMessage(ZeroTeam.MessageMVC.Messages.IMessageItem,ZeroTeam.MessageMVC.Messages.ISerializeProxy)">
+        <member name="M:ZeroTeam.MessageMVC.Messages.SmartSerializer.SerializeMessage(ZeroTeam.MessageMVC.Messages.IMessageItem)">
             <summary>
             自动序列化()
             </summary>
             <param name="message">消息</param>
-            <param name="serializer">序列化器</param>
+            <returns>字符</returns>
+            <remarks>
+            基于内部全部使用JSON传输的规则,如序列化器不存在,则为JSON
+            </remarks>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.SmartSerializer.SerializeResult(ZeroTeam.MessageMVC.Messages.IMessageResult)">
+            <summary>
+            自动序列化()
+            </summary>
+            <param name="result">消息</param>
+            <returns>字符</returns>
+            <remarks>
+            基于内部全部使用JSON传输的规则,如序列化器不存在,则为JSON
+            </remarks>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.SmartSerializer.SerializeResult(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
+            <summary>
+            自动序列化为MessageResult
+            </summary>
+            <param name="message">消息</param>
             <returns>字符</returns>
             <remarks>
             基于内部全部使用JSON传输的规则,如序列化器不存在,则为JSON
@@ -3248,6 +3304,29 @@
             <param name="message">返回的消息</param>
             <param name="trim">执行Trim,以消除空白字符</param>
             <returns>是否成功</returns>
+            <remarks>
+            xml以&lt;为第一个字符
+            json以[或{为第一个字符
+            </remarks>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.SmartSerializer.ToInnerString(System.Object)">
+            <summary>
+            使用MsJson序列化
+            </summary>
+            <param name="obj">对象</param>
+            <returns>字符</returns>
+            <remarks>
+            基于内部全部使用JSON传输的规则,如序列化器不存在,则为JSON
+            </remarks>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.SmartSerializer.FromInnerString(System.String,System.Type,System.Boolean)">
+            <summary>
+            自动根据字符特点反序列化
+            </summary>
+            <param name="str">文本</param>
+            <param name="type">类型</param>
+            <param name="trim">执行Trim,以消除空白字符</param>
+            <returns>对象</returns>
             <remarks>
             xml以&lt;为第一个字符
             json以[或{为第一个字符
@@ -3297,36 +3376,6 @@
         <member name="M:ZeroTeam.MessageMVC.Messages.SmartSerializer.TryDeserialize``1(System.String,``0@)">
             <summary>
             反序列化
-            </summary>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.Messages.StaticContext">
-            <summary>
-                全局上下文(用于序列化)
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.StaticContext.User">
-            <summary>
-                当前调用的客户信息
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.StaticContext.Option">
-            <summary>
-            上下文配置
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.StaticContext.Message">
-            <summary>
-            当前消息
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.StaticContext.Trace">
-            <summary>
-                跟踪信息
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.StaticContext.Status">
-            <summary>
-            全局状态
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Messages.XmlSerializeProxy">

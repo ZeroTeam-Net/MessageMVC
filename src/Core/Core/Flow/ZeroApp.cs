@@ -1,6 +1,7 @@
 ﻿using Agebull.Common.Ioc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using System;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -52,7 +53,7 @@ namespace ZeroTeam.MessageMVC
             services.TryAddSingleton<IInlineMessage, InlineMessage>();
             //IZeroContext构造
             services.TryAddScoped<IZeroContext, ZeroContext>();
-            services.TryAddTransient<IUser,UserInfo>();
+            services.TryAddTransient<IUser, UserInfo>();
             //序列化器
             services.TryAddTransient<ISerializeProxy, NewtonJsonSerializeProxy>();
             services.TryAddTransient<IJsonSerializeProxy, NewtonJsonSerializeProxy>();
@@ -62,12 +63,23 @@ namespace ZeroTeam.MessageMVC
         }
 
         /// <summary>
-        /// 使用主流程控制器
+        /// 启动主流程控制器，发现指定类型所在的程序集的Api，由参数决定是否等待系统退出
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="type">需要发现服务的程序集的类型之一</param>
+        /// <param name="waitEnd"></param>
+        public static Task UseFlow(this IServiceCollection services, Type type, bool waitEnd = false)
+        {
+            return UseFlow(services, type.Assembly, waitEnd);
+        }
+
+        /// <summary>
+        /// 启动主流程控制器，发现指定程序集的Api，由参数决定是否等待系统退出
         /// </summary>
         /// <param name="services"></param>
         /// <param name="assembly">需要发现服务的程序集</param>
         /// <param name="waitEnd"></param>
-        public static Task UseFlow(this IServiceCollection services, Assembly assembly, bool waitEnd)
+        public static async Task UseFlow(this IServiceCollection services, Assembly assembly, bool waitEnd = false)
         {
             if (Interlocked.Increment(ref isInitialized) == 1)
             {
@@ -75,18 +87,15 @@ namespace ZeroTeam.MessageMVC
                 ZeroFlowControl.Discove(assembly);
             }
             ZeroFlowControl.Initialize();
+            await ZeroFlowControl.RunAsync();
             if (waitEnd)
             {
-                return ZeroFlowControl.RunAwaiteAsync();
-            }
-            else
-            {
-                return ZeroFlowControl.RunAsync();
+                await ZeroFlowControl.WaitEnd();
             }
         }
 
         /// <summary>
-        /// 使用主流程控制器
+        /// 启动主流程控制器，发现指定程序集的Api，适用于测试的场景
         /// </summary>
         /// <param name="services"></param>
         /// <param name="assembly">需要发现服务的程序集</param>
@@ -106,7 +115,7 @@ namespace ZeroTeam.MessageMVC
         }
 
         /// <summary>
-        /// 使用主流程控制器
+        /// 启动主流程控制器，不发现Api，适用于无Controler的场景
         /// </summary>
         /// <param name="services"></param>
         public static Task UseFlow(this IServiceCollection services)
@@ -121,7 +130,7 @@ namespace ZeroTeam.MessageMVC
 
 
         /// <summary>
-        /// 使用主流程控制器
+        /// 启动主流程控制器，同时自动发现Api
         /// </summary>
         /// <param name="services"></param>
         public static async void UseFlowByAutoDiscover(this IServiceCollection services)
@@ -136,10 +145,10 @@ namespace ZeroTeam.MessageMVC
         }
 
         /// <summary>
-        /// 使用主流程控制器
+        /// 启动主流程控制器并等待退出，同时自动发现Api
         /// </summary>
         /// <param name="services"></param>
-        public static Task UseFlowAsync(this IServiceCollection services)
+        public static async Task UseFlowAndWait(this IServiceCollection services)
         {
             if (Interlocked.Increment(ref isInitialized) == 1)
             {
@@ -147,7 +156,8 @@ namespace ZeroTeam.MessageMVC
                 ZeroFlowControl.Discove();
             }
             ZeroFlowControl.Initialize();
-            return ZeroFlowControl.RunAwaiteAsync();
+            await ZeroFlowControl.RunAsync();
+            await ZeroFlowControl.WaitEnd();
         }
     }
 }

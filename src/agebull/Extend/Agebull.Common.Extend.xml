@@ -1822,6 +1822,11 @@
             基本目录
             </summary>
         </member>
+        <member name="M:Agebull.Common.Configuration.ConfigurationManager.IsEnable(System.String)">
+            <summary>
+            刷新
+            </summary>
+        </member>
         <member name="M:Agebull.Common.Configuration.ConfigurationManager.Flush">
             <summary>
             刷新
@@ -2413,6 +2418,11 @@
             日志记录器
             </summary>
         </member>
+        <member name="P:Agebull.Common.Ioc.DependencyScope.InnerModel">
+            <summary>
+            内部模式,框架使用
+            </summary>
+        </member>
         <member name="P:Agebull.Common.Ioc.DependencyScope.DisposeFunc">
             <summary>
             析构方法
@@ -2441,6 +2451,11 @@
         <member name="P:Agebull.Common.Ioc.ScopeData.Logger">
             <summary>
             日志记录器
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Ioc.ScopeData.InnerModel">
+            <summary>
+            内部模式,框架使用
             </summary>
         </member>
         <member name="F:Agebull.Common.Ioc.ScopeData.DisposeFunc">

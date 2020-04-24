@@ -188,7 +188,7 @@ namespace Agebull.Common.Logging
             {
                 if (info.Index > 0)
                 {
-                    if (info.Index >= Option.maxFile)
+                    if (info.Index >= Option.MaxFile)
                     {
                         info.Index = 1;
                     }
@@ -212,7 +212,7 @@ namespace Agebull.Common.Logging
                     }
                     return;
                 }
-                fileName = Path.Combine(folder, $"{sub}.{Option.maxFile:D3}.log");
+                fileName = Path.Combine(folder, $"{sub}.{Option.MaxFile:D3}.log");
                 if (File.Exists(fileName))//达最大文件数量
                 {
                     var stream = new FileStream(fileName, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
@@ -230,7 +230,7 @@ namespace Agebull.Common.Logging
                         DateTime time = File.GetLastWriteTime(fileName);
                         DateTime timeLast = time;
                         //找到最大写入时间
-                        for (int idx = Option.maxFile - 1; idx > 0; idx--)
+                        for (int idx = Option.MaxFile - 1; idx > 0; idx--)
                         {
                             fileName = Path.Combine(folder, $"{sub}.{idx:D3}.log");
                             if (File.Exists(fileName))
@@ -246,7 +246,7 @@ namespace Agebull.Common.Logging
                             }
                         }
                         //最后的时间与1相比,最后的时间如果大则说明正好要循环到1;
-                        info.Index = timeLast > time ? 1 : Option.maxFile;
+                        info.Index = timeLast > time ? 1 : Option.MaxFile;
                         ReUseFile(sub, info);
                         return;
                     }
@@ -320,11 +320,15 @@ namespace Agebull.Common.Logging
                 var size = IOHelper.FolderDiskInfo(Option.LogPath);
                 if (size.AvailableSize < Option.MinFreeSize)
                 {
-                    Option.disable = true;
+                    Option.Disable = true;
                 }
             }
-            string Text() => $"{DateTime.Now:MM-dd HH:mm:ss.ffff} [{eventId.Name ?? logLevel.ToString()}]\t{LogRecorder.GetMachineName()}({LogRecorder.GetUserName()}) [{eventId.Id:D4}({LogRecorder.GetRequestId()})]\t{formatter(state, exception)}";
-            if (!Option.disable)
+            string Text() => Option.MulitLog
+                      ? $"{DateTime.Now:MM-dd HH:mm:ss.ffff} [{eventId.Name ?? logLevel.ToString()}] {LogRecorder.GetMachineName()}({LogRecorder.GetUserName()}) [{eventId.Id:D4}({LogRecorder.GetRequestId()})]\t{formatter(state, exception)}"
+                      : $"{DateTime.Now:MM-dd HH:mm:ss.ffff} [{eventId.Name ?? logLevel.ToString()}] [{eventId.Id:D4}({LogRecorder.GetRequestId()})]\t{formatter(state, exception)}";
+           
+
+            if (!Option.Disable)
             {
                 WriteFile("log", Text());
             }
@@ -332,7 +336,7 @@ namespace Agebull.Common.Logging
             switch (logLevel)
             {
                 case LogLevel.Warning:
-                    if (!Option.disable)
+                    if (!Option.Disable)
                     {
                         WriteFile("warning", Text());
                     }
@@ -348,7 +352,7 @@ namespace Agebull.Common.Logging
 
         bool ILogger.IsEnabled(LogLevel logLevel)
         {
-            return !Option.disable && logLevel != LogLevel.None;
+            return !Option.Disable && logLevel != LogLevel.None;
         }
 
         IDisposable ILogger.BeginScope<TState>(TState state)

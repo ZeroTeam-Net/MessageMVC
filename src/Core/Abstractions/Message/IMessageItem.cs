@@ -49,7 +49,6 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </remarks>
         string Result { get; set; }
 
-
         /// <summary>
         /// 处理状态
         /// </summary>

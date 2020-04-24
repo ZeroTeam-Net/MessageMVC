@@ -1,8 +1,6 @@
 ﻿using Agebull.Common.Ioc;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using ZeroTeam.MessageMVC.Context;
+using System.Text.Json;
 
 namespace ZeroTeam.MessageMVC.Messages
 {
@@ -11,7 +9,8 @@ namespace ZeroTeam.MessageMVC.Messages
     /// </summary>
     public static class SmartSerializer
     {
-        static readonly IJsonSerializeProxy Json = new JsonSerializeProxy();
+        static readonly JsonSerializeProxy Inner = new JsonSerializeProxy();
+        static readonly IJsonSerializeProxy Json = DependencyHelper.Create<IJsonSerializeProxy>();
         static readonly IXmlSerializeProxy Xml = DependencyHelper.Create<IXmlSerializeProxy>();
         static readonly Type MessageType = DependencyHelper.Create<IInlineMessage>().GetType();
 
@@ -19,56 +18,59 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 自动序列化()
         /// </summary>
         /// <param name="message">消息</param>
-        /// <param name="serializer">序列化器</param>
         /// <returns>字符</returns>
         /// <remarks>
         /// 基于内部全部使用JSON传输的规则,如序列化器不存在,则为JSON
         /// </remarks>
-        public static string SerializeMessage(IMessageItem message, ISerializeProxy serializer = null)
+        public static string SerializeMessage(IMessageItem message)
         {
             if (message == null)
                 return null;
-            var msg = new MessageItem
+            return JsonSerializer.Serialize(new MessageItem
             {
                 ID = message.ID,
                 State = message.State,
                 Topic = message.Topic,
                 Title = message.Title,
                 Content = message.Content,
-                Result = message.Result
-            };
-            if(message.Trace != null)
+                Result = message.Result,
+                Trace = message.Trace
+            });
+        }
+
+        /// <summary>
+        /// 自动序列化()
+        /// </summary>
+        /// <param name="result">消息</param>
+        /// <returns>字符</returns>
+        /// <remarks>
+        /// 基于内部全部使用JSON传输的规则,如序列化器不存在,则为JSON
+        /// </remarks>
+        public static string SerializeResult(IMessageResult result)
+        {
+            if (result == null)
+                return null;
+            return JsonSerializer.Serialize(new MessageResult
             {
-                msg.Trace = new TraceInfo
-                {
-                    TraceId = message.Trace.TraceId,
-                    Start = message.Trace.Start,
-                    LocalId = message.Trace.LocalId,
-                    LocalApp = message.Trace.LocalApp,
-                    LocalMachine = message.Trace.LocalMachine,
-                    CallId = message.Trace.CallId,
-                    CallApp = message.Trace.CallApp,
-                    CallMachine = message.Trace.CallMachine,
-                    Headers = message.Trace.Headers,
-                    Token = message.Trace.Token,
-                    Level = message.Trace.Level
-                };
-                if(message.Trace.Context != null)
-                {
-                    msg.Trace.Context = new StaticContext
-                    {
-                        User = message.Trace.Context.User,
-                        Option = message.Trace.Context.Option
-                    };
-                }
-                else
-                {
-                    msg.Trace.Context = null;
-                }
-            }
-            return serializer != null
-                    ? serializer.ToString(msg)
-                    : Json.ToString(msg);
+                ID = result.ID,
+                State = result.State,
+                Trace = result.Trace,
+                Result = result.Result,
+                DataState = result.Result != null ? MessageDataState.ResultOffline : MessageDataState.None
+            });
+        }
+
+        /// <summary>
+        /// 自动序列化为MessageResult
+        /// </summary>
+        /// <param name="message">消息</param>
+        /// <returns>字符</returns>
+        /// <remarks>
+        /// 基于内部全部使用JSON传输的规则,如序列化器不存在,则为JSON
+        /// </remarks>
+        public static string SerializeResult(IInlineMessage message)
+        {
+            return JsonSerializer.Serialize(message.ToMessageResult(true));
         }
 
         /// <summary>
@@ -94,7 +96,7 @@ namespace ZeroTeam.MessageMVC.Messages
             {
                 case '{':
                 case '[':
-                    message = Json.ToObject(str, MessageType) as IInlineMessage;
+                    message = Inner.ToObject(str, MessageType) as IInlineMessage;
                     break;
                 case '<':
                     message = Xml.ToObject(str, MessageType) as IInlineMessage;
@@ -128,6 +130,51 @@ namespace ZeroTeam.MessageMVC.Messages
             {
                 message = null;
                 return false;
+            }
+        }
+        /// <summary>
+        /// 使用MsJson序列化
+        /// </summary>
+        /// <param name="obj">对象</param>
+        /// <returns>字符</returns>
+        /// <remarks>
+        /// 基于内部全部使用JSON传输的规则,如序列化器不存在,则为JSON
+        /// </remarks>
+        public static string ToInnerString(object obj)
+        {
+            return obj == null
+                ? null
+                : Inner.ToString(obj, false);
+        }
+
+        /// <summary>
+        /// 自动根据字符特点反序列化
+        /// </summary>
+        /// <param name="str">文本</param>
+        /// <param name="type">类型</param>
+        /// <param name="trim">执行Trim,以消除空白字符</param>
+        /// <returns>对象</returns>
+        /// <remarks>
+        /// xml以&lt;为第一个字符
+        /// json以[或{为第一个字符
+        /// </remarks>
+        public static object FromInnerString(string str, Type type, bool trim = true)
+        {
+            if (string.IsNullOrWhiteSpace(str))
+            {
+                return null;
+            }
+            if (trim)
+                str = str.Trim();
+            switch (str[0])
+            {
+                case '{':
+                case '[':
+                    return Inner.ToObject(str, type);
+                case '<':
+                    return Xml.ToObject(str, type);
+                default:
+                    return null;
             }
         }
 
@@ -247,7 +294,7 @@ namespace ZeroTeam.MessageMVC.Messages
                 dest = ToObject<T>(soruce);
                 return !Equals(dest, default);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.Error.WriteLine(ex);
                 dest = default;
@@ -256,41 +303,4 @@ namespace ZeroTeam.MessageMVC.Messages
         }
     }
 
-    /// <summary>
-    ///     全局上下文(用于序列化)
-    /// </summary>
-    [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
-    internal class StaticContext : IZeroContext
-    {
-        /// <summary>
-        ///     当前调用的客户信息
-        /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public IUser User { get; set; }
-
-        /// <summary>
-        /// 上下文配置
-        /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public Dictionary<string, string> Option { get; set; }
-
-        /// <summary>
-        /// 当前消息
-        /// </summary>
-        [System.Text.Json.Serialization.JsonIgnore]
-        public IInlineMessage Message { get; set; }
-
-        /// <summary>
-        ///     跟踪信息
-        /// </summary>
-        [System.Text.Json.Serialization.JsonIgnore]
-        public TraceInfo Trace { get; set; }
-
-        /// <summary>
-        /// 全局状态
-        /// </summary>
-        [System.Text.Json.Serialization.JsonIgnore]
-        public ContextStatus Status { get; set; }
-
-    }
 }

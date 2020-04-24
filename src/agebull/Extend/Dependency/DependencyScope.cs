@@ -26,7 +26,8 @@ namespace Agebull.Common.Ioc
 
             Local.Value = new ScopeData
             {
-                Name = name ?? "Scope"
+                Name = name ?? "Scope",
+                Scope = this
             };
         }
 
@@ -42,12 +43,13 @@ namespace Agebull.Common.Ioc
         /// <summary>
         /// 活动实例
         /// </summary>
-        internal static readonly AsyncLocal<ScopeData> Local = new AsyncLocal<ScopeData>();
+        public static readonly AsyncLocal<ScopeData> Local = new AsyncLocal<ScopeData>();
 
         /// <summary>
         /// 析构方法
         /// </summary>
         static ScopeData LocalValue => Local.Value ??= new ScopeData { Name = "Scope" };
+
 
         /// <summary>
         /// 范围名称
@@ -65,6 +67,15 @@ namespace Agebull.Common.Ioc
         {
             get => LocalValue.Logger;
             set => LocalValue.Logger = value;
+        }
+
+        /// <summary>
+        /// 内部模式,框架使用
+        /// </summary>
+        public static bool InnerModel
+        {
+            get => LocalValue.InnerModel;
+            set => LocalValue.InnerModel = value;
         }
 
         /// <summary>
@@ -95,7 +106,7 @@ namespace Agebull.Common.Ioc
                     Console.WriteLine(e);
                 }
             }
-            foreach(var den in data.Dependency._dictionary.Values)
+            foreach (var den in data.Dependency._dictionary.Values)
             {
                 if (den is IDisposable disposable)
                     disposable.Dispose();

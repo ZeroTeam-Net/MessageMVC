@@ -58,6 +58,39 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             }
         }
 
+        /// <summary>
+        /// 测试接口
+        /// </summary>
+        [Test]
+        public void Serialize2()
+        {
+            try
+            {
+                var id = Guid.NewGuid().ToString("N").ToUpper();
+                IMessageItem message = new MessageItem
+                {
+                    ID = id,
+                    State = MessageState.Accept,
+                    Topic = "Topic",
+                    Title = "Title",
+                    Content = @"{""Value"": ""Content""}",
+                    Trace = TraceInfo.New(id),
+                    Result = @"{""Value"": ""Result""}"
+                };
+                SmartSerializer.SerializeMessage(message);
+
+                DateTime start = DateTime.Now;
+                for(int i=0;i<short.MaxValue;i++)
+                    SmartSerializer.SerializeMessage(message);
+                var time =  (DateTime.Now - start).TotalSeconds;
+                Console.WriteLine($"{time}s {short.MaxValue / time} qps");
+                Assert.IsTrue(time < 2, "性能不好");
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"发生异常\n{ex}");
+            }
+        }
 
         /// <summary>
         /// 消息生命同期测试
