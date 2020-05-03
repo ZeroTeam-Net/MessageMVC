@@ -18,9 +18,19 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         public const int waitTime = 30000;
 
         /// <summary>
+        /// Redis链接字符串
+        /// </summary>
+        public string ConnectionString { get; set; }
+
+        /// <summary>
         /// 执行超时(MS),默认30000(30秒)
         /// </summary>
         public int ExecTimeout { get; set; }
+
+        /// <summary>
+        /// 检查结果的最长时间(S),默认600(10分钟)
+        /// </summary>
+        public int CheckResultTime { get; set; }
 
         /// <summary>
         /// 关闭后的数据过期时间(S),无效时间立即删除
@@ -65,32 +75,6 @@ namespace ZeroTeam.MessageMVC.PlanTasks
 
         #region 配置同步
 
-
-        /// <summary>
-        /// 初始化
-        /// </summary>
-        static void Load()
-        {
-            var option = ConfigurationManager.Get<PlanSystemOption>("MessageMVC:PlanTask");
-            if (option == null)
-            {
-                return;
-            }
-            Instance.SavePlanResult = option.SavePlanResult;
-            Instance.CheckPlanResult = option.CheckPlanResult;
-            if (option.ExecTimeout >= 0)
-                Instance.CloseTimeout = option.CloseTimeout;
-            if (option.ExecTimeout >= 0)
-                Instance.ExecTimeout = option.ExecTimeout;
-            if (option.LoopIdleTime >= 0)
-                Instance.LoopIdleTime = option.LoopIdleTime;
-            if (option.MaxRunTask >= 0)
-                Instance.MaxRunTask = option.MaxRunTask;
-            if (option.RetryCount >= 0)
-                Instance.RetryCount = option.RetryCount;
-            if (option.RetryDelay != null && option.RetryDelay.Length > 0)
-                Instance.RetryDelay = option.RetryDelay;
-        }
         /// <summary>
         /// 计划的系统配置
         /// </summary>
@@ -100,6 +84,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
             LoopIdleTime = 300,
             MaxRunTask = 128,
             RetryCount = 3,
+            CheckResultTime = 600,
             RetryDelay = new[] { 3000, 10000, 600000 }
         };
 
@@ -109,8 +94,34 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// </summary>
         static PlanSystemOption()
         {
-            ConfigurationManager.RegistOnChange("MessageMVC:PlanTask", Load, true);
+            ConfigurationManager.RegistOnChange<PlanSystemOption>("MessageMVC:PlanTask", Load, true);
         }
+
+
+        /// <summary>
+        /// 初始化
+        /// </summary>
+        static void Load(PlanSystemOption option)
+        {
+            Instance.ConnectionString = option.ConnectionString;
+            Instance.SavePlanResult = option.SavePlanResult;
+            Instance.CheckPlanResult = option.CheckPlanResult;
+            if (option.ExecTimeout >= 0)
+                Instance.CloseTimeout = option.CloseTimeout;
+            if (option.ExecTimeout >= 0)
+                Instance.ExecTimeout = option.ExecTimeout;
+            if (option.LoopIdleTime >= 0)
+                Instance.ExecTimeout = option.ExecTimeout;
+            if (option.CheckResultTime >= 0)
+                Instance.CheckResultTime = option.CheckResultTime;
+            if (option.MaxRunTask >= 0)
+                Instance.MaxRunTask = option.MaxRunTask;
+            if (option.RetryCount >= 0)
+                Instance.RetryCount = option.RetryCount;
+            if (option.RetryDelay != null && option.RetryDelay.Length > 0)
+                Instance.RetryDelay = option.RetryDelay;
+        }
+
         #endregion
 
     }

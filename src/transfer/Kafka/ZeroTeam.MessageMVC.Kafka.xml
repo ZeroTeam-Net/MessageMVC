@@ -89,11 +89,6 @@
                 Kafka消息发布
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#Messages#IMessagePoster#State">
-            <summary>
-            运行状态
-            </summary>
-        </member>
         <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#IZeroDependency#Name">
             <summary>
             实例名称
@@ -104,12 +99,12 @@
             等级
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#IFlowMiddleware#Start">
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#ILifeFlow#Open">
             <summary>
             关闭
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#IFlowMiddleware#Close">
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#ILifeFlow#Close">
             <summary>
             关闭
             </summary>

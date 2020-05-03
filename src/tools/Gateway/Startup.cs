@@ -27,6 +27,7 @@ namespace ZeroTeam.MessageMVC.Http
             //    services.AddTransient<IMessageMiddleware, WxPayRouter>();
 
             services.UseHttp();
+            services.UseFlow(typeof(Startup));
         }
 
         /// <summary>

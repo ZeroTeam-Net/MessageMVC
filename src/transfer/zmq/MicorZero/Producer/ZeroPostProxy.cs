@@ -36,11 +36,12 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         /// 初始化
         /// </summary>
-        void IFlowMiddleware.Initialize()
+        Task ILifeFlow.Initialize()
         {
             logger.Information("ZeroPostProxy >>> Initialize");
             logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(ZeroPostProxy));
             ZeroRpcFlow.ZeroNetEvents.Add(OnZeroNetEvent);
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -77,7 +78,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     _isChanged = true;
                     return Task.CompletedTask;
                 case ZeroNetEventType.CenterSystemStart:
-                    Prepare();
+                    SyncStationConfig();
                     return Task.CompletedTask;
                 case ZeroNetEventType.ConfigUpdate:
                 case ZeroNetEventType.CenterStationJoin:
@@ -126,12 +127,12 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         #region 主循环
 
         /// <summary>
-        /// 构造
+        /// 启动
         /// </summary>
-        void IFlowMiddleware.Start()
+        Task ILifeFlow.Open()
         {
-            logger.Information("ZeroPostProxy >>> Start");
-            Task.Run(Loop);
+            logger.Information("ZeroPostProxy >>> 启动");
+            return Task.Factory.StartNew(Loop);
         }
 
         /// <summary>
@@ -141,14 +142,14 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         public bool Loop()
         {
             logger.Information("Run");
-            Prepare();
+            SyncStationConfig();
             _proxyServiceSocket = ZSocketEx.CreateServiceSocket(InprocAddress, null, ZSocketType.ROUTER);
-            ZeroRPCPoster.Instance.state = StationStateType.Run;
+            ZeroRPCPoster.Instance.State = StationStateType.Run;
             while (CanLoopEx)
             {
                 Listen();
             }
-            ZeroRPCPoster.Instance.state = StationStateType.Closed;
+            ZeroRPCPoster.Instance.State = StationStateType.Closed;
             logger.Information("Close");
             return true;
         }
@@ -157,9 +158,9 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// 关闭时的处理
         /// </summary>
         /// <returns></returns>
-        void IFlowMiddleware.End()
+        Task ILifeFlow.Destory()
         {
-            logger.Information("ZeroPostProxy >>> CheckOption");
+            logger.Information("ZeroPostProxy >>> Check");
             _proxyServiceSocket.Dispose();
             _zmqPool?.Dispose();
 
@@ -168,6 +169,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 proxyItem.Socket?.Dispose();
             }
             StationProxy.Clear();
+            return Task.CompletedTask;
         }
 
         #endregion
@@ -324,10 +326,12 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// 能不能循环处理
         /// </summary>
         protected bool CanLoopEx => WaitCount > 0 || ZeroFlowControl.IsRuning;
-
-        private void Prepare()
+        /// <summary>
+        /// 同步站点配置
+        /// </summary>
+        private void SyncStationConfig()
         {
-            logger.Information("Prepare");
+            logger.Information("同步站点配置");
             foreach (var config in ZeroRpcFlow.Config.GetConfigs())
             {
                 StationProxy.TryAdd(config.StationName, new StationProxyItem
@@ -492,7 +496,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
 
             task.Argument.Message.Result = zeroResult.Result;
             IMessageResult messageResult;
-            if (JsonHelper.TryDeserializeObject<MessageResult>(json, out var result) && result != null)
+            if (SmartSerializer.TryFromInnerString<MessageResult>(json, out var result))
             {
                 messageResult = result;
                 task.Argument.Message.RealState = result.State;
@@ -510,12 +514,12 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             {
                 if (!task.TaskSource.TrySetResult(messageResult))
                 {
-                    logger.Trace("({0})接收到远程返回.但等待队列已销毁:", zeroResult.Requester);
+                    logger.Trace("({0})接收到远程返回.但等待队列已注销:", zeroResult.Requester);
                 }
             }
             catch
             {
-                logger.Trace("({0})接收到远程返回.但等待队列已销毁:", zeroResult.Requester);
+                logger.Trace("({0})接收到远程返回.但等待队列已注销:", zeroResult.Requester);
             }
         }
 

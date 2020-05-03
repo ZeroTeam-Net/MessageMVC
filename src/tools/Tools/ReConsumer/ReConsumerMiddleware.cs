@@ -26,30 +26,25 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         ///     配置校验,作为第一步
         /// </summary>
-        void IFlowMiddleware.CheckOption(ZeroAppOption config)
+        Task ILifeFlow.Check(ZeroAppOption config)
         {
             path = IOHelper.CheckPath(ZeroAppOption.Instance.DataFolder, "message");
+            return Task.CompletedTask;
         }
 
         private string path;
-        private List<string> files;
-        /// <summary>
-        /// 开启
-        /// </summary>
-        void IFlowMiddleware.Start()
-        {
-            files = IOHelper.GetAllFiles(path, "*.msg");
-            if (files.Count > 0)
-            {
-                _ = ReConsumer();
-            }
-        }
 
         /// <summary>
-        ///     重新消费错误消息
+        /// 启动
         /// </summary>
-        private async Task ReConsumer()
+        async Task ILifeFlow.Open()
         {
+            var files = IOHelper.GetAllFiles(path, "*.msg");
+            if (files.Count == 0)
+            {
+                return ;
+            }
+            LogRecorder.Information($"重新消费错误消息.共{files.Count}个");
             var service = new ZeroService
             {
                 Receiver = new EmptyReceiver()

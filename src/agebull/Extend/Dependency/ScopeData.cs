@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Agebull.EntityModel.Common;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 namespace Agebull.Common.Ioc
 {
@@ -9,7 +10,15 @@ namespace Agebull.Common.Ioc
     /// </summary>
     public class ScopeData
     {
-        public IDisposable Scope;
+        /// <summary>
+        /// 依赖服务范围
+        /// </summary>
+        internal IServiceScope ServiceScope { get;  set; }
+
+        /// <summary>
+        /// 当前范围
+        /// </summary>
+        public IDisposable Scope { get; internal set; }
 
         string name;
         /// <summary>

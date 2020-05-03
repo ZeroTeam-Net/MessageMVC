@@ -22,7 +22,7 @@ namespace Agebull.EntityModel.Common
     /// </summary>
     public static class CommonExtend
     {
-        /// <summary>
+        /*// <summary>
         ///     正确安全的转为小数
         /// </summary>
         /// <param name="obj">对象</param>
@@ -42,21 +42,6 @@ namespace Agebull.EntityModel.Common
         }
 
         /// <summary>
-        ///     正确安全的转为小数
-        /// </summary>
-        /// <param name="str">文本对象</param>
-        /// <param name="def">无法转换时的缺省值</param>
-        /// <returns>小数</returns>
-        public static decimal ToDecimal(this string str, decimal def = 0)
-        {
-            if (str == null)
-            {
-                return def;
-            }
-            return decimal.TryParse(str.Trim(), out var re) ? re : def;
-        }
-
-        /// <summary>
         ///     正确安全的转为整数
         /// </summary>
         /// <param name="obj">对象</param>
@@ -73,6 +58,21 @@ namespace Agebull.EntityModel.Common
             }
 
             return int.TryParse(obj.ToString().Trim(), out var re) ? re : def;
+        }*/
+
+        /// <summary>
+        ///     正确安全的转为小数
+        /// </summary>
+        /// <param name="str">文本对象</param>
+        /// <param name="def">无法转换时的缺省值</param>
+        /// <returns>小数</returns>
+        public static decimal ToDecimal(this string str, decimal def = 0)
+        {
+            if (str == null)
+            {
+                return def;
+            }
+            return decimal.TryParse(str.Trim(), out var re) ? re : def;
         }
 
         /// <summary>

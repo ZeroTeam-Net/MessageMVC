@@ -14,7 +14,7 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Authors>Agebull</Authors>
     <Company>ZeroTeam</Company>
-    <Version>1.0.0.57-bate</Version>
+    <Version>1.0.0.58-bate</Version>
     <PackageReleaseNotes></PackageReleaseNotes>
   </PropertyGroup>
 
@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Tools\ZeroTeam.MessageMVC.Tools.csproj" />
+    <PackageReference Include="ZeroTeam.MessageMVC.ApiContract" Version="1.0.0.60-bate" />
   </ItemGroup>
 
 </Project>

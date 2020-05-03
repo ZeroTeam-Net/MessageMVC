@@ -13,7 +13,7 @@
         /// <summary>
         /// 配置错误
         /// </summary>
-        public const int CheckOption = 1;
+        public const int Check = 1;
 
         /// <summary>
         /// 错误状态
@@ -56,7 +56,7 @@
         public const int Closed = 9;
 
         /// <summary>
-        /// 已销毁，析构已调用
+        /// 已注销，析构已调用
         /// </summary>
         public const int Destroy = 10;
 

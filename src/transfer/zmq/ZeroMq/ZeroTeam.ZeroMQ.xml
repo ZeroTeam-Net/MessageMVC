@@ -753,12 +753,12 @@
         </member>
         <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.StationRealState.Destroy">
             <summary>
-            已销毁，析构已调用
+            已注销，析构已调用
             </summary>
         </member>
         <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.StationRealState.Disposed">
             <summary>
-            已销毁，析构已调用
+            已注销，析构已调用
             </summary>
         </member>
         <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.StationRealState.Stop">
@@ -960,7 +960,7 @@
         </member>
         <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroCenterState.Destroy">
             <summary>
-             已销毁，析构已调用
+             已注销，析构已调用
             </summary>
         </member>
         <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroCenterState.Stop">
@@ -2652,7 +2652,7 @@
         </member>
         <member name="F:ZeroTeam.ZeroMQ.SocketState.Open">
             <summary>
-            连接方式开启
+            连接方式启动
             </summary>
         </member>
         <member name="F:ZeroTeam.ZeroMQ.SocketState.Pause">

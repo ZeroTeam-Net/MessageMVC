@@ -3,6 +3,7 @@ using Agebull.EntityModel.Common;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.ComponentModel.Composition;
+using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.AddIn;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
@@ -20,7 +21,7 @@ namespace ZeroTeam.MessageMVC.ConfigSync
         /// <summary>
         /// 注册
         /// </summary>
-        void IAutoRegister.AutoRegist(IServiceCollection services)
+        Task IAutoRegister.AutoRegist(IServiceCollection services)
         {
             ////启用跟踪日志
             //if (ToolsOption.Instance.EnableMonitorLog)
@@ -54,13 +55,15 @@ namespace ZeroTeam.MessageMVC.ConfigSync
             //健康检查
             services.AddTransient<IMessageMiddleware, HealthCheckMiddleware>();
             //异常处理
-            services.AddTransient<IMessageMiddleware, ExceptionMiddleware>(); 
+            services.AddTransient<IMessageMiddleware, ExceptionMiddleware>();
+
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// 初始化
         /// </summary>
-        void IAutoRegister.Initialize()
+        Task ILifeFlow.Initialize()
         {
             //显示
             Console.WriteLine($@"-----[Tools infomation]-----
@@ -70,6 +73,7 @@ namespace ZeroTeam.MessageMVC.ConfigSync
    ReConsumer : {(ToolsOption.Instance.EnableMessageReConsumer ? "Enable" : "Disable")}
     MarkPoint : {(ToolsOption.Instance.EnableMarkPoint ? "Enable" : "Disable")}({ToolsOption.Instance.MarkPointName})
 ");
+            return Task.CompletedTask;
         }
     }
 

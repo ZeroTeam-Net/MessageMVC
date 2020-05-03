@@ -159,7 +159,7 @@
         </member>
         <member name="P:Agebull.Common.Logging.LogRecorder.LogMonitor">
             <summary>
-            是否开启跟踪日志
+            是否启动跟踪日志
             </summary>
         </member>
         <member name="P:Agebull.Common.Logging.LogRecorder.MonitorIncludeDetails">
@@ -169,7 +169,7 @@
         </member>
         <member name="P:Agebull.Common.Logging.LogRecorder.LogDataSql">
             <summary>
-            是否开启SQL日志
+            是否启动SQL日志
             </summary>
         </member>
         <member name="F:Agebull.Common.Logging.LogRecorder.GetRequestIdFunc">
@@ -446,7 +446,7 @@
         </member>
         <member name="M:Agebull.Common.Logging.TextLogger.DisposeWriters">
             <summary>
-                任务结束,环境销毁
+                任务结束,环境注销
             </summary>
         </member>
         <member name="F:Agebull.Common.Logging.TextLogger.cnt">
@@ -496,7 +496,7 @@
         </member>
         <member name="P:Agebull.Common.Logging.TextLoggerOption.MulitLog">
             <summary>
-            是否开启联机日志
+            是否启动联机日志
             </summary>
         </member>
         <member name="M:Agebull.Common.Logging.TextLoggerOption.Initialize">
@@ -704,6 +704,12 @@
             <summary>
                 刷新资源检测
             </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.MonitorItem.Trace(System.String)">
+            <summary>
+            设置跟踪消息
+            </summary>
+            <param name="msg"></param>
         </member>
     </members>
 </doc>

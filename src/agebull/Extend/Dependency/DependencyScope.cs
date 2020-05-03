@@ -11,23 +11,19 @@ namespace Agebull.Common.Ioc
     /// <summary>
     /// IOC范围对象,内部框架使用
     /// </summary>
-    public class DependencyScope : IDisposable, IAsyncDisposable
+    public class DependencyScope : IDisposable
     {
-        private readonly IServiceScope scope;
-        private readonly ServiceProvider provider;
         /// <summary>
         /// 生成一个范围
         /// </summary>
         /// <returns></returns>
         private DependencyScope(string name = null)
         {
-            provider = DependencyHelper.ServiceCollection.BuildServiceProvider(true);
-            scope = provider.GetService<IServiceScopeFactory>().CreateScope();
-
             Local.Value = new ScopeData
             {
                 Name = name ?? "Scope",
-                Scope = this
+                Scope = this,
+                ServiceScope = DependencyHelper.ServiceScopeFactory.CreateScope()
             };
         }
 
@@ -68,6 +64,11 @@ namespace Agebull.Common.Ioc
             get => LocalValue.Logger;
             set => LocalValue.Logger = value;
         }
+
+        /// <summary>
+        /// 依赖服务范围
+        /// </summary>
+        internal static IServiceScope ServiceScope => Local.Value?.ServiceScope;
 
         /// <summary>
         /// 内部模式,框架使用
@@ -127,8 +128,7 @@ namespace Agebull.Common.Ioc
             DoDisposeAction();
             try
             {
-                scope.Dispose();
-                provider.Dispose();
+                ServiceScope?.Dispose();
             }
             catch (Exception e)
             {
@@ -137,26 +137,6 @@ namespace Agebull.Common.Ioc
             GC.Collect();
         }
 
-        async ValueTask IAsyncDisposable.DisposeAsync()
-        {
-            if (disposedValue)
-            {
-                return;
-            }
-            disposedValue = true;
-
-            DoDisposeAction();
-            try
-            {
-                scope.Dispose();
-                await provider.DisposeAsync();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-            GC.Collect();
-        }
         #endregion
     }
 }

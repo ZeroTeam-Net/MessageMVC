@@ -266,10 +266,10 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                 await client.DelAsync(guard);
                 return true;
             }
-            InlineMessage item;
+            IInlineMessage item;
             try
             {
-                item = JsonHelper.DeserializeObject<InlineMessage>(str);
+                item = SmartSerializer.ToMessage(str);
             }
             catch (Exception ex)
             {
@@ -332,7 +332,8 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <returns>是否需要发送回执</returns>
         async Task<bool> IMessageReceiver.OnResult(IInlineMessage item, object tag)
         {
-            item.Trace.Context.Option["Receipt"] = "false";
+            if(item.Trace.Context != null)
+                item.Trace.Context.Option["Receipt"] = "false";
             var key = $"msg:{Service.ServiceName}:{item.ID}";
             var guard = $"guard:{Service.ServiceName}:{item.ID}";
             while (!await CheckState(item.State, key, item.ID, guard))

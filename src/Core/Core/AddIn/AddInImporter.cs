@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace ZeroTeam.MessageMVC.AddIn
 {
@@ -18,7 +19,7 @@ namespace ZeroTeam.MessageMVC.AddIn
         /// 单例
         /// </summary>
         public static AddInImporter Instance = new AddInImporter();
-        
+
 
         /// <summary>
         /// 实例名称
@@ -37,17 +38,16 @@ namespace ZeroTeam.MessageMVC.AddIn
         public IEnumerable<IAutoRegister> Registers { get; set; }
 
         /// <summary>
-        /// 配置校验
+        /// 检查
         /// </summary>
-        void IFlowMiddleware.CheckOption(ZeroAppOption config)
+        async Task ILifeFlow.Check(ZeroAppOption config)
         {
             logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(AddInImporter));
-            logger.Information("AddInImporter >>> CheckOption");
+            logger.Information("AddInImporter >>> 检查");
             DirectoryCatalog directoryCatalog;
             if (string.IsNullOrEmpty(ZeroAppOption.Instance.AddInPath))
             {
-                directoryCatalog = new DirectoryCatalog(Path.GetDirectoryName(GetType().Assembly.Location),
-                    "ZeroTeam.MessageMVC.*.dll");
+                directoryCatalog = new DirectoryCatalog(Path.GetDirectoryName(GetType().Assembly.Location),"*.dll");
             }
             else
             {
@@ -72,64 +72,94 @@ namespace ZeroTeam.MessageMVC.AddIn
             }
             foreach (var reg in Registers)
             {
-                logger.Information(() => reg.GetType().Assembly.FullName);
                 try
                 {
-                    reg.AutoRegist(DependencyHelper.ServiceCollection);
+                    await reg.AutoRegist(DependencyHelper.ServiceCollection);
+                    logger.Information(() => $"插件【{reg.GetType().Assembly.FullName}】注册成功");
                 }
                 catch (System.Exception ex)
                 {
+                    logger.Information(() => $"插件【{reg.GetType().Assembly.FullName}】注册异常.{ex.Message}");
                     logger.Exception(ex);
                 }
             }
-
+            foreach (var reg in Registers)
+            {
+                try
+                {
+                    await reg.Check(config);
+                }
+                catch (System.Exception ex)
+                {
+                    logger.Information(() => $"插件【{reg.GetType().Assembly.FullName}】预检异常.{ex.Message}");
+                    logger.Exception(ex);
+                }
+            }
         }
 
         /// <summary>
-        /// 初始化
+        /// 准备
         /// </summary>
-        void IFlowMiddleware.Initialize()
+        async Task ILifeFlow.Initialize()
         {
-            logger.Information("AddInImporter >>> Initialize");
+            logger.Information("AddInImporter >>> 准备");
             if (Registers == null)
             {
                 return;
             }
             foreach (var reg in Registers)
             {
-                reg.Initialize();
+                await reg.Initialize();
             }
         }
 
         /// <summary>
-        /// 初始化
+        /// 启动
         /// </summary>
-        void IFlowMiddleware.Start()
+        Task ILifeFlow.Open()
         {
-            logger.Information("AddInImporter >>> Start");
+            logger.Information("AddInImporter >>> 启动");
+            if (Registers == null)
+            {
+                return Task.CompletedTask;
+            }
+            foreach (var reg in Registers)
+            {
+                _ = reg.Open();
+            }
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// 关闭
+        /// </summary>
+        async Task ILifeFlow.Close()
+        {
+            logger.Information("AddInImporter >>> 关闭");
             if (Registers == null)
             {
                 return;
             }
             foreach (var reg in Registers)
             {
-                reg.Start();
+                await reg.Close();
             }
         }
 
+
         /// <summary>
-        /// 初始化
+        /// 注销
         /// </summary>
-        void IFlowMiddleware.End()
+        async Task ILifeFlow.Destory()
         {
-            logger.Information("AddInImporter >>> CheckOption");
+            logger.Information("AddInImporter >>> 注销");
             if (Registers == null)
             {
                 return;
             }
             foreach (var reg in Registers)
             {
-                reg.End();
+                await reg.Destory();
             }
         }
     }

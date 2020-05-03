@@ -14,8 +14,14 @@ namespace MicroZero.Kafka.QueueStation
         {
             var service = DependencyHelper.ServiceCollection;
             service.UseCsRedis();
-            await service.UseFlow(typeof(Program).Assembly, false);
+            service.UseFlowAndWait(typeof(Program));
+            _ = Task.Run(Test);
+            await ZeroFlowControl.WaitEnd();
+            Console.WriteLine("Bye bye.");
+        }
 
+        private static void Test()
+        {
             for (int i = 1; i <= 100; i++)
             {
                 MessagePoster.Publish("OrderEvent", "offline/v1/new", new UnionOrder
@@ -37,9 +43,6 @@ namespace MicroZero.Kafka.QueueStation
                     Pay = 500
                 });
             }
-            Console.ReadKey();
-            //ZeroFlowControl.Shutdown();
-            Console.WriteLine("Bye bye.");
         }
     }
 }

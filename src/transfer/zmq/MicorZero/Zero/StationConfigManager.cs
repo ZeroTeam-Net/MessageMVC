@@ -84,7 +84,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     continue;
                 }
 
-                var result = CallCommand("doc", doc.Name, JsonHelper.SerializeObject(doc));
+                var result = CallCommand("doc", doc.Name, JsonHelper.NewtonJson.ToString(doc,false));
                 if (result.InteractiveSuccess && result.State == ZeroOperatorStateType.Ok)
                 {
                     continue;

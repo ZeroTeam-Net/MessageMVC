@@ -1,0 +1,56 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:MessageMVC.Wpf.Sample.View">
+
+    <DataTemplate x:Key="Step1" DataType="config:Step1Model">
+        <local:Step1Control VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+    </DataTemplate>
+    <DataTemplate x:Key="Hmoe" DataType="config:Step1Model">
+        <local:HomeControl VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+    </DataTemplate>
+    
+    <DataTemplate x:Key="Step2" DataType="config:Step2Model">
+        <local:Step2Control VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+    </DataTemplate>
+    <DataTemplate x:Key="Step3" DataType="config:Step3Model">
+        <local:Step3Control VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+    </DataTemplate>
+    <DataTemplate x:Key="CardPush" DataType="config:Step3Model">
+        <GroupBox Header="卡片插入" Margin="5"
+                  DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Border}},Path=DataContext}"
+                  >
+            <TextBox>卡片插入</TextBox>
+        </GroupBox>
+    </DataTemplate>
+    <DataTemplate x:Key="CardPull" DataType="config:Step3Model">
+        <GroupBox Header="卡片退出" Margin="5"
+                  DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Border}},Path=DataContext}"
+                  >
+            <TextBox>卡片插入</TextBox>
+        </GroupBox>
+    </DataTemplate>
+
+    <Style x:Key="StepStyle" TargetType="{x:Type ContentControl}">
+        <Setter Property="ContentTemplate" Value="{DynamicResource Step1}" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding}" Value="home">
+                <Setter Property="ContentTemplate" Value="{DynamicResource Hmoe}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding}" Value="step1">
+                <Setter Property="ContentTemplate" Value="{DynamicResource Step1}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding}" Value="step2">
+                <Setter Property="ContentTemplate" Value="{DynamicResource Step2}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding}" Value="step3">
+                <Setter Property="ContentTemplate" Value="{DynamicResource Step3}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding}" Value="pull">
+                <Setter Property="ContentTemplate" Value="{DynamicResource CardPull}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding}" Value="push">
+                <Setter Property="ContentTemplate" Value="{DynamicResource CardPush}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+</ResourceDictionary>

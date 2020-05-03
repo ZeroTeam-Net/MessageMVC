@@ -1,0 +1,58 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <UseWPF>true</UseWPF>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
+    <Description>ZeroTeam.MessageMVC的WPF包</Description>
+    <AssemblyVersion>1.0.0.1</AssemblyVersion>
+    <FileVersion>1.0.0.1</FileVersion>
+    <Version>1.0.0.1-bate</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;CLIENT</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;CLIENT</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Coefficient\**" />
+    <Compile Remove="CommandItem\**" />
+    <Compile Remove="Trace\**" />
+    <Compile Remove="TreeModel\**" />
+    <EmbeddedResource Remove="Coefficient\**" />
+    <EmbeddedResource Remove="CommandItem\**" />
+    <EmbeddedResource Remove="Trace\**" />
+    <EmbeddedResource Remove="TreeModel\**" />
+    <None Remove="Coefficient\**" />
+    <None Remove="CommandItem\**" />
+    <None Remove="Trace\**" />
+    <None Remove="TreeModel\**" />
+    <Page Remove="Coefficient\**" />
+    <Page Remove="CommandItem\**" />
+    <Page Remove="Trace\**" />
+    <Page Remove="TreeModel\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Command\IAutoRegister.cs" />
+    <Compile Remove="Models\AsyncWorkItem.cs" />
+    <Compile Remove="Models\ComboItem.cs" />
+    <Compile Remove="Models\StepTackProxy.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Agebull.Common.LogRecorder" Version="4.0.0.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+</Project>

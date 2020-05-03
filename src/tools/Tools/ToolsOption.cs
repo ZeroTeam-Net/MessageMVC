@@ -64,17 +64,14 @@ namespace ZeroTeam.MessageMVC.Tools
 
         static ToolsOption()
         {
-            ConfigurationManager.RegistOnChange("MessageMVC:Tools", Instance.Update, true);
+            ConfigurationManager.RegistOnChange<ToolsOption>("MessageMVC:Tools", Instance.Update, true);
         }
 
         /// <summary>
         /// 重新载入并更新
         /// </summary>
-        private void Update()
+        private void Update(ToolsOption option)
         {
-            ToolsOption option = ConfigurationManager.Get<ToolsOption>("MessageMVC:Tools");
-            if (option == null)
-                return;
             EnableLinkTrace = option.EnableLinkTrace;
             EnableMonitorLog = option.EnableMonitorLog;
             EnableMessageReConsumer = option.EnableMessageReConsumer;

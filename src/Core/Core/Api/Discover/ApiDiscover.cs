@@ -48,11 +48,19 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         public void FindApies()
         {
+            Type[] types;
+            try
+            {
+                types = Assembly.GetTypes().Where(p => p.IsSupperInterface(typeof(IApiControler))).ToArray();
+            }
+            catch
+            {
+                return;
+            }
             XmlMember.Load(Assembly);
 
             TransportDiscories ??= DependencyHelper.RootProvider.GetServices<IReceiverDiscover>().ToArray();
 
-            var types = Assembly.GetTypes().Where(p => p.IsSupperInterface(typeof(IApiControler))).ToArray();
             foreach (var type in types)
             {
                 FindApi(type);
@@ -77,6 +85,22 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 FindApi(type);
             }
         }
+
+        /// <summary>
+        /// 查找API
+        /// </summary>
+        public void Discover(Type type)
+        {
+            Assembly = type.Assembly;
+            XmlMember.Load(Assembly);
+            TransportDiscories ??= DependencyHelper.RootProvider.GetServices<IReceiverDiscover>().ToArray();
+
+            if (type.IsSupperInterface(typeof(IApiControler)))
+            {
+                FindApi(type);
+            }
+        }
+
         private void RegistToZero()
         {
             foreach (var serviceInfo in ServiceInfos.Values)
@@ -97,7 +121,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                         Receiver = serviceInfo.NetBuilder(serviceInfo.Name)
                     };// DependencyHelper.Create<IService>();
 
-                    ZeroFlowControl.RegistService(service);
+                    ZeroFlowControl.RegistService(ref service);
                 }
                 foreach (var api in serviceInfo.Aips)
                 {
@@ -167,7 +191,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             }
 
             var defPage = GetCustomAttribute<ApiPageAttribute>(type)?.PageUrl?.SafeTrim();
-            var defOption = GetCustomAttribute<ApiAccessOptionFilterAttribute>(type)?.Option ?? ApiAccessOption.OpenAccess;
+            var defOption = GetCustomAttribute<ApiOptionAttribute>(type)?.Option ?? ApiOption.None;
             var defCategory = GetCustomAttribute<CategoryAttribute>(type)?.Category.SafeTrim();
 
             foreach (var method in type.GetMethods(PublicFlags))
@@ -195,7 +219,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     throw new NotSupportedException($"{type}序列化方式暂不支持");
             };
         }
-        private void CheckMethod(Type type, XmlMember docx, ServiceInfo serviceInfo, string routeHead, string defPage, ApiAccessOption defOption, string defCategory, MethodInfo method)
+        private void CheckMethod(Type type, XmlMember docx, ServiceInfo serviceInfo, string routeHead, string defPage, ApiOption defOption, string defCategory, MethodInfo method)
         {
             var routeAttribute = GetCustomAttribute<RouteAttribute>(method);
             if (routeAttribute == null)
@@ -214,8 +238,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             var route = routeAttribute.Name == null
                 ? $"{head}{method.Name}"
                 : $"{head}{routeAttribute.Name.Trim(' ', '\t', '\r', '\n', '/')}";
-            var accessOption = GetCustomAttribute<ApiAccessOptionFilterAttribute>(method);
-            ApiAccessOption option;
+            var accessOption = GetCustomAttribute<ApiOptionAttribute>(method);
+            ApiOption option;
             if (accessOption != null)
             {
                 option = accessOption.Option;
@@ -231,7 +255,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             var api = new ApiActionInfo
             {
                 Name = method.Name,
-                ApiName = route,
+                Route = route,
+                ControllerName = type.GetTypeName(),
+                ControllerCaption = docx?.Caption,
                 Category = category ?? defCategory ?? docx?.Caption ?? docx?.Name,
                 AccessOption = option,
                 ResultInfo = ReadEntity(method.ReturnType, "result"),
@@ -280,7 +306,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 info.Name = para.Name;
                 api.Arguments.Add(info);
             }
-            serviceInfo.Aips.Add(api.ApiName, api);
+            serviceInfo.Aips.Add(api.Route, api);
         }
 
         #endregion
@@ -650,12 +676,12 @@ namespace {serviceInfo.Type.Namespace}.UnitTest
         /// {api.Caption}
         /// </summary>
         [Test]
-        public async Task {api.ApiName.Replace('/', '_')}()
+        public async Task {api.Route.Replace('/', '_')}()
         {{
             var (msg, ser) = await MessagePoster.Post(new InlineMessage
             {{
                 ServiceName = ""{serviceInfo.Name}"",
-                ApiName = ""{api.ApiName}"",
+                ApiName = ""{api.Route}"",
                 Content = 
 @""{json}""
             }});
@@ -720,7 +746,7 @@ namespace {serviceInfo.Type.Namespace}.UnitTest
             var (msg, ser) = await MessagePoster.Post(new InlineMessage
             {{
                 ServiceName = ""{serviceInfo.Name}"",
-                ApiName = ""{api.ApiName}"",
+                ApiName = ""{api.Route}"",
                 Content = 
 @""{json}""
             }});
@@ -818,5 +844,34 @@ namespace {serviceInfo.Type.Namespace}.UnitTest
 
         #endregion
 
+
+
+        #region SaveApi
+
+        /// <summary>
+        /// 生成单元测试代码
+        /// </summary>
+        /// <param name="path"></param>
+        public void ApiSql(string path)
+        {
+            foreach (var serviceInfo in ServiceInfos.Values)
+            {
+                if (serviceInfo.Aips.Count == 0)
+                {
+                    continue;
+                }
+                var file = Path.Combine(path, $"{serviceInfo.Name}.sql");
+                var code = new StringBuilder();
+                foreach (var api in serviceInfo.Aips.Values.Cast<ApiActionInfo>())
+                {
+                    code.AppendLine($@"
+INSERT INTO `tb_app_api`(`app_id`,`service_name`,`model_name`,`model_caption`,`api_name`,`api_caption`,`url`,`option`,`memo`,`binding_pages`) 
+VALUES ('请修改为正确的AppId', '{serviceInfo.Name}', '{api.ControllerName}','{api.ControllerCaption}', '{api.Name}', '{api.Caption}', '{serviceInfo.Name}/{api.Route}','{(int)api.AccessOption}', '{api.Description}', '{api.PageUrl}');
+");
+                }
+                File.WriteAllText(file, code.ToString());
+            }
+        }
+        #endregion
     }
 }

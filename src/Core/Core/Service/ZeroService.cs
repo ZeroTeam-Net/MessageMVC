@@ -314,41 +314,41 @@ namespace ZeroTeam.MessageMVC.Services
         #region IFlowMiddleware
 
 
-        void IFlowMiddleware.Initialize()
+        Task ILifeFlow.Initialize()
         {
             logger = DependencyHelper.LoggerFactory.CreateLogger($"ZeroService({ServiceName})");
             logger.Information("ZeroService >>> Initialize");
             Initialize();
+            return Task.CompletedTask;
         }
 
         /// <summary>
-        /// 开始
+        /// 启动
         /// </summary>
-        /// <returns></returns>
-        void IFlowMiddleware.Start()
+        Task ILifeFlow.Open()
         {
-            logger.Information("ZeroService >>> Start");
-            StateMachine.Start();
+            logger.Information($"ZeroService({ServiceName}) >>> 启动");
+            return StateMachine.Start();
         }
 
-        void IFlowMiddleware.Close()
+        Task ILifeFlow.Close()
         {
-            logger.Information("ZeroService >>> Close");
-            StateMachine.Close();
+            logger.Information($"ZeroService({ServiceName}) >>> 关闭");
+            return StateMachine.Close();
         }
 
         private bool _isDisposed;
         /// <inheritdoc/>
-        void IFlowMiddleware.End()
+        Task ILifeFlow.Destory()
         {
-            logger.Information("ZeroService >>> CheckOption");
+            logger.Information($"ZeroService({ServiceName}) >>> 注销");
             if (_isDisposed)
             {
-                return;
+                return Task.CompletedTask;
             }
 
             _isDisposed = true;
-            StateMachine.End();
+            return StateMachine.End();
         }
         #endregion
 
@@ -440,13 +440,14 @@ namespace ZeroTeam.MessageMVC.Services
         /// <summary>
         ///     注册方法
         /// </summary>
-        /// <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
+        /// <param name="route">方法外部方法名称，如 v1/auto/getdid </param>
         /// <param name="info">反射信息</param>
-        void IService.RegistAction(string name, ApiActionInfo info)
+        void IService.RegistAction(string route, ApiActionInfo info)
         {
+            logger ??= DependencyHelper.LoggerFactory.CreateLogger($"ZeroService({ServiceName})");
             var action = new ApiAction
             {
-                Name = name,
+                RouteName = route,
                 Function = info.Action,
                 Access = info.AccessOption,
                 ArgumentName = info.ArgumentName,
@@ -458,17 +459,11 @@ namespace ZeroTeam.MessageMVC.Services
             };
 
             action.Initialize();
-            if (!ApiActions.ContainsKey(name))
+            if (!ApiActions.TryAdd(route, action))
             {
-                action.Name = name;
-                ApiActions.Add(name, action);
+                logger.Error($"[注册接口]失败，因为路由名称已存在 {ServiceName}/{route} => {info.Caption} {info.ControllerName}.{info.Name}");
             }
-            else
-            {
-                ApiActions[name] = action;
-            }
-            logger ??= DependencyHelper.LoggerFactory.CreateLogger($"ZeroService({ServiceName})");
-            logger.Trace(() => $"[Regist Action] {name}({info.Controller}.{info.Name})");
+            logger.Trace(() => $"[注册接口] {ServiceName}/{route} => {info.Caption} {info.ControllerName}.{info.Name}");
         }
 
         #endregion

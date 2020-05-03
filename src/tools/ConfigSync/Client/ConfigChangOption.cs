@@ -17,15 +17,11 @@ namespace ZeroTeam.MessageMVC.ConfigSync
         /// </summary>
         static ConfigChangOption()
         {
-            ConfigurationManager.RegistOnChange("MessageMVC:ConfigSync", () =>
+            ConfigurationManager.RegistOnChange<ConfigChangOption>("MessageMVC:ConfigSync", option =>
             {
-                var option = ConfigurationManager.Get<ConfigChangOption>("MessageMVC:ConfigSync");
-                if(option != null)
-                {
-                    Instance.IsService = option.IsService;
-                    Instance.ConnectionString = option.ConnectionString;
-                }
-            },true);
+                Instance.IsService = option.IsService;
+                Instance.ConnectionString = option.ConnectionString;
+            }, true);
         }
 
         /// <summary>

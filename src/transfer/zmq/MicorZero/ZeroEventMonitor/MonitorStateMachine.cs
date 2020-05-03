@@ -50,7 +50,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
                 case ZeroCenterState.Start: // 正在启动
                 case ZeroCenterState.Closing: // 将要关闭
                 case ZeroCenterState.Closed: // 已关闭
-                case ZeroCenterState.Destroy: // 已销毁，析构已调用
+                case ZeroCenterState.Destroy: // 已注销，析构已调用
                                               //StateMachine = new EmptyStateMachine();
                                               //return;
                 case ZeroCenterState.Failed: // 错误状态

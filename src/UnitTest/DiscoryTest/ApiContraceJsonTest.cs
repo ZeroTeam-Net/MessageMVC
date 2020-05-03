@@ -178,10 +178,10 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
                 InnerMessage = "InnerMessage",
                 Exception = new System.Exception("Exception")
             };
-            var json1 = JsonHelper.SerializeObject(status);
-            var opt = JsonHelper.DeserializeObject<OperatorStatus>(json1);
-            var json2 = JsonHelper.SerializeObject(opt);
-            opt = (OperatorStatus)JsonHelper.DeserializeObject(json2, typeof(OperatorStatus));
+            var json1 = SmartSerializer.ToInnerString(status);
+            var opt = SmartSerializer.FromInnerString<OperatorStatus>(json1);
+            var json2 = SmartSerializer.ToInnerString(opt);
+            opt = (OperatorStatus)SmartSerializer.FromInnerString(json2, typeof(OperatorStatus));
             Assert.IsTrue(opt.Message == "Message", json1);
             Assert.IsTrue(opt.InnerMessage == null, json1);
         }

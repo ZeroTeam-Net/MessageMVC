@@ -37,29 +37,22 @@ namespace ZeroTeam.MessageMVC.Http
         /// </remarks>
         public Dictionary<string, int> HostPaths { get; set; }
 
-
-
         /// <summary>
         /// 选项
         /// </summary>
         public static MessageRouteOption Instance = new MessageRouteOption
         {
-            HostPaths= new Dictionary<string, int>(),
+            HostPaths = new Dictionary<string, int>(),
         };
 
 
         static MessageRouteOption()
         {
-            ConfigurationManager.RegistOnChange("MessageMVC:HttpRoute", Instance.Load, true);
+            ConfigurationManager.RegistOnChange<MessageRouteOption>("MessageMVC:HttpRoute", Instance.Load, true);
         }
 
-         void Load()
+        void Load(MessageRouteOption option)
         {
-            var option = ConfigurationManager.Get<MessageRouteOption>("MessageMVC:HttpRoute");
-            if (option == null)
-            {
-                return;
-            }
             if (option.HostPaths != null)
                 Instance.HostPaths = option.HostPaths;
             Instance.EnableHeader = option.EnableHeader;

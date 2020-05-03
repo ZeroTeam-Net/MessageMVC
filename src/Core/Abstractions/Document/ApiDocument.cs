@@ -16,7 +16,7 @@ namespace ZeroTeam.MessageMVC.Documents
         ///     访问设置
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public ApiAccessOption AccessOption { get; set; }
+        public ApiOption AccessOption { get; set; }
 
         /// <summary>
         ///     参数名称
@@ -49,10 +49,10 @@ namespace ZeroTeam.MessageMVC.Documents
         public TypeDocument ResultInfo { get; set; }
 
         /// <summary>
-        ///     Api名称
+        ///     Api路由地址
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string ApiName;
+        public string Route;
 
         /// <summary>
         ///     承载页面
@@ -62,10 +62,16 @@ namespace ZeroTeam.MessageMVC.Documents
         public string PageUrl { get; set; }
 
         /// <summary>
-        ///     所在控制器类型
+        ///     所在控制器名称
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string Controller { get; set; }
+        public string ControllerName { get; set; }
+
+        /// <summary>
+        ///     所在控制器说明
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string ControllerCaption { get; set; }
 
         /// <summary>
         ///     是否有调用参数

@@ -1,10 +1,9 @@
-﻿using Agebull.Common.Ioc;
-using Agebull.Common.Logging;
+﻿using Agebull.Common.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
+using ZeroTeam.MessageMVC.PlanTasks.BusinessLogic;
 using ZeroTeam.MessageMVC.Tools;
 using ZeroTeam.MessageMVC.ZeroApis;
 
@@ -30,18 +29,18 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         #region IMessageReceiver
 
         /// <summary>
-        /// 开启
+        /// 启动
         /// </summary>
         async Task<bool> IMessageReceiver.LoopBegin()
         {
-            PlanItem.logger.Information("Plan queue loog begin.");
+            PlanItem.logger.Information("计划任务轮询开始");
             wait = 0;
             await PlanItem.Start();
             return true;
         }
 
         /// <summary>
-        /// 开启
+        /// 启动
         /// </summary>
         async Task<bool> IMessageReceiver.Loop(CancellationToken token)
         {
@@ -68,39 +67,33 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                             return true;
                         }
                     }
+                    (bool state, PlanItem item) task;
                     try
                     {
-                        var (state, item) = await PlanItem.Pop();
-                        if (!state)
-                        {
-                            succes = false;
-                        }
-                        else if (item != null)
-                        {
-                            PlanItem.logger.Trace(() => $"Plan message begin post.{item.Option.plan_id}");
-
-                            Interlocked.Increment(ref wait);
-
-                            //写入回执备查
-                            item.Message.Trace??= TraceInfo.New(item.Message.ID);
-                            item.Message.Trace.Context ??= new StaticContext();
-                            item.Message.Trace.Context.Option ??= new System.Collections.Generic.Dictionary<string, string>();
-                            item.Message.Trace.Context.Option["Receipt"] = "true";
-
-                            _ = MessageProcessor.OnMessagePush(Service, item.Message, true, item);
-                        }
+                        task = await PlanItem.Pop();
                     }
                     catch (Exception ex)
                     {
-                        PlanItem.logger.Warning(() => $"Plan queue loop error.{ex.Message}");
+                        PlanItem.logger.Exception(ex, "计划任务轮询出错");
                         succes = false;
+                        continue;
                     }
+                    if (!task.state)
+                    {
+                        succes = false;
+                        continue;
+                    }
+                    if (task.item == null)
+                    {
+                        continue;
+                    }
+                    Interlocked.Increment(ref wait);
+                    _ = MessageProcessor.OnMessagePush(Service, task.item.Message, true, task.item);
                 }
             }
             catch (TaskCanceledException)
             {
             }
-            PlanItem.logger.Information("计划任务轮询结束");
             return true;
         }
 
@@ -109,29 +102,81 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// </summary>
         async Task IMessageReceiver.LoopComplete()
         {
-            PlanItem.logger.Information("Plan queue loop complete....");
+            PlanItem.logger.Information("计划任务轮询正在关闭中....");
             while (wait > 0)
             {
                 await Task.Delay(50);
             }
+            PlanItem.logger.Information("计划任务轮询结束");
         }
 
         #endregion
 
-        #region 计划执行
+        #region 计划结果
 
         private int wait = 0;
+
+        /// <summary>
+        /// 标明调用结束
+        /// </summary>
+        /// <returns>是否发送成功</returns>
+        async Task<bool> IMessageReceiver.OnResult(IInlineMessage message, object tag)
+        {
+            Interlocked.Decrement(ref wait);
+
+            await CheckRemoteResult(message, (PlanItem)tag);
+
+            return true;
+        }
+
+        private static async Task CheckRemoteResult(IInlineMessage message, PlanItem item)
+        {
+            if (message.State.IsEnd())
+            {
+                item.RealInfo.ExecState = item.Message.State;
+                item.RealInfo.ExecEndTime = PlanItem.NowTime();
+
+                item.Monitor.Trace($"执行完成,消息状态: {message.State}");
+                if (await CheckResult(item))
+                {
+                    item.RealInfo.RetryNum = 0;
+                    await item.CheckNextTime();
+                }
+            }
+            else
+            {
+                item.RealInfo.ErrorNum++;
+                item.RealInfo.ExecState = item.Message.State;
+                if (message.State == MessageState.NetworkError)
+                {
+                    item.Monitor.Trace("执行时遇到网络错误,将通过获取回执决定后续结果");
+                    await item.WaitReceipt(PlanMessageState.error);
+                }
+                else if (message.State == MessageState.AsyncQueue)
+                {
+                    item.Monitor.Trace("正在异步执行,将通过获取回执决定后续结果");
+                    await item.WaitReceipt(PlanMessageState.waiting);
+                }
+                else
+                {
+                    item.RealInfo.ExecEndTime = PlanItem.NowTime();
+                    int time = await item.ReTry();
+                    item.Monitor.Trace(time > 0
+                        ? $"执行状态{message.State}，重试执行"
+                        : $"执行状态{message.State}，超过最大重试次数，异常关闭");
+                }
+            }
+            await TaskExecutionBusinessLogic.SaveToDatabase(item, item.Message);
+        }
 
         private static async Task<bool> CheckResult(PlanItem item)
         {
             if (!PlanSystemOption.Instance.CheckPlanResult)
             {
-                await item.SaveResult(item.Message.Topic, item.Message.Result);
                 return true;
             }
             var result = ApiResultHelper.Helper.Deserialize(item.Message.Result);
 
-            await item.SaveResult(result?.Trace?.Point ?? item.Message.Topic, item.Message.Result);
             if (result == null || result.Success)
             {
                 return true;
@@ -141,67 +186,27 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                 case OperatorStatusCode.ReTry:
                 case OperatorStatusCode.NoReady:
                 case OperatorStatusCode.Unavailable:
-                    item.RealInfo.exec_state = MessageState.Cancel;
+                    item.RealInfo.ExecState = MessageState.Cancel;
                     break;
                 case OperatorStatusCode.NoFind:
-                    item.RealInfo.exec_state = MessageState.NonSupport;
+                    item.RealInfo.ExecState = MessageState.NonSupport;
                     break;
                 case OperatorStatusCode.NetworkError:
-                    item.RealInfo.exec_state = MessageState.NetworkError;
+                    item.RealInfo.ExecState = MessageState.NetworkError;
                     break;
                 case OperatorStatusCode.BusinessException:
                 case OperatorStatusCode.UnhandleException:
-                    item.RealInfo.exec_state = MessageState.BusinessError;
+                    item.RealInfo.ExecState = MessageState.BusinessError;
                     break;
                 default:
-                    item.RealInfo.exec_state = MessageState.Failed;
+                    item.RealInfo.ExecState = MessageState.Failed;
                     break;
             }
-            item.RealInfo.error_num++;
+            item.RealInfo.ErrorNum++;
             await item.ReTry();
             return false;
         }
 
-        /// <summary>
-        /// 标明调用结束
-        /// </summary>
-        /// <returns>是否发送成功</returns>
-        async Task<bool> IMessageReceiver.OnResult(IInlineMessage message, object tag)
-        {
-            PlanItem item = (PlanItem)tag;
-            Interlocked.Decrement(ref wait);
-            PlanItem.logger.Trace(() => $"计划任务执行结束,消息状态: {message.State}");
-
-            //message.OfflineResult(Service.Serialize);全为远程调用,应该不需要
-
-            if (message.State.IsEnd())
-            {
-                item.RealInfo.exec_state = item.Message.State;
-                item.RealInfo.exec_end_time = PlanItem.NowTime();
-
-                if (await CheckResult(item))
-                {
-                    item.RealInfo.retry_num = 0;
-                    await item.CheckNextTime();
-                }
-            }
-            else
-            {
-                item.RealInfo.error_num++;
-                item.RealInfo.exec_state = item.Message.State;
-                if (message.State == MessageState.NetworkError)
-                {
-                    await item.Error();
-                }
-                else
-                {
-                    await item.SaveResult(item.Message.Topic, item.Message.Result);
-                    item.RealInfo.exec_end_time = PlanItem.NowTime();
-                    await item.ReTry();
-                }
-            }
-            return true;
-        }
         #endregion
 
         #region 回执检测
@@ -216,72 +221,97 @@ namespace ZeroTeam.MessageMVC.PlanTasks
             PlanItem.logger.Information("计划任务：回执检查已启动");
             while (!token.IsCancellationRequested)
             {
+                PlanItem item;
+                string id;
                 try
                 {
-                    var id = await RedisHelper.RPopLPushAsync(PlanItem.planErrorKey, PlanItem.planErrorKey);
+                    id = await RedisHelper.RPopLPushAsync(PlanItem.planErrorKey, PlanItem.planErrorKey);
                     if (id == null)
                     {
-                        await Task.Delay(PlanSystemOption.idleTime,token);
+                        await Task.Delay(PlanSystemOption.idleTime, token);
                         continue;
                     }
                     if (id == pre)
                         await Task.Delay(PlanSystemOption.waitTime, token);//相同ID多次处理
                     else
                         pre = id;
-                    var item = PlanItem.LoadMessage(id, false);
+                    item = await PlanItem.LoadPlan(id, false, true);
                     if (item == null)
                     {
                         await RedisHelper.LRemAsync(PlanItem.planErrorKey, 0, id);
                         continue;
                     }
-                    //BUG:返回值为空
-                    var (msg, recri) = await MessagePoster.Post(MessageHelper.Simple(id,
-                        ToolsOption.Instance.ReceiptService, "receipt/v1/load", id));
-
-                    if (msg.State != MessageState.Success || msg.State != MessageState.Failed)
-                    {
-                        //取不到,在30分钟后认为失败
-                        if ((DateTime.Now - PlanItem.FromTime(item.RealInfo.exec_start_time)).TotalMinutes > 10)
-                        {
-                            await RedisHelper.LRemAsync(PlanItem.planErrorKey, 0, id);
-                            await item.ReTry();//远程错误,直接重试
-                        }
-                        continue;
-                    }
-
-                    var result = ApiResultHelper.Helper.Deserialize<InlineMessage>(msg.Result);
-                    if (result == null || !result.Success || result.ResultData == null)
-                    {
-                        await RedisHelper.LRemAsync(PlanItem.planErrorKey, 0, id);
-                        await item.ReTry();//远程错误,直接重试
-                        continue;
-                    }
-                    var message = result.ResultData;
-                    await item.SaveResult(message.Topic, message.Result);
-
-                    item.RealInfo.exec_state = item.Message.State;
-                    item.RealInfo.exec_end_time = PlanItem.NowTime();
-                    await item.SaveRealInfo();
-
-
-                    if (message.State.IsEnd())
-                    {
-                        await item.CheckNextTime();
-                    }
-                    else
-                    {
-                        await item.ReTry();
-                    }
-                    await RedisHelper.LRemAsync(PlanItem.planErrorKey, 0, id);
-
-                    await MessagePoster.Post(MessageHelper.Simple(id, ToolsOption.Instance.ReceiptService, "receipt/v1/remove", id));
                 }
                 catch (Exception ex)
                 {
-                    PlanItem.logger.Warning(() => $"检查回执发生异常.{ex.Message}");
+                    PlanItem.logger.Warning(() => $"获取回执队列异常.{ex.Message}");
+                    continue;
+                }
+                item.Monitor.BeginStep("回执检查");
+                if (!await LoadReceipt(id, item))
+                {
+                    item.Monitor.EndStep();
+                    await item.WaitReceipt(PlanMessageState.error);
                 }
             }
             PlanItem.logger.Information("计划任务：回执检查已退出");
+        }
+
+        private async Task<bool> LoadReceipt(string id, PlanItem item)
+        {
+            (IInlineMessage msg, MessageState state) re;
+            try
+            {
+                re = await MessagePoster.Post(MessageHelper.Simple(
+                   item.Option.PlanId,
+                   ToolsOption.Instance.ReceiptService,
+                   "receipt/v1/load",
+                   item.Option.PlanId));
+            }
+            catch (Exception ex)
+            {
+                item.Monitor.Trace($"提取回执发生异常.{ex.Message}");
+                return false;
+            }
+            if (re.state != MessageState.Success || re.state != MessageState.Failed)
+            {
+                await CheckResultTimeOut(id, item);
+                return false;
+            }
+
+            var result = ApiResultHelper.Helper.Deserialize<InlineMessage>(re.msg.Result);
+            if (result == null || !result.Success || result.ResultData == null)
+            {
+                await CheckResultTimeOut(id, item);
+                return false;
+            }
+            item.Monitor.Trace($"已获取回执.执行状态为{result.ResultData.State}");
+            item.Monitor.EndStep();
+            try
+            {
+                await RedisHelper.LRemAsync(PlanItem.planErrorKey, 0, id);
+                await MessagePoster.CallAsync(ToolsOption.Instance.ReceiptService, "receipt/v1/remove", new { id });
+
+            }
+            catch (Exception ex)
+            {
+                item.Monitor.Trace($"处理回执发生异常.{ex.Message}");
+            }
+            await CheckRemoteResult(result.ResultData, item);
+            return true;
+        }
+
+        private async Task<bool> CheckResultTimeOut(string id, PlanItem item)
+        {
+            if ((DateTime.Now - PlanItem.FromTime(item.RealInfo.ExecStartTime)).TotalSeconds < item.Option.CheckResultTime)
+            {
+                item.Monitor.Trace($"获取回执失败.{state}");
+                return false;
+            }
+            item.Monitor.Trace("超过10分钟未取得回执，系统假设远程未正常处理.任务进入重试");
+            await RedisHelper.LRemAsync(PlanItem.planErrorKey, 0, id);
+            await item.ReTry();//远程错误,直接重试
+            return true;
         }
 
         #endregion

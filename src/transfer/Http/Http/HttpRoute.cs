@@ -82,7 +82,7 @@ namespace ZeroTeam.MessageMVC.Http
                 using var texter = new StreamReader(context.Request.Body);
                 var json = await texter.ReadToEndAsync();
 
-                var message = JsonHelper.DeserializeObject<InlineMessage>(json);
+                var message = SmartSerializer.ToMessage(json);
                 if (message == null)
                 {
                     await context.Response.WriteAsync(SmartSerializer.ToString(new MessageResult

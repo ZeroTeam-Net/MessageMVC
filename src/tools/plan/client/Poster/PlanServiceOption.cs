@@ -32,18 +32,15 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// </summary>
         static PlanServiceOption()
         {
-            ConfigurationManager.RegistOnChange("MessageMVC:PlanService", Load, true);
+            ConfigurationManager.RegistOnChange<PlanServiceOption>("MessageMVC:PlanService", Load, true);
         }
 
 
         /// <summary>
         /// 构造
         /// </summary>
-        static void Load()
+        static void Load(PlanServiceOption option)
         {
-            var option = ConfigurationManager.Get<PlanServiceOption>("MessageMVC:PlanService");
-            if (option == null)
-                return;
             if (string.IsNullOrEmpty(option.ServiceName))
             {
                 Instance.ServiceName = option.ServiceName;

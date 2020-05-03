@@ -39,7 +39,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         ///     配置校验,作为第一步
         /// </summary>
-        void IFlowMiddleware.CheckOption(ZeroAppOption config)
+        Task ILifeFlow.Check(ZeroAppOption config)
         {
             ZContext.Initialize();
 
@@ -79,7 +79,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             {
                 Config.StationOption.CopyByHase(cfg);
             }
-            
+
             #endregion
 
             #region ServiceName
@@ -99,6 +99,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
 
             #endregion
+            return Task.CompletedTask;
 
         }
 
@@ -263,35 +264,38 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         ///     初始化
         /// </summary>
-        void IFlowMiddleware.Initialize()
+        Task ILifeFlow.Initialize()
         {
             Logger.Information("ZeroRpcFlow >>> Initialize");
             ZeroCenterProxy.Master = new ZeroCenterProxy(Config.Master);
             JoinCenter();
+            return Task.CompletedTask;
         }
 
 
         /// <summary>
         ///     启动
         /// </summary>
-        void IFlowMiddleware.Start()
+        Task ILifeFlow.Open()
         {
-            Logger.Information("ZeroRpcFlow >>> Start");
+            Logger.Information("ZeroRpcFlow >>> 启动");
             SystemMonitor.Start();
             if (WorkModel == ZeroWorkModel.Service)
             {
                 var m = new StationConfigManager(Config.Master);
                 m.UploadDocument();
             }
+            return Task.CompletedTask;
         }
 
         /// <summary>
-        ///     关闭
+        ///     注销
         /// </summary>
-        void IFlowMiddleware.End()
+        Task ILifeFlow.Destory()
         {
-            Logger.Information("ZeroRpcFlow >>> End");
+            Logger.Information("ZeroRpcFlow >>> 注销");
             ZContext.Destroy();
+            return Task.CompletedTask;
         }
 
         #endregion

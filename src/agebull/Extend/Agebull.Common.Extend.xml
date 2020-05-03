@@ -1822,10 +1822,19 @@
             基本目录
             </summary>
         </member>
-        <member name="M:Agebull.Common.Configuration.ConfigurationManager.IsEnable(System.String)">
+        <member name="M:Agebull.Common.Configuration.ConfigurationManager.IsEnable(System.String,System.Boolean)">
+            <summary>
+            指定配置是否启用
+            </summary>
+            <param name="key">配置的键名称，应已约定为bool类型</param>
+            <param name="def">不存在时默认值</param>
+        </member>
+        <member name="M:Agebull.Common.Configuration.ConfigurationManager.IsDisable(System.String,System.Boolean)">
             <summary>
             刷新
             </summary>
+            <param name="key">配置的键名称，应已约定为bool类型</param>
+            <param name="def">不存在时默认值</param>
         </member>
         <member name="M:Agebull.Common.Configuration.ConfigurationManager.Flush">
             <summary>
@@ -1844,6 +1853,14 @@
             </summary>
         </member>
         <member name="M:Agebull.Common.Configuration.ConfigurationManager.RegistOnChange(System.String,System.Action,System.Boolean)">
+            <summary>
+            注册更新处理器
+            </summary>
+            <param name="section">节点</param>
+            <param name="action">更新处理方法</param>
+            <param name="runNow">是否现在执行一次</param>
+        </member>
+        <member name="M:Agebull.Common.Configuration.ConfigurationManager.RegistOnChange``1(System.String,System.Action{``0},System.Boolean)">
             <summary>
             注册更新处理器
             </summary>
@@ -2033,14 +2050,6 @@
             <param name="def"> 缺省值（不存在或不合理时使用） </param>
             <returns> 双精数值 </returns>
         </member>
-        <member name="M:Agebull.Common.Configuration.ConfigurationManager.SetAppSetting``1(System.String,``0)">
-            <summary>
-              配置一个配置内容
-            </summary>
-            <typeparam name="T"> </typeparam>
-            <param name="key">名称</param>
-            <param name="value"> </param>
-        </member>
         <member name="M:Agebull.Common.Configuration.ConfigurationManager.GetConnectionString(System.String,System.String)">
             <summary>
               获取连接串的节点信息
@@ -2048,13 +2057,6 @@
             <param name="key">名称</param>
             <param name="def">找不到的缺省值</param>
             <returns> </returns>
-        </member>
-        <member name="M:Agebull.Common.Configuration.ConfigurationManager.SetConnectionString(System.String,System.String)">
-            <summary>
-              设置连接串的节点信息
-            </summary>
-            <param name="key">名称</param>
-            <param name="connectionString">连接字符</param>
         </member>
         <member name="T:Agebull.Common.Configuration.FromConfigAttribute">
             <summary>
@@ -2134,6 +2136,111 @@
             </summary>
             <typeparam name="TInterface"></typeparam>
             <returns></returns>
+        </member>
+        <member name="M:Agebull.Common.Ioc.DependencyHelper.AddAutoTransient``2">
+            <summary>
+            注册并使用自动构造
+            </summary>
+            <typeparam name="TService">基类型</typeparam>
+            <typeparam name="TImplementation">实际类型</typeparam>
+            <returns>构造后的类型</returns>
+            <remarks>
+            构造参数构造方式，
+            1. ILogger构造成ILogger&lt;T&gt;
+            2. FromConfigAttribute特性标识的构造成从配置文件读取的对象
+            3. 其余全部通过依赖构造（如果无法依赖构造或未注册的，后果未知）
+            公开属性构造方式
+            1. ILogger构造成ILogger&lt;T&gt;
+            2. FromConfigAttribute特性标识的构造成从配置文件读取的对象
+            3. FromServicesAttribute通过依赖构造（如果无法依赖构造或未注册的，后果未知）
+            </remarks>
+        </member>
+        <member name="M:Agebull.Common.Ioc.DependencyHelper.AddAutoScoped``2">
+            <summary>
+            注册并使用自动构造
+            </summary>
+            <typeparam name="TService">基类型</typeparam>
+            <typeparam name="TImplementation">实际类型</typeparam>
+            <returns>构造后的类型</returns>
+            <remarks>
+            构造参数构造方式，
+            1. ILogger构造成ILogger&lt;T&gt;
+            2. FromConfigAttribute特性标识的构造成从配置文件读取的对象
+            3. 其余全部通过依赖构造（如果无法依赖构造或未注册的，后果未知）
+            公开属性构造方式
+            1. ILogger构造成ILogger&lt;T&gt;
+            2. FromConfigAttribute特性标识的构造成从配置文件读取的对象
+            3. FromServicesAttribute通过依赖构造（如果无法依赖构造或未注册的，后果未知）
+            </remarks>
+        </member>
+        <member name="M:Agebull.Common.Ioc.DependencyHelper.AddAutoSingleton``2">
+            <summary>
+            注册并使用动态构造
+            </summary>
+            <typeparam name="TService">基类型</typeparam>
+            <typeparam name="TImplementation">实际类型</typeparam>
+            <returns>构造后的类型</returns>
+            <remarks>
+            构造参数构造方式，
+            1. ILogger构造成ILogger&lt;T&gt;
+            2. FromConfigAttribute特性标识的构造成从配置文件读取的对象
+            3. 其余全部通过依赖构造（如果无法依赖构造或未注册的，后果未知）
+            公开属性构造方式
+            1. ILogger构造成ILogger&lt;T&gt;
+            2. FromConfigAttribute特性标识的构造成从配置文件读取的对象
+            3. FromServicesAttribute通过依赖构造（如果无法依赖构造或未注册的，后果未知）
+            </remarks>
+        </member>
+        <member name="M:Agebull.Common.Ioc.DependencyHelper.AddAutoTransient``1">
+            <summary>
+            注册并使用自动构造
+            </summary>
+            <typeparam name="TService">基类型</typeparam>
+            <returns>构造后的类型</returns>
+            <remarks>
+            构造参数构造方式，
+            1. ILogger构造成ILogger&lt;T&gt;
+            2. FromConfigAttribute特性标识的构造成从配置文件读取的对象
+            3. 其余全部通过依赖构造（如果无法依赖构造或未注册的，后果未知）
+            公开属性构造方式
+            1. ILogger构造成ILogger&lt;T&gt;
+            2. FromConfigAttribute特性标识的构造成从配置文件读取的对象
+            3. FromServicesAttribute通过依赖构造（如果无法依赖构造或未注册的，后果未知）
+            </remarks>
+        </member>
+        <member name="M:Agebull.Common.Ioc.DependencyHelper.AddAutoScoped``1">
+            <summary>
+            注册并使用自动构造
+            </summary>
+            <typeparam name="TService">类型</typeparam>
+            <returns>构造后的类型</returns>
+            <remarks>
+            构造参数构造方式，
+            1. ILogger构造成ILogger&lt;T&gt;
+            2. FromConfigAttribute特性标识的构造成从配置文件读取的对象
+            3. 其余全部通过依赖构造（如果无法依赖构造或未注册的，后果未知）
+            公开属性构造方式
+            1. ILogger构造成ILogger&lt;T&gt;
+            2. FromConfigAttribute特性标识的构造成从配置文件读取的对象
+            3. FromServicesAttribute通过依赖构造（如果无法依赖构造或未注册的，后果未知）
+            </remarks>
+        </member>
+        <member name="M:Agebull.Common.Ioc.DependencyHelper.AddAutoSingleton``1">
+            <summary>
+            注册并使用动态构造
+            </summary>
+            <typeparam name="TService">类型</typeparam>
+            <returns>构造后的类型</returns>
+            <remarks>
+            构造参数构造方式，
+            1. ILogger构造成ILogger&lt;T&gt;
+            2. FromConfigAttribute特性标识的构造成从配置文件读取的对象
+            3. 其余全部通过依赖构造（如果无法依赖构造或未注册的，后果未知）
+            公开属性构造方式
+            1. ILogger构造成ILogger&lt;T&gt;
+            2. FromConfigAttribute特性标识的构造成从配置文件读取的对象
+            3. FromServicesAttribute通过依赖构造（如果无法依赖构造或未注册的，后果未知）
+            </remarks>
         </member>
         <member name="M:Agebull.Common.Ioc.DependencyHelper.AddTransient(System.Type,System.Type)">
             <summary>
@@ -2418,6 +2525,11 @@
             日志记录器
             </summary>
         </member>
+        <member name="P:Agebull.Common.Ioc.DependencyScope.ServiceScope">
+            <summary>
+            依赖服务范围
+            </summary>
+        </member>
         <member name="P:Agebull.Common.Ioc.DependencyScope.InnerModel">
             <summary>
             内部模式,框架使用
@@ -2433,6 +2545,14 @@
             附件内容
             </summary>
         </member>
+        <member name="T:Agebull.Common.Ioc.DynamicCreateBuilder">
+            <summary>
+            接口方法生成器
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Ioc.DynamicCreateBuilder.AutoCreate``1">
+            <summary>生成动态匿名调用内部方法（参数由TArg转为实际类型后调用，并将调用返回值转为TRes）</summary>
+        </member>
         <member name="T:Agebull.Common.Ioc.FromServicesAttribute">
             <summary>
             表示来自依赖构造的对象
@@ -2441,6 +2561,16 @@
         <member name="T:Agebull.Common.Ioc.ScopeData">
             <summary>
             范围数据
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Ioc.ScopeData.ServiceScope">
+            <summary>
+            依赖服务范围
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Ioc.ScopeData.Scope">
+            <summary>
+            当前范围
             </summary>
         </member>
         <member name="P:Agebull.Common.Ioc.ScopeData.Name">
@@ -4515,14 +4645,6 @@
                 公共方法的一些扩展
             </summary>
         </member>
-        <member name="M:Agebull.EntityModel.Common.CommonExtend.ToDecimal(System.Object,System.Decimal)">
-            <summary>
-                正确安全的转为小数
-            </summary>
-            <param name="obj">对象</param>
-            <param name="def">无法转换时的缺省值</param>
-            <returns>小数</returns>
-        </member>
         <member name="M:Agebull.EntityModel.Common.CommonExtend.ToDecimal(System.String,System.Decimal)">
             <summary>
                 正确安全的转为小数
@@ -4530,14 +4652,6 @@
             <param name="str">文本对象</param>
             <param name="def">无法转换时的缺省值</param>
             <returns>小数</returns>
-        </member>
-        <member name="M:Agebull.EntityModel.Common.CommonExtend.ToInteger(System.Object,System.Int32)">
-            <summary>
-                正确安全的转为整数
-            </summary>
-            <param name="obj">对象</param>
-            <param name="def">无法转换时的缺省值</param>
-            <returns>整数</returns>
         </member>
         <member name="M:Agebull.EntityModel.Common.CommonExtend.ToInteger(System.String,System.Int32)">
             <summary>
@@ -4576,6 +4690,32 @@
             <param name="enumObj">目标枚举对象</param>
             <param name="val">枚举值</param>
             <returns>枚举值的描述</returns>
+        </member>
+        <member name="T:Agebull.EntityModel.Common.Number46">
+            <summary>
+            46位数字
+            </summary>
+        </member>
+        <member name="M:Agebull.EntityModel.Common.Number46.To46(System.Int32)">
+            <summary>
+            转为46进制
+            </summary>
+            <param name="num"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Agebull.EntityModel.Common.Number46.Dec46(System.Int32,System.Text.StringBuilder)">
+            <summary>
+            取余
+            </summary>
+            <param name="num"></param>
+            <param name="code"></param>
+        </member>
+        <member name="M:Agebull.EntityModel.Common.Number46.From46(System.String)">
+            <summary>
+            转为46进制
+            </summary>
+            <param name="code"></param>
+            <returns></returns>
         </member>
         <member name="T:Agebull.EntityModel.Common.RandomOperate">
             <summary>

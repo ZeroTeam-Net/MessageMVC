@@ -10,13 +10,12 @@ namespace MicroZero.Kafka.QueueStation
     {
         static async Task Main()
         {
-            DependencyHelper.ServiceCollection.UseKafka();
-            await DependencyHelper.ServiceCollection.UseFlow(typeof(Program).Assembly, false);
+            var services = DependencyHelper.ServiceCollection;
+            services.UseKafka();
+            services.UseFlow(typeof(Program));
 
             //_ = Task.Run(Test);
-
-            Console.ReadKey();
-            Console.WriteLine("Bye bye.");
+            await ZeroFlowControl.WaitEnd();
         }
         static async void Test()
         {

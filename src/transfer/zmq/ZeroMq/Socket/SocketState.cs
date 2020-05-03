@@ -25,7 +25,7 @@ namespace ZeroTeam.ZeroMQ
         /// </summary>
         Binding = 0x4,
         /// <summary>
-        /// 连接方式开启
+        /// 连接方式启动
         /// </summary>
         Open = 0x8,
         /// <summary>

@@ -1,6 +1,4 @@
-﻿using Agebull.Common;
-using System;
-using ZeroTeam.MessageMVC.Context;
+﻿using System;
 
 namespace ZeroTeam.MessageMVC.Messages
 {
@@ -36,7 +34,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <param name="title">消息标题</param>
         /// <param name="content">消息内容</param>
         /// <returns></returns>
-        public static InlineMessage NewRemote<T>(string topic, string title, T content)
+        public static IInlineMessage NewRemote<T>(string topic, string title, T content)
         {
             var msg = new InlineMessage
             {
@@ -55,7 +53,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <param name="title">消息标题</param>
         /// <param name="content">消息内容</param>
         /// <returns></returns>
-        public static InlineMessage NewRemote(string topic, string title, string content = null)
+        public static IInlineMessage NewRemote(string topic, string title, string content = null)
         {
             var msg = new InlineMessage
             {

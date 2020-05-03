@@ -19,6 +19,7 @@ namespace ZeroTeam.MessageMVC.Http
             services.UseCsRedis();
             services.UseRedisPoster();//采用Redis生产端
             services.UseHttp();
+            services.UseFlow(typeof(Startup));
         }
 
         /// <summary>

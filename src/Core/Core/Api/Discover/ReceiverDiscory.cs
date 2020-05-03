@@ -31,7 +31,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <param name="type">控制器类型</param>
         /// <param name="name">发现的服务名称</param>
         /// <returns>传输对象构造器</returns>
-        public static Func<string, IMessageReceiver> DiscoverNetTransport(Type type, out string name)
+        static Func<string, IMessageReceiver> DiscoverNetTransport(Type type, out string name)
         {
             #region Api
             var sa = type.GetCustomAttribute<ServiceAttribute>();
@@ -60,8 +60,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             }
             #endregion
 
-            name = null;
-            return null;
+            name = ZeroAppOption.Instance.ApiServiceName;
+            return RpcTransportBuilder;
             //throw new Exception($"控制器{type.FullName},缺少必要的服务类型声明,请使用ServiceAttribute\\ConsumerAttribute\\NetEventAttribute之一特性声明为Api服务\\消息队列订阅\\分布式事件处理");
         }
     }

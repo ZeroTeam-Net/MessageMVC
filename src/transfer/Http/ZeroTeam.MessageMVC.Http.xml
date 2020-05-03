@@ -14,11 +14,6 @@
                 初始化
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpApp.UseHttp(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Type)">
-            <summary>
-                初始化
-            </summary>
-        </member>
         <member name="M:ZeroTeam.MessageMVC.Http.HttpApp.RunMessageMVC(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
             <summary>
                 初始化
@@ -294,24 +289,59 @@
             <param name="context"></param>
             <returns></returns>
         </member>
+        <member name="T:ZeroTeam.MessageMVC.Http.HttpClientItem">
+            <summary>
+            HttpClient预定义服务映射配置
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpClientItem.TimeOut">
+            <summary>
+            超时时间（秒）
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpClientItem.Name">
+            <summary>
+            别名
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpClientItem.Url">
+            <summary>
+            基础地址,包含http://
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpClientItem.Services">
+            <summary>
+            绑定的服务列表,组合结果为 [Url]/[Service]/[ApiName]
+            </summary>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Http.HttpClientOption">
             <summary>
             HttpClient预定义服务映射配置
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.HttpClientOption.Name">
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpClientOption.DefaultUrl">
             <summary>
-            别名
+            默认地址
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.HttpClientOption.Url">
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpClientOption.DefaultTimeOut">
             <summary>
-            基础地址,包含http://
+            默认超时（秒）
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.HttpClientOption.Services">
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpClientOption.Clients">
             <summary>
-            绑定的服务列表,组合结果为 [Url]/[Service]/[ApiName]
+            所有节点
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Http.HttpClientOption.Instance">
+            <summary>
+            所有节点
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Http.HttpClientOption.ServiceMap">
+            <summary>
+            服务到HttpClientName的查找表.
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Http.MessageRouteOption">
@@ -357,24 +387,9 @@
                 Http生产者
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Http.HttpPoster.ServiceMap">
-            <summary>
-            服务到HttpClientName的查找表.
-            </summary>
-        </member>
         <member name="P:ZeroTeam.MessageMVC.Http.HttpPoster.ZeroTeam#MessageMVC#IZeroDependency#Name">
             <summary>
             名称
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.HttpPoster.ZeroTeam#MessageMVC#Messages#IMessagePoster#State">
-            <summary>
-            运行状态
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpPoster.ZeroTeam#MessageMVC#Messages#IMessagePoster#Initialize">
-            <summary>
-                初始化
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Http.HttpPoster.ZeroTeam#MessageMVC#Messages#IMessagePoster#Post(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
@@ -382,6 +397,15 @@
             生产消息
             </summary>
             <param name="message">消息</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpPoster.CallOut(System.String,System.String,System.String)">
+            <summary>
+            访问外部
+            </summary>
+            <param name="service">服务名称，用于查找HttpClient，不会与api拼接</param>
+            <param name="api">完整的接口名称</param>
+            <param name="content">内容</param>
             <returns></returns>
         </member>
     </members>

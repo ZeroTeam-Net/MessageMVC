@@ -37,7 +37,7 @@ namespace Agebull.Common.Logging
         public static string LogPath { get; set; }
 
         /// <summary>
-        /// 是否开启跟踪日志
+        /// 是否启动跟踪日志
         /// </summary>
         public static bool LogMonitor { get; set; }
 
@@ -47,7 +47,7 @@ namespace Agebull.Common.Logging
         public static bool MonitorIncludeDetails { get; set; }
 
         /// <summary>
-        /// 是否开启SQL日志
+        /// 是否启动SQL日志
         /// </summary>
         public static bool LogDataSql { get; set; }
 
@@ -83,7 +83,7 @@ namespace Agebull.Common.Logging
         public static void Initialize()
         {
             ReadConfig();
-            if (!ConfigurationManager.IsEnable("LogRecorder:noRegist"))
+            if (ConfigurationManager.IsDisable("LogRecorder:noRegist"))
             {
                 DoInitialize();
             }
@@ -101,7 +101,7 @@ namespace Agebull.Common.Logging
             {
                 builder.AddConfiguration(ConfigurationManager.Root.GetSection("Logging"));
                 builder.AddConsole();
-                if (!ConfigurationManager.IsEnable("LogRecorder:innerLogger"))
+                if (ConfigurationManager.IsDisable("LogRecorder:innerLogger"))
                 {
                     return;
                 }

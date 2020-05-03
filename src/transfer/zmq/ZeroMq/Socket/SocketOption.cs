@@ -103,15 +103,11 @@ namespace ZeroTeam.ZeroMQ
         /// </summary>
         static SocketOption()
         {
-            ConfigurationManager.RegistOnChange("ZeroRPC:SocketOption", Instance.Load, true);
+            ConfigurationManager.RegistOnChange<SocketOption>("ZeroRPC:SocketOption", Instance.Load, true);
         }
 
-        void Load()
+        void Load(SocketOption option)
         {
-            var option = ConfigurationManager.Get<SocketOption>("ZeroRPC:SocketOption");
-            if (option == null)
-                return;
-
             if (option.PoolTimeOut > 100)
                 PoolTimeOut = option.PoolTimeOut;
 

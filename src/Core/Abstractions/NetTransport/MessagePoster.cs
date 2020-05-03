@@ -40,7 +40,7 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         ///     初始化
         /// </summary>
-        void IFlowMiddleware.Initialize()
+        Task ILifeFlow.Initialize()
         {
             logger ??= DependencyHelper.LoggerFactory.CreateLogger(nameof(MessagePoster));
             posters = new Dictionary<string, IMessagePoster>();
@@ -59,7 +59,7 @@ namespace ZeroTeam.MessageMVC
                 {
                     logger.Information("无发布器,所有外部请求将失败.");
                 }
-                return;
+                return Task.CompletedTask;
             }
             var def = sec.GetStr("default", "");
             if (posters.TryGetValue(def, out Default))
@@ -83,6 +83,7 @@ namespace ZeroTeam.MessageMVC
                     ServiceMap[service] = poster.Value;
                 }
             }
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -162,7 +163,7 @@ namespace ZeroTeam.MessageMVC
                 if (autoOffline)
                 {
                     inline.OfflineResult();
-                    LogRecorder.MonitorDetails(() => $"返回 => {msg.ToJson(true)}");
+                    LogRecorder.MonitorDetails(() => $"返回 => {SmartSerializer.ToInnerString(msg)}");
                 }
                 return (inline, inline.State);
             }

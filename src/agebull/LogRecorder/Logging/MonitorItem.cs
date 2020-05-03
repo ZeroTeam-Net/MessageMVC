@@ -7,7 +7,7 @@ namespace Agebull.Common.Logging
     ///     跟踪信息
     /// </summary>
     [Serializable]
-    internal class MonitorItem
+    public class MonitorItem
     {
         /// <summary>
         ///     记录堆栈
@@ -34,7 +34,7 @@ namespace Agebull.Common.Logging
         /// <summary>
         ///     刷新资源检测
         /// </summary>
-        internal void BeginStep(string title)
+        public void BeginStep(string title)
         {
             if (InMonitor)
                 Stack.Push(new TraceStep
@@ -55,19 +55,23 @@ namespace Agebull.Common.Logging
         /// <summary>
         ///     刷新资源检测
         /// </summary>
-        public void End()
+        public TraceStep End()
         {
             if (!InMonitor)
-                return;
+                return null;
             InMonitor = false;
             while (!Stack.IsEmpty)
             {
                 Stack.Pop();
             }
             Stack.FixValue.End = DateTime.Now;
+            return Stack.FixValue;
         }
-
-        internal void Trace(string msg)
+        /// <summary>
+        /// 设置跟踪消息
+        /// </summary>
+        /// <param name="msg"></param>
+        public void Trace(string msg)
         {
             Stack.Current.Children.Add(new TraceItem
             {

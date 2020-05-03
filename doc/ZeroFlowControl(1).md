@@ -10,7 +10,7 @@
 # 主流程
 
 
-## CheckOption
+## Check
 > 配置校验
 
 
@@ -32,7 +32,7 @@
 |ReConsumerMiddleware|0|异常消息重新浪费|
 |KafkaProducer|0|Kafka消息发布,目前仅实现初始化,后续应实现里程内通讯,以保证可靠高效的投递|
 
-5. 所有中间件执行CheckOption
+5. 所有中间件执行Check
 > 并未进行异常处理,仅记录日志,所有执行异常将导致应用程序退出
 
 6. IocHelper对象刷新
@@ -99,7 +99,7 @@
             IocHelper.AddTransient<IMessageMiddleware, StorageMiddleware>();
             IocHelper.AddTransient<IFlowMiddleware, ReConsumerMiddleware>();
             //主流程
-            ZeroFlowControl.CheckOption();
+            ZeroFlowControl.Check();
             KafkaProducer.Initialize();
             ZeroFlowControl.Discove(assembly);
             ZeroFlowControl.Initialize();

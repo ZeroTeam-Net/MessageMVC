@@ -316,13 +316,6 @@ namespace ZeroTeam.MessageMVC.RedisMQ
 
         #region IMessagePoster
 
-        StationStateType state;
-
-        /// <summary>
-        /// 运行状态
-        /// </summary>
-        StationStateType IMessagePoster.State { get => state; set => state = value; }
-
         /// <summary>
         /// 生产消息
         /// </summary>
@@ -367,34 +360,36 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <summary>
         /// 关闭
         /// </summary>
-        void IFlowMiddleware.Start()
+        Task ILifeFlow.Open()
         {
             Logger.Information("CsRedisPoster >>> Start");
             client = new CSRedisClient(RedisOption.Instance.ConnectionString);
-            state = StationStateType.Run;
+            State = StationStateType.Run;
             tokenSource = new CancellationTokenSource();
-            _ = AsyncPostQueue();
+            return AsyncPostQueue();
         }
 
         /// <summary>
         /// 关闭
         /// </summary>
-        void IFlowMiddleware.Close()
+        Task ILifeFlow.Close()
         {
             Logger.Information("CsRedisPoster >>> Close");
             tokenSource?.Cancel();
             tokenSource?.Dispose();
             tokenSource = null;
-            state = StationStateType.Closed;
+            State = StationStateType.Closed;
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// 注销时调用
         /// </summary>
-        void IFlowMiddleware.End()
+        Task ILifeFlow.Destory()
         {
-            Logger.Information("CsRedisPoster >>> CheckOption");
+            Logger.Information("CsRedisPoster >>> Check");
             client.Dispose();
+            return Task.CompletedTask;
         }
 
         #endregion

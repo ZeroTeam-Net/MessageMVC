@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Agebull.Common.Ioc;
 using Agebull.EntityModel.Common;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 
 namespace Agebull.Common.Configuration
@@ -53,11 +55,29 @@ namespace Agebull.Common.Configuration
         #region 配置文件组合
 
         /// <summary>
+        /// 指定配置是否启用
+        /// </summary>
+        /// <param name="key">配置的键名称，应已约定为bool类型</param>
+        /// <param name="def">不存在时默认值</param>
+        public static bool IsEnable(string key, bool def = false)
+        {
+            var sec = Root.GetSection(key);
+            return sec == null
+                ? def
+                : string.Equals(sec.Value, "true", StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
         /// 刷新
         /// </summary>
-        public static bool IsEnable(string key)
+        /// <param name="key">配置的键名称，应已约定为bool类型</param>
+        /// <param name="def">不存在时默认值</param>
+        public static bool IsDisable(string key, bool def = false)
         {
-            return string.Equals(Root.GetSection(key)?.Value, "true", StringComparison.OrdinalIgnoreCase);
+            var sec = Root.GetSection(key);
+            return sec == null
+                ? def
+                : string.Equals(sec.Value, "false", StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -127,7 +147,38 @@ namespace Agebull.Common.Configuration
             if (runNow)
                 cfg.Value();
         }
-
+        /// <summary>
+        /// 注册更新处理器
+        /// </summary>
+        /// <param name="section">节点</param>
+        /// <param name="action">更新处理方法</param>
+        /// <param name="runNow">是否现在执行一次</param>
+        public static void RegistOnChange<TConfig>(string section, Action<TConfig> action, bool runNow = true)
+            where TConfig : class
+        {
+            var cfg = new NameValue<string, Action>
+            {
+                Name = section,
+                Value = () =>
+                {
+                    try
+                    {
+                        var opt = Option<TConfig>(section);
+                        if (opt != null)
+                            action(opt);
+                    }
+                    catch (Exception ex)//防止异常出错,中断应用
+                    {
+                        Console.WriteLine(ex);
+                    }
+                }
+            };
+            DependencyHelper.ServiceCollection.AddOptions<TConfig>(section);
+            actions.Add(cfg);
+            ChangeToken.OnChange(() => Root.GetSection(cfg.Name).GetReloadToken(), cfg.Value);
+            if (runNow)
+                cfg.Value();
+        }
         #endregion
 
         #region 实例
@@ -197,11 +248,7 @@ namespace Agebull.Common.Configuration
                 return def;
             }
             var value = this[key];
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                return this[key] = def;
-            }
-            return value;
+            return string.IsNullOrWhiteSpace(value) ? def : value;
         }
 
         /// <summary>
@@ -506,22 +553,6 @@ namespace Agebull.Common.Configuration
         }
 
         /// <summary>
-        ///   配置一个配置内容
-        /// </summary>
-        /// <typeparam name="T"> </typeparam>
-        /// <param name="key">名称</param>
-        /// <param name="value"> </param>
-        public static void SetAppSetting<T>(string key, T value) where T : struct
-        {
-            if (key == null)
-            {
-                return;
-            }
-
-            AppSettings[key] = value.ToString();
-        }
-
-        /// <summary>
         ///   获取连接串的节点信息
         /// </summary>
         /// <param name="key">名称</param>
@@ -530,20 +561,6 @@ namespace Agebull.Common.Configuration
         public static string GetConnectionString(string key, string def = "")
         {
             return key == null ? def : ConnectionStrings[key];
-        }
-
-        /// <summary>
-        ///   设置连接串的节点信息
-        /// </summary>
-        /// <param name="key">名称</param>
-        /// <param name="connectionString">连接字符</param>
-        public static void SetConnectionString(string key, string connectionString)
-        {
-            if (key == null)
-            {
-                return;
-            }
-            ConnectionStrings[key] = connectionString;
         }
 
         #endregion

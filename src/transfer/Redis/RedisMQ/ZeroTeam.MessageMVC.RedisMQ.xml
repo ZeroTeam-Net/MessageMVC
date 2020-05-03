@@ -155,11 +155,6 @@
             <param name="path"></param>
             <returns></returns>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.ZeroTeam#MessageMVC#Messages#IMessagePoster#State">
-            <summary>
-            运行状态
-            </summary>
-        </member>
         <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.ZeroTeam#MessageMVC#Messages#IMessagePoster#Post(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
             <summary>
             生产消息
@@ -182,17 +177,17 @@
             等级
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.ZeroTeam#MessageMVC#IFlowMiddleware#Start">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.ZeroTeam#MessageMVC#ILifeFlow#Open">
             <summary>
             关闭
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.ZeroTeam#MessageMVC#IFlowMiddleware#Close">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.ZeroTeam#MessageMVC#ILifeFlow#Close">
             <summary>
             关闭
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.ZeroTeam#MessageMVC#IFlowMiddleware#End">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.ZeroTeam#MessageMVC#ILifeFlow#Destory">
             <summary>
             注销时调用
             </summary>
@@ -260,7 +255,7 @@
             实例
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisOption.Update">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisOption.Update(ZeroTeam.MessageMVC.RedisMQ.RedisOption)">
             <summary>
             重新载入并更新
             </summary>

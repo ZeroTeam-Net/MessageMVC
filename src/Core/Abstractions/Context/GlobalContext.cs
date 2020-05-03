@@ -42,7 +42,7 @@ namespace ZeroTeam.MessageMVC.Context
         public static IZeroContext Reset() => DependencyScope.Dependency.Annex(DependencyHelper.Create<IZeroContext>());
 
         /// <summary>
-        ///     置空并销毁当前上下文
+        ///     置空并注销当前上下文
         /// </summary>
         public static void SetEmpty() => DependencyScope.Dependency.Remove<IZeroContext>();
 

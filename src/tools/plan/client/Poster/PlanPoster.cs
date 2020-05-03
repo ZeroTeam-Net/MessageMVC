@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.Tools;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.PlanTasks
@@ -81,11 +80,9 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <returns></returns>
         static async Task<IOperatorStatus> PostToService<TArg>(PlanOption option, string topic, string title, TArg content)
         {
-            if (GlobalContext.EnableLinkTrace)
-            {
-                option.trace = GlobalContext.CurrentNoLazy?.Trace;
-            }
-            var message = new InlineMessage
+            var innerMessage = MessageHelper.NewRemote(topic, title, content);
+            innerMessage.ArgumentOffline(SmartSerializer.MsJson);
+            IInlineMessage message = new InlineMessage
             {
                 ID = Guid.NewGuid().ToString("N").ToUpper(),
                 ServiceName = PlanServiceOption.Instance.ServiceName,
@@ -93,13 +90,18 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                 ArgumentData = new PlanCallInfo
                 {
                     Option = option,
-                    Message = MessageHelper.NewRemote(topic, title, content)
+                    Message = innerMessage as InlineMessage
                 }
             };
-            option.plan_id = message.ID;
+            if (GlobalContext.EnableLinkTrace)
+            {
+                message.Trace = GlobalContext.CurrentNoLazy?.Trace;
+            }
+
+            option.PlanId = message.ID;
             var (msg, _) = await MessagePoster.Post(message);
             return msg.State.IsSuccess()
-                ? ApiResultHelper.State(OperatorStatusCode.Queue,"已进入计划任务队列") 
+                ? ApiResultHelper.State(OperatorStatusCode.Queue, "已进入计划任务队列")
                 : ApiResultHelper.State(OperatorStatusCode.ReTry);
         }
 
@@ -113,10 +115,6 @@ namespace ZeroTeam.MessageMVC.PlanTasks
         /// <returns></returns>
         static async Task<IOperatorStatus> PostToService(PlanOption option, string topic, string title, string content)
         {
-            if (GlobalContext.EnableLinkTrace)
-            {
-                option.trace = GlobalContext.CurrentNoLazy?.Trace;
-            }
             var message = new InlineMessage
             {
                 ID = Guid.NewGuid().ToString("N").ToUpper(),
@@ -125,13 +123,17 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                 ArgumentData = new PlanCallInfo
                 {
                     Option = option,
-                    Message = MessageHelper.NewRemote(topic, title, content)
+                    Message = MessageHelper.NewRemote(topic, title, content) as InlineMessage
                 }
             };
-            option.plan_id = message.ID;
+            if (GlobalContext.EnableLinkTrace)
+            {
+                message.Trace = GlobalContext.CurrentNoLazy?.Trace;
+            }
+            option.PlanId = message.ID;
             var (msg, _) = await MessagePoster.Post(message);
             return msg.State.IsSuccess()
-                ? ApiResultHelper.State(OperatorStatusCode.Queue,"已进入计划任务队列") 
+                ? ApiResultHelper.State(OperatorStatusCode.Queue, "已进入计划任务队列")
                 : ApiResultHelper.State(OperatorStatusCode.ReTry);
         }
         #endregion

@@ -29,24 +29,29 @@
             插件对象
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.AddIn.AddInImporter.ZeroTeam#MessageMVC#IFlowMiddleware#CheckOption(ZeroTeam.MessageMVC.ZeroAppOption)">
+        <member name="M:ZeroTeam.MessageMVC.AddIn.AddInImporter.ZeroTeam#MessageMVC#ILifeFlow#Check(ZeroTeam.MessageMVC.ZeroAppOption)">
             <summary>
-            配置校验
+            检查
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.AddIn.AddInImporter.ZeroTeam#MessageMVC#IFlowMiddleware#Initialize">
+        <member name="M:ZeroTeam.MessageMVC.AddIn.AddInImporter.ZeroTeam#MessageMVC#ILifeFlow#Initialize">
             <summary>
-            初始化
+            准备
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.AddIn.AddInImporter.ZeroTeam#MessageMVC#IFlowMiddleware#Start">
+        <member name="M:ZeroTeam.MessageMVC.AddIn.AddInImporter.ZeroTeam#MessageMVC#ILifeFlow#Open">
             <summary>
-            初始化
+            启动
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.AddIn.AddInImporter.ZeroTeam#MessageMVC#IFlowMiddleware#End">
+        <member name="M:ZeroTeam.MessageMVC.AddIn.AddInImporter.ZeroTeam#MessageMVC#ILifeFlow#Close">
             <summary>
-            初始化
+            关闭
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.AddIn.AddInImporter.ZeroTeam#MessageMVC#ILifeFlow#Destory">
+            <summary>
+            注销
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiAction">
@@ -54,9 +59,9 @@
                 Api站点
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAction.Name">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAction.RouteName">
             <summary>
-                Api名称
+                Api路由名称
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAction.IsApiContract">
@@ -188,6 +193,11 @@
             查找API
             </summary>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.Discover(System.Type)">
+            <summary>
+            查找API
+            </summary>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.FindApi(System.Type)">
             <summary>
             查找API
@@ -201,6 +211,12 @@
             <param name="path"></param>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.xUnitCode(System.String)">
+            <summary>
+            生成单元测试代码
+            </summary>
+            <param name="path"></param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.ApiSql(System.String)">
             <summary>
             生成单元测试代码
             </summary>
@@ -317,7 +333,7 @@
             等级
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ConfigMiddleware.ZeroTeam#MessageMVC#IFlowMiddleware#CheckOption(ZeroTeam.MessageMVC.ZeroAppOption)">
+        <member name="M:ZeroTeam.MessageMVC.ConfigMiddleware.ZeroTeam#MessageMVC#ILifeFlow#Check(ZeroTeam.MessageMVC.ZeroAppOption)">
             <summary>
                 配置校验,作为第一步
             </summary>
@@ -332,27 +348,38 @@
             应用扩展方法
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApp.CheckOption(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.AddDependency(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             检查并注入配置
             </summary>
             <param name="services"></param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlow(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Type,System.Boolean)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseMsJson(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            使用System.Text.Json序列化工具
+            </summary>
+            <param name="services"></param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlow(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Boolean)">
+            <summary>
+            启动主流程控制器
+            </summary>
+            <param name="services">依赖服务</param>
+            <param name="autoDiscover">对接口自动发现</param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlow(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Type)">
             <summary>
             启动主流程控制器，发现指定类型所在的程序集的Api，由参数决定是否等待系统退出
             </summary>
             <param name="services"></param>
             <param name="type">需要发现服务的程序集的类型之一</param>
-            <param name="waitEnd"></param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlow(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly,System.Boolean)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlow(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly)">
             <summary>
             启动主流程控制器，发现指定程序集的Api，由参数决定是否等待系统退出
             </summary>
             <param name="services"></param>
             <param name="assembly">需要发现服务的程序集</param>
-            <param name="waitEnd"></param>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseTest(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly)">
             <summary>
@@ -361,23 +388,26 @@
             <param name="services"></param>
             <param name="assembly">需要发现服务的程序集</param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlow(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlowAndWait(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Boolean)">
             <summary>
-            启动主流程控制器，不发现Api，适用于无Controler的场景
+            启动主流程控制器并等待退出
             </summary>
-            <param name="services"></param>
+            <param name="services">依赖服务</param>
+            <param name="autoDiscover">对接口自动发现</param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlowByAutoDiscover(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlowAndWait(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Type)">
             <summary>
-            启动主流程控制器，同时自动发现Api
+            启动主流程控制器，发现指定类型所在的程序集的Api，由参数决定是否等待系统退出
             </summary>
             <param name="services"></param>
+            <param name="type">需要发现服务的程序集的类型之一</param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlowAndWait(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlowAndWait(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly)">
             <summary>
-            启动主流程控制器并等待退出，同时自动发现Api
+            启动主流程控制器，发现指定程序集的Api，由参数决定是否等待系统退出
             </summary>
             <param name="services"></param>
+            <param name="assembly">需要发现服务的程序集</param>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroFlowControl">
             <summary>
@@ -411,7 +441,7 @@
         </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroFlowControl.IsDestroy">
             <summary>
-                已销毁
+                已注销
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroFlowControl.IsClosed">
@@ -419,7 +449,7 @@
                 已关闭
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.CheckOption">
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.Check">
             <summary>
                 配置校验,作为第一步
             </summary>
@@ -516,15 +546,20 @@
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.RegistService(ZeroTeam.MessageMVC.Services.IService)">
             <summary>
-                注册对象
+                注册服务
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.OnZeroInitialize">
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.RegistService(ZeroTeam.MessageMVC.Services.IService@)">
             <summary>
-                系统启动时调用
+                注册服务
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.OnZeroStart">
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.InitializeAll">
+            <summary>
+                初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.OpenAll">
             <summary>
                 系统启动时调用
             </summary>
@@ -534,14 +569,14 @@
                 重新启动未正常启动的项目
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.OnZeroClose">
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.CloseAll">
             <summary>
-                注销时调用
+                关闭
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.OnZeroEnd">
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.DestoryAll">
             <summary>
-                注销时调用
+                注销
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.EmptyReceiver">
@@ -815,13 +850,12 @@
             析构
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Services.ZeroService.ZeroTeam#MessageMVC#IFlowMiddleware#Start">
+        <member name="M:ZeroTeam.MessageMVC.Services.ZeroService.ZeroTeam#MessageMVC#ILifeFlow#Open">
             <summary>
-            开始
+            启动
             </summary>
-            <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Services.ZeroService.ZeroTeam#MessageMVC#IFlowMiddleware#End">
+        <member name="M:ZeroTeam.MessageMVC.Services.ZeroService.ZeroTeam#MessageMVC#ILifeFlow#Destory">
             <inheritdoc/>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Services.ZeroService.ZeroTeam#MessageMVC#IStateMachineControl#DoEnd">
@@ -850,7 +884,7 @@
             <summary>
                 注册方法
             </summary>
-            <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
+            <param name="route">方法外部方法名称，如 v1/auto/getdid </param>
             <param name="info">反射信息</param>
         </member>
         <member name="T:ZeroTeam.MessageMVC.IStateMachineControl">

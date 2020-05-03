@@ -14,21 +14,6 @@
             执行自动注册
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.AddIn.IAutoRegister.Initialize">
-            <summary>
-            初始化
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.AddIn.IAutoRegister.Start">
-            <summary>
-            开始
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.AddIn.IAutoRegister.End">
-            <summary>
-            结束
-            </summary>
-        </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiResultHelper">
             <summary>API返回基类</summary>
         </member>
@@ -219,7 +204,7 @@
                 访问控制
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IApiAction.Name">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IApiAction.RouteName">
             <summary>
                 Api名称
             </summary>
@@ -656,73 +641,53 @@
             <param name="eid">错误码</param>
             <returns>消息文本</returns>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption">
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiOption">
             <summary>
                 API访问配置
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.None">
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiOption.None">
             <summary>
                 不可访问
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.Public">
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiOption.Public">
             <summary>
                 公开访问(网关入口)
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.Internal">
-            <summary>
-                内部访问(内部Poster)
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.Anymouse">
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiOption.Anymouse">
             <summary>
                 匿名访问
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.Authority">
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiOption.Readonly">
             <summary>
-                需要身份验证
+                只读操作
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.ArgumentCanNil">
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiOption.ArgumentCanNil">
             <summary>
                 参数可以为null
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.DictionaryArgument">
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiOption.DictionaryArgument">
             <summary>
                 参数仅为定义,内部进行通过字典读取
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.OpenAccess">
-            <summary>
-            开放访问,即公开且匿名访问
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.UserAccess">
-            <summary>
-            用户访问,即公开且需要身份验证
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption.ArgumentIsDefault">
-            <summary>
-                参数仅为定义,内部进行通过字典读取
-            </summary>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOptionFilterAttribute">
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiOptionAttribute">
             <summary>
             API配置过滤器
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOptionFilterAttribute.#ctor(ZeroTeam.MessageMVC.ZeroApis.ApiAccessOption)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiOptionAttribute.#ctor(ZeroTeam.MessageMVC.ZeroApis.ApiOption)">
             <summary>
             构造
             </summary>
             <param name="option"></param>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAccessOptionFilterAttribute.Option">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiOptionAttribute.Option">
             <summary>
             配置
             </summary>
@@ -886,7 +851,7 @@
             无，刚构造
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.StationState.CheckOption">
+        <member name="F:ZeroTeam.MessageMVC.StationState.Check">
             <summary>
             配置错误
             </summary>
@@ -933,7 +898,7 @@
         </member>
         <member name="F:ZeroTeam.MessageMVC.StationState.Destroy">
             <summary>
-            已销毁，析构已调用
+            已注销，析构已调用
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.StationState.Text(System.Int32)">
@@ -998,6 +963,11 @@
                 当前应用名称
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.ApiServiceName">
+            <summary>
+                当前接口服务名称（未明显设置Service属性的Controler使用）
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.ShortName">
             <summary>
                 当前应用简称
@@ -1041,6 +1011,11 @@
         <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.EnableAddIn">
             <summary>
                 启用插件自动加载
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.ServiceMap">
+            <summary>
+                服务映射，即将对应服务名称替换成另一个服务
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroAppConfig.CopyByHase(ZeroTeam.MessageMVC.ZeroAppConfig)">
@@ -1178,7 +1153,7 @@
         </member>
         <member name="M:ZeroTeam.MessageMVC.Context.GlobalContext.SetEmpty">
             <summary>
-                置空并销毁当前上下文
+                置空并注销当前上下文
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Context.GlobalContext.User">
@@ -1568,9 +1543,9 @@
                 返回值说明
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Documents.ApiDocument.ApiName">
+        <member name="F:ZeroTeam.MessageMVC.Documents.ApiDocument.Route">
             <summary>
-                Api名称
+                Api路由地址
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.PageUrl">
@@ -1578,9 +1553,14 @@
                 承载页面
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.Controller">
+        <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.ControllerName">
             <summary>
-                所在控制器类型
+                所在控制器名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.ControllerCaption">
+            <summary>
+                所在控制器说明
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.HaseArgument">
@@ -1864,31 +1844,6 @@
             表示一个流程中间件
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.IFlowMiddleware.CheckOption(ZeroTeam.MessageMVC.ZeroAppOption)">
-            <summary>
-                配置校验
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.IFlowMiddleware.Initialize">
-            <summary>
-                初始化
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.IFlowMiddleware.Start">
-            <summary>
-            开启
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.IFlowMiddleware.Close">
-            <summary>
-            关闭
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.IFlowMiddleware.End">
-            <summary>
-            注销时调用
-            </summary>
-        </member>
         <member name="T:ZeroTeam.MessageMVC.IHealthCheck">
             <summary>
             表示一个应用中间件
@@ -1897,6 +1852,36 @@
         <member name="M:ZeroTeam.MessageMVC.IHealthCheck.Check">
             <summary>
             执行健康检查
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ILifeFlow">
+            <summary>
+            表示一个生命周期流程
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ILifeFlow.Check(ZeroTeam.MessageMVC.ZeroAppOption)">
+            <summary>
+                预检
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ILifeFlow.Initialize">
+            <summary>
+                初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ILifeFlow.Open">
+            <summary>
+            启动
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ILifeFlow.Close">
+            <summary>
+            关闭
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ILifeFlow.Destory">
+            <summary>
+            注销
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Services.IService">
@@ -1972,54 +1957,6 @@
             <summary>
             等级,用于确定中间件优先级
             </summary>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.Messages.JsonHelper">
-            <summary>
-            Json序列化装饰器
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.JsonHelper.ToJson(System.Object,System.Boolean)">
-            <summary>
-            序列化
-            </summary>
-            <param name="t"></param>
-            <param name="indented">是否格式化</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.JsonHelper.SerializeObject``1(``0)">
-            <summary>
-            序列化
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="t"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.JsonHelper.DeserializeObject``1(System.String)">
-            <summary>
-            反序列化
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.JsonHelper.TryDeserializeObject``1(System.String,``0@)">
-            <summary>
-            反序列化
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.JsonHelper.TryDeserializeObject``1(System.String)">
-            <summary>
-            反序列化
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.JsonHelper.DeserializeObject(System.String,System.Type)">
-            <summary>
-            反序列化
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.JsonHelper.ToJsonBytes``1(``0)">
-            <summary>
-            转为UTF8字节
-            </summary>
-            <param name="obj"></param>
-            <returns>字节</returns>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Messages.IInlineMessage">
             <summary>
@@ -2542,6 +2479,11 @@
             已接受
             </summary>
         </member>
+        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.Unsend">
+            <summary>
+            未发送
+            </summary>
+        </member>
         <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.Send">
             <summary>
             已发送
@@ -2595,6 +2537,11 @@
         <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.BusinessError">
             <summary>
             处理错误
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.NoUs">
+            <summary>
+            并非MessageMVC服务
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.FrameworkError">
@@ -2743,6 +2690,11 @@
         <member name="P:ZeroTeam.MessageMVC.Messages.MessagePostBase.Logger">
             <summary>
             日志器
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.MessagePostBase.State">
+            <summary>
+            运行状态
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.MessagePostBase.Initialize">
@@ -3015,155 +2967,6 @@
             数据发送结束
             </summary>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.Messages.CDataXmlSerializeProxy">
-            <summary>
-            Xml序列化装饰器
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.CDataXmlSerializeProxy.ToObject``1(System.String)">
-            <summary>
-            反序列化
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.CDataXmlSerializeProxy.ToObject(System.String,System.Type)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.CDataXmlSerializeProxy.ToString(System.Object,System.Boolean)">
-            <inheritdoc/>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.Messages.IBsonSerializeProxy">
-            <summary>
-            Bson序列化装饰器
-            </summary>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.Messages.IJsonSerializeProxy">
-            <summary>
-            Json序列化装饰器
-            </summary>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.Messages.ISerializeProxy">
-            <summary>
-            表示一个序列化代理
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.ISerializeProxy.TryDeserialize(System.String,System.Type,System.Object@)">
-            <summary>
-            反序列化
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.ISerializeProxy.TryDeserialize``1(System.String,``0@)">
-            <summary>
-            反序列化
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.ISerializeProxy.ToObject``1(System.String)">
-            <summary>
-            反序列化
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.ISerializeProxy.ToObject(System.String,System.Type)">
-            <summary>
-            反序列化
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.ISerializeProxy.ToString(System.Object,System.Boolean)">
-            <summary>
-            序列化
-            </summary>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.Messages.IXmlSerializeProxy">
-            <summary>
-            Xml序列化装饰器
-            </summary>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.Messages.JsonSerializeProxy">
-            <summary>
-            Json序列化装饰器
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.JsonSerializeProxy.ToObject``1(System.String)">
-            <summary>
-            反序列化
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.JsonSerializeProxy.ToObject(System.String,System.Type)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.JsonSerializeProxy.ToString(System.Object,System.Boolean)">
-            <inheritdoc/>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.Messages.NewtonJsonSerializeProxy">
-            <summary>
-            Json序列化装饰器
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.NewtonJsonSerializeProxy.ToObject``1(System.String)">
-            <summary>
-            反序列化
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.NewtonJsonSerializeProxy.ToObject(System.String,System.Type)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.NewtonJsonSerializeProxy.ToString(System.Object,System.Boolean)">
-            <inheritdoc/>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.Messages.SerializeProxy">
-            <summary>
-            值类型序列化代理
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.SerializeProxy.Convert">
-            <summary>
-            转换器
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.SerializeProxy.ToObject``1(System.String)">
-            <summary>
-            反序列化
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.SerializeProxy.ToObject(System.String,System.Type)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.SerializeProxy.ToString(System.Object,System.Boolean)">
-            <inheritdoc/>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.Messages.SerializeType">
-            <summary>
-            序列化类型
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Messages.SerializeType.None">
-            <summary>
-            不需要
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Messages.SerializeType.Json">
-            <summary>
-            JSON
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Messages.SerializeType.NewtonJson">
-            <summary>
-            Newtonsoft的JSON
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Messages.SerializeType.Xml">
-            <summary>
-            XML
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Messages.SerializeType.Bson">
-            <summary>
-            gRPC的BSON
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Messages.SerializeType.Custom">
-            <summary>
-            自定义
-            </summary>
-        </member>
         <member name="T:ZeroTeam.MessageMVC.Messages.ArgumentScope">
             <summary>
             序列化类型
@@ -3204,21 +3007,6 @@
             构造
             </summary>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.Messages.SerializeTypeAttribute">
-            <summary>
-            表示自自定义序列化
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.SerializeTypeAttribute.Type">
-            <summary>
-            类型
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.SerializeTypeAttribute.#ctor(ZeroTeam.MessageMVC.Messages.SerializeType)">
-            <summary>
-            构造
-            </summary>
-        </member>
         <member name="T:ZeroTeam.MessageMVC.Messages.ArgumentSerializeTypeAttribute">
             <summary>
             参数序列化
@@ -3249,9 +3037,154 @@
             构造
             </summary>
         </member>
+        <member name="T:ZeroTeam.MessageMVC.Messages.SerializeType">
+            <summary>
+            序列化类型
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Messages.SerializeType.None">
+            <summary>
+            不需要
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Messages.SerializeType.Json">
+            <summary>
+            JSON
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Messages.SerializeType.NewtonJson">
+            <summary>
+            Newtonsoft的JSON
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Messages.SerializeType.Xml">
+            <summary>
+            XML
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Messages.SerializeType.Bson">
+            <summary>
+            gRPC的BSON
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Messages.SerializeType.Custom">
+            <summary>
+            自定义
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Messages.SerializeTypeAttribute">
+            <summary>
+            表示自自定义序列化
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.SerializeTypeAttribute.Type">
+            <summary>
+            类型
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.SerializeTypeAttribute.#ctor(ZeroTeam.MessageMVC.Messages.SerializeType)">
+            <summary>
+            构造
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Messages.JsonHelper">
+            <summary>
+            Json序列化装饰器
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Messages.JsonHelper.NewtonJson">
+            <summary>
+            使用NewtonsoftJson的序列化器
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.JsonHelper.ToJson(System.Object,System.Boolean)">
+            <summary>
+            序列化
+            </summary>
+            <param name="t"></param>
+            <param name="indented">是否格式化</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.JsonHelper.SerializeObject``1(``0)">
+            <summary>
+            序列化
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="t"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.JsonHelper.DeserializeObject``1(System.String)">
+            <summary>
+            反序列化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.JsonHelper.TryDeserializeObject``1(System.String,``0@)">
+            <summary>
+            反序列化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.JsonHelper.TryDeserializeObject``1(System.String)">
+            <summary>
+            反序列化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.JsonHelper.DeserializeObject(System.String,System.Type)">
+            <summary>
+            反序列化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.JsonHelper.ToJsonBytes``1(``0)">
+            <summary>
+            转为UTF8字节
+            </summary>
+            <param name="obj"></param>
+            <returns>字节</returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Messages.JsonSerializeProxy">
+            <summary>
+            Json序列化装饰器
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.JsonSerializeProxy.ToObject``1(System.String)">
+            <summary>
+            反序列化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.JsonSerializeProxy.ToObject(System.String,System.Type)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.JsonSerializeProxy.ToString(System.Object,System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Messages.SerializeProxy">
+            <summary>
+            值类型序列化代理
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.SerializeProxy.Convert">
+            <summary>
+            转换器
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.SerializeProxy.ToObject``1(System.String)">
+            <summary>
+            反序列化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.SerializeProxy.ToObject(System.String,System.Type)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.SerializeProxy.ToString(System.Object,System.Boolean)">
+            <inheritdoc/>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Messages.SmartSerializer">
             <summary>
             智能序列化器
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Messages.SmartSerializer.MsJson">
+            <summary>
+            内置序列化器
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.SmartSerializer.SerializeMessage(ZeroTeam.MessageMVC.Messages.IMessageItem)">
@@ -3319,6 +3252,31 @@
             基于内部全部使用JSON传输的规则,如序列化器不存在,则为JSON
             </remarks>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.SmartSerializer.FromInnerString``1(System.String,System.Boolean)">
+            <summary>
+            自动根据字符特点反序列化
+            </summary>
+            <param name="str">文本</param>
+            <param name="trim">执行Trim,以消除空白字符</param>
+            <returns>对象</returns>
+            <remarks>
+            xml以&lt;为第一个字符
+            json以[或{为第一个字符
+            </remarks>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.SmartSerializer.TryFromInnerString``1(System.String,``0@,System.Boolean)">
+            <summary>
+            自动根据字符特点反序列化
+            </summary>
+            <param name="str">文本</param>
+            <param name="obj">返回的对象</param>
+            <param name="trim">执行Trim,以消除空白字符</param>
+            <returns>对象</returns>
+            <remarks>
+            xml以&lt;为第一个字符
+            json以[或{为第一个字符
+            </remarks>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.SmartSerializer.FromInnerString(System.String,System.Type,System.Boolean)">
             <summary>
             自动根据字符特点反序列化
@@ -3378,6 +3336,83 @@
             反序列化
             </summary>
         </member>
+        <member name="T:ZeroTeam.MessageMVC.Messages.IBsonSerializeProxy">
+            <summary>
+            Bson序列化装饰器
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Messages.IJsonSerializeProxy">
+            <summary>
+            Json序列化装饰器
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Messages.ISerializeProxy">
+            <summary>
+            表示一个序列化代理
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.ISerializeProxy.TryDeserialize(System.String,System.Type,System.Object@)">
+            <summary>
+            反序列化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.ISerializeProxy.TryDeserialize``1(System.String,``0@)">
+            <summary>
+            反序列化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.ISerializeProxy.ToObject``1(System.String)">
+            <summary>
+            反序列化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.ISerializeProxy.ToObject(System.String,System.Type)">
+            <summary>
+            反序列化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.ISerializeProxy.ToString(System.Object,System.Boolean)">
+            <summary>
+            序列化
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Messages.IXmlSerializeProxy">
+            <summary>
+            Xml序列化装饰器
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Messages.NewtonJsonSerializeProxy">
+            <summary>
+            Json序列化装饰器
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.NewtonJsonSerializeProxy.ToObject``1(System.String)">
+            <summary>
+            反序列化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.NewtonJsonSerializeProxy.ToObject(System.String,System.Type)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.NewtonJsonSerializeProxy.ToString(System.Object,System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Messages.CDataXmlSerializeProxy">
+            <summary>
+            Xml序列化装饰器
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.CDataXmlSerializeProxy.ToObject``1(System.String)">
+            <summary>
+            反序列化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.CDataXmlSerializeProxy.ToObject(System.String,System.Type)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.CDataXmlSerializeProxy.ToString(System.Object,System.Boolean)">
+            <inheritdoc/>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Messages.XmlSerializeProxy">
             <summary>
             Xml序列化装饰器
@@ -3404,7 +3439,7 @@
             默认的生产者
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.MessagePoster.ZeroTeam#MessageMVC#IFlowMiddleware#Initialize">
+        <member name="M:ZeroTeam.MessageMVC.MessagePoster.ZeroTeam#MessageMVC#ILifeFlow#Initialize">
             <summary>
                 初始化
             </summary>

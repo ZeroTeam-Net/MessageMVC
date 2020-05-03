@@ -7,9 +7,13 @@
 
   <ItemGroup>
     <Compile Remove="config\**" />
+    <Compile Remove="logs\**" />
     <Content Remove="config\**" />
+    <Content Remove="logs\**" />
     <EmbeddedResource Remove="config\**" />
+    <EmbeddedResource Remove="logs\**" />
     <None Remove="config\**" />
+    <None Remove="logs\**" />
   </ItemGroup>
 
   <ItemGroup>

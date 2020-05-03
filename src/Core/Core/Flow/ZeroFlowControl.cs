@@ -61,7 +61,7 @@ namespace ZeroTeam.MessageMVC
         public static bool IsAlive => ApplicationState < StationState.Closing;
 
         /// <summary>
-        ///     已销毁
+        ///     已注销
         /// </summary>
         public static bool IsDestroy => ApplicationState == StationState.Destroy;
 
@@ -74,17 +74,17 @@ namespace ZeroTeam.MessageMVC
 
         #region Flow
 
-        #region CheckOption
+        #region Check
         private static ILogger logger;
 
         /// <summary>
         ///     配置校验,作为第一步
         /// </summary>
-        public static void CheckOption()
+        public static void Check()
         {
-            if (ApplicationState >= StationState.CheckOption)
+            if (ApplicationState >= StationState.Check)
                 return;
-            ApplicationState = StationState.CheckOption;
+            ApplicationState = StationState.Check;
             LogRecorder.DoInitialize();
             logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(ZeroFlowControl));
 
@@ -94,11 +94,11 @@ namespace ZeroTeam.MessageMVC
             {
                 try
                 {
-                    mid.CheckOption(ZeroAppOption.Instance);
+                    mid.Check(ZeroAppOption.Instance);
                 }
                 catch (Exception ex)
                 {
-                    logger.Exception(ex, "ZeroFlowControl.CheckOption:{0}", mid.GetTypeName());
+                    logger.Exception(ex, "ZeroFlowControl.Check:{0}", mid.GetTypeName());
                     throw;
                 }
             }
@@ -106,17 +106,18 @@ namespace ZeroTeam.MessageMVC
 
             //显示
             Console.WriteLine($@"Wecome ZeroTeam MessageMVC
-      AppName : {ZeroAppOption.Instance.AppName}
-      Version : {ZeroAppOption.Instance.AppVersion}
-     RunModel : {(ZeroAppOption.Instance.IsDevelopment ? "Development" : "Production")}
-  ServiceName : {ZeroAppOption.Instance.ServiceName}
-           OS : {(ZeroAppOption.Instance.IsLinux ? "Linux" : "Windows")}
-         Host : {ZeroAppOption.Instance.LocalIpAddress}
-        AddIn : {(ZeroAppOption.Instance.EnableAddIn ? "Enable" : "Disable")}({ZeroAppOption.Instance.AddInPath})
-    TraceName : {ZeroAppOption.Instance.TraceName}
-   ThreadPool : {ZeroAppOption.Instance.MaxWorkThreads:N0}worker|{ ZeroAppOption.Instance.MaxIOThreads:N0}threads
-     RootPath : {ZeroAppOption.Instance.RootPath}
-   DataFolder : {ZeroAppOption.Instance.DataFolder}
+       AppName : {ZeroAppOption.Instance.AppName}
+       Version : {ZeroAppOption.Instance.AppVersion}
+      RunModel : {(ZeroAppOption.Instance.IsDevelopment ? "Development" : "Production")}
+   ServiceName : {ZeroAppOption.Instance.ServiceName}
+ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
+            OS : {(ZeroAppOption.Instance.IsLinux ? "Linux" : "Windows")}
+          Host : {ZeroAppOption.Instance.LocalIpAddress}
+         AddIn : {(ZeroAppOption.Instance.EnableAddIn ? "Enable" : "Disable")}({ZeroAppOption.Instance.AddInPath})
+     TraceName : {ZeroAppOption.Instance.TraceName}
+    ThreadPool : {ZeroAppOption.Instance.MaxWorkThreads:N0}worker|{ ZeroAppOption.Instance.MaxIOThreads:N0}threads
+      RootPath : {ZeroAppOption.Instance.RootPath}
+     DataFolder : {ZeroAppOption.Instance.DataFolder}
  ConfigFolder : {ZeroAppOption.Instance.ConfigFolder}
 ");
         }
@@ -206,7 +207,7 @@ namespace ZeroTeam.MessageMVC
                     Services.TryAdd(service.ServiceName, service);
                 }
             }
-            OnZeroInitialize();
+            InitializeAll();
             DependencyHelper.Update();
         }
 
@@ -219,7 +220,7 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public static bool Run()
         {
-            var task = OnZeroStart();
+            var task = OpenAll();
             task.Wait();
             return task.Result;
         }
@@ -229,7 +230,7 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public static Task<bool> RunAsync()
         {
-            return OnZeroStart();
+            return OpenAll();
         }
 
         private static TaskCompletionSource<bool> waitTask;
@@ -279,16 +280,17 @@ namespace ZeroTeam.MessageMVC
             {
                 return;
             }
-            Console.WriteLine("开始退出...");
+            logger.Information("【正在退出...】");
             ApplicationState = StationState.Closing;
-            OnZeroClose();
+            CloseAll();
             WaitAllObjectSafeClose();
             ApplicationState = StationState.Closed;
-            OnZeroEnd();
+            DestoryAll();
             ApplicationState = StationState.Destroy;
+
             DependencyHelper.LoggerFactory.Dispose();
             DependencyScope.Local.Value?.Scope?.Dispose();
-            Console.WriteLine("已正常退出");
+            logger.Information("【已退出，下次见！】");
             //if (waitTask == null)
             //    return;
             //waitTask.TrySetResult(true);
@@ -368,7 +370,7 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public static void OnObjectClose(IService obj)
         {
-            logger.Information("[OnObjectClose] {0}", obj.ServiceName);
+            logger.Information("[服务关闭] {0}", obj.ServiceName);
             bool can;
             lock (ActiveObjects)
             {
@@ -379,7 +381,6 @@ namespace ZeroTeam.MessageMVC
             {
                 ActiveSemaphore.Release(); //发出完成信号
             }
-
         }
 
         /// <summary>
@@ -394,7 +395,6 @@ namespace ZeroTeam.MessageMVC
                     return;
                 }
             }
-
             ActiveSemaphore.Wait();
         }
 
@@ -407,72 +407,107 @@ namespace ZeroTeam.MessageMVC
         }
 
         /// <summary>
-        ///     注册对象
+        ///     注册服务
         /// </summary>
         public static bool RegistService(IService service)
         {
             if (!Services.TryAdd(service.ServiceName, service))
             {
+                logger?.Error("服务注册失败({0}),因为同名服务已存在", service.ServiceName);
                 return false;
             }
-            logger?.Information("[RegistService] {0}", service.ServiceName);
+            logger?.Information("[注册服务] {0}", service.ServiceName);
 
             if (ApplicationState >= StationState.Initialized)
             {
                 try
                 {
-                    logger.Information("[Initialize] {0}", service.ServiceName);
+                    logger.Information("[初始化服务] {0}", service.ServiceName);
                     service.Initialize();
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[Initialize] {0}", service.ServiceName);
+                    logger.Exception(e, "[初始化服务] {0}", service.ServiceName);
                 }
             }
-
-            //if (obj.GetType().IsSubclassOf(typeof(ZeroStation)))
-            //{
-            //    ZeroDiscover discover = new ZeroDiscover
-            //    {
-            //        StationName = obj.StationName
-            //    };
-            //    discover.FindApies(obj.GetType());
-            //    ZeroDiscover.DiscoverApiDocument(obj.GetType());
-            //}
-
             if (ApplicationState != StationState.Run)
             {
                 return true;
             }
-
             try
             {
-                logger.Information("[Start] {0}", service.ServiceName);
-                service.Start();
+                logger.Information("[启动服务] {0}", service.ServiceName);
+                service.Open();
             }
             catch (Exception e)
             {
-                logger.Exception(e, "[Start] {0}", service.ServiceName);
+                logger.Exception(e, "[启动服务] {0}", service.ServiceName);
             }
             return true;
         }
 
         /// <summary>
-        ///     系统启动时调用
+        ///     注册服务
         /// </summary>
-        static void OnZeroInitialize()
+        public static bool RegistService(ref IService service)
         {
-            logger.Information("[OnZeroInitialize>>");
+            if (ZeroAppOption.Instance.ServiceMap.TryGetValue(service.ServiceName, out var map))
+                service.ServiceName = map;
+            if (Services.TryGetValue(service.ServiceName, out var old))
+            {
+                service = old;
+            }
+            else if (!Services.TryAdd(service.ServiceName, service))
+            {
+                logger?.Error("服务注册失败({0}),因为同名服务已存在", service.ServiceName);
+                return false;
+            }
+            logger?.Information("[注册服务] {0}", service.ServiceName);
+
+            if (ApplicationState >= StationState.Initialized)
+            {
+                try
+                {
+                    logger.Information("[初始化服务] {0}", service.ServiceName);
+                    service.Initialize();
+                }
+                catch (Exception e)
+                {
+                    logger.Exception(e, "[初始化服务] {0}", service.ServiceName);
+                }
+            }
+            if (ApplicationState != StationState.Run)
+            {
+                return true;
+            }
+            try
+            {
+                logger.Information("[启动服务] {0}", service.ServiceName);
+                service.Open();
+            }
+            catch (Exception e)
+            {
+                logger.Exception(e, "[启动服务] {0}", service.ServiceName);
+            }
+            return true;
+        }
+
+        /// <summary>
+        ///     初始化
+        /// </summary>
+        static void InitializeAll()
+        {
+            logger.Information("【初始化】开始");
             foreach (var mid in Middlewares)
             {
                 try
                 {
-                    logger.Information("[Initialize] {0}", mid.Name);
+                    logger.Information("[初始化流程] {0}", mid.Name);
                     mid.Initialize();
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[Initialize] {0}", mid.Name);
+                    logger.Exception(e, "[初始化流程] {0}", mid.Name);
                 }
             }
 
@@ -480,36 +515,36 @@ namespace ZeroTeam.MessageMVC
             {
                 try
                 {
-                    logger.Information("[Initialize] {0}", service.ServiceName);
+                    logger.Information("[初始化服务] {0}", service.ServiceName);
                     service.Initialize();
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[Initialize] {0}", service.ServiceName);
+                    logger.Exception(e, "[初始化服务] {0}", service.ServiceName);
                 }
             }
-            logger.Information("<<OnZeroInitialize]");
+            logger.Information("【初始化】完成");
         }
 
         /// <summary>
         ///     系统启动时调用
         /// </summary>
-        static async Task<bool> OnZeroStart()
+        static async Task<bool> OpenAll()
         {
             if (ApplicationState >= StationState.BeginRun)
                 return false;
             ApplicationState = StationState.BeginRun;
-            logger.Information("[OnZeroStart>>");
+            logger.Information("【启动】开始");
             foreach (var mid in Middlewares)
             {
                 try
                 {
-                    logger.Information("[Start] {0}", mid.Name);
-                    mid.Start();
+                    logger.Information("[启动流程] {0}", mid.Name);
+                    _ = mid.Open();
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[Start] {0}", mid.Name);
+                    logger.Exception(e, "[启动流程] {0}", mid.Name);
                 }
             }
 
@@ -517,12 +552,12 @@ namespace ZeroTeam.MessageMVC
             {
                 try
                 {
-                    logger.Information("[Start] {0}", service.ServiceName);
-                    _ = Task.Run(service.Start);
+                    logger.Information("[启动服务] {0}", service.ServiceName);
+                    _ = service.Open();
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[Start] {0}", service.ServiceName);
+                    logger.Exception(e, "[启动服务] {0}", service.ServiceName);
                 }
             }
             //等待所有对象信号(Active or Failed)
@@ -530,7 +565,7 @@ namespace ZeroTeam.MessageMVC
                 await ActiveSemaphore.WaitAsync();
 
             ApplicationState = StationState.Run;
-            logger.Information("<<OnZeroStart]");
+            logger.Information("【启动】完成");
             return true;
         }
 
@@ -561,7 +596,7 @@ namespace ZeroTeam.MessageMVC
                 try
                 {
                     logger.Information("[StartFailed] {0}", service.ServiceName);
-                    service.Start();
+                    service.Open();
                 }
                 catch (Exception e)
                 {
@@ -574,25 +609,25 @@ namespace ZeroTeam.MessageMVC
             Interlocked.Decrement(ref inFailed);
             logger.Information("<<StartFailed]");
         }
+
         /// <summary>
-        ///     注销时调用
+        ///     关闭
         /// </summary>
-        static void OnZeroClose()
+        static void CloseAll()
         {
             List<Task> tasks = new List<Task>();
-            logger.Information("[OnZeroClose>>");
+            logger.Information("【关闭】开始");
 
             foreach (var service in Services.Values.OrderByDescending(p => p.Level).ToArray())
             {
                 try
                 {
-                    logger.Information("[OnZeroClose]  》》》 {0}", service.ServiceName);
-                    var task = Task.Factory.StartNew(service.Close);
-                    tasks.Add(task);
+                    logger.Information("[关闭服务] {0}", service.ServiceName);
+                    tasks.Add(service.Close());
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[OnZeroClose] {0}", service.ServiceName);
+                    logger.Exception(e, "[关闭服务] {0}", service.ServiceName);
                 }
             }
             Task.WaitAll(tasks.ToArray());
@@ -601,40 +636,37 @@ namespace ZeroTeam.MessageMVC
             {
                 try
                 {
-                    logger.Information("[OnZeroClose] {0}", mid.Name);
-                    var task = Task.Factory.StartNew(mid.Close);
-                    tasks.Add(task);
+                    logger.Information("[关闭流程] {0}", mid.Name);
+                    tasks.Add(mid.Close());
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[OnZeroClose] {0}", mid.Name);
+                    logger.Exception(e, "[关闭流程] {0}", mid.Name);
                 }
             }
             Task.WaitAll(tasks.ToArray());
             GC.Collect();
 
-            logger.Information("<<OnZeroClose]");
-
+            logger.Information("【关闭】结束");
         }
 
         /// <summary>
-        ///     注销时调用
+        ///     注销
         /// </summary>
-        static void OnZeroEnd()
+        static void DestoryAll()
         {
             List<Task> tasks = new List<Task>();
-            logger.Information("》》》OnZeroEnd");
+            logger.Information("【注销】开始");
             foreach (var service in Services.Values.OrderByDescending(p => p.Level).ToArray())
             {
                 try
                 {
-                    logger.Information("[OnZeroEnd]  {0}", service.ServiceName);
-                    var task = Task.Factory.StartNew(service.End);
-                    tasks.Add(task);
+                    logger.Information("[注销服务] {0}", service.ServiceName);
+                    tasks.Add(service.Destory());
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[OnZeroEnd]  {0}", service.ServiceName);
+                    logger.Exception(e, "[注销服务]  {0}", service.ServiceName);
                 }
             }
             Task.WaitAll(tasks.ToArray());
@@ -643,18 +675,16 @@ namespace ZeroTeam.MessageMVC
             {
                 try
                 {
-                    logger.Information("[OnZeroEnd]  {0}", mid.Name);
-                    var task = Task.Factory.StartNew(mid.End);
-                    tasks.Add(task);
+                    logger.Information("[注销流程]  {0}", mid.Name);
+                    tasks.Add(mid.Destory());
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[OnZeroEnd]  {0}", mid.Name);
+                    logger.Exception(e, "[注销流程]  {0}", mid.Name);
                 }
             }
             Task.WaitAll(tasks.ToArray());
-
-            logger.Information("《《《 OnZeroEnd");
+            logger.Information("【注销】完成");
         }
 
         #endregion

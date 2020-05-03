@@ -14,7 +14,7 @@
             注册
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ConfigSync.AutoRegister.ZeroTeam#MessageMVC#AddIn#IAutoRegister#Initialize">
+        <member name="M:ZeroTeam.MessageMVC.ConfigSync.AutoRegister.ZeroTeam#MessageMVC#ILifeFlow#Initialize">
             <summary>
             初始化
             </summary>
@@ -253,7 +253,7 @@
             实例
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Tools.ToolsOption.Update">
+        <member name="M:ZeroTeam.MessageMVC.Tools.ToolsOption.Update(ZeroTeam.MessageMVC.Tools.ToolsOption)">
             <summary>
             重新载入并更新
             </summary>
@@ -297,19 +297,14 @@
             等级
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.ReConsumerMiddleware.ZeroTeam#MessageMVC#IFlowMiddleware#CheckOption(ZeroTeam.MessageMVC.ZeroAppOption)">
+        <member name="M:ZeroTeam.MessageMVC.Messages.ReConsumerMiddleware.ZeroTeam#MessageMVC#ILifeFlow#Check(ZeroTeam.MessageMVC.ZeroAppOption)">
             <summary>
                 配置校验,作为第一步
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.ReConsumerMiddleware.ZeroTeam#MessageMVC#IFlowMiddleware#Start">
+        <member name="M:ZeroTeam.MessageMVC.Messages.ReConsumerMiddleware.ZeroTeam#MessageMVC#ILifeFlow#Open">
             <summary>
-            开启
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.ReConsumerMiddleware.ReConsumer">
-            <summary>
-                重新消费错误消息
+            启动
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Messages.StorageMiddleware">

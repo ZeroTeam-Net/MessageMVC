@@ -23,7 +23,7 @@ namespace ZeroTeam.MessageMVC.ConfigSync
         /// <summary>
         /// 注册
         /// </summary>
-        async void IAutoRegister.AutoRegist(IServiceCollection services)
+        async Task IAutoRegister.AutoRegist(IServiceCollection services)
         {
             services.UseCsRedis();
             if (!ConfigChangOption.Instance.IsService)
@@ -49,7 +49,6 @@ namespace ZeroTeam.MessageMVC.ConfigSync
             #endregion
 
             #region Redis读取
-
             using var redis = new CSRedisClient(ConfigChangOption.Instance.ConnectionString);
             var sections = await redis.HGetAllAsync(ConfigChangOption.ConfigRedisKey);
             foreach (var section in sections)
@@ -61,13 +60,13 @@ namespace ZeroTeam.MessageMVC.ConfigSync
         }
 
         /// <summary>
-        /// 注册
+        /// 启动
         /// </summary>
-        void IAutoRegister.Start()
+        Task ILifeFlow.Open()
         {
-            if (ConfigChangOption.Instance.IsService)
-                return;
-            _ = Start();
+            if (!ConfigChangOption.Instance.IsService)
+                return Start();
+            return Task.CompletedTask;
         }
 
         /// <summary>

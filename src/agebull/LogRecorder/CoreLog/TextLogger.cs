@@ -163,7 +163,7 @@ namespace Agebull.Common.Logging
         private static int Used = 0;
 
         /// <summary>
-        ///     任务结束,环境销毁
+        ///     任务结束,环境注销
         /// </summary>
         private static void DisposeWriters()
         {

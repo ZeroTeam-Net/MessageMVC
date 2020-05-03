@@ -56,12 +56,12 @@
         public const int Closed = 9;
 
         /// <summary>
-        /// 已销毁，析构已调用
+        /// 已注销，析构已调用
         /// </summary>
         public const int Destroy = 10;
 
         /// <summary>
-        /// 已销毁，析构已调用
+        /// 已注销，析构已调用
         /// </summary>
         public const int Disposed = 11;
 

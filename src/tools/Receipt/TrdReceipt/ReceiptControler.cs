@@ -1,23 +1,31 @@
-﻿
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.PlanTasks
 {
+    /// <summary>
+    /// 回执服务
+    /// </summary>
     [Service("TrdReceipt")]
     internal class ReceiptControler : IApiControler
     {
+        /// <summary>
+        /// 保存回执
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
         [Route("v1/save")]
         public async Task<IApiResult> Save(InlineMessage message)
         {
-            await RedisHelper.SetAsync($"receipt:{message.ID}", message);
+            await RedisHelper.SetAsync($"receipt:{message.ID}",GlobalContext.Current.Message.Argument);
             //var file = Path.Combine(ZeroAppOption.Instance.DataFolder, $"{message}.json");
             //await File.AppendAllTextAsync(file, JsonHelper.SerializeObject(message));
             return ApiResultHelper.Succees();
         }
         /// <summary>
-        /// 载入
+        /// 载入回执
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -34,6 +42,11 @@ namespace ZeroTeam.MessageMVC.PlanTasks
                 : ApiResultHelper.State<InlineMessage>(OperatorStatusCode.ArgumentError);
         }
 
+        /// <summary>
+        /// 删除回执
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [Route("v1/remove")]
         public async Task<IApiResult> Remove(string id)
         {

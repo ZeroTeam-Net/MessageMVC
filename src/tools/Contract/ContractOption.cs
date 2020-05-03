@@ -26,17 +26,14 @@ namespace ZeroTeam.MessageMVC.ApiContract
 
         static ContractOption()
         {
-            ConfigurationManager.RegistOnChange("MessageMVC:ApiContract", Instance.Update, true);
+            ConfigurationManager.RegistOnChange<ContractOption>("MessageMVC:ApiContract", Instance.Update, true);
         }
 
         /// <summary>
         /// 重新载入并更新
         /// </summary>
-        private void Update()
+        private void Update(ContractOption option)
         {
-            ContractOption option = ConfigurationManager.Get<ContractOption>("MessageMVC:ApiContract");
-            if (option == null)
-                return;
             TraceMachine = option.TraceMachine;
             EnableResultTrace = option.EnableResultTrace;
         }

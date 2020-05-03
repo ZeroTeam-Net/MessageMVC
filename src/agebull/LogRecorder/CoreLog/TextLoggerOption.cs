@@ -53,7 +53,7 @@ namespace Agebull.Common.Logging
         public int SplitNumber { get; set; }
 
         /// <summary>
-        /// 是否开启联机日志
+        /// 是否启动联机日志
         /// </summary>
         public bool MulitLog { get; set; }
 

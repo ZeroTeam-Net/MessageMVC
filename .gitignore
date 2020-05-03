@@ -21,3 +21,4 @@ nuget
 datas
 logs
 config
+*.vs

@@ -15,11 +15,17 @@ namespace ZeroTeam.MessageMVC.Messages
         protected ILogger Logger { get; private set; }
 
         /// <summary>
+        /// 运行状态
+        /// </summary>
+        public StationStateType State { get; set; }
+
+        /// <summary>
         ///     初始化
         /// </summary>
         public void Initialize()
         {
             Logger = DependencyHelper.LoggerFactory.CreateLogger(GetType().GetTypeName());
+            State = StationStateType.Run;
         }
     }
 }

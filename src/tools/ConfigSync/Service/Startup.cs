@@ -20,7 +20,8 @@ namespace ZeroTeam.MessageMVC.ConfigSync
         public void ConfigureServices(IServiceCollection services)
         {
             services.UseCsRedis();
-            services.UseHttp(typeof(Startup));
+            services.UseHttp();
+            services.UseFlow(typeof(Startup));
         }
 
         /// <summary>

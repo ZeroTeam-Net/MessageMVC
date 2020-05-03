@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Agebull.Common.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -25,9 +24,7 @@ namespace Agebull.Common.Ioc
         {
             get
             {
-                if (loggerFactory != null)
-                    return loggerFactory;
-                return loggerFactory = DependencyHelper.Create<ILoggerFactory>() ?? new LoggerFactory();
+                return loggerFactory ??= Create<ILoggerFactory>() ?? new LoggerFactory();
             }
             set
             {
@@ -41,12 +38,15 @@ namespace Agebull.Common.Ioc
         /// <summary>
         ///     依赖注入代理
         /// </summary>
-        public static IServiceProvider RootProvider => _rootProvider ??= ServiceCollection.BuildServiceProvider();
+        public static IServiceProvider RootProvider => _rootProvider ??= ServiceCollection.BuildServiceProvider(true);
 
+        static IServiceScopeFactory serviceScopeFactory;
+
+        internal static IServiceScopeFactory ServiceScopeFactory => serviceScopeFactory ??= RootProvider.GetService<IServiceScopeFactory>();
         /// <summary>
         ///     依赖注入代理
         /// </summary>
-        public static IServiceProvider ServiceProvider => RootProvider;
+        public static IServiceProvider ServiceProvider => DependencyScope.ServiceScope?.ServiceProvider ?? RootProvider;
 
         /// <summary>
         ///     全局依赖
@@ -92,6 +92,7 @@ namespace Agebull.Common.Ioc
         public static IServiceProvider Update()
         {
             loggerFactory = null;
+            serviceScopeFactory = null;
             _rootProvider = null;
             return _rootProvider = ServiceCollection.BuildServiceProvider();
         }
@@ -120,6 +121,147 @@ namespace Agebull.Common.Ioc
             return ServiceProvider.GetServices<TInterface>();
         }
 
+        #endregion
+
+        #region 自动构造与属性扩展
+
+        /// <summary>
+        /// 注册并使用自动构造
+        /// </summary>
+        /// <typeparam name="TService">基类型</typeparam>
+        /// <typeparam name="TImplementation">实际类型</typeparam>
+        /// <returns>构造后的类型</returns>
+        /// <remarks>
+        /// 构造参数构造方式，
+        /// 1. ILogger构造成ILogger&lt;T&gt;
+        /// 2. FromConfigAttribute特性标识的构造成从配置文件读取的对象
+        /// 3. 其余全部通过依赖构造（如果无法依赖构造或未注册的，后果未知）
+        /// 公开属性构造方式
+        /// 1. ILogger构造成ILogger&lt;T&gt;
+        /// 2. FromConfigAttribute特性标识的构造成从配置文件读取的对象
+        /// 3. FromServicesAttribute通过依赖构造（如果无法依赖构造或未注册的，后果未知）
+        /// </remarks>
+        public static IServiceCollection AddAutoTransient<TService, TImplementation>() where TService : class
+            where TImplementation : class, TService
+        {
+            var func = new DynamicCreateBuilder().AutoCreate<TImplementation>();
+            ServiceCollection.AddTransient<TService>(func);
+            return ServiceCollection;
+        }
+
+        /// <summary>
+        /// 注册并使用自动构造
+        /// </summary>
+        /// <typeparam name="TService">基类型</typeparam>
+        /// <typeparam name="TImplementation">实际类型</typeparam>
+        /// <returns>构造后的类型</returns>
+        /// <remarks>
+        /// 构造参数构造方式，
+        /// 1. ILogger构造成ILogger&lt;T&gt;
+        /// 2. FromConfigAttribute特性标识的构造成从配置文件读取的对象
+        /// 3. 其余全部通过依赖构造（如果无法依赖构造或未注册的，后果未知）
+        /// 公开属性构造方式
+        /// 1. ILogger构造成ILogger&lt;T&gt;
+        /// 2. FromConfigAttribute特性标识的构造成从配置文件读取的对象
+        /// 3. FromServicesAttribute通过依赖构造（如果无法依赖构造或未注册的，后果未知）
+        /// </remarks>
+        public static IServiceCollection AddAutoScoped<TService, TImplementation>() where TService : class
+            where TImplementation : class, TService
+        {
+            var func = new DynamicCreateBuilder().AutoCreate<TImplementation>();
+            ServiceCollection.AddScoped<TService>(func);
+            return ServiceCollection;
+        }
+
+        /// <summary>
+        /// 注册并使用动态构造
+        /// </summary>
+        /// <typeparam name="TService">基类型</typeparam>
+        /// <typeparam name="TImplementation">实际类型</typeparam>
+        /// <returns>构造后的类型</returns>
+        /// <remarks>
+        /// 构造参数构造方式，
+        /// 1. ILogger构造成ILogger&lt;T&gt;
+        /// 2. FromConfigAttribute特性标识的构造成从配置文件读取的对象
+        /// 3. 其余全部通过依赖构造（如果无法依赖构造或未注册的，后果未知）
+        /// 公开属性构造方式
+        /// 1. ILogger构造成ILogger&lt;T&gt;
+        /// 2. FromConfigAttribute特性标识的构造成从配置文件读取的对象
+        /// 3. FromServicesAttribute通过依赖构造（如果无法依赖构造或未注册的，后果未知）
+        /// </remarks>
+        public static IServiceCollection AddAutoSingleton<TService, TImplementation>() where TService : class
+            where TImplementation : class, TService
+        {
+            var func = new DynamicCreateBuilder().AutoCreate<TImplementation>();
+            ServiceCollection.AddSingleton<TService>(func);
+            return ServiceCollection;
+        }
+
+        /// <summary>
+        /// 注册并使用自动构造
+        /// </summary>
+        /// <typeparam name="TService">基类型</typeparam>
+        /// <returns>构造后的类型</returns>
+        /// <remarks>
+        /// 构造参数构造方式，
+        /// 1. ILogger构造成ILogger&lt;T&gt;
+        /// 2. FromConfigAttribute特性标识的构造成从配置文件读取的对象
+        /// 3. 其余全部通过依赖构造（如果无法依赖构造或未注册的，后果未知）
+        /// 公开属性构造方式
+        /// 1. ILogger构造成ILogger&lt;T&gt;
+        /// 2. FromConfigAttribute特性标识的构造成从配置文件读取的对象
+        /// 3. FromServicesAttribute通过依赖构造（如果无法依赖构造或未注册的，后果未知）
+        /// </remarks>
+        public static IServiceCollection AddAutoTransient<TService>() where TService : class
+        {
+            var func = new DynamicCreateBuilder().AutoCreate<TService>();
+            ServiceCollection.AddTransient(func);
+            return ServiceCollection;
+        }
+
+        /// <summary>
+        /// 注册并使用自动构造
+        /// </summary>
+        /// <typeparam name="TService">类型</typeparam>
+        /// <returns>构造后的类型</returns>
+        /// <remarks>
+        /// 构造参数构造方式，
+        /// 1. ILogger构造成ILogger&lt;T&gt;
+        /// 2. FromConfigAttribute特性标识的构造成从配置文件读取的对象
+        /// 3. 其余全部通过依赖构造（如果无法依赖构造或未注册的，后果未知）
+        /// 公开属性构造方式
+        /// 1. ILogger构造成ILogger&lt;T&gt;
+        /// 2. FromConfigAttribute特性标识的构造成从配置文件读取的对象
+        /// 3. FromServicesAttribute通过依赖构造（如果无法依赖构造或未注册的，后果未知）
+        /// </remarks>
+        public static IServiceCollection AddAutoScoped<TService>() where TService : class
+        {
+            var func = new DynamicCreateBuilder().AutoCreate<TService>();
+            ServiceCollection.AddScoped(func);
+            return ServiceCollection;
+        }
+
+        /// <summary>
+        /// 注册并使用动态构造
+        /// </summary>
+        /// <typeparam name="TService">类型</typeparam>
+        /// <returns>构造后的类型</returns>
+        /// <remarks>
+        /// 构造参数构造方式，
+        /// 1. ILogger构造成ILogger&lt;T&gt;
+        /// 2. FromConfigAttribute特性标识的构造成从配置文件读取的对象
+        /// 3. 其余全部通过依赖构造（如果无法依赖构造或未注册的，后果未知）
+        /// 公开属性构造方式
+        /// 1. ILogger构造成ILogger&lt;T&gt;
+        /// 2. FromConfigAttribute特性标识的构造成从配置文件读取的对象
+        /// 3. FromServicesAttribute通过依赖构造（如果无法依赖构造或未注册的，后果未知）
+        /// </remarks>
+        public static IServiceCollection AddAutoSingleton<TService>() where TService : class
+        {
+            var func = new DynamicCreateBuilder().AutoCreate<TService>();
+            ServiceCollection.AddSingleton(func);
+            return ServiceCollection;
+        }
         #endregion
 
         #region 拿来主义
@@ -187,6 +329,7 @@ namespace Agebull.Common.Ioc
         {
             return ServiceCollection.AddTransient(serviceType, implementationFactory);
         }
+
 
         /// <summary>
         ///     Adds a transient service of the type specified in <typeparamref name="TService" /> with an

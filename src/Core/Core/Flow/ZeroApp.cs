@@ -24,17 +24,20 @@ namespace ZeroTeam.MessageMVC
         /// 检查并注入配置
         /// </summary>
         /// <param name="services"></param>
-        public static void CheckOption(this IServiceCollection services)
+        public static void AddDependency(this IServiceCollection services)
         {
             if (DependencyHelper.ServiceCollection != services)
             {
                 DependencyHelper.SetServiceCollection(services);
             }
 
+            //IZeroContext构造
+            services.TryAddScoped<IZeroContext, ZeroContext>();
+            services.TryAddTransient<IUser, UserInfo>();
             //序列化工具
-            services.AddTransient<ISerializeProxy, NewtonJsonSerializeProxy>();
-            services.AddTransient<IJsonSerializeProxy, NewtonJsonSerializeProxy>();
-            services.AddTransient<IXmlSerializeProxy, XmlSerializeProxy>();
+            services.TryAddTransient<ISerializeProxy, NewtonJsonSerializeProxy>();
+            services.TryAddTransient<IJsonSerializeProxy, NewtonJsonSerializeProxy>();
+            services.TryAddTransient<IXmlSerializeProxy, XmlSerializeProxy>();
 
             //配置\依赖对象初始化,系统配置获取
             services.AddTransient<IFlowMiddleware, ConfigMiddleware>();
@@ -51,15 +54,36 @@ namespace ZeroTeam.MessageMVC
             }
 
             services.TryAddSingleton<IInlineMessage, InlineMessage>();
-            //IZeroContext构造
-            services.TryAddScoped<IZeroContext, ZeroContext>();
-            services.TryAddTransient<IUser, UserInfo>();
-            //序列化器
-            services.TryAddTransient<ISerializeProxy, NewtonJsonSerializeProxy>();
-            services.TryAddTransient<IJsonSerializeProxy, NewtonJsonSerializeProxy>();
+
+        }
+
+        /// <summary>
+        /// 使用System.Text.Json序列化工具
+        /// </summary>
+        /// <param name="services"></param>
+        public static void UseMsJson(this IServiceCollection services)
+        {
+            services.TryAddTransient<ISerializeProxy, JsonSerializeProxy>();
+            services.TryAddTransient<IJsonSerializeProxy, JsonSerializeProxy>();
             services.TryAddTransient<IXmlSerializeProxy, XmlSerializeProxy>();
-            ZeroFlowControl.CheckOption();
-            DependencyHelper.Update();
+        }
+
+        /// <summary>
+        /// 启动主流程控制器
+        /// </summary>
+        /// <param name="services">依赖服务</param>
+        /// <param name="autoDiscover">对接口自动发现</param>
+        public static async void UseFlow(this IServiceCollection services, bool autoDiscover = true)
+        {
+            if (Interlocked.Increment(ref isInitialized) == 1)
+            {
+                AddDependency(services);
+                ZeroFlowControl.Check();
+                if (autoDiscover)
+                    ZeroFlowControl.Discove();
+            }
+            ZeroFlowControl.Initialize();
+            await ZeroFlowControl.RunAsync();
         }
 
         /// <summary>
@@ -67,10 +91,9 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         /// <param name="services"></param>
         /// <param name="type">需要发现服务的程序集的类型之一</param>
-        /// <param name="waitEnd"></param>
-        public static Task UseFlow(this IServiceCollection services, Type type, bool waitEnd = false)
+        public static void UseFlow(this IServiceCollection services, Type type)
         {
-            return UseFlow(services, type.Assembly, waitEnd);
+            UseFlow(services, type.Assembly);
         }
 
         /// <summary>
@@ -78,20 +101,16 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         /// <param name="services"></param>
         /// <param name="assembly">需要发现服务的程序集</param>
-        /// <param name="waitEnd"></param>
-        public static async Task UseFlow(this IServiceCollection services, Assembly assembly, bool waitEnd = false)
+        public static async void UseFlow(this IServiceCollection services, Assembly assembly)
         {
             if (Interlocked.Increment(ref isInitialized) == 1)
             {
-                CheckOption(services);
+                AddDependency(services);
+                ZeroFlowControl.Check();
                 ZeroFlowControl.Discove(assembly);
             }
             ZeroFlowControl.Initialize();
             await ZeroFlowControl.RunAsync();
-            if (waitEnd)
-            {
-                await ZeroFlowControl.WaitEnd();
-            }
         }
 
         /// <summary>
@@ -99,61 +118,63 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         /// <param name="services"></param>
         /// <param name="assembly">需要发现服务的程序集</param>
-        public static bool UseTest(this IServiceCollection services, Assembly assembly = null)
+        public static void UseTest(this IServiceCollection services, Assembly assembly = null)
         {
             if (Interlocked.Increment(ref isInitialized) == 1)
             {
                 services.TryAddTransient<IServiceReceiver, EmptyReceiver>();
                 services.TryAddTransient<IMessageConsumer, EmptyReceiver>();
                 services.TryAddTransient<INetEvent, EmptyReceiver>();
-                CheckOption(services);
+                AddDependency(services);
+                ZeroFlowControl.Check();
                 if (assembly != null)
                     ZeroFlowControl.Discove(assembly);
             }
             ZeroFlowControl.Initialize();
-            return ZeroFlowControl.Run();
+            ZeroFlowControl.Run();
         }
 
         /// <summary>
-        /// 启动主流程控制器，不发现Api，适用于无Controler的场景
+        /// 启动主流程控制器并等待退出
         /// </summary>
-        /// <param name="services"></param>
-        public static Task UseFlow(this IServiceCollection services)
+        /// <param name="services">依赖服务</param>
+        /// <param name="autoDiscover">对接口自动发现</param>
+        public static async Task UseFlowAndWait(this IServiceCollection services, bool autoDiscover = true)
         {
             if (Interlocked.Increment(ref isInitialized) == 1)
             {
-                CheckOption(services);
-            }
-            ZeroFlowControl.Initialize();
-            return ZeroFlowControl.RunAsync();
-        }
-
-
-        /// <summary>
-        /// 启动主流程控制器，同时自动发现Api
-        /// </summary>
-        /// <param name="services"></param>
-        public static async void UseFlowByAutoDiscover(this IServiceCollection services)
-        {
-            if (Interlocked.Increment(ref isInitialized) == 1)
-            {
-                CheckOption(services);
-                ZeroFlowControl.Discove();
+                AddDependency(services);
+                ZeroFlowControl.Check();
+                if (autoDiscover)
+                    ZeroFlowControl.Discove();
             }
             ZeroFlowControl.Initialize();
             await ZeroFlowControl.RunAsync();
+            await ZeroFlowControl.WaitEnd();
         }
 
         /// <summary>
-        /// 启动主流程控制器并等待退出，同时自动发现Api
+        /// 启动主流程控制器，发现指定类型所在的程序集的Api，由参数决定是否等待系统退出
         /// </summary>
         /// <param name="services"></param>
-        public static async Task UseFlowAndWait(this IServiceCollection services)
+        /// <param name="type">需要发现服务的程序集的类型之一</param>
+        public static Task UseFlowAndWait(this IServiceCollection services, Type type)
+        {
+            return UseFlowAndWait(services, type.Assembly);
+        }
+
+        /// <summary>
+        /// 启动主流程控制器，发现指定程序集的Api，由参数决定是否等待系统退出
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="assembly">需要发现服务的程序集</param>
+        public static async Task UseFlowAndWait(this IServiceCollection services, Assembly assembly)
         {
             if (Interlocked.Increment(ref isInitialized) == 1)
             {
-                CheckOption(services);
-                ZeroFlowControl.Discove();
+                AddDependency(services);
+                ZeroFlowControl.Check();
+                ZeroFlowControl.Discove(assembly);
             }
             ZeroFlowControl.Initialize();
             await ZeroFlowControl.RunAsync();

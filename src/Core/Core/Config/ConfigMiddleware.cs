@@ -3,11 +3,12 @@ using Agebull.Common.Configuration;
 using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading;
-
+using System.Threading.Tasks;
 
 namespace ZeroTeam.MessageMVC
 {
@@ -29,21 +30,21 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         ///     配置校验,作为第一步
         /// </summary>
-        void IFlowMiddleware.CheckOption(ZeroAppOption config)
+        Task ILifeFlow.Check(ZeroAppOption config)
         {
             CheckConfig(config);
             DependencyHelper.AddSingleton(config);
             DependencyHelper.Update();
             LogRecorder.GetMachineNameFunc = () => config.TraceName;
-            var opt = ConfigurationManager.Get<TextLoggerOption>("Logging:Text");
-            if (string.IsNullOrWhiteSpace(opt?.LogPath))
+            if(ConfigurationManager.IsEnable("LogRecorder:innerLogger"))
             {
-
-                ConfigurationManager.Root.GetSection("Logging:Text:LogPath").Value =
-
-                LogRecorder.LogPath = config.IsolateFolder
-                     ? IOHelper.CheckPath(config.RootPath, "logs", config.AppName)
-                     : IOHelper.CheckPath(config.RootPath, "logs");
+                var opt = ConfigurationManager.Get<TextLoggerOption>("Logging:Text");
+                if (string.IsNullOrWhiteSpace(opt?.LogPath))
+                {
+                    LogRecorder.LogPath = config.IsolateFolder
+                         ? IOHelper.CheckPath(config.RootPath, "logs", config.AppName)
+                         : IOHelper.CheckPath(config.RootPath, "logs");
+                }
             }
             //线程数
             if (config.MaxIOThreads > 0 && config.MaxWorkThreads > 0)
@@ -56,6 +57,7 @@ namespace ZeroTeam.MessageMVC
                 config.MaxIOThreads = io;
                 config.MaxWorkThreads = worker;
             }
+            return Task.CompletedTask;
         }
 
 
@@ -96,6 +98,8 @@ namespace ZeroTeam.MessageMVC
                     config.CopyByHase(ConfigurationManager.Get<ZeroAppConfig>("MessageMVC:Option"));
                 }
             }
+
+            config.ServiceMap ??= new Dictionary<string, string>();
             #endregion
 
             #region ServiceName

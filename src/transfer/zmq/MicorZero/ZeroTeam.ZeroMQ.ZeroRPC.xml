@@ -483,7 +483,7 @@
             等级
             </summary>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroPostProxy.ZeroTeam#MessageMVC#IFlowMiddleware#Initialize">
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroPostProxy.ZeroTeam#MessageMVC#ILifeFlow#Initialize">
             <summary>
             初始化
             </summary>
@@ -508,9 +508,9 @@
             所有代理
             </summary>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroPostProxy.ZeroTeam#MessageMVC#IFlowMiddleware#Start">
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroPostProxy.ZeroTeam#MessageMVC#ILifeFlow#Open">
             <summary>
-            构造
+            启动
             </summary>
         </member>
         <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroPostProxy.Loop">
@@ -519,7 +519,7 @@
             </summary>
             <returns>返回False表明需要重启</returns>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroPostProxy.ZeroTeam#MessageMVC#IFlowMiddleware#End">
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroPostProxy.ZeroTeam#MessageMVC#ILifeFlow#Destory">
             <summary>
             关闭时的处理
             </summary>
@@ -559,6 +559,11 @@
             能不能循环处理
             </summary>
         </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroPostProxy.SyncStationConfig">
+            <summary>
+            同步站点配置
+            </summary>
+        </member>
         <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroPostProxy.OnLocalCall(ZeroTeam.ZeroMQ.ZMessage)">
             <summary>
             调用
@@ -573,11 +578,6 @@
         <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCPoster.ZeroTeam#MessageMVC#IZeroDependency#Name">
             <summary>
             实例名称
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCPoster.ZeroTeam#MessageMVC#Messages#IMessagePoster#State">
-            <summary>
-            运行状态
             </summary>
         </member>
         <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRPCPoster.Instance">
@@ -1161,7 +1161,7 @@
             工作模式
             </summary>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroTeam#MessageMVC#IFlowMiddleware#CheckOption(ZeroTeam.MessageMVC.ZeroAppOption)">
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroTeam#MessageMVC#ILifeFlow#Check(ZeroTeam.MessageMVC.ZeroAppOption)">
             <summary>
                 配置校验,作为第一步
             </summary>
@@ -1221,19 +1221,19 @@
                 进入系统侦听
             </summary>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroTeam#MessageMVC#IFlowMiddleware#Initialize">
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroTeam#MessageMVC#ILifeFlow#Initialize">
             <summary>
                 初始化
             </summary>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroTeam#MessageMVC#IFlowMiddleware#Start">
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroTeam#MessageMVC#ILifeFlow#Open">
             <summary>
                 启动
             </summary>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroTeam#MessageMVC#IFlowMiddleware#End">
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroTeam#MessageMVC#ILifeFlow#Destory">
             <summary>
-                关闭
+                注销
             </summary>
         </member>
         <member name="F:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcFlow.ZeroNetEvents">

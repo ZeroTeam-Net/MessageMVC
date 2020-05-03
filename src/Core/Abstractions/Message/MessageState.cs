@@ -28,6 +28,11 @@ namespace ZeroTeam.MessageMVC.Messages
         Accept = 0x10,
 
         /// <summary>
+        /// 未发送
+        /// </summary>
+        Unsend = 0x11,
+
+        /// <summary>
         /// 已发送
         /// </summary>
         Send = 0x12,
@@ -35,7 +40,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 已接收
         /// </summary>
-        Recive = 0x12,
+        Recive = 0x13,
 
         /// <summary>
         /// 正在处理
@@ -81,6 +86,11 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 处理错误
         /// </summary>
         BusinessError = 0x27,
+
+        /// <summary>
+        /// 并非MessageMVC服务
+        /// </summary>
+        NoUs = 0x28,
 
         /// <summary>
         /// 框架错误

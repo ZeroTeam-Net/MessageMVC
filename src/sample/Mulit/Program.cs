@@ -10,13 +10,13 @@ namespace MicroZero.Kafka.QueueStation
 {
     class Program
     {
-        static async Task Main()
+        static void Main()
         {
             DependencyHelper.AddTransient<IFlowMiddleware, ZeroRpcFlow>();
             DependencyHelper.AddSingleton<IServiceReceiver, ZeroRpcReceiver>();
 
             DependencyHelper.ServiceCollection.UseKafka();
-            await DependencyHelper.ServiceCollection.UseFlow(typeof(Program).Assembly, false);
+            DependencyHelper.ServiceCollection.UseFlow(typeof(Program));
 
             MessagePoster.Publish("test1", "test", "");
             MessagePoster.Publish("Inproc", "test", "");

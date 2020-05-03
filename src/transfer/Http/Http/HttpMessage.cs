@@ -403,6 +403,13 @@ namespace ZeroTeam.MessageMVC.Http
                     //使用Form与Arguments组合的字典对象
                     DataState |= MessageDataState.ArgumentInline;
                     DataState &= ~MessageDataState.ArgumentOffline;
+
+                    var dir = SmartSerializer.ToObject<Dictionary<string, string>>(HttpContent);
+                    if (dir != null)
+                    {
+                        foreach (var item in dir)
+                            Dictionary[item.Key] = item.Value;
+                    }
                 }
                 else
                 {

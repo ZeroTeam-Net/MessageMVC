@@ -214,7 +214,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     Service.Close();
                     return Task.CompletedTask;
                 case ZeroNetEventType.CenterSystemStart:
-                    Service.Start();
+                    Service.Open();
                     return Task.CompletedTask;
                 case ZeroNetEventType.CenterWorkerSoundOff:
                 case ZeroNetEventType.CenterStationTrends:
@@ -256,10 +256,10 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 case ZeroNetEventType.CenterStationJoin:
                     Service.ConfigState = StationStateType.Initialized;
                     Service.ResetStateMachine();
-                    Service.Start();
+                    Service.Open();
                     break;
                 case ZeroNetEventType.CenterStationResume:
-                    Service.Start();
+                    Service.Open();
                     break;
             }
 

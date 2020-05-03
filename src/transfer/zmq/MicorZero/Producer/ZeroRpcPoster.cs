@@ -20,13 +20,6 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// </summary>
         string IZeroDependency.Name => nameof(ZeroRPCPoster);
 
-        internal StationStateType state;
-
-        /// <summary>
-        /// 运行状态
-        /// </summary>
-        StationStateType IMessagePoster.State { get => state; set => state = value; }
-
         /// <summary>
         /// 实例
         /// </summary>

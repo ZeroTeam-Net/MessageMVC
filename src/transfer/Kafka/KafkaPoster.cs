@@ -113,13 +113,6 @@ namespace ZeroTeam.MessageMVC.Kafka
 
         #region IFlowMiddleware 
 
-        StationStateType State;
-
-        /// <summary>
-        /// 运行状态
-        /// </summary>
-        StationStateType IMessagePoster.State { get => State; set => State = value; }
-
         private static IProducer<Null, string> producer;
 
         /// <summary>
@@ -135,18 +128,18 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <summary>
         /// 关闭
         /// </summary>
-        void IFlowMiddleware.Start()
+        Task ILifeFlow.Open()
         {
             producer = new ProducerBuilder<Null, string>(KafkaOption.Instance.Producer).Build();
             State = StationStateType.Run;
             tokenSource = new CancellationTokenSource();
-            _ = AsyncPostQueue();
+            return AsyncPostQueue();
         }
 
         /// <summary>
         /// 关闭
         /// </summary>
-        void IFlowMiddleware.Close()
+        Task ILifeFlow.Close()
         {
             tokenSource?.Cancel();
             tokenSource.Dispose();
@@ -154,6 +147,7 @@ namespace ZeroTeam.MessageMVC.Kafka
             State = StationStateType.Closed;
             producer?.Dispose();
             producer = null;
+            return Task.CompletedTask;
         }
 
         #endregion

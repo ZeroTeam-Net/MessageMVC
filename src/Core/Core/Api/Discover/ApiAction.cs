@@ -1,11 +1,8 @@
-using Agebull.Common;
 using Agebull.Common.Ioc;
 using System;
-using System.Reflection;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.Services;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -15,32 +12,36 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     /// </summary>
     public class ApiAction : IApiAction
     {
+        #region 基本信息
+
         /// <summary>
-        ///     Api名称
+        ///     Api路由名称
         /// </summary>
-        public string Name { get; set; }
+        public string RouteName { get; set; }
 
         /// <summary>
         ///     是合符合API契约规定
         /// </summary>
         public bool IsApiContract { get; private set; }
 
+        #endregion
+
         #region 权限
 
         /// <summary>
         ///     访问控制
         /// </summary>
-        public ApiAccessOption Access { get; set; }
+        public ApiOption Access { get; set; }
 
         /// <summary>
         ///     需要登录
         /// </summary>
-        public bool NeedLogin => !Access.HasFlag(ApiAccessOption.Anymouse);
+        public bool NeedLogin => !Access.HasFlag(ApiOption.Anymouse);
 
         /// <summary>
         ///     是否公开接口
         /// </summary>
-        public bool IsPublic => Access.HasFlag(ApiAccessOption.Public);
+        public bool IsPublic => Access.HasFlag(ApiOption.Public);
 
         #endregion
 
@@ -195,7 +196,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 return arg.Validate(out message);
             }
 
-            if (data.ArgumentData != null || Access.HasFlag(ApiAccessOption.ArgumentCanNil))
+            if (data.ArgumentData != null || Access.HasFlag(ApiOption.ArgumentCanNil))
             {
                 message = null;
                 return true;
@@ -206,7 +207,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         }
 
         #endregion
-
 
         #region 执行
 

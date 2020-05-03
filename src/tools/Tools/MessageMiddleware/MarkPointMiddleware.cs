@@ -58,7 +58,7 @@ namespace ZeroTeam.MessageMVC.Tools
                 if (message.Trace != null)
                 {
                     var trace = message.Trace;
-                    LogRecorder.MonitorDetails(() => $"Trace => {trace.ToJson()}");
+                    LogRecorder.MonitorDetails(() => $"Trace => {SmartSerializer.ToInnerString(trace)}");
                     message.Trace = null;
                 }
                 root = LogRecorder.EndMonitor();

@@ -13,12 +13,12 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         ///     访问控制
         /// </summary>
-        ApiAccessOption Access { get; set; }
+        ApiOption Access { get; set; }
 
         /// <summary>
         ///     Api名称
         /// </summary>
-        string Name { get; set; }
+        string RouteName { get; set; }
 
         /// <summary>
         ///     是合符合API契约规定

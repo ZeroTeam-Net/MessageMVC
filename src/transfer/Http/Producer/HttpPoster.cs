@@ -1,14 +1,9 @@
-using Agebull.Common.Configuration;
-using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
-using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Http
 {
@@ -17,77 +12,12 @@ namespace ZeroTeam.MessageMVC.Http
     /// </summary>
     public class HttpPoster : MessagePostBase, IMessagePoster
     {
-        #region HttpClientFactory
-
-        /// <summary>
-        /// 服务到HttpClientName的查找表.
-        /// </summary>
-        private readonly Dictionary<string, string> ServiceMap = new Dictionary<string, string>();
-        private IHttpClientFactory httpClientFactory;
-        private string defName;
-
-
-        private readonly Dictionary<string, HttpClientOption> Options = new Dictionary<string, HttpClientOption>();
-
-        void LoadOption()
-        {
-            var dirStr = ConfigurationManager.Get<HttpClientOption[]>("MessageMVC:HttpClient");
-            if (dirStr != null)
-            {
-                foreach (var kv in dirStr)
-                {
-                    if (Options.ContainsKey(kv.Name))
-                    {
-                        Options[kv.Name] = kv;
-                        continue;
-                    }
-                    Options.TryAdd(kv.Name, kv);
-                    DependencyHelper.ServiceCollection.AddHttpClient(kv.Name);
-
-                    if (kv.Name == "Default")
-                    {
-                        defName = kv.Name;
-                        continue;
-                    }
-                    if (kv.Services != null)
-                        foreach (var service in kv.Services.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-                        {
-                            if (ServiceMap.ContainsKey(service))
-                                ServiceMap[service] = kv.Name;
-                            else
-                                ServiceMap.Add(service, kv.Name);
-                        }
-                }
-                DependencyHelper.Update();
-            }
-            httpClientFactory = DependencyHelper.Create<IHttpClientFactory>();
-
-        }
-        #endregion
-
         #region IMessagePoster
 
         /// <summary>
         /// 名称
         /// </summary>
         string IZeroDependency.Name => nameof(HttpPoster);
-
-        StationStateType state;
-
-        /// <summary>
-        /// 运行状态
-        /// </summary>
-        StationStateType IMessagePoster.State { get => state; set => state = value; }
-
-        /// <summary>
-        ///     初始化
-        /// </summary>
-        void IMessagePoster.Initialize()
-        {
-            Initialize();
-            state = StationStateType.Run;
-            ConfigurationManager.RegistOnChange("MessageMVC:HttpClient", LoadOption, true);
-        }
 
         /// <summary>
         /// 生产消息
@@ -96,22 +26,20 @@ namespace ZeroTeam.MessageMVC.Http
         /// <returns></returns>
         async Task<IMessageResult> IMessagePoster.Post(IInlineMessage message)
         {
-            if (!ServiceMap.TryGetValue(message.Topic, out var name))
+            if (!HttpClientOption.ServiceMap.TryGetValue(message.Topic, out var name))
             {
-                name = defName;
+                name = HttpClientOption.DefaultName;
             }
             IMessageResult result;
             LogRecorder.BeginStepMonitor("[HttpPoster.Post]");
             try
             {
                 message.Offline();
-                var client = httpClientFactory.CreateClient(name);
-                client.BaseAddress = new Uri(Options[name].Url);
-                client.DefaultRequestHeaders.Add("User-Agent", MessageRouteOption.AgentName);
+                var client = HttpClientOption.HttpClientFactory.CreateClient(name);
                 LogRecorder.MonitorDetails(() => $"URL : {client.BaseAddress }{message.Topic}/{message.Title}");
-                using var response = await client.PostAsync(
-                    $"/{message.Topic}/{message.Title}",
-                    new StringContent(SmartSerializer.SerializeMessage(message)));
+
+                using var content = new StringContent(SmartSerializer.SerializeMessage(message));
+                using var response = await client.PostAsync($"/{message.Topic}/{message.Title}", content);
 
                 var json = await response.Content.ReadAsStringAsync();
 
@@ -127,49 +55,19 @@ namespace ZeroTeam.MessageMVC.Http
                     result = new MessageResult
                     {
                         ID = message.ID,
-                        Trace = message.Trace
+                        Trace = message.Trace,
+                        State = HttpCodeToMessageState(response.StatusCode)
                     };
-                    switch (response.StatusCode)
-                    {
-                        case HttpStatusCode.OK:
-                            result.State = MessageState.Success;
-                            break;
-                        case HttpStatusCode.MethodNotAllowed:
-                            result.State = MessageState.Unhandled;
-                            break;
-                        case HttpStatusCode.NotFound:
-                            result.State = MessageState.Unhandled;
-                            break;
-                        case HttpStatusCode.BadRequest:
-                            result.State = MessageState.FormalError;
-                            break;
-                        case HttpStatusCode.RequestTimeout:
-                            result.State = MessageState.Cancel;
-                            break;
-                        case HttpStatusCode.InternalServerError:
-                            result.State = MessageState.BusinessError;
-                            break;
-                        case HttpStatusCode.ServiceUnavailable:
-                            result.State = MessageState.NetworkError;
-                            break;
-                        case HttpStatusCode.ProxyAuthenticationRequired:
-                        case HttpStatusCode.NetworkAuthenticationRequired:
-                        case HttpStatusCode.NonAuthoritativeInformation:
-                            result.State = MessageState.Deny;
-                            break;
-                        case HttpStatusCode.Accepted:
-                            result.State = MessageState.AsyncQueue;
-                            break;
-                        case HttpStatusCode.ExpectationFailed:
-                            result.State = MessageState.FrameworkError;
-                            break;
-                        default:
-                            result.State = MessageState.NetworkError;
-                            break;
-                    }
                 }
+                message.State = result.State;
                 LogRecorder.MonitorDetails(() => $"State : {result.State} Result : {result.Result}");
                 return result;
+            }
+            catch (HttpRequestException ex)
+            {
+                LogRecorder.MonitorInfomation(() => $"发生异常.{ex.Message}");
+                message.State = MessageState.Unsend;
+                return null;//直接使用状态
             }
             catch (Exception ex)
             {
@@ -183,6 +81,92 @@ namespace ZeroTeam.MessageMVC.Http
             }
         }
 
+
+        /// <summary>
+        /// 访问外部
+        /// </summary>
+        /// <param name="service">服务名称，用于查找HttpClient，不会与api拼接</param>
+        /// <param name="api">完整的接口名称</param>
+        /// <param name="content">内容</param>
+        /// <returns></returns>
+        public static async Task<(MessageState state, string res)> CallOut(string service, string api, string content)
+        {
+            if (!HttpClientOption.ServiceMap.TryGetValue(service, out var name))
+            {
+                name = HttpClientOption.DefaultName;
+            }
+            LogRecorder.BeginStepMonitor("[HttpPoster.CallOut]");
+            try
+            {
+                var client = HttpClientOption.HttpClientFactory.CreateClient(name);
+                LogRecorder.MonitorDetails(() => $"URL : {client.BaseAddress}{api}");
+
+                using var httpContent = new StringContent(content);
+                using var response = await client.PostAsync(api, httpContent);
+
+                var json = await response.Content.ReadAsStringAsync();
+
+                MessageState state = HttpCodeToMessageState(response.StatusCode);
+
+                LogRecorder.MonitorDetails(() => $"HttpStatus : {response.StatusCode} MessageState : {state} Result : {json}");
+
+                return (state, json);
+            }
+            catch (HttpRequestException ex)
+            {
+                LogRecorder.MonitorInfomation(() => $"发生异常.{ex.Message}");
+                return (MessageState.Unsend, null);
+            }
+            catch (Exception ex)
+            {
+                LogRecorder.MonitorInfomation(() => $"发生异常.{ex.Message}");
+                return (MessageState.NetworkError, null);
+            }
+            finally
+            {
+                LogRecorder.EndStepMonitor();
+            }
+        }
+
+        static MessageState HttpCodeToMessageState(HttpStatusCode httpStatusCode)
+        {
+            switch (httpStatusCode)
+            {
+                case HttpStatusCode.OK:
+                    return MessageState.NoUs;
+
+                case HttpStatusCode.NotFound:
+                case HttpStatusCode.MethodNotAllowed:
+                    return MessageState.Unhandled;
+
+                case HttpStatusCode.BadRequest:
+                    return MessageState.FormalError;
+
+                case HttpStatusCode.RequestTimeout:
+                    return MessageState.Cancel;
+
+                case HttpStatusCode.InternalServerError:
+                    return MessageState.BusinessError;
+
+                case HttpStatusCode.ServiceUnavailable:
+                    return MessageState.NetworkError;
+
+                case HttpStatusCode.ProxyAuthenticationRequired:
+                case HttpStatusCode.NetworkAuthenticationRequired:
+                case HttpStatusCode.NonAuthoritativeInformation:
+                    return MessageState.Deny;
+
+                case HttpStatusCode.Accepted:
+                    return MessageState.AsyncQueue;
+
+                case HttpStatusCode.ExpectationFailed:
+                    return MessageState.FrameworkError;
+
+                default:
+                    return MessageState.NetworkError;
+
+            }
+        }
         #endregion
     }
 }

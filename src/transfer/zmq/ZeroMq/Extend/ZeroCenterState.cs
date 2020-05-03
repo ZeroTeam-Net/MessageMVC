@@ -38,7 +38,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// </summary>
         Closed,
         /// <summary>
-        ///  已销毁，析构已调用
+        ///  已注销，析构已调用
         /// </summary>
         Destroy,
         /// <summary>
