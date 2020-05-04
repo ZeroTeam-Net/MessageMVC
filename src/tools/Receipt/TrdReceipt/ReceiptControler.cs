@@ -9,7 +9,7 @@ namespace ZeroTeam.MessageMVC.PlanTasks
     /// 回执服务
     /// </summary>
     [Service("TrdReceipt")]
-    internal class ReceiptControler : IApiControler
+    internal class ReceiptControler : IApiController
     {
         /// <summary>
         /// 保存回执

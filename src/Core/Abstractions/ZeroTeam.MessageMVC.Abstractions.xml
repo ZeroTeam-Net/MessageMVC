@@ -290,7 +290,7 @@
             <param name="message">返回的消息</param>
             <returns>成功则返回真</returns>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.IApiControler">
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.IApiController">
             <summary>
             ZeroApi控制器基类
             </summary>

@@ -3,7 +3,10 @@ using Agebull.Common.Ioc;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace ZeroTeam.MessageMVC.Http
 {
@@ -50,6 +53,7 @@ namespace ZeroTeam.MessageMVC.Http
 
         static HttpClientOption()
         {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls;
             ConfigurationManager.RegistOnChange<HttpClientOption>("MessageMVC:HttpClient", Instance.LoadOption, true);
         }
 
@@ -77,27 +81,32 @@ namespace ZeroTeam.MessageMVC.Http
             {
                 foreach (var item in option.Clients)
                 {
+                    foreach (var service in ServiceMap.Where(p => p.Value == item.Name).Select(p => p.Key).ToArray())
+                        ServiceMap.Remove(service);
+
                     if (string.IsNullOrEmpty(item.Services))
                     {
                         Options.Remove(item.Name);
                         continue;
                     }
+                    if (item.TimeOut <= 0)
+                        item.TimeOut = DefaultTimeOut;
                     if (Options.ContainsKey(item.Name))
                     {
                         Options[item.Name] = item;
-                        continue;
                     }
-                    if (item.TimeOut <= 0)
-                        item.TimeOut = DefaultTimeOut;
-
-                    Options.TryAdd(item.Name, item);
-
-                    DependencyHelper.ServiceCollection.AddHttpClient(item.Name,client =>
+                    else
                     {
-                        client.BaseAddress = new Uri(item.Url);
-                        client.Timeout = TimeSpan.FromSeconds(item.TimeOut);
-                        client.DefaultRequestHeaders.Add("User-Agent", MessageRouteOption.AgentName);
-                    });
+                        Options.TryAdd(item.Name, item);
+
+                        DependencyHelper.ServiceCollection.AddHttpClient(item.Name, client =>
+                        {
+                            client.BaseAddress = new Uri(item.Url);
+                            client.Timeout = TimeSpan.FromSeconds(item.TimeOut);
+                            client.DefaultRequestHeaders.Add("Content-Type", item.ContentType ?? "application/json;charset=utf-8");
+                            client.DefaultRequestHeaders.Add("User-Agent", item.UserAgent ?? MessageRouteOption.AgentName);
+                        });
+                    }
 
                     foreach (var service in item.Services.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                     {

@@ -3,7 +3,7 @@
     /// <summary>
     /// ZeroApi控制器基类
     /// </summary>
-    public interface IApiControler
+    public interface IApiController
     {
     }
 }

@@ -17,7 +17,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
     /// 测试服务
     /// </summary>
     [Service("UnitService")]
-    public class TestControler : IApiControler
+    public class TestControler : IApiController
     {
         /// <summary>
         /// 日志对象

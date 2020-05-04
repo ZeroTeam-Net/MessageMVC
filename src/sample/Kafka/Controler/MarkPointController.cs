@@ -11,7 +11,7 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink.WebApi
     ///  消息存储
     /// </summary>
     [Consumer("MarkPoint")]
-    public partial class MarkPointController : IApiControler
+    public partial class MarkPointController : IApiController
     {
         /// <summary>
         /// 

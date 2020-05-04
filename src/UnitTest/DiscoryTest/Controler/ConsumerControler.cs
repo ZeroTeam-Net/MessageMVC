@@ -8,7 +8,7 @@ using ZeroTeam.MessageMVC.ApiContract;
 namespace ZeroTeam.MessageMVC.Sample.Controllers
 {
     [Consumer("Consumer")]
-    public class ConsumerControler : IApiControler
+    public class ConsumerControler : IApiController
     {
         /// <summary>
         /// 日志对象

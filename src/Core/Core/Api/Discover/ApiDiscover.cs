@@ -51,7 +51,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             Type[] types;
             try
             {
-                types = Assembly.GetTypes().Where(p => p.IsSupperInterface(typeof(IApiControler))).ToArray();
+                types = Assembly.GetTypes().Where(p => p.IsSupperInterface(typeof(IApiController))).ToArray();
             }
             catch
             {
@@ -79,7 +79,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             Assembly = assembly;
             TransportDiscories ??= DependencyHelper.RootProvider.GetServices<IReceiverDiscover>().ToArray();
 
-            var types = Assembly.GetTypes().Where(p => p.IsSupperInterface(typeof(IApiControler))).ToArray();
+            var types = Assembly.GetTypes().Where(p => p.IsSupperInterface(typeof(IApiController))).ToArray();
             foreach (var type in types)
             {
                 FindApi(type);
@@ -95,7 +95,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             XmlMember.Load(Assembly);
             TransportDiscories ??= DependencyHelper.RootProvider.GetServices<IReceiverDiscover>().ToArray();
 
-            if (type.IsSupperInterface(typeof(IApiControler)))
+            if (type.IsSupperInterface(typeof(IApiController)))
             {
                 FindApi(type);
             }

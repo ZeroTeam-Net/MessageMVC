@@ -8,7 +8,7 @@ using ZeroTeam.MessageMVC.ApiContract;
 namespace ZeroTeam.MessageMVC.Sample.Controllers
 {
     [NetEvent("NetEvent")]
-    public class NetEventControler : IApiControler
+    public class NetEventControler : IApiController
     {
         /// <summary>
         /// 日志对象

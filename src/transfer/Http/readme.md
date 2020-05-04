@@ -166,7 +166,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
 {
 
     [Service("api")]
-    public class TestControler : IApiControler
+    public class TestControler : IApiController
     {
         [Route("v1/test")]
         public ApiResult OnOrderNew(Argument argument)
@@ -177,7 +177,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
 }
 ```
 1. Service标签，保证可以正确对应到服务（HttpRoute.Initialize内部已注册了IRpcTransfer的实现HttpTransfer）
-2. 继承IApiControler接口，保证可以被正确发现
+2. 继承IApiController接口，保证可以被正确发现
 3. Route特性，说明这是一个Api。
 
 # 性能

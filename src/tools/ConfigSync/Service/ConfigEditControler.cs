@@ -11,7 +11,7 @@ using ZeroTeam.MessageMVC.ZeroApis;
 namespace ZeroTeam.MessageMVC.ConfigSync
 {
     [Service("ConfigEdit")]
-    internal class ConfigEditControler : IApiControler
+    internal class ConfigEditControler : IApiController
     {
         /// <summary>
         /// 读配置节点列表

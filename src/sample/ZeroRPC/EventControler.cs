@@ -6,7 +6,7 @@ using ZeroTeam.MessageMVC.ZeroApis;
 namespace ZeroTeam.MessageMVC.Sample.Controllers
 {
     [NetEvent("MarkPoint")]
-    public class EventControler : IApiControler
+    public class EventControler : IApiController
     {
         [Route("post"), SerializeType( SerializeType.NewtonJson)]
         public IApiResult Result(TraceLinkMessage argument)

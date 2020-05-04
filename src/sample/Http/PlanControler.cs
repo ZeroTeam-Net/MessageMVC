@@ -10,7 +10,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
 {
 
     [Service("PlanTest")]
-    public class PlanControler : IApiControler
+    public class PlanControler : IApiController
     {
         ///// <summary>
         ///// 测试接口

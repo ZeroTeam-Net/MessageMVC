@@ -294,11 +294,6 @@
             HttpClient预定义服务映射配置
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.HttpClientItem.TimeOut">
-            <summary>
-            超时时间（秒）
-            </summary>
-        </member>
         <member name="P:ZeroTeam.MessageMVC.Http.HttpClientItem.Name">
             <summary>
             别名
@@ -307,6 +302,21 @@
         <member name="P:ZeroTeam.MessageMVC.Http.HttpClientItem.Url">
             <summary>
             基础地址,包含http://
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpClientItem.UserAgent">
+            <summary>
+            UserAgent
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpClientItem.ContentType">
+            <summary>
+            内容类型
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpClientItem.TimeOut">
+            <summary>
+            超时时间（秒）
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Http.HttpClientItem.Services">
@@ -399,7 +409,15 @@
             <param name="message">消息</param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpPoster.CallOut(System.String,System.String,System.String)">
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpPoster.OutGet(System.String,System.String)">
+            <summary>
+            访问外部
+            </summary>
+            <param name="service">服务名称，用于查找HttpClient，不会与api拼接</param>
+            <param name="api">完整的接口名称+参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpPoster.OutPost(System.String,System.String,System.String)">
             <summary>
             访问外部
             </summary>

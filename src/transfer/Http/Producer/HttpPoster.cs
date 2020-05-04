@@ -81,53 +81,6 @@ namespace ZeroTeam.MessageMVC.Http
             }
         }
 
-
-        /// <summary>
-        /// 访问外部
-        /// </summary>
-        /// <param name="service">服务名称，用于查找HttpClient，不会与api拼接</param>
-        /// <param name="api">完整的接口名称</param>
-        /// <param name="content">内容</param>
-        /// <returns></returns>
-        public static async Task<(MessageState state, string res)> CallOut(string service, string api, string content)
-        {
-            if (!HttpClientOption.ServiceMap.TryGetValue(service, out var name))
-            {
-                name = HttpClientOption.DefaultName;
-            }
-            LogRecorder.BeginStepMonitor("[HttpPoster.CallOut]");
-            try
-            {
-                var client = HttpClientOption.HttpClientFactory.CreateClient(name);
-                LogRecorder.MonitorDetails(() => $"URL : {client.BaseAddress}{api}");
-
-                using var httpContent = new StringContent(content);
-                using var response = await client.PostAsync(api, httpContent);
-
-                var json = await response.Content.ReadAsStringAsync();
-
-                MessageState state = HttpCodeToMessageState(response.StatusCode);
-
-                LogRecorder.MonitorDetails(() => $"HttpStatus : {response.StatusCode} MessageState : {state} Result : {json}");
-
-                return (state, json);
-            }
-            catch (HttpRequestException ex)
-            {
-                LogRecorder.MonitorInfomation(() => $"发生异常.{ex.Message}");
-                return (MessageState.Unsend, null);
-            }
-            catch (Exception ex)
-            {
-                LogRecorder.MonitorInfomation(() => $"发生异常.{ex.Message}");
-                return (MessageState.NetworkError, null);
-            }
-            finally
-            {
-                LogRecorder.EndStepMonitor();
-            }
-        }
-
         static MessageState HttpCodeToMessageState(HttpStatusCode httpStatusCode)
         {
             switch (httpStatusCode)
@@ -167,6 +120,100 @@ namespace ZeroTeam.MessageMVC.Http
 
             }
         }
+        #endregion
+        #region 访问外部
+
+        /// <summary>
+        /// 访问外部
+        /// </summary>
+        /// <param name="service">服务名称，用于查找HttpClient，不会与api拼接</param>
+        /// <param name="api">完整的接口名称+参数</param>
+        /// <returns></returns>
+        public static async Task<(MessageState state, string res)> OutGet(string service, string api)
+        {
+            if (!HttpClientOption.ServiceMap.TryGetValue(service, out var name))
+            {
+                name = HttpClientOption.DefaultName;
+            }
+            LogRecorder.BeginStepMonitor("[HttpPoster.CallOut]");
+            try
+            {
+                var client = HttpClientOption.HttpClientFactory.CreateClient(name);
+                LogRecorder.MonitorDetails(() => $"URL : {client.BaseAddress}{api}");
+
+                using var response = await client.GetAsync(api);
+
+                var json = await response.Content.ReadAsStringAsync();
+
+                MessageState state = HttpCodeToMessageState(response.StatusCode);
+
+                LogRecorder.MonitorDetails(() => $"HttpStatus : {response.StatusCode} MessageState : {state} Result : {json}");
+
+                return (state, json);
+            }
+            catch (HttpRequestException ex)
+            {
+                LogRecorder.MonitorInfomation(() => $"发生异常.{ex.Message}");
+                return (MessageState.Unsend, null);
+            }
+            catch (Exception ex)
+            {
+                LogRecorder.MonitorInfomation(() => $"发生异常.{ex.Message}");
+                return (MessageState.NetworkError, null);
+            }
+            finally
+            {
+                LogRecorder.EndStepMonitor();
+            }
+        }
+
+
+        /// <summary>
+        /// 访问外部
+        /// </summary>
+        /// <param name="service">服务名称，用于查找HttpClient，不会与api拼接</param>
+        /// <param name="api">完整的接口名称</param>
+        /// <param name="content">内容</param>
+        /// <returns></returns>
+        public static async Task<(MessageState state, string res)> OutPost(string service, string api, string content)
+        {
+            if (!HttpClientOption.ServiceMap.TryGetValue(service, out var name))
+            {
+                name = HttpClientOption.DefaultName;
+            }
+            LogRecorder.BeginStepMonitor("[HttpPoster.CallOut]");
+            try
+            {
+                var client = HttpClientOption.HttpClientFactory.CreateClient(name);
+                LogRecorder.MonitorDetails(() => $"URL : {client.BaseAddress}{api}");
+
+                using var httpContent = new StringContent(content);
+                using var response = await client.PostAsync(api, httpContent);
+
+                var json = await response.Content.ReadAsStringAsync();
+
+                MessageState state = HttpCodeToMessageState(response.StatusCode);
+
+                LogRecorder.MonitorDetails(() => $"HttpStatus : {response.StatusCode} MessageState : {state} Result : {json}");
+
+                return (state, json);
+            }
+            catch (HttpRequestException ex)
+            {
+                LogRecorder.MonitorInfomation(() => $"发生异常.{ex.Message}");
+                return (MessageState.Unsend, null);
+            }
+            catch (Exception ex)
+            {
+                LogRecorder.MonitorInfomation(() => $"发生异常.{ex.Message}");
+                return (MessageState.NetworkError, null);
+            }
+            finally
+            {
+                LogRecorder.EndStepMonitor();
+            }
+        }
+
         #endregion
     }
 }

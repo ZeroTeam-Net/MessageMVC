@@ -7,7 +7,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
 {
 
     [NetEvent("OrderEvent")]
-    public class OrderEventControler : IApiControler
+    public class OrderEventControler : IApiController
     {
         [Route("offline/v1/new")]
         public void OnOrderNew(UnionOrder order)

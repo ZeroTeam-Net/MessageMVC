@@ -7,7 +7,7 @@ namespace ZeroTeam.MessageMVC.ConfigSync
     /// 配置同步控制器
     /// </summary>
     [NetEvent("ConfigSync")]
-    public class ConfigSyncControler : IApiControler
+    public class ConfigSyncControler : IApiController
     {
         /// <summary>
         /// 更新

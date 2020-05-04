@@ -8,7 +8,7 @@ using ZeroTeam.MessageMVC.ApiContract;
 namespace ZeroTeam.MessageMVC.Sample.Controllers
 {
     [Service("UnitService")]
-    public class TestControler2 : IApiControler
+    public class TestControler2 : IApiController
     {
         /// <summary>
         /// 日志对象
