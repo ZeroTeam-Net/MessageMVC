@@ -267,7 +267,7 @@
                 参数类型
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiAction.Execute(ZeroTeam.MessageMVC.Messages.IInlineMessage,ZeroTeam.MessageMVC.Messages.ISerializeProxy)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiAction.Execute(ZeroTeam.MessageMVC.Messages.IInlineMessage,ZeroTeam.MessageMVC.Messages.ISerializeProxy,Agebull.MicroZero.ZeroApis.ActionArgumentConvert)">
             <summary>
                 执行
             </summary>
@@ -1361,6 +1361,11 @@
             请求的全局标识(传递)
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.TraceInfo.CallPage">
+            <summary>
+            请求的页面(传递)
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.Context.TraceInfo.CallApp">
             <summary>
             请求应用
@@ -2036,6 +2041,14 @@
             取参数值
             </summary>
             <param name="name">名称</param>
+            <returns>值</returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.GetScopeArgument(System.String,ZeroTeam.MessageMVC.Messages.ArgumentScope)">
+            <summary>
+            取参数值
+            </summary>
+            <param name="name">名称</param>
+            <param name="scope">参数范围</param>
             <returns>值</returns>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.GetValueArgument(System.String,System.Int32,System.Int32,ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Type)">
@@ -3574,6 +3587,710 @@
             <param name="api">接口名称</param>
             <param name="args">接口参数</param>
             <returns></returns>
+        </member>
+        <member name="T:Agebull.MicroZero.ZeroApis.ActionArgumentConvert">
+            <summary>
+                动态方法参数转换器
+            </summary>
+        </member>
+        <member name="P:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.Failed">
+            <summary>
+                是否发生解析错误
+            </summary>
+        </member>
+        <member name="F:Agebull.MicroZero.ZeroApis.ActionArgumentConvert._messages">
+            <summary>
+                字段
+            </summary>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.AddMessage(System.String,System.String)">
+            <summary>
+            设置错误字段
+            </summary>
+            <param name="field"></param>
+            <param name="msg"></param>
+        </member>
+        <member name="P:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.Message">
+            <summary>
+                是否发生解析错误
+            </summary>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.FrameTryGetNullable``1(System.String,System.Func{System.String,``0},System.Nullable{``0}@)">
+            <summary>
+            字段值转换(框架调用)
+            </summary>
+            <param name="field">名称</param>
+            <param name="convert">转换器</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.FrameTryGet``1(System.String,System.Func{System.String,``0},``0@)">
+            <summary>
+            字段值转换(框架调用)
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <param name="convert">转换器</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.String@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetEnumNullable``1(System.String,System.Nullable{``0}@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetEnum``1(System.String,``0@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.Byte@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.Nullable{System.Byte}@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.SByte@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.Nullable{System.SByte}@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.Int16@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.Nullable{System.Int16}@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.UInt16@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.Nullable{System.UInt16}@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.Boolean@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.Nullable{System.Boolean}@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.Int32@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.Nullable{System.Int32}@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.UInt32@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.Nullable{System.UInt32}@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.Int64@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.Nullable{System.Int64}@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.UInt64@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.Nullable{System.UInt64}@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.Single@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.Nullable{System.Single}@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.Double@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.Nullable{System.Double}@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.DateTime@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.Nullable{System.DateTime}@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.Decimal@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.Nullable{System.Decimal}@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.Guid@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.Nullable{System.Guid}@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.Collections.Generic.List{System.Int32}@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetValue(System.String,System.Collections.Generic.List{System.Int64}@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.ActionArgumentConvert.TryGetIDs(System.String,System.Collections.Generic.List{System.Int64}@)">
+            <summary>
+            字段值转换
+            </summary>
+            <param name="field">名称</param>
+            <param name="value">字段名称</param>
+            <returns>是否接收值</returns>
+        </member>
+        <member name="T:Agebull.MicroZero.ZeroApis.MessageArgumentConvert">
+            <summary>
+                参数解析器
+            </summary>
+        </member>
+        <member name="P:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.Arguments">
+            <summary>
+                参数
+            </summary>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.ContainsArgument(System.String)">
+            <summary>
+                当前请求是否包含这个参数
+            </summary>
+            <param name="name">参数名称</param>
+            <returns>是否包含这个参数</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.SetArgument(System.String,System.String)">
+            <summary>
+                设置替代参数
+            </summary>
+            <param name="name">参数名</param>
+            <param name="value">参数值</param>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.SetArgument``1(System.String,``0)">
+            <summary>
+                设置替代参数
+            </summary>
+            <param name="name">参数名</param>
+            <param name="value">参数值</param>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.SetArgument(System.String,System.Object)">
+            <summary>
+                设置替代参数
+            </summary>
+            <param name="name">参数名</param>
+            <param name="value">参数值</param>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.GetArgValue(System.String)">
+            <summary>
+                获取参数
+            </summary>
+            <param name="name">参数名</param>
+            <returns>参数值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.Get(System.String)">
+            <summary>
+                获取参数
+            </summary>
+            <param name="name">参数名</param>
+            <returns>参数值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.GetString(System.String)">
+            <summary>
+                获取参数(文本)
+            </summary>
+            <param name="name">参数名称</param>
+            <returns>文本</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.GetNullable``1(System.String,System.Func{System.String,``0},System.Nullable{``0})">
+            <summary>
+                读参数(泛型),如果参数为空或不存在,用默认值填充
+            </summary>
+            <param name="name">参数名称</param>
+            <param name="convert">转换方法</param>
+            <param name="def">默认值</param>
+            <returns>值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.GetArg``1(System.String,System.Func{System.String,``0},``0)">
+            <summary>
+                读参数(泛型),如果参数为空或不存在,用默认值填充
+            </summary>
+            <param name="name">参数名称</param>
+            <param name="convert">转换方法</param>
+            <param name="def">默认值</param>
+            <returns>值</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.GetBool(System.String)">
+            <summary>
+                读参数(泛型)
+            </summary>
+            <param name="name">参数名称</param>
+            <returns>参数为空或不存在,返回不成功,其它情况视convert返回值自行控制</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.GetInt(System.String)">
+            <summary>
+                获取参数int类型
+            </summary>
+            <param name="name">参数名称</param>
+            <returns>int类型,为空则为0,如果存在且不能转为int类型将出现异常</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.GetDouble(System.String)">
+            <summary>
+                获取参数int类型
+            </summary>
+            <param name="name">参数名称</param>
+            <returns>int类型,为空则为0,如果存在且不能转为int类型将出现异常</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.GetSingle(System.String)">
+            <summary>
+                获取参数int类型
+            </summary>
+            <param name="name">参数名称</param>
+            <returns>int类型,为空则为0,如果存在且不能转为int类型将出现异常</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.GetGuid(System.String)">
+            <summary>
+                获取参数int类型
+            </summary>
+            <param name="name">参数名称</param>
+            <returns>int类型,为空则为0,如果存在且不能转为int类型将出现异常</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.GetByte(System.String)">
+            <summary>
+                获取参数int类型
+            </summary>
+            <param name="name">参数名称</param>
+            <returns>int类型,为空则为0,如果存在且不能转为int类型将出现异常</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.GetIntArray(System.String)">
+            <summary>
+                获取参数int类型
+            </summary>
+            <param name="name">参数名称</param>
+            <returns>int类型,为空则为0,如果存在且不能转为int类型将出现异常</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.GetInt(System.String,System.Int32)">
+            <summary>
+                获取参数(int类型),如果参数为空或不存在,用默认值填充
+            </summary>
+            <param name="name">参数名称</param>
+            <param name="def">默认值</param>
+            <returns>int类型,如果存在且不能转为int类型将出现异常</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.GetIntAny(System.String[])">
+            <summary>
+                获取参数(数字),模糊名称读取
+            </summary>
+            <param name="names">多个名称</param>
+            <returns>名称解析到的第一个不为0的数字,如果有名称存在且不能转为int类型将出现异常</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.GetNullableDate(System.String)">
+            <summary>
+                获取参数(日期类型)
+            </summary>
+            <param name="name">参数名称</param>
+            <returns>日期类型,为空则为空,如果存在且不能转为日期类型将出现异常</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.GetDate(System.String)">
+            <summary>
+                获取参数(日期类型)
+            </summary>
+            <param name="name">参数名称</param>
+            <returns>日期类型,为空则为DateTime.MinValue,如果存在且不能转为日期类型将出现异常</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.GetDate(System.String,System.DateTime)">
+            <summary>
+                获取参数(日期类型)
+            </summary>
+            <param name="name">参数名称</param>
+            <param name="def"></param>
+            <returns>日期类型,为空则为空,如果存在且不能转为日期类型将出现异常</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.GetBool(System.String,System.Boolean)">
+            <summary>
+                获取参数bool类型
+            </summary>
+            <param name="name">参数名称</param>
+            <param name="def">默认值</param>
+            <returns>int类型,为空则为0,如果存在且不能转为int类型将出现异常</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.GetDecimal(System.String)">
+            <summary>
+                获取参数(decimal型数据)
+            </summary>
+            <param name="name">参数名称</param>
+            <returns>decimal型数据,如果未读取值则为-1,如果存在且不能转为decimal类型将出现异常</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.GetDecimal(System.String,System.Decimal)">
+            <summary>
+                获取参数(decimal型数据),如果参数为空或不存在,用默认值填充
+            </summary>
+            <param name="name">参数名称</param>
+            <param name="def">默认值</param>
+            <returns>decimal型数据,如果存在且不能转为decimal类型将出现异常</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.GetLong(System.String,System.Int64)">
+            <summary>
+                获取参数(long型数据),如果参数为空或不存在,用默认值填充
+            </summary>
+            <param name="name">参数名称</param>
+            <param name="def">默认值</param>
+            <returns>long型数据,如果存在且不能转为long类型将出现异常</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.GetLongArray(System.String)">
+            <summary>
+                获取参数int类型
+            </summary>
+            <param name="name">参数名称</param>
+            <returns>int类型,为空则为0,如果存在且不能转为int类型将出现异常</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.GetLongAny(System.String[])">
+            <summary>
+                获取参数(数字),模糊名称读取
+            </summary>
+            <param name="names">多个名称</param>
+            <returns>名称解析到的第一个不为0的数字,如果有名称存在且不能转为int类型将出现异常</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.TryGetValue(System.String,System.String@)">
+            <summary>
+                获取参数(文本)
+            </summary>
+            <param name="name">参数名称</param>
+            <param name="val"></param>
+            <returns>文本</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.FrameTryGetValue(System.String,System.String@)">
+            <summary>
+                获取参数(文本)
+            </summary>
+            <param name="name">参数名称</param>
+            <param name="val"></param>
+            <returns>文本</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.TryGet(System.String,System.String@,System.Boolean)">
+            <summary>
+                获取参数(文本)
+            </summary>
+            <param name="name">参数名称</param>
+            <param name="val">结果值</param>
+            <param name="trim">是否清除首尾空白</param>
+            <returns>文本</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.TryGet``1(System.String,System.Func{System.String,``0},System.Nullable{``0}@)">
+            <summary>
+                读参数(泛型),如果参数为空或不存在,用默认值填充
+            </summary>
+            <param name="name">参数名称</param>
+            <param name="convert">转换方法</param>
+            <param name="value">参数值</param>
+            <returns>如果参数存在且可转换为对应类型，则返回True</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.TryGet``1(System.String,System.Func{System.String,``0},``0@)">
+            <summary>
+                读参数(泛型),如果参数为空或不存在,用默认值填充
+            </summary>
+            <param name="name">参数名称</param>
+            <param name="convert">转换方法</param>
+            <param name="value">参数值</param>
+            <returns>如果参数存在且可转换为对应类型，则返回True</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.TryGet(System.String,System.Nullable{System.Boolean}@)">
+            <summary>
+                试图读参数
+            </summary>
+            <param name="name">参数名称</param>
+            <param name="value">参数值</param>
+            <returns>如果参数存在且可转换为对应类型，则返回True</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.TryGet(System.String,System.Boolean@)">
+            <summary>
+                试图读参数
+            </summary>
+            <param name="name">参数名称</param>
+            <param name="value">参数值</param>
+            <returns>如果参数存在且可转换为对应类型，则返回True</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.TryGet(System.String,System.Guid@)">
+            <summary>
+                试图读参数
+            </summary>
+            <param name="name">参数名称</param>
+            <param name="value">参数值</param>
+            <returns>如果参数存在且可转换为对应类型，则返回True</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.TryGet(System.String,System.DateTime@)">
+            <summary>
+                试图读参数
+            </summary>
+            <param name="name">参数名称</param>
+            <param name="value">参数值</param>
+            <returns>如果参数存在且可转换为对应类型，则返回True</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.TryGetEnum``1(System.String,``0@)">
+            <summary>
+                试图读参数
+            </summary>
+            <param name="name">参数名称</param>
+            <param name="value">参数值</param>
+            <returns>如果参数存在且可转换为对应类型，则返回True</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.TryGet(System.String,System.Int32@)">
+            <summary>
+                试图读参数
+            </summary>
+            <param name="name">参数名称</param>
+            <param name="value">参数值</param>
+            <returns>如果参数存在且可转换为对应类型，则返回True</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.TryGet(System.String,System.Decimal@)">
+            <summary>
+                试图读参数
+            </summary>
+            <param name="name">参数名称</param>
+            <param name="value">参数值</param>
+            <returns>如果参数存在且可转换为对应类型，则返回True</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.TryGet(System.String,System.Single@)">
+            <summary>
+                试图读参数
+            </summary>
+            <param name="name">参数名称</param>
+            <param name="value">参数值</param>
+            <returns>如果参数存在且可转换为对应类型，则返回True</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.TryGet(System.String,System.Double@)">
+            <summary>
+                试图读参数
+            </summary>
+            <param name="name">参数名称</param>
+            <param name="value">参数值</param>
+            <returns>如果参数存在且可转换为对应类型，则返回True</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.TryGet(System.String,System.Int16@)">
+            <summary>
+                试图读参数
+            </summary>
+            <param name="name">参数名称</param>
+            <param name="value">参数值</param>
+            <returns>如果参数存在且可转换为对应类型，则返回True</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.TryGet(System.String,System.Int64@)">
+            <summary>
+                试图读参数
+            </summary>
+            <param name="name">参数名称</param>
+            <param name="value">参数值</param>
+            <returns>如果参数存在且可转换为对应类型，则返回True</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.TryGet(System.String,System.String[]@)">
+            <summary>
+                试图读参数
+            </summary>
+            <param name="name">参数名称</param>
+            <param name="value">参数值</param>
+            <returns>如果参数存在且可转换为对应类型，则返回True</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.TryGet(System.String,System.Int32[]@)">
+            <summary>
+                试图读参数
+            </summary>
+            <param name="name">参数名称</param>
+            <param name="values">参数值</param>
+            <returns>如果参数存在且可转换为对应类型，则返回True</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.TryGet(System.String,System.Collections.Generic.List{System.Int32}@)">
+            <summary>
+                试图读参数
+            </summary>
+            <param name="name">参数名称</param>
+            <param name="values">参数值</param>
+            <returns>如果参数存在且可转换为对应类型，则返回True</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.TryGet(System.String,System.Int64[]@)">
+            <summary>
+                试图读参数
+            </summary>
+            <param name="name">参数名称</param>
+            <param name="values">参数值</param>
+            <returns>如果参数存在且可转换为对应类型，则返回True</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.TryGet(System.String,System.Collections.Generic.List{System.Int64}@)">
+            <summary>
+                试图读参数
+            </summary>
+            <param name="name">参数名称</param>
+            <param name="values">参数值</param>
+            <returns>如果参数存在且可转换为对应类型，则返回True</returns>
+        </member>
+        <member name="M:Agebull.MicroZero.ZeroApis.MessageArgumentConvert.TryGetIDs(System.String,System.Collections.Generic.List{System.Int64}@)">
+            <summary>
+                试图读参数
+            </summary>
+            <param name="name">参数名称</param>
+            <param name="values">参数值</param>
+            <returns>如果参数存在且可转换为对应类型，则返回True</returns>
         </member>
         <member name="T:Agebull.EntityModel.Common.DataRuleAttribute">
             <summary>

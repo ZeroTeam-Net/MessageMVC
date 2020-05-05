@@ -24,7 +24,12 @@
             等级
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.AddIn.AddInImporter.Registers">
+        <member name="P:ZeroTeam.MessageMVC.AddIn.AddInImporter.Import">
+            <summary>
+            插件对象
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.AddIn.AddInImporter.Registers">
             <summary>
             插件对象
             </summary>
@@ -152,7 +157,7 @@
                 执行行为
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiAction.Execute(ZeroTeam.MessageMVC.Messages.IInlineMessage,ZeroTeam.MessageMVC.Messages.ISerializeProxy)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiAction.Execute(ZeroTeam.MessageMVC.Messages.IInlineMessage,ZeroTeam.MessageMVC.Messages.ISerializeProxy,Agebull.MicroZero.ZeroApis.ActionArgumentConvert)">
             <summary>
                 执行
             </summary>
@@ -181,6 +186,21 @@
         <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.#cctor">
             <summary>
             构造
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.FindAppDomain">
+            <summary>
+                发现
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.FindApies(System.Collections.Generic.IEnumerable{System.Reflection.Assembly})">
+            <summary>
+                发现
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.FindApies(System.Reflection.Assembly)">
+            <summary>
+            查找API
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.FindApies">

@@ -4,17 +4,17 @@
         <name>ZeroTeam.MessageMVC.Tools</name>
     </assembly>
     <members>
-        <member name="T:ZeroTeam.MessageMVC.ConfigSync.AutoRegister">
+        <member name="T:ZeroTeam.MessageMVC.Tools.AutoRegister">
             <summary>
               组件注册
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ConfigSync.AutoRegister.ZeroTeam#MessageMVC#AddIn#IAutoRegister#AutoRegist(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:ZeroTeam.MessageMVC.Tools.AutoRegister.ZeroTeam#MessageMVC#AddIn#IAutoRegister#AutoRegist(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             注册
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ConfigSync.AutoRegister.ZeroTeam#MessageMVC#ILifeFlow#Initialize">
+        <member name="M:ZeroTeam.MessageMVC.Tools.AutoRegister.ZeroTeam#MessageMVC#ILifeFlow#Initialize">
             <summary>
             初始化
             </summary>

@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
@@ -202,27 +201,42 @@ namespace ZeroTeam.MessageMVC.Http
             Trace.CallMachine = $"{HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.RemotePort}";
 
             HttpMethod = request.Method.ToUpper();
-            CheckHeaders(context, request);
+            CheckHeaders(request);
             //Trace.TraceId = $"{Trace.Token ?? HttpContext.Connection.Id}:{RandomCode.Generate(6)}";
             DataState = MessageDataState.None;
             return true;
         }
 
-        private void CheckHeaders(HttpContext context, HttpRequest request)
+        private void CheckHeaders(HttpRequest request)
         {
+            var referer = request.Headers["Referer"].LastOrDefault();
+            if (referer != null)
+            {
+                var uri = new UriBuilder(referer);
+                Trace.CallPage = uri.Path;
+            }
             if (MessageRouteOption.Instance.EnableAuthToken)
             {
-                Trace.Token = request.Headers["AUTHORIZATION"].LastOrDefault()?
-                .Trim()
-                .Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries)
-                .Last()
-                ?? context.Request.Query["token"];
-                if (string.IsNullOrWhiteSpace(Trace.Token) ||
-                    Trace.Token.Equals("null") ||
-                    Trace.Token.Equals("undefined") ||
-                    Trace.Token.Equals("Bearer"))
+                var header = request.Headers["Authorization"];
+                if(header.Count > 0)
                 {
-                    Trace.Token = null;
+                    var token = header[0]?.Trim().Split(new[] { ' ', '\t' }, 2, StringSplitOptions.RemoveEmptyEntries).Last();
+                    if (string.IsNullOrWhiteSpace(token) ||
+                        token.Equals("null") ||
+                        token.Equals("undefined") ||
+                        token.Equals("Bearer"))
+                    {
+                        Trace.Token = null;
+                    }
+                    else
+                    {
+                        var ks = token.Split('|');
+                        Trace.Token = ks[0];
+                        if (ks.Length > 1)
+                            Trace.CallApp = ks[1];
+                        if (ks.Length > 2)
+                            Trace.CallId = ks[2];
+                    }
                 }
             }
             if (MessageRouteOption.Instance.EnableHeader)
@@ -233,6 +247,9 @@ namespace ZeroTeam.MessageMVC.Http
                     Trace.Headers.Add(head.Key.ToUpper(), head.Value.ToList());
                 }
             }
+            Trace.CallApp ??= request.Query["__app"];
+            Trace.CallPage ??= request.Query["__page"];
+            Trace.Token ??= request.Query["__token"];
         }
 
         /// <summary>
@@ -322,12 +339,13 @@ namespace ZeroTeam.MessageMVC.Http
         /// <returns>值</returns>
         public object FrameGetValueArgument(string name, int scope, int serializeType, ISerializeProxy serialize, Type type)
         {
-            var value = GetValueArgument(name, scope);
-            if (value == null && type != typeof(string))
+            var val= GetScopeArgument(name, (ArgumentScope)scope);
+
+            if (val == null && type != typeof(string))
             {
                 throw new MessageArgumentNullException(name);
             }
-            return value;
+            return val;
         }
 
         /// <summary>
@@ -341,22 +359,20 @@ namespace ZeroTeam.MessageMVC.Http
         /// <returns>值</returns>
         public object GetValueArgument(string name, int scope, int serializeType, ISerializeProxy serialize, Type type)
         {
-            var vl = GetValueArgument(name, scope);
-            //return serialize.ToObject(arg, type);
-            return vl;
+            return GetScopeArgument(name, (ArgumentScope)scope);
         }
 
         /// <summary>
-        /// 取参数值(动态IL代码调用)
+        /// 取参数值
         /// </summary>
         /// <param name="name">名称</param>
         /// <param name="scope">参数范围</param>
         /// <returns>值</returns>
-        public string GetValueArgument(string name, int scope = 0)
+        public string GetScopeArgument(string name, ArgumentScope scope = ArgumentScope.HttpArgument)
         {
             if (string.IsNullOrWhiteSpace(name))
                 return null;
-            switch ((ArgumentScope)scope)
+            switch (scope)
             {
                 case ArgumentScope.HttpArgument:
                     if (HttpArguments.TryGetValue(name, out var ha))
@@ -524,6 +540,10 @@ namespace ZeroTeam.MessageMVC.Http
                 {
                     foreach (var key in request.Query.Keys)
                     {
+                        //if (key.Length == 1 && key[0] == '_')
+                        //    continue;
+                        //if (key.Length >= 2 && key[0] == '_' && key[1] == '_')
+                        //    continue;
                         arguments.TryAdd(key, request.Query[key]);
                     }
                 }

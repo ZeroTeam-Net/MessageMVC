@@ -126,64 +126,20 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
 
         #region Discove
 
-
-        private static readonly List<Assembly> knowAssemblies = new List<Assembly>();
+        /// <summary>
+        ///     发现
+        /// </summary>
+        public static void Discove(Assembly assembly)=> ApiDiscover.FindApies(assembly);
 
         /// <summary>
         ///     发现
         /// </summary>
-        public static void Discove(Assembly assembly)
-        {
-            if (knowAssemblies.Contains(assembly))
-            {
-                return;
-            }
-
-            knowAssemblies.Add(assembly);
-            var discover = new ApiDiscover
-            {
-                Assembly = assembly
-            };
-            discover.FindApies();
-        }
-
+        public static void Discove() => ApiDiscover.FindAppDomain();
 
         /// <summary>
         ///     发现
         /// </summary>
-        public static void Discove() => Discove(AppDomain.CurrentDomain.GetAssemblies());
-
-        /// <summary>
-        ///     发现
-        /// </summary>
-        public static void Discove(IEnumerable<Assembly> assemblies)
-        {
-            //AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-            foreach (var asm in assemblies)
-            {
-                //Console.WriteLine(asm.FullName);
-                if (knowAssemblies.Contains(asm) ||
-                    asm.FullName == null ||
-                    asm.FullName.Contains("netstandard") ||
-                    asm.FullName.Contains("System.") ||
-                    asm.FullName.Contains("Microsoft.") ||
-                    asm.FullName.Contains("Newtonsoft.") ||
-                    asm.FullName.Contains("Agebull.Common.") ||
-                    asm.FullName.Contains("ZeroTeam.MessageMVC.Abstractions") ||
-                    asm.FullName.Contains("ZeroTeam.MessageMVC.Core"))
-                {
-                    knowAssemblies.Add(asm);
-                    continue;
-                }
-                Discove(asm);
-            }
-        }
-
-        //private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
-        //{
-        //    Discove(args.RequestingAssembly);
-        //    return null;
-        //}
+        public static void Discove(IEnumerable<Assembly> assemblies) => ApiDiscover.FindApies(assemblies);
 
         #endregion
 

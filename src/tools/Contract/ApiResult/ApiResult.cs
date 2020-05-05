@@ -1,3 +1,4 @@
+using Agebull.Common.Ioc;
 using Newtonsoft.Json;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
@@ -68,6 +69,29 @@ namespace ZeroTeam.MessageMVC.ApiContract
         /// </summary>
         [DataMember(Name = "data"), JsonPropertyName("data"), JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
         public TData ResultData { get; set; }
+
+    }
+
+
+    /// <summary>
+    ///     API返回数据泛型类
+    /// </summary>
+    [DataContract, JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
+    public class DependencyApiResult<TData> : ApiResult, IApiResult<TData>
+    {
+        /// <summary>
+        ///     返回值
+        /// </summary>
+        [DataMember(Name = "data"), JsonPropertyName("data"), JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
+        public TData ResultData { get; set; }
+
+        /// <summary>
+        /// 构造
+        /// </summary>
+        public DependencyApiResult()
+        {
+            ResultData = DependencyHelper.Create<TData>();
+        }
 
     }
 }

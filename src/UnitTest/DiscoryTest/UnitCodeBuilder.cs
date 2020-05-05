@@ -36,8 +36,14 @@ namespace DiscoverTest
             discover.Discover(GetType().Assembly);
             discover.NUnitCode(IOHelper.CheckPath(path, "AutoCode"));
         }
-
         [Test]
+        public void FindAppDomain()
+        {
+            ApiDiscover.FindAppDomain();
+        }
+        
+
+       [Test]
         public void CreateApiSqlCode()
         {
             var path =

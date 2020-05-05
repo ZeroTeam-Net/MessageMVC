@@ -1,8 +1,0 @@
-﻿{
-  "MessageMVC" : {
-    "PlanProducer" : {
-      "ServiceName": "PlanTask",
-      "PostApiName": "v1/post"
-    }
-  }
-}

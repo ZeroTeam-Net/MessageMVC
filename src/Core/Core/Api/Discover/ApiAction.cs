@@ -1,4 +1,5 @@
 using Agebull.Common.Ioc;
+using Agebull.MicroZero.ZeroApis;
 using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
@@ -218,25 +219,25 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         ///     执行行为
         /// </summary>
-        public Func<IInlineMessage, ISerializeProxy, object, object> Function { get; set; }
+        public Func<IInlineMessage, ISerializeProxy, object, ActionArgumentConvert, object> Function { get; set; }
 
 
-        private Func<IInlineMessage, ISerializeProxy, object, (MessageState state, object result)> FuncSync;
-        private Func<IInlineMessage, ISerializeProxy, object, Task<(MessageState state, object result)>> FuncAsync;
+        private Func<IInlineMessage, ISerializeProxy, object, ActionArgumentConvert , (MessageState state, object result)> FuncSync;
+        private Func<IInlineMessage, ISerializeProxy, object, ActionArgumentConvert , Task<(MessageState state, object result)>> FuncAsync;
 
 
         /// <summary>
         ///     执行
         /// </summary>
         /// <returns></returns>
-        public Task<(MessageState state, object result)> Execute(IInlineMessage message, ISerializeProxy serializer)
+        public Task<(MessageState state, object result)> Execute(IInlineMessage message, ISerializeProxy serializer, ActionArgumentConvert convert)
         {
             if (IsAsync)
             {
-                return FuncAsync(message, ArgumentSerializer ?? serializer, message.ArgumentData);
+                return FuncAsync(message, ArgumentSerializer ?? serializer, message.ArgumentData, convert);
             }
 
-            var res = FuncSync(message, ArgumentSerializer ?? serializer, message.ArgumentData);
+            var res = FuncSync(message, ArgumentSerializer ?? serializer, message.ArgumentData, convert);
             return Task.FromResult(res);
         }
 
@@ -286,9 +287,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 if (ResultType == null)
                 {
-                    FuncSync = (msg, seri, arg) =>
+                    FuncSync = (msg, seri, arg, convert) =>
                     {
-                        Function(msg, seri, arg);
+                        Function(msg, seri, arg, convert);
                         return (MessageState.Success, null);
                     };
                     return;
@@ -296,9 +297,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 if (ResultType.IsSupperInterface(typeof(IApiResult)))
                 {
                     IsApiContract = true;
-                    FuncSync = (msg, seri, arg) =>
+                    FuncSync = (msg, seri, arg, convert) =>
                     {
-                        var res = Function(msg, seri, arg) as IApiResult;
+                        var res = Function(msg, seri, arg, convert) as IApiResult;
                         if (GlobalContext.CurrentNoLazy != null)
                         {
                             GlobalContext.Current.Status.LastStatus = res;
@@ -309,18 +310,18 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     };
                     return;
                 }
-                FuncSync = (msg, seri, arg) =>
+                FuncSync = (msg, seri, arg, convert) =>
                 {
-                    var res = Function(msg, seri, arg);
+                    var res = Function(msg, seri, arg, convert);
                     return (MessageState.Success, res);
                 };
                 return;
             }
             if (ResultType == null)
             {
-                FuncAsync = async (msg, seri, arg) =>
+                FuncAsync = async (msg, seri, arg, convert) =>
                 {
-                    var task = (Task)Function(msg, seri, arg);
+                    var task = (Task)Function(msg, seri, arg, convert);
                     await task;
                     return (MessageState.Success, null);
                 };
@@ -329,9 +330,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             if (ResultType.IsSupperInterface(typeof(IApiResult)))
             {
                 IsApiContract = true;
-                FuncAsync = async (msg, seri, arg) =>
+                FuncAsync = async (msg, seri, arg, convert) =>
                 {
-                    var task = Function(msg, seri, arg) as Task;
+                    var task = Function(msg, seri, arg, convert) as Task;
                     await task;
                     dynamic dy = task;
                     var res = dy.Result as IApiResult;
@@ -346,9 +347,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 };
                 return;
             }
-            FuncAsync = async (msg, seri, arg) =>
+            FuncAsync = async (msg, seri, arg, convert) =>
             {
-                var task = (Task)Function(msg, seri, arg);
+                var task = (Task)Function(msg, seri, arg, convert);
                 await task;
                 dynamic dy = task;
                 return (MessageState.Success, dy.Result);

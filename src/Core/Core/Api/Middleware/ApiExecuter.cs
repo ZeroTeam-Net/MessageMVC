@@ -1,4 +1,5 @@
 using Agebull.Common.Logging;
+using Agebull.MicroZero.ZeroApis;
 using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
@@ -94,19 +95,31 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             try
             {
                 //方法执行
-                var (state, result) = await action.Execute(Message, Service.Serialize);
-                Message.State = state;
-                Message.ResultData = result;
+                var convert = new ActionArgumentConvert();
+                var (state, result) = await action.Execute(Message, Service.Serialize, convert);
+                if (convert.Failed)
+                {
+                    Message.State = MessageState.FormalError;
+                }
+                else
+                {
+                    Message.State = state;
+                    Message.ResultData = result;
+                }
             }
-            catch (FormatException)
+            catch (FormatException ex)
             {
+                LogRecorder.Exception(ex);
+                LogRecorder.MonitorDetails(() => $"参数转换出错误, 请检查调用参数是否合适:{ex.Message}");
                 Message.RealState = MessageState.FormalError;
                 Message.Result = "参数转换出错误, 请检查调用参数是否合适";
             }
             catch (MessageArgumentNullException b)
             {
+                var msg = $"参数{b.ParamName}不能为空";
+                LogRecorder.MonitorDetails(msg);
                 Message.RealState = MessageState.FormalError;
-                Message.Result = $"参数{b.ParamName}不能为空";
+                Message.Result = msg;
             }
 
             if (next != null)

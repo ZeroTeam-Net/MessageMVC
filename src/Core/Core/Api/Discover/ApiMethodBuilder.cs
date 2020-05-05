@@ -1,6 +1,7 @@
 ﻿using Agebull.Common.Configuration;
 using Agebull.Common.Ioc;
 using Agebull.EntityModel.Common;
+using Agebull.MicroZero.ZeroApis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Documents;
 using ZeroTeam.MessageMVC.Messages;
-using ApiFunc = System.Func<ZeroTeam.MessageMVC.Messages.IInlineMessage, ZeroTeam.MessageMVC.Messages.ISerializeProxy, object, object>;
+using ApiFunc = System.Func<ZeroTeam.MessageMVC.Messages.IInlineMessage, ZeroTeam.MessageMVC.Messages.ISerializeProxy, object, object, Agebull.MicroZero.ZeroApis.ActionArgumentConvert>;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -56,7 +57,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 {
                     typeof(IInlineMessage),
                     typeof(ISerializeProxy),
-                    typeof(object)
+                    typeof(object),
+                    typeof(ActionArgumentConvert)
                 });
             ilGenerator = dynamicMethod.GetILGenerator();
 
@@ -343,6 +345,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 ilGenerator.Emit(OpCodes.Ldloc, typ);
                 ilGenerator.Emit(OpCodes.Ldloc, str);
+
+                
                 ilGenerator.Emit(OpCodes.Call, typeof(Enum).GetMethod(nameof(Enum.Parse), new[] { typeof(Type), typeof(string) }));
 
                 ilGenerator.Emit(OpCodes.Unbox_Any, parameter.ParameterType);

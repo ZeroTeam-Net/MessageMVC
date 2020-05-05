@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace ZeroTeam.MessageMVC.AddIn
@@ -35,7 +37,12 @@ namespace ZeroTeam.MessageMVC.AddIn
         /// 插件对象
         /// </summary>
         [ImportMany(typeof(IAutoRegister))]
-        public IEnumerable<IAutoRegister> Registers { get; set; }
+        public IEnumerable<IAutoRegister> Import { get; set; }
+
+        /// <summary>
+        /// 插件对象
+        /// </summary>
+        List<IAutoRegister> Registers = new List<IAutoRegister>();
 
         /// <summary>
         /// 检查
@@ -44,29 +51,77 @@ namespace ZeroTeam.MessageMVC.AddIn
         {
             logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(AddInImporter));
             logger.Information("AddInImporter >>> 检查");
-            DirectoryCatalog directoryCatalog;
+
             if (string.IsNullOrEmpty(ZeroAppOption.Instance.AddInPath))
             {
-                directoryCatalog = new DirectoryCatalog(Path.GetDirectoryName(GetType().Assembly.Location),"*.dll");
+                //using var catalog = new AggregateCatalog();
+                var path = Path.GetDirectoryName(GetType().Assembly.Location);
+                var files = Directory.GetFiles(path, "*.dll", SearchOption.TopDirectoryOnly);
+                foreach(var file in files)
+                {
+                    var name = Path.GetFileName(file);
+                    var first = name.Split('.',2)[0];
+                    switch(first)
+                    {
+                        case "System":
+                        case "Microsoft":
+                        case "NuGet":
+                        case "Newtonsoft":
+                            break;
+                        default:
+                            // 通过容器对象将宿主和部件组装到一起。 
+                            try
+                            {
+                                using var provider = new DirectoryCatalog(path, name);
+                                using var c = new CompositionContainer(provider);
+                                c.ComposeParts(this);
+                                if (Import != null && Import.Any())
+                                {
+                                    Registers.AddRange(Import);
+                                }
+                                Import = null;
+                            }
+                            catch (System.Exception e2)
+                            {
+                                logger.Exception(e2);
+                            }
+                            break;
+                    }
+                }
+                // 通过容器对象将宿主和部件组装到一起。 
+                //try
+                //{
+                //    using var provider = new CompositionContainer(catalog);
+                //    using var c = new CompositionContainer(provider);
+                //    c.ComposeParts(this);
+                //}
+                //catch (System.Exception e2)
+                //{
+                //    logger.Exception(e2);
+                //}
             }
             else
             {
-                directoryCatalog = new DirectoryCatalog(ZeroAppOption.Instance.AddInPath[0] == '/'
-                     ? ZeroAppOption.Instance.AddInPath
-                     : IOHelper.CheckPath(ZeroAppOption.Instance.RootPath, ZeroAppOption.Instance.AddInPath));
+                var path = ZeroAppOption.Instance.AddInPath[0] == '/'
+                        ? ZeroAppOption.Instance.AddInPath
+                        : Path.Combine(ZeroAppOption.Instance.RootPath, ZeroAppOption.Instance.AddInPath);
+                if (!Directory.Exists(path))
+                    return;
+                // 通过容器对象将宿主和部件组装到一起。 
+                try
+                {
+                    using var provider = new DirectoryCatalog(path, "*.dll");
+                    using var c = new CompositionContainer(provider);
+                    c.ComposeParts(this);
+                }
+                catch (System.Exception e2)
+                {
+                    logger.Exception(e2);
+                }
             }
 
 
-            // 通过容器对象将宿主和部件组装到一起。 
-            try
-            {
-                new CompositionContainer(directoryCatalog).ComposeParts(this);
-            }
-            catch (System.Exception e2)
-            {
-                logger.Exception(e2);
-            }
-            if (Registers == null)
+            if (Registers.Count == 0)
             {
                 return;
             }

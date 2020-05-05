@@ -1,7 +1,9 @@
 using Agebull.Common.Ioc;
+using Agebull.Common.Logging;
 using Agebull.Common.Reflection;
 using Agebull.EntityModel.Common;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -24,6 +26,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     {
         #region API发现
 
+        static ILogger logger;
+
+
+        private static readonly List<string> knowAssemblies = new List<string>();
+
         /// <summary>
         /// 主调用程序集
         /// </summary>
@@ -39,34 +46,111 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         static ApiDiscover()
         {
+            logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(ApiDiscover));
+            TransportDiscories ??= DependencyHelper.RootProvider.GetServices<IReceiverDiscover>().ToArray();
             XmlMember.Load(typeof(IMessageItem).Assembly);
             XmlMember.Load(typeof(ApiExecuter).Assembly);
         }
 
         /// <summary>
+        ///     发现
+        /// </summary>
+        public static void FindAppDomain()
+        {
+            FindApies(AppDomain.CurrentDomain.GetAssemblies());
+
+            var path = Path.GetDirectoryName(typeof(ApiDiscover).Assembly.Location);
+            var files = Directory.GetFiles(path, "*.dll", SearchOption.TopDirectoryOnly);
+            foreach (var file in files)
+            {
+                var name = Path.GetFileName(file);
+                if (knowAssemblies.Contains(name))
+                    continue;
+                knowAssemblies.Add(file);
+                var first = name.Split('.', 2)[0];
+                switch (first)
+                {
+                    case "System":
+                    case "Microsoft":
+                    case "NuGet":
+                    case "Newtonsoft":
+                        break;
+                    default:
+                        FindApies(Assembly.LoadFile(file));
+                        break;
+                }
+            }
+        }
+        /// <summary>
+        ///     发现
+        /// </summary>
+        public static void FindApies(IEnumerable<Assembly> assemblies)
+        {
+            foreach (var assembly in assemblies)
+            {
+                FindApies(assembly);
+            }
+        }
+
+        /// <summary>
         /// 查找API
         /// </summary>
-        public void FindApies()
+        public static void FindApies(Assembly asm)
         {
-            Type[] types;
             try
             {
-                types = Assembly.GetTypes().Where(p => p.IsSupperInterface(typeof(IApiController))).ToArray();
+                if(string.IsNullOrWhiteSpace(asm.Location))
+                    return;
+                var file = Path.GetFileName(asm.Location);
+                if (knowAssemblies.Contains(file))
+                {
+                    return;
+                }
+                knowAssemblies.Add(file);
+                if (asm.FullName == null ||
+                    asm.FullName.Contains("netstandard") ||
+                    asm.FullName.Contains("System.") ||
+                    asm.FullName.Contains("Microsoft.") ||
+                    asm.FullName.Contains("Newtonsoft.") ||
+                    asm.FullName.Contains("Agebull.Common.") ||
+                    asm.FullName.Contains("ZeroTeam.MessageMVC.Abstractions") ||
+                    asm.FullName.Contains("ZeroTeam.MessageMVC.Core"))
+                {
+                    return;
+                }
             }
             catch
             {
                 return;
             }
-            XmlMember.Load(Assembly);
+            try
+            {
+                var discover = new ApiDiscover
+                {
+                    Assembly = asm
+                };
+                XmlMember.Load(asm);
+                discover.FindApies();
+            }
+            catch (Exception e2)
+            {
+                logger.Debug(e2.ToString());
+            }
+        }
 
-            TransportDiscories ??= DependencyHelper.RootProvider.GetServices<IReceiverDiscover>().ToArray();
-
+        /// <summary>
+        /// 查找API
+        /// </summary>
+        void FindApies()
+        {
+            var types = Assembly.GetTypes().Where(p => p.IsSupperInterface(typeof(IApiController))).ToArray();
+            if (types.Length == 0)
+                return;
             foreach (var type in types)
             {
                 FindApi(type);
             }
             RegistToZero();
-
             RegistDocument();
         }
 
@@ -131,7 +215,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             }
         }
 
-        private IReceiverDiscover[] TransportDiscories;
+        static IReceiverDiscover[] TransportDiscories;
 
         /// <summary>
         /// 查找API
@@ -145,6 +229,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 return;
             }
 
+            logger.Debug(type.GetFullTypeName);
             var docx = XmlMember.Find(type) ?? new XmlMember
             {
                 Name = type.Name
@@ -307,6 +392,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 api.Arguments.Add(info);
             }
             serviceInfo.Aips.Add(api.Route, api);
+
+            logger.Debug(()=> $"=>{api.Caption}({api.Name}) : {api.Route}");
         }
 
         #endregion
@@ -843,8 +930,6 @@ namespace {serviceInfo.Type.Namespace}.UnitTest
         }
 
         #endregion
-
-
 
         #region SaveApi
 

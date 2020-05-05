@@ -25,7 +25,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/ZeroTeam-Net/MessageMVC</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ZeroTeam-Net/MessageMVC.git</RepositoryUrl>
-    <Version>1.0.0.83-beta</Version>
+    <Version>1.0.0.92-pre</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>ZeroTeam.MessageMVC.Http.xml</DocumentationFile>

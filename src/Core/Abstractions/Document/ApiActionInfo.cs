@@ -1,9 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-using ZeroTeam.MessageMVC.Messages;
-using ApiFunc = System.Func<ZeroTeam.MessageMVC.Messages.IInlineMessage, ZeroTeam.MessageMVC.Messages.ISerializeProxy, object, object>;
+using ApiFunc = System.Func<ZeroTeam.MessageMVC.Messages.IInlineMessage, ZeroTeam.MessageMVC.Messages.ISerializeProxy, object, object, Agebull.MicroZero.ZeroApis.ActionArgumentConvert>;
 
 
 namespace ZeroTeam.MessageMVC.Documents

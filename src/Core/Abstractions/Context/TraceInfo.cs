@@ -64,6 +64,12 @@ namespace ZeroTeam.MessageMVC.Context
         public string CallId { get; set; }
 
         /// <summary>
+        /// 请求的页面(传递)
+        /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public string CallPage { get; set; }
+
+        /// <summary>
         /// 请求应用
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
@@ -118,6 +124,7 @@ namespace ZeroTeam.MessageMVC.Context
             {
                 TraceId = TraceId,
                 Start = Start,
+                CallPage = CallPage,
                 LocalId = LocalId,
                 LocalApp = LocalApp,
                 LocalMachine = LocalMachine,

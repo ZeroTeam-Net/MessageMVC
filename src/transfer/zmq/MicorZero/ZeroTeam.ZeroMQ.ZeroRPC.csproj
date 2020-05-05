@@ -26,7 +26,7 @@
     <Company>ZeroTeam</Company>
     <PackageReleaseNotes>ZeroMQ实现的RPC网络通讯</PackageReleaseNotes>
     <Product>ZeroTeam.ZeroMQ.ZeroRPC</Product>
-    <Version>1.0.0.83-beta</Version>
+    <Version>1.0.0.92-pre</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

@@ -190,9 +190,9 @@
             <param name="type">序列化对象</param>
             <returns>值</returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpMessage.GetValueArgument(System.String,System.Int32)">
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpMessage.GetScopeArgument(System.String,ZeroTeam.MessageMVC.Messages.ArgumentScope)">
             <summary>
-            取参数值(动态IL代码调用)
+            取参数值
             </summary>
             <param name="name">名称</param>
             <param name="scope">参数范围</param>

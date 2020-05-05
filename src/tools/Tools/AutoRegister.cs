@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.AddIn;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.Tools;
 
-namespace ZeroTeam.MessageMVC.ConfigSync
+namespace ZeroTeam.MessageMVC.Tools
 {
     /// <summary>
     ///   组件注册

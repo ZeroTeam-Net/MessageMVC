@@ -23,7 +23,6 @@ namespace ZeroTeam.MessageMVC.Http
         /// </summary>
         public bool EnableAuthToken { get; set; }
 
-
         /// <summary>
         /// 启用Header跟踪(如HTTP请求头)
         /// </summary>
@@ -42,13 +41,14 @@ namespace ZeroTeam.MessageMVC.Http
         /// </summary>
         public static MessageRouteOption Instance = new MessageRouteOption
         {
+            EnableAuthToken = true,
             HostPaths = new Dictionary<string, int>(),
         };
 
 
         static MessageRouteOption()
         {
-            ConfigurationManager.RegistOnChange<MessageRouteOption>("MessageMVC:HttpRoute", Instance.Load, true);
+            ConfigurationManager.RegistOnChange<MessageRouteOption>("Http:Message", Instance.Load, true);
         }
 
         void Load(MessageRouteOption option)

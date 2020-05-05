@@ -199,6 +199,19 @@ namespace ZeroTeam.MessageMVC.Messages
         }*/
 
         /// <summary>
+        /// 取参数值
+        /// </summary>
+        /// <param name="name">名称</param>
+        /// <param name="scope">参数范围</param>
+        /// <returns>值</returns>
+        string GetScopeArgument(string name, ArgumentScope scope = ArgumentScope.HttpArgument)
+        {
+            if (Dictionary == null || !Dictionary.TryGetValue(name, out var value))
+                return null;
+            return value;
+        }
+
+        /// <summary>
         /// 取参数值(动态IL代码调用)  BUG
         /// </summary>
         /// <param name="name">名称</param>

@@ -61,6 +61,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     //LocalApp = message.Trace.LocalApp,
                     //LocalMachine = message.Trace.LocalMachine,
                     CallId = message.Trace.CallId,
+                    CallPage = message.Trace.CallPage,
                     CallApp = message.Trace.CallApp,
                     CallMachine = message.Trace.CallMachine,
                     Headers = message.Trace.Headers,

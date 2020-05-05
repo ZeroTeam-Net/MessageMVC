@@ -14,7 +14,7 @@ namespace MicroZero.Kafka.QueueStation
         {
             var service = DependencyHelper.ServiceCollection;
             service.UseCsRedis();
-            service.UseFlowAndWait(typeof(Program));
+            await service.UseFlowAndWait(typeof(Program));
             _ = Task.Run(Test);
             await ZeroFlowControl.WaitEnd();
             Console.WriteLine("Bye bye.");

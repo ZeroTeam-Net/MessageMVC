@@ -54,7 +54,7 @@ namespace ZeroTeam.MessageMVC.Http
         static HttpClientOption()
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls;
-            ConfigurationManager.RegistOnChange<HttpClientOption>("MessageMVC:HttpClient", Instance.LoadOption, true);
+            ConfigurationManager.RegistOnChange<HttpClientOption>("Http:Client", Instance.LoadOption, true);
         }
 
         void LoadOption(HttpClientOption option)
