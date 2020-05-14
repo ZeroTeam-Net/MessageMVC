@@ -157,7 +157,7 @@
                 执行行为
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiAction.Execute(ZeroTeam.MessageMVC.Messages.IInlineMessage,ZeroTeam.MessageMVC.Messages.ISerializeProxy,Agebull.MicroZero.ZeroApis.ActionArgumentConvert)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiAction.Execute(ZeroTeam.MessageMVC.Messages.IInlineMessage,ZeroTeam.MessageMVC.Messages.ISerializeProxy)">
             <summary>
                 执行
             </summary>

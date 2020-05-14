@@ -19,14 +19,11 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <summary>
         /// 异常守卫多久检查一次
         /// </summary>
-
         public int GuardCheckTime { get; set; }
-
 
         /// <summary>
         /// 消息处理过程锁定时长
         /// </summary>
-
         public int MessageLockTime { get; set; }
 
 
@@ -39,7 +36,6 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <summary>
         /// 无处理方法按发生异常处理
         /// </summary>
-
         public bool NoSupperIsError { get; set; }
 
         /// <summary>
@@ -50,7 +46,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
 
         static RedisOption()
         {
-            ConfigurationManager.RegistOnChange<RedisOption>("MessageMVC:Redis", Instance.Update, true);
+            ConfigurationHelper.RegistOnChange<RedisOption>("MessageMVC:Redis", Instance.Update, true);
         }
 
         /// <summary>

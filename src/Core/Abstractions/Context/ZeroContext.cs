@@ -16,7 +16,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// </summary>
         public ZeroContext()
         {
-            User = DependencyHelper.Create<IUser>();//防止反序列化失败
+            User = DependencyHelper.GetService<IUser>();//防止反序列化失败
             Status = new ContextStatus();
             Option = new Dictionary<string, string>();
         }

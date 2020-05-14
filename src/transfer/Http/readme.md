@@ -76,7 +76,7 @@ namespace ZeroTeam.MessageMVC.Http
 
         public static void Main(string[] args)
         {
-            LogRecorder.LogPath = Path.Combine(Environment.CurrentDirectory, "logs", ConfigurationManager.Root["AppName"]);
+            LogRecorder.LogPath = Path.Combine(Environment.CurrentDirectory, "logs", ConfigurationHelper.Root["AppName"]);
 
             CreateHostBuilder(args).Build().Run();
         }
@@ -86,11 +86,11 @@ namespace ZeroTeam.MessageMVC.Http
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder
-                    .UseConfiguration(ConfigurationManager.Root)
+                    .UseConfiguration(ConfigurationHelper.Root)
                     .ConfigureLogging((hostingContext, builder) =>
                     {
-                        var option = ConfigurationManager.Get("Logging");
-                        builder.AddConfiguration(ConfigurationManager.Root.GetSection("Logging"));
+                        var option = ConfigurationHelper.Get("Logging");
+                        builder.AddConfiguration(ConfigurationHelper.Root.GetSection("Logging"));
                         if (option.GetBool("console", true))
                             builder.AddConsole();
                         if (option.GetBool("innerLogger", false))
@@ -99,7 +99,7 @@ namespace ZeroTeam.MessageMVC.Http
                             LoggerProviderOptions.RegisterProviderOptions<TextLoggerOption, TextLoggerProvider>(builder.Services);
                         }
                     })
-                    .UseUrls(ConfigurationManager.Root.GetSection("Kestrel:Endpoints:Http:Url").Value)
+                    .UseUrls(ConfigurationHelper.Root.GetSection("Kestrel:Endpoints:Http:Url").Value)
                     .UseKestrel((ctx, opt) =>
                     {
                         opt.Configure(ctx.Configuration.GetSection("Kestrel"));
@@ -111,7 +111,7 @@ namespace ZeroTeam.MessageMVC.Http
 ```
 
 1. 设置LogRecorder.LogPath,保存路径相同,如果不启用LogRecorder的文本记录器,可跳过
-2. UseConfiguration(ConfigurationManager.Root),保证ConfigurationManager用途的一致性.
+2. UseConfiguration(ConfigurationHelper.Root),保证ConfigurationHelper用途的一致性.
 3. 日志配置ConfigureLogging ,此处响应Logging的扩展配置,用于更合理的使用LogRecorder
 4. UseUrls,是为了不跳出默认使用5000及5001端口的讨厌Warning
 5. UseKestrel,使用Core的标准配置,可参考MSDN了解更多配置的详情.

@@ -1,7 +1,6 @@
 ﻿using Agebull.Common.Configuration;
 using Agebull.Common.Ioc;
 using Agebull.EntityModel.Common;
-using Agebull.MicroZero.ZeroApis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -13,7 +12,7 @@ using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Documents;
 using ZeroTeam.MessageMVC.Messages;
-using ApiFunc = System.Func<ZeroTeam.MessageMVC.Messages.IInlineMessage, ZeroTeam.MessageMVC.Messages.ISerializeProxy, object, object, Agebull.MicroZero.ZeroApis.ActionArgumentConvert>;
+using ApiFunc = System.Func<ZeroTeam.MessageMVC.Messages.IInlineMessage, ZeroTeam.MessageMVC.Messages.ISerializeProxy, object, object>;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -57,8 +56,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 {
                     typeof(IInlineMessage),
                     typeof(ISerializeProxy),
-                    typeof(object),
-                    typeof(ActionArgumentConvert)
+                    typeof(object)
                 });
             ilGenerator = dynamicMethod.GetILGenerator();
 
@@ -415,8 +413,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         private static void ConfigCreate(ILGenerator ilGenerator, string name, Type type)
         {
             ilGenerator.Emit(OpCodes.Ldstr, name);
-            var method = typeof(ConfigurationManager)
-                .GetMethod(nameof(ConfigurationManager.Option), new[] { typeof(string) })
+            var method = typeof(ConfigurationHelper)
+                .GetMethod(nameof(ConfigurationHelper.Option), new[] { typeof(string) })
                 .MakeGenericMethod(type);
             ilGenerator.Emit(OpCodes.Call, method);
         }

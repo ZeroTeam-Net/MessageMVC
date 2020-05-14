@@ -17,7 +17,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         ///     当前线程的调用上下文
         /// </summary>
-        public static IZeroContext Current => DependencyScope.Dependency.TryGetDependency(DependencyHelper.Create<IZeroContext>);
+        public static IZeroContext Current => DependencyScope.Dependency.TryGetDependency(DependencyHelper.GetService<IZeroContext>);
 
         /// <summary>
         ///     当前线程的调用上下文(无懒构造)
@@ -29,7 +29,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// </summary>
         public static void SetContext(IInlineMessage message)
         {
-            var ctx = DependencyHelper.Create<IZeroContext>();
+            var ctx = DependencyHelper.GetService<IZeroContext>();
             ctx.Message = message;
             ctx.Trace = message.Trace;
             ctx.User.FormJson(message.Trace?.Context?.UserJson);
@@ -39,7 +39,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         ///     内部构造
         /// </summary>
-        public static IZeroContext Reset() => DependencyScope.Dependency.Annex(DependencyHelper.Create<IZeroContext>());
+        public static IZeroContext Reset() => DependencyScope.Dependency.Annex(DependencyHelper.GetService<IZeroContext>());
 
         /// <summary>
         ///     置空并注销当前上下文
@@ -57,7 +57,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         /// 表示一个匿名用户
         /// </summary>
-        public static IUser Anymouse { get; } = DependencyHelper.Create<IUser>();
+        public static IUser Anymouse { get; } = DependencyHelper.GetService<IUser>();
 
         #endregion
 

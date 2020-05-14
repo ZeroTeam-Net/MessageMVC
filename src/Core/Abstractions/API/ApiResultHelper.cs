@@ -16,7 +16,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// ApiResult的抽象
         /// </summary>
-        public static IApiResultHelper Helper => helper ??= DependencyHelper.Create<IApiResultHelper>();
+        public static IApiResultHelper Helper => helper ??= DependencyHelper.GetService<IApiResultHelper>();
 
         /// <summary>成功的Json字符串</summary>
         /// <remarks>成功</remarks>

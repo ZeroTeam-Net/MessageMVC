@@ -10,9 +10,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     /// </summary>
     public class ReceiverDiscover : IReceiverDiscover
     {
-        private static IMessageReceiver RpcTransportBuilder(string name) => DependencyHelper.Create<IServiceReceiver>();
-        private static IMessageReceiver ConsumerTransportBuilder(string name) => DependencyHelper.Create<IMessageConsumer>();
-        private static IMessageReceiver NetEventTransportBuilder(string name) => DependencyHelper.Create<INetEvent>();
+        private static IMessageReceiver RpcTransportBuilder(string name) => DependencyHelper.GetService<IServiceReceiver>();
+        private static IMessageReceiver ConsumerTransportBuilder(string name) => DependencyHelper.GetService<IMessageConsumer>();
+        private static IMessageReceiver NetEventTransportBuilder(string name) => DependencyHelper.GetService<INetEvent>();
 
         /// <summary>
         /// 发现传输对象

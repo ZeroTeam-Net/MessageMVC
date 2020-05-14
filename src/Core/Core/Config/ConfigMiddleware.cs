@@ -36,9 +36,9 @@ namespace ZeroTeam.MessageMVC
             DependencyHelper.AddSingleton(config);
             DependencyHelper.Update();
             LogRecorder.GetMachineNameFunc = () => config.TraceName;
-            if(ConfigurationManager.IsEnable("LogRecorder:innerLogger"))
+            if(ConfigurationHelper.IsEnable("LogRecorder:innerLogger"))
             {
-                var opt = ConfigurationManager.Get<TextLoggerOption>("Logging:Text");
+                var opt = ConfigurationHelper.Get<TextLoggerOption>("Logging:Text");
                 if (string.IsNullOrWhiteSpace(opt?.LogPath))
                 {
                     LogRecorder.LogPath = config.IsolateFolder
@@ -69,10 +69,10 @@ namespace ZeroTeam.MessageMVC
             #region 配置组合
 
             bool useZero = !string.IsNullOrEmpty(config.RootPath);
-            config.IsDevelopment = ConfigurationManager.Root["ASPNETCORE_ENVIRONMENT_"] == "Development";
+            config.IsDevelopment = ConfigurationHelper.Root["ASPNETCORE_ENVIRONMENT_"] == "Development";
             if (!useZero)
             {
-                bool.TryParse(ConfigurationManager.Root["MessageMVC:Option:UseZero"] ?? "false", out useZero);
+                bool.TryParse(ConfigurationHelper.Root["MessageMVC:Option:UseZero"] ?? "false", out useZero);
                 if (!useZero || config.IsDevelopment)
                 {
                     config.RootPath = Environment.CurrentDirectory;
@@ -82,20 +82,20 @@ namespace ZeroTeam.MessageMVC
                     config.RootPath = Path.GetDirectoryName(Environment.CurrentDirectory);
                 }
             }
-            ConfigurationManager.BasePath = config.RootPath;
+            ConfigurationHelper.BasePath = config.RootPath;
             if (useZero)
             {
                 var file = Path.Combine(config.RootPath, "config", "zero.json");
                 if (File.Exists(file))
                 {
-                    ConfigurationManager.Load(file);
-                    config.CopyByEmpty(ConfigurationManager.Get<ZeroAppConfig>("MessageMVC:Option"));
+                    ConfigurationHelper.Load(file);
+                    config.CopyByEmpty(ConfigurationHelper.Get<ZeroAppConfig>("MessageMVC:Option"));
                 }
                 file = Path.Combine(config.RootPath, "config", $"{config.AppName}.json");
                 if (File.Exists(file))
                 {
-                    ConfigurationManager.Load(file);
-                    config.CopyByHase(ConfigurationManager.Get<ZeroAppConfig>("MessageMVC:Option"));
+                    ConfigurationHelper.Load(file);
+                    config.CopyByHase(ConfigurationHelper.Get<ZeroAppConfig>("MessageMVC:Option"));
                 }
             }
 

@@ -90,7 +90,7 @@ namespace ZeroTeam.MessageMVC.ApiContract
         /// </summary>
         public DependencyApiResult()
         {
-            ResultData = DependencyHelper.Create<TData>();
+            ResultData = DependencyHelper.GetService<TData>();
         }
 
     }

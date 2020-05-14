@@ -10,7 +10,7 @@ namespace ZeroTeam.MessageMVC.Messages
     /// </summary>
     public static class JsonHelper
     {
-        static readonly IJsonSerializeProxy porxy = DependencyHelper.Create<IJsonSerializeProxy>() ?? NewtonJson;
+        static readonly IJsonSerializeProxy porxy = DependencyHelper.GetService<IJsonSerializeProxy>() ?? NewtonJson;
 
         /// <summary>
         /// 使用NewtonsoftJson的序列化器

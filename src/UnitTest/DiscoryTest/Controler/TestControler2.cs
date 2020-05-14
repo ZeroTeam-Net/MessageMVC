@@ -30,7 +30,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         [Route("v1/json")]
         public string Json(Argument argument)
         {
-            return DependencyHelper.Create<IJsonSerializeProxy>().ToString(argument);
+            return DependencyHelper.GetService<IJsonSerializeProxy>().ToString(argument);
         }
 
         [Route("v1/xml")]

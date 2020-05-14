@@ -46,13 +46,13 @@ namespace ZeroTeam.MessageMVC.Kafka
 
         static KafkaOption()
         {
-            ConfigurationManager.RegistOnChange(sectionName, Instance.Load, true);
+            ConfigurationHelper.RegistOnChange(sectionName, Instance.Load, true);
         }
 
         void Load()
         {
-            BootstrapServers = ConfigurationManager.Get(sectionName).GetStr("BootstrapServers", BootstrapServers);
-            TestTopic = ConfigurationManager.Get(sectionName).GetStr("TestTopic", TestTopic);
+            BootstrapServers = ConfigurationHelper.Get(sectionName).GetStr("BootstrapServers", BootstrapServers);
+            TestTopic = ConfigurationHelper.Get(sectionName).GetStr("TestTopic", TestTopic);
             Producer.BootstrapServers = BootstrapServers;
             Consumer.BootstrapServers = BootstrapServers;
 
@@ -71,7 +71,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         void ProducerLoad()
         {
             ConfigLoad(Producer);
-            var config = ConfigurationManager.Get<ProducerConfig>(ProducerName);
+            var config = ConfigurationHelper.Get<ProducerConfig>(ProducerName);
             if (config == null)
                 return;
             Producer.QueueBufferingBackpressureThreshold = config.QueueBufferingBackpressureThreshold;
@@ -96,7 +96,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         static void ConsumerLoad(ConsumerConfig con)
         {
             ConfigLoad(con);
-            var config = ConfigurationManager.Get<ConsumerConfig>(ConsumerName);
+            var config = ConfigurationHelper.Get<ConsumerConfig>(ConsumerName);
             if (config == null)
                 return;
             con.IsolationLevel = config.IsolationLevel;
@@ -120,7 +120,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         static void ConfigLoad(ClientConfig dest)
         {
 
-            var config = ConfigurationManager.Get<ClientConfig>(ConfigName);
+            var config = ConfigurationHelper.Get<ClientConfig>(ConfigName);
             if (config == null)
                 return;
 

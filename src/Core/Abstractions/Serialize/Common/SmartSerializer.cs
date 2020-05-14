@@ -15,9 +15,9 @@ namespace ZeroTeam.MessageMVC.Messages
         public static readonly JsonSerializeProxy MsJson = new JsonSerializeProxy();
 
 
-        static readonly IJsonSerializeProxy Json = DependencyHelper.Create<IJsonSerializeProxy>();
-        static readonly IXmlSerializeProxy Xml = DependencyHelper.Create<IXmlSerializeProxy>();
-        static readonly Type MessageType = DependencyHelper.Create<IInlineMessage>().GetType();
+        static readonly IJsonSerializeProxy Json = DependencyHelper.GetService<IJsonSerializeProxy>();
+        static readonly IXmlSerializeProxy Xml = DependencyHelper.GetService<IXmlSerializeProxy>();
+        static readonly Type MessageType = DependencyHelper.GetService<IInlineMessage>().GetType();
 
         /// <summary>
         /// 自动序列化()

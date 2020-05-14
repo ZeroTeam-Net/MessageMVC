@@ -418,7 +418,7 @@ namespace ZeroTeam.MessageMVC.Services
         /// </summary>
         public ISerializeProxy Serialize
         {
-            get => serialize ??= DependencyHelper.Create<ISerializeProxy>();
+            get => serialize ??= DependencyHelper.GetService<ISerializeProxy>();
             set => serialize = value;
         }
 

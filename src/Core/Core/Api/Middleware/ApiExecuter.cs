@@ -1,5 +1,4 @@
 using Agebull.Common.Logging;
-using Agebull.MicroZero.ZeroApis;
 using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
@@ -95,17 +94,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             try
             {
                 //方法执行
-                var convert = new ActionArgumentConvert();
-                var (state, result) = await action.Execute(Message, Service.Serialize, convert);
-                if (convert.Failed)
-                {
-                    Message.State = MessageState.FormalError;
-                }
-                else
-                {
-                    Message.State = state;
-                    Message.ResultData = result;
-                }
+                var (state, result) = await action.Execute(Message, Service.Serialize);
+                Message.State = state;
+                Message.ResultData = result;
             }
             catch (FormatException ex)
             {

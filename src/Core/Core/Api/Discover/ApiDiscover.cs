@@ -203,7 +203,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                         ServiceName = serviceInfo.Name,
                         Serialize = SelectSerialize(serviceInfo.Serialize),
                         Receiver = serviceInfo.NetBuilder(serviceInfo.Name)
-                    };// DependencyHelper.Create<IService>();
+                    };// DependencyHelper.GetService<IService>();
 
                     ZeroFlowControl.RegistService(ref service);
                 }
@@ -290,16 +290,16 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             switch (type)
             {
                 case SerializeType.Json:
-                    return DependencyHelper.Create<IJsonSerializeProxy>();
+                    return DependencyHelper.GetService<IJsonSerializeProxy>();
 
                 case SerializeType.NewtonJson:
                     return new NewtonJsonSerializeProxy();
 
                 case SerializeType.Xml:
-                    return DependencyHelper.Create<IXmlSerializeProxy>();
+                    return DependencyHelper.GetService<IXmlSerializeProxy>();
 
                 case SerializeType.Bson:
-                    return DependencyHelper.Create<IBsonSerializeProxy>();
+                    return DependencyHelper.GetService<IBsonSerializeProxy>();
                 default:
                     throw new NotSupportedException($"{type}序列化方式暂不支持");
             };

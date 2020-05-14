@@ -97,7 +97,7 @@ namespace ZeroTeam.MessageMVC.Http
                      {
                          ServiceName = "***",
                          Receiver = new HttpReceiver(),
-                         Serialize = DependencyHelper.Create<ISerializeProxy>()
+                         Serialize = DependencyHelper.GetService<ISerializeProxy>()
                      };
 
                 await MessageProcessor.OnMessagePush(service, message, true, context);
@@ -150,7 +150,7 @@ namespace ZeroTeam.MessageMVC.Http
                          {
                              ServiceName = "***",
                              Receiver = new HttpReceiver(),
-                             Serialize = DependencyHelper.Create<ISerializeProxy>()
+                             Serialize = DependencyHelper.GetService<ISerializeProxy>()
                          };
                     await MessageProcessor.OnMessagePush(service, data, false, context);
                 }

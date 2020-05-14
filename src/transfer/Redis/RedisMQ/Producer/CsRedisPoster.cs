@@ -44,7 +44,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             try
             {
                 DateTime start = DateTime.Now;
-                if (!await client.SetAsync("_HealthCheck_", "c", 10))
+                if (!await client.SetAsync("_health_", "c", 10))
                 {
                     item.Value = (DateTime.Now - start).TotalMilliseconds;
                     item.Level = 0;
@@ -80,7 +80,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             try
             {
                 DateTime start = DateTime.Now;
-                if (await client.GetAsync("_HealthCheck_") != "c")
+                if (await client.GetAsync("_health_") != "c")
                 {
                     item.Value = (DateTime.Now - start).TotalMilliseconds;
                     item.Level = 0;
@@ -115,7 +115,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             try
             {
                 DateTime start = DateTime.Now;
-                if (await client.DelAsync("_HealthCheck_") != 1)
+                if (await client.DelAsync("_health_") != 1)
                 {
                     item.Value = (DateTime.Now - start).TotalMilliseconds;
                     item.Level = 0;
@@ -133,7 +133,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                         item.Level = 2;
                     else item.Level = 1;
                 }
-                await client.DelAsync("_HealthCheck_");
+                await client.DelAsync("_health_");
             }
             catch (Exception ex)
             {

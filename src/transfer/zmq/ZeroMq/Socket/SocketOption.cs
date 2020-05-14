@@ -103,7 +103,7 @@ namespace ZeroTeam.ZeroMQ
         /// </summary>
         static SocketOption()
         {
-            ConfigurationManager.RegistOnChange<SocketOption>("ZeroRPC:SocketOption", Instance.Load, true);
+            ConfigurationHelper.RegistOnChange<SocketOption>("ZeroRPC:SocketOption", Instance.Load, true);
         }
 
         void Load(SocketOption option)

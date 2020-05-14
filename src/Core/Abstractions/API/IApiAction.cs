@@ -1,5 +1,4 @@
-﻿using Agebull.MicroZero.ZeroApis;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.Services;
@@ -84,7 +83,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ///     执行
         /// </summary>
         /// <returns></returns>
-        Task<(MessageState state, object result)> Execute(IInlineMessage message, ISerializeProxy serializer,ActionArgumentConvert convert);
+        Task<(MessageState state, object result)> Execute(IInlineMessage message, ISerializeProxy serializer);
 
         /// <summary>
         /// 初始化检查

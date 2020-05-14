@@ -34,7 +34,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             var (msg, _) = await MessagePoster.Post(new InlineMessage
             {
                 ServiceName = "UnitService",
-                ApiName = "_HealthCheck_"
+                ApiName = "_health_"
             });
 
             Assert.IsTrue(msg.State == MessageState.Success, msg.Result);

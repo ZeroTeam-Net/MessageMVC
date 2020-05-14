@@ -48,7 +48,7 @@ namespace ZeroTeam.MessageMVC.Http
 
         static MessageRouteOption()
         {
-            ConfigurationManager.RegistOnChange<MessageRouteOption>("Http:Message", Instance.Load, true);
+            ConfigurationHelper.RegistOnChange<MessageRouteOption>("Http:Message", Instance.Load, true);
         }
 
         void Load(MessageRouteOption option)

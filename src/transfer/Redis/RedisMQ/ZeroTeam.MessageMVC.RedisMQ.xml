@@ -51,7 +51,7 @@
             单处理守卫变量
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.OnMessagePush(CSRedis.SubscribeMessageEventArgs)">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.OnMessagePush(CSRedis.CSRedisClient.SubscribeMessageEventArgs)">
             <summary>
             消息处理
             </summary>

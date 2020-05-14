@@ -38,7 +38,7 @@ namespace ZeroTeam.MessageMVC.Tools
         async Task<bool> IMessageMiddleware.Prepare(IService service, IInlineMessage message, object tag)
         {
             message.Trace ??= TraceInfo.New(message.ID);
-            if (message.Title != "_HealthCheck_")
+            if (message.ServiceName != "_health_")
             {
                 return true;
             }

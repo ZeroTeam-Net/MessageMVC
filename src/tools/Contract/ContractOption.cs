@@ -26,7 +26,7 @@ namespace ZeroTeam.MessageMVC.ApiContract
 
         static ContractOption()
         {
-            ConfigurationManager.RegistOnChange<ContractOption>("MessageMVC:ApiContract", Instance.Update, true);
+            ConfigurationHelper.RegistOnChange<ContractOption>("MessageMVC:ApiContract", Instance.Update, true);
         }
 
         /// <summary>

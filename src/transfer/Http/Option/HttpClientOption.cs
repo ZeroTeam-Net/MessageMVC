@@ -54,7 +54,7 @@ namespace ZeroTeam.MessageMVC.Http
         static HttpClientOption()
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls;
-            ConfigurationManager.RegistOnChange<HttpClientOption>("Http:Client", Instance.LoadOption, true);
+            ConfigurationHelper.RegistOnChange<HttpClientOption>("Http:Client", Instance.LoadOption, true);
         }
 
         void LoadOption(HttpClientOption option)
@@ -118,7 +118,7 @@ namespace ZeroTeam.MessageMVC.Http
                 }
             }
             DependencyHelper.Update();
-            HttpClientFactory = DependencyHelper.Create<IHttpClientFactory>();
+            HttpClientFactory = DependencyHelper.GetService<IHttpClientFactory>();
         }
     }
 }

@@ -17,7 +17,7 @@
     <PackageReleaseNotes>ClrZmq的ZeroTeam专用版本</PackageReleaseNotes>
     <Product>ClrZmq</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.0.92-pre</Version>
+    <Version>1.0.0.94</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

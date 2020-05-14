@@ -38,7 +38,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         public IApiResult Argument(Argument argument)
         {
             GlobalContext.Current.Status.LastMessage = "ddd";
-            var ctx = DependencyHelper.Create<IZeroContext>();
+            var ctx = DependencyHelper.GetService<IZeroContext>();
             if (GlobalContext.Current.Status.LastMessage != ctx.Status.LastMessage)
                 return ApiResultHelper.State(1);
             return ApiResultHelper.Succees(argument.Value);

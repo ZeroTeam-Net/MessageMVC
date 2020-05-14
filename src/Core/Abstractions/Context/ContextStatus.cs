@@ -43,7 +43,7 @@ namespace ZeroTeam.MessageMVC.Context
             {
                 if(_status == null)
                 {
-                    _status = DependencyHelper.Create<IOperatorStatus>();
+                    _status = DependencyHelper.GetService<IOperatorStatus>();
                     _status.Success = true;
                 }
                 return _status ;

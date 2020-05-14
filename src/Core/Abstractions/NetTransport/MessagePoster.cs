@@ -48,7 +48,7 @@ namespace ZeroTeam.MessageMVC
             {
                 posters.TryAdd(poster.GetTypeName(), poster);
             }
-            var sec = ConfigurationManager.Get("MessageMVC:MessagePoster");
+            var sec = ConfigurationHelper.Get("MessageMVC:MessagePoster");
             if (sec == null)
             {
                 if (posters.TryGetValue("HttpPoster", out Default))

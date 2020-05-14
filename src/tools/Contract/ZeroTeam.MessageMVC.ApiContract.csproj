@@ -14,7 +14,7 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Authors>Agebull</Authors>
     <Company>ZeroTeam</Company>
-    <Version>1.0.0.92-pre</Version>
+    <Version>1.0.0.94</Version>
     <PackageReleaseNotes></PackageReleaseNotes>
     <Product>ZeroTeam.MessageMVC.Tools</Product>
   </PropertyGroup>

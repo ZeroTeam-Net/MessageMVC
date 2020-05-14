@@ -70,7 +70,7 @@ namespace ZeroTeam.MessageMVC.Web
 
                 try
                 {
-                    var sec = ConfigurationManager.Root.GetSection("MessageMVC:WebSocket");
+                    var sec = ConfigurationHelper.Root.GetSection("MessageMVC:WebSocket");
                     return _config = sec.Get<WebSocketConfig>() ?? new WebSocketConfig();
                 }
                 catch (Exception e)
@@ -96,7 +96,7 @@ namespace ZeroTeam.MessageMVC.Web
                 ZeroFlowControl.RegistService(new ZeroService
                 {
                     ServiceName = folder,
-                    Receiver = DependencyHelper.Create<IMessageConsumer>()
+                    Receiver = DependencyHelper.GetService<IMessageConsumer>()
                 });
                 Handlers.Add(folder, new List<WebSocketClient>());
             }

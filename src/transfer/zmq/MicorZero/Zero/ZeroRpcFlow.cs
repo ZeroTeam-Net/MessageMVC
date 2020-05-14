@@ -48,7 +48,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
 
             #region 配置组合
 
-            var sec = ConfigurationManager.Get("ZeroRPC");
+            var sec = ConfigurationHelper.Get("ZeroRPC");
             if (sec == null)
             {
                 throw new Exception("无法找到ZeroRPC配置节点,路径为ZeroRPC,在zero.json或appsettings.json中设置");
@@ -126,7 +126,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// </summary>
         private static ZeroStationOption GetStationOption(string station)
         {
-            var sec = ConfigurationManager.Get("ZeroRPC");
+            var sec = ConfigurationHelper.Get("ZeroRPC");
             var option = sec.Child<ZeroStationOption>(station) ?? new ZeroStationOption();
             option.CopyByEmpty(Config.StationOption);
             if (option.ApiTimeout <= 1)

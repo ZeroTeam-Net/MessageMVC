@@ -1,5 +1,4 @@
 using Agebull.Common.Ioc;
-using Agebull.MicroZero.ZeroApis;
 using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
@@ -112,7 +111,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 if (ResultType.IsSupperInterface(typeof(IOperatorStatus)))
                     ResultCreater = (code, msg) =>
                     {
-                        var re = DependencyHelper.Create<IOperatorStatus>();
+                        var re = DependencyHelper.GetService<IOperatorStatus>();
                         re.Code = code;
                         re.Message = msg;
                         return re;
@@ -121,7 +120,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 switch (ResultSerializeType)
                 {
                     case SerializeType.Json:
-                        ResultSerializer = DependencyHelper.Create<IJsonSerializeProxy>();
+                        ResultSerializer = DependencyHelper.GetService<IJsonSerializeProxy>();
                         break;
                     case SerializeType.NewtonJson:
                         ResultSerializer = new NewtonJsonSerializeProxy();
@@ -219,25 +218,25 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         ///     执行行为
         /// </summary>
-        public Func<IInlineMessage, ISerializeProxy, object, ActionArgumentConvert, object> Function { get; set; }
+        public Func<IInlineMessage, ISerializeProxy, object, object> Function { get; set; }
 
 
-        private Func<IInlineMessage, ISerializeProxy, object, ActionArgumentConvert , (MessageState state, object result)> FuncSync;
-        private Func<IInlineMessage, ISerializeProxy, object, ActionArgumentConvert , Task<(MessageState state, object result)>> FuncAsync;
+        private Func<IInlineMessage, ISerializeProxy, object, (MessageState state, object result)> FuncSync;
+        private Func<IInlineMessage, ISerializeProxy, object, Task<(MessageState state, object result)>> FuncAsync;
 
 
         /// <summary>
         ///     执行
         /// </summary>
         /// <returns></returns>
-        public Task<(MessageState state, object result)> Execute(IInlineMessage message, ISerializeProxy serializer, ActionArgumentConvert convert)
+        public Task<(MessageState state, object result)> Execute(IInlineMessage message, ISerializeProxy serializer)
         {
             if (IsAsync)
             {
-                return FuncAsync(message, ArgumentSerializer ?? serializer, message.ArgumentData, convert);
+                return FuncAsync(message, ArgumentSerializer ?? serializer, message.ArgumentData);
             }
 
-            var res = FuncSync(message, ArgumentSerializer ?? serializer, message.ArgumentData, convert);
+            var res = FuncSync(message, ArgumentSerializer ?? serializer, message.ArgumentData);
             return Task.FromResult(res);
         }
 
@@ -265,16 +264,16 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             switch (ArgumentSerializeType)
             {
                 case SerializeType.Json:
-                    ArgumentSerializer = DependencyHelper.Create<IJsonSerializeProxy>();
+                    ArgumentSerializer = DependencyHelper.GetService<IJsonSerializeProxy>();
                     break;
                 case SerializeType.NewtonJson:
                     ArgumentSerializer = new NewtonJsonSerializeProxy();
                     break;
                 case SerializeType.Xml:
-                    ArgumentSerializer = DependencyHelper.Create<IXmlSerializeProxy>();
+                    ArgumentSerializer = DependencyHelper.GetService<IXmlSerializeProxy>();
                     break;
                 case SerializeType.Bson:
-                    ArgumentSerializer = DependencyHelper.Create<IBsonSerializeProxy>();
+                    ArgumentSerializer = DependencyHelper.GetService<IBsonSerializeProxy>();
                     break;
                 case SerializeType.Custom:
                     throw new NotSupportedException($"{ResultSerializeType}序列化方式暂不支持");
@@ -287,9 +286,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 if (ResultType == null)
                 {
-                    FuncSync = (msg, seri, arg, convert) =>
+                    FuncSync = (msg, seri, arg) =>
                     {
-                        Function(msg, seri, arg, convert);
+                        Function(msg, seri, arg);
                         return (MessageState.Success, null);
                     };
                     return;
@@ -297,9 +296,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 if (ResultType.IsSupperInterface(typeof(IApiResult)))
                 {
                     IsApiContract = true;
-                    FuncSync = (msg, seri, arg, convert) =>
+                    FuncSync = (msg, seri, arg) =>
                     {
-                        var res = Function(msg, seri, arg, convert) as IApiResult;
+                        var res = Function(msg, seri, arg) as IApiResult;
                         if (GlobalContext.CurrentNoLazy != null)
                         {
                             GlobalContext.Current.Status.LastStatus = res;
@@ -310,18 +309,18 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     };
                     return;
                 }
-                FuncSync = (msg, seri, arg, convert) =>
+                FuncSync = (msg, seri, arg) =>
                 {
-                    var res = Function(msg, seri, arg, convert);
+                    var res = Function(msg, seri, arg);
                     return (MessageState.Success, res);
                 };
                 return;
             }
             if (ResultType == null)
             {
-                FuncAsync = async (msg, seri, arg, convert) =>
+                FuncAsync = async (msg, seri, arg) =>
                 {
-                    var task = (Task)Function(msg, seri, arg, convert);
+                    var task = (Task)Function(msg, seri, arg);
                     await task;
                     return (MessageState.Success, null);
                 };
@@ -330,9 +329,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             if (ResultType.IsSupperInterface(typeof(IApiResult)))
             {
                 IsApiContract = true;
-                FuncAsync = async (msg, seri, arg, convert) =>
+                FuncAsync = async (msg, seri, arg) =>
                 {
-                    var task = Function(msg, seri, arg, convert) as Task;
+                    var task = Function(msg, seri, arg) as Task;
                     await task;
                     dynamic dy = task;
                     var res = dy.Result as IApiResult;
@@ -347,9 +346,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 };
                 return;
             }
-            FuncAsync = async (msg, seri, arg, convert) =>
+            FuncAsync = async (msg, seri, arg) =>
             {
-                var task = (Task)Function(msg, seri, arg, convert);
+                var task = (Task)Function(msg, seri, arg);
                 await task;
                 dynamic dy = task;
                 return (MessageState.Success, dy.Result);

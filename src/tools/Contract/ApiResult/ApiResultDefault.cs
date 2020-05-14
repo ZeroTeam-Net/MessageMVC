@@ -12,7 +12,7 @@ namespace ZeroTeam.MessageMVC.ApiContract
     {
         #region 序列化
 
-        static readonly ISerializeProxy Serializer = DependencyHelper.Create<ISerializeProxy>();
+        static readonly ISerializeProxy Serializer = DependencyHelper.GetService<ISerializeProxy>();
 
         /// <summary>
         /// 序列化
@@ -56,7 +56,7 @@ namespace ZeroTeam.MessageMVC.ApiContract
             var baseType = typeof(T);
             if (!interfaceMap.TryGetValue(baseType, out var supType))
             {
-                var def = DependencyHelper.Create<T>();
+                var def = DependencyHelper.GetService<T>();
                 if (def == null)
                     interfaceMap.TryAdd(baseType, null);
                 else interfaceMap.TryAdd(baseType, typeof(ApiResult<>).MakeGenericType(def.GetType()));

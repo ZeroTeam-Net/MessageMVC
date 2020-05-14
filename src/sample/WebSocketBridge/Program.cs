@@ -19,8 +19,8 @@ namespace WebNotifyTest
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder
-                        .UseConfiguration(ConfigurationManager.Root)
-                        .UseUrls(ConfigurationManager.Root.GetSection("Kestrel:Endpoints:Http:Url").Value)
+                        .UseConfiguration(ConfigurationHelper.Root)
+                        .UseUrls(ConfigurationHelper.Root.GetSection("Kestrel:Endpoints:Http:Url").Value)
                         .UseKestrel((ctx, opt) =>
                         {
                             opt.Configure(ctx.Configuration.GetSection("Kestrel"));

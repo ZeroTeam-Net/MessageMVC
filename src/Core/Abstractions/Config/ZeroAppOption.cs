@@ -69,7 +69,7 @@ namespace ZeroTeam.MessageMVC
                 BinPath = Environment.CurrentDirectory,
                 IsLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
             };
-            Instance.CopyByHase(ConfigurationManager.Get<ZeroAppConfig>("MessageMVC:Option"));
+            Instance.CopyByHase(ConfigurationHelper.Get<ZeroAppConfig>("MessageMVC:Option"));
         }
 
     }
