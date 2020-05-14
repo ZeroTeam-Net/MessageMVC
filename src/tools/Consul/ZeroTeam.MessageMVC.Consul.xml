@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ZeroTeam.MessageMVC.Consul</name>
+    </assembly>
+    <members>
+        <member name="T:ZeroTeam.MessageMVC.Consul.AutoRegister">
+            <summary>
+              组件注册
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Consul.AutoRegister.ZeroTeam#MessageMVC#AddIn#IAutoRegister#AutoRegist(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            注册
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Consul.ConsulFlow">
+            <summary>
+            Consul注册流程控制
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Consul.ConsulFlow.Level">
+            <inheritdoc/>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Consul.ConsulFlow.Name">
+            <inheritdoc/>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Consul.ConsulOption">
+            <summary>
+            Consul对应配置
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Consul.ConsulOption.IP">
+            <summary>
+            本地IP
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Consul.ConsulOption.Port">
+            <summary>
+            本地端口
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Consul.ConsulOption.ConsulIP">
+            <summary>
+            Consol的IP
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Consul.ConsulOption.ConsulPort">
+            <summary>
+            Consol的端口
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Consul.ConsulOption.HealthName">
+            <summary>
+            健康检查接口名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Consul.ConsulOption.RegisterAfter">
+            <summary>
+            服务启动多久后注册(单位秒),默认为1秒
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Consul.ConsulOption.HealthInterval">
+            <summary>
+            健康检查时间间隔，或者称为心跳间隔(单位秒),默认为10秒
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Consul.ConsulOption.HealthTimeout">
+            <summary>
+            健康检查超时时长(单位秒),默认为3秒
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Consul.ConsulOption.Instance">
+            <summary>
+            唯一实例
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Consul.ConsulOption.AgentServiceCheck">
+            <summary>
+            代理服务检查配置
+            </summary>
+        </member>
+    </members>
+</doc>
