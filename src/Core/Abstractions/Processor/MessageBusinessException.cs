@@ -14,7 +14,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <param name="exception">原始异常</param>
         public MessageBusinessException(string msg, Exception exception) : base(msg, exception)
         {
-            
+
         }
     }
 }

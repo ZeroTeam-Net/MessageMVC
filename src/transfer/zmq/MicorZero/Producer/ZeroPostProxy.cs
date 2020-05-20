@@ -10,7 +10,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.ZeroMQ.ZeroRPC
 {

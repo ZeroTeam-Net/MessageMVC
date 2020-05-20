@@ -19,7 +19,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         /// <param name="name"></param>
         /// <param name="localCall"></param>
-        protected MessageReceiverBase(string name,bool localCall=true)
+        protected MessageReceiverBase(string name, bool localCall = true)
         {
             Name = name;
             LocalCall = localCall;

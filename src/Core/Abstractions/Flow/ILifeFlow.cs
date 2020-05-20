@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace ZeroTeam.MessageMVC
 {
@@ -12,6 +11,14 @@ namespace ZeroTeam.MessageMVC
         ///     预检
         /// </summary>
         Task Check(ZeroAppOption config)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        ///  发现
+        /// </summary>
+        Task Discover()
         {
             return Task.CompletedTask;
         }

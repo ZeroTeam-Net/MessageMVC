@@ -41,12 +41,12 @@ namespace ZeroTeam.MessageMVC.Context
         {
             get
             {
-                if(_status == null)
+                if (_status == null)
                 {
                     _status = DependencyHelper.GetService<IOperatorStatus>();
                     _status.Success = true;
                 }
-                return _status ;
+                return _status;
             }
 
             set => _status = value;

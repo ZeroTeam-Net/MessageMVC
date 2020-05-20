@@ -4,192 +4,292 @@
         <name>ZeroTeam.MessageMVC.RedisMQ</name>
     </assembly>
     <members>
-        <member name="T:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer">
+        <member name="T:ZeroTeam.MessageMVC.RedisMQ.CSRedisEventReceiver">
             <summary>
             RedisMQ消息队列
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.#ctor">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisEventReceiver.#ctor">
             <summary>
             构造
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.ZeroTeam#MessageMVC#Messages#IMessageReceiver#PosterName">
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CSRedisEventReceiver.ZeroTeam#MessageMVC#Messages#IMessageReceiver#PosterName">
             <summary>
             对应发送器名称
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.client">
+        <member name="F:ZeroTeam.MessageMVC.RedisMQ.CSRedisEventReceiver.client">
             <summary>
             本地代理
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.subscribeObject">
+        <member name="F:ZeroTeam.MessageMVC.RedisMQ.CSRedisEventReceiver.subscribeObject">
             <summary>
             订阅对象
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.ZeroTeam#MessageMVC#Messages#IMessagePoster#Initialize">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisEventReceiver.ZeroTeam#MessageMVC#Messages#IMessagePoster#Initialize">
             <summary>
             初始化
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.ZeroTeam#MessageMVC#Messages#IMessageReceiver#Close">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisEventReceiver.ZeroTeam#MessageMVC#Messages#IMessageReceiver#Close">
             <summary>
             关闭
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.ZeroTeam#MessageMVC#Messages#IMessageReceiver#LoopComplete">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisEventReceiver.ZeroTeam#MessageMVC#Messages#IMessageReceiver#LoopComplete">
             <summary>
             同步关闭状态
             </summary>
             <returns></returns>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.isBusy">
-            <summary>
-            单处理守卫变量
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.OnMessagePush(CSRedis.CSRedisClient.SubscribeMessageEventArgs)">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisEventReceiver.OnMessagePush(CSRedis.CSRedisClient.SubscribeMessageEventArgs)">
             <summary>
             消息处理
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.ReadList(System.String)">
-            <summary>
-            取出队列,全部处理,为空后退出
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisConsumer.Read(System.String)">
-            <summary>
-            取出队列,全部处理,为空后退出
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue">
+        <member name="T:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueueReceiver">
             <summary>
             RedisMQ消费者
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.#ctor">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueueReceiver.#ctor">
             <summary>
             构造
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.ZeroTeam#MessageMVC#Messages#IMessageReceiver#PosterName">
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueueReceiver.ZeroTeam#MessageMVC#Messages#IMessageReceiver#PosterName">
             <summary>
             对应发送器名称
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.client">
+        <member name="F:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueueReceiver.client">
             <summary>
             本地代理
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.subscribeObject">
+        <member name="F:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueueReceiver.subscribeObject">
             <summary>
             订阅对象
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.ZeroTeam#MessageMVC#Messages#IMessagePoster#Initialize">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueueReceiver.ZeroTeam#MessageMVC#Messages#IMessagePoster#Initialize">
             <summary>
             初始化
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.ZeroTeam#MessageMVC#Messages#IMessageReceiver#Close">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueueReceiver.ZeroTeam#MessageMVC#Messages#IMessageReceiver#Close">
             <summary>
             关闭
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.ZeroTeam#MessageMVC#Messages#IMessageReceiver#LoopComplete">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueueReceiver.ZeroTeam#MessageMVC#Messages#IMessageReceiver#LoopComplete">
             <summary>
             同步关闭状态
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.Guard">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueueReceiver.Guard">
             <summary>
             异常守护
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.isBusy">
+        <member name="F:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueueReceiver.isBusy">
             <summary>
             单处理守卫变量
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.OnMessagePush">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueueReceiver.OnMessagePush">
             <summary>
             消息处理
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.ReadList">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueueReceiver.ReadList">
             <summary>
             取出队列,全部处理,为空后退出
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.Read">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueueReceiver.Read">
             <summary>
             取出队列,全部处理,为空后退出
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueue.ZeroTeam#MessageMVC#Messages#IMessageReceiver#OnResult(ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueueReceiver.ZeroTeam#MessageMVC#Messages#IMessageReceiver#OnResult(ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
             <summary>
             标明调用结束
             </summary>
             <returns>是否需要发送回执</returns>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster">
+        <member name="T:ZeroTeam.MessageMVC.RedisMQ.RedisEventAttribute">
+            <summary>
+                表示Redis事件
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisEventAttribute.#ctor(System.String)">
+            <summary>
+            构造
+            </summary>
+            <param name="name"></param>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisEventAttribute.ServiceName">
+            <summary>
+            消息节点
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.RedisMQ.RedisEventAttribute.RedisQueueAttribute">
+            <summary>
+                表示Redis事件
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisEventAttribute.RedisQueueAttribute.#ctor(System.String)">
+            <summary>
+            构造
+            </summary>
+            <param name="name"></param>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisEventAttribute.RedisQueueAttribute.ServiceName">
+            <summary>
+            消息节点
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.RedisMQ.CsRedisQueuePoster">
             <summary>
                 Redis生产者
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.ReQueueErrorMessage(System.String)">
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CsRedisQueuePoster.ZeroTeam#MessageMVC#IZeroDependency#Name">
             <summary>
-            还原发送异常文件
+            实例名称
             </summary>
-            <param name="path"></param>
-            <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.ZeroTeam#MessageMVC#Messages#IMessagePoster#Post(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisQueuePoster.ZeroTeam#MessageMVC#Messages#IMessagePoster#Post(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
             <summary>
             生产消息
             </summary>
             <param name="message">消息</param>
             <returns></returns>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.Instance">
+        <member name="T:ZeroTeam.MessageMVC.RedisMQ.CsRedisEventPoster">
             <summary>
-            单例
+                Redis生产者
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.ZeroTeam#MessageMVC#IZeroDependency#Name">
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CsRedisEventPoster.ZeroTeam#MessageMVC#IZeroDependency#Name">
             <summary>
             实例名称
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.ZeroTeam#MessageMVC#IZeroMiddleware#Level">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisEventPoster.ZeroTeam#MessageMVC#Messages#IMessagePoster#Post(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
+            <summary>
+            生产消息
+            </summary>
+            <param name="message">消息</param>
+            <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.RedisMQ.RedisBackPoster">
+            <summary>
+                Redis后台发布
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisBackPoster.ReQueueErrorMessage(System.String)">
+            <summary>
+            还原发送异常文件
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisBackPoster.Post(ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Boolean)">
+            <summary>
+            发布消息
+            </summary>
+            <param name="message">消息</param>
+            <param name="isEvent">是否事件</param>
+            <returns></returns>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.RedisMQ.RedisBackPoster.Instance">
+            <summary>
+            单例
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisBackPoster.ZeroTeam#MessageMVC#IZeroDependency#Name">
+            <summary>
+            实例名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisBackPoster.ZeroTeam#MessageMVC#IZeroMiddleware#Level">
             <summary>
             等级
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.ZeroTeam#MessageMVC#ILifeFlow#Open">
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisBackPoster.Logger">
+            <summary>
+            日志器
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisBackPoster.ZeroTeam#MessageMVC#ILifeFlow#Initialize">
+            <summary>
+                初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisBackPoster.ZeroTeam#MessageMVC#ILifeFlow#Open">
             <summary>
             关闭
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.ZeroTeam#MessageMVC#ILifeFlow#Close">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisBackPoster.ZeroTeam#MessageMVC#ILifeFlow#Close">
             <summary>
             关闭
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.ZeroTeam#MessageMVC#ILifeFlow#Destory">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisBackPoster.ZeroTeam#MessageMVC#ILifeFlow#Destory">
             <summary>
             注销时调用
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.RedisMQ.RedisQueueItem">
+            <summary>
+            Redis队列
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisQueueItem.ID">
+            <summary>
+            消息标识
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisQueueItem.IsEvent">
+            <summary>
+            是否事件
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisQueueItem.Channel">
+            <summary>
+            主题
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisQueueItem.Message">
+            <summary>
+            序列化后的消息
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisQueueItem.Step">
+            <summary>
+            发送步骤
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisQueueItem.FileName">
+            <summary>
+            保全文件名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisQueueItem.Try">
+            <summary>
+            重试次数
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.RedisMQ.RedisApp">
@@ -212,7 +312,17 @@
             使用Redis消息队列
             </summary>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisApp.UseRedisQueueClient(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            使用Redis消息队列
+            </summary>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisApp.UseRedisEvent(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            使用Redis事件
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisApp.UseRedisEventClient(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             使用Redis事件
             </summary>

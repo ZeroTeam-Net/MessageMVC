@@ -13,6 +13,7 @@
             <summary>
             执行自动注册
             </summary>
+            <returns>返回false表示后续无操作</returns>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiResultHelper">
             <summary>API返回基类</summary>
@@ -556,7 +557,7 @@
         </member>
         <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.Success">
             <summary>
-                正确
+                成功
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.ArgumentError">
@@ -596,7 +597,7 @@
         </member>
         <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.TokenUnknow">
             <summary>
-                未知的Token
+                未知的令牌
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.TokenTimeOut">
@@ -719,9 +720,24 @@
             </summary>
             <param name="topic"></param>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ConsumerAttribute.Topic">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ConsumerAttribute.ServiceName">
             <summary>
             消息节点
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.IReceiverGet">
+            <summary>
+            表示一个消息队列消费者
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IReceiverGet.Receiver(System.String)">
+            <summary>
+            服务接收器
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IReceiverGet.ServiceName">
+            <summary>
+            服务名称
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.NetEventAttribute">
@@ -735,9 +751,9 @@
             </summary>
             <param name="event"></param>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.NetEventAttribute.Name">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.NetEventAttribute.ServiceName">
             <summary>
-            配置
+            消息节点
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.RouteAttribute">
@@ -783,23 +799,23 @@
             </summary>
             <param name="name"></param>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ServiceAttribute.Name">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ServiceAttribute.ServiceName">
             <summary>
-            配置
+            消息节点
             </summary>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.IReceiverDiscover">
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.XmlDocumentDiscover">
             <summary>
-            自定义消息接收对象发现
+            XML文档解析
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IReceiverDiscover.DiscoverNetTransport(System.Type,System.String@)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.XmlDocumentDiscover.ReadEntity(System.Type,System.String)">
             <summary>
-            发现传输对象
+            读取类型说明
             </summary>
-            <param name="type">控制器类型</param>
-            <param name="name">发现的服务名称</param>
-            <returns>传输对象构造器</returns>
+            <param name="type"></param>
+            <param name="name"></param>
+            <returns></returns>
         </member>
         <member name="T:ZeroTeam.MessageMVC.MiddlewareLevel">
             <summary>
@@ -1006,11 +1022,6 @@
         <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.AddInPath">
             <summary>
                 插件地址,如为空则与运行目录相同
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.EnableAddIn">
-            <summary>
-                启用插件自动加载
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.ServiceMap">
@@ -1502,11 +1513,6 @@
                 Api方法的信息
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Documents.ApiActionInfo.ArgumentType">
-            <summary>
-                参数类型
-            </summary>
-        </member>
         <member name="F:ZeroTeam.MessageMVC.Documents.ApiActionInfo.ResultType">
             <summary>是否有调用参数</summary>
         </member>
@@ -1523,29 +1529,9 @@
                 访问设置
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.ArgumentName">
-            <summary>
-                参数名称
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.ArgumentInfo">
-            <summary>
-                参数说明
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.Arguments">
-            <summary>
-                参数说明
-            </summary>
-        </member>
         <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.Category">
             <summary>
                 分类
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.ResultInfo">
-            <summary>
-                返回值说明
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.Documents.ApiDocument.Route">
@@ -1568,14 +1554,29 @@
                 所在控制器说明
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.IsAsync">
+            <summary>
+                是否异步任务
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.ResultInfo">
+            <summary>
+                返回值说明
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.ResultSerializeType">
+            <summary>
+            序列化类型
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.HaseArgument">
             <summary>
                 是否有调用参数
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.IsAsync">
+        <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.Arguments">
             <summary>
-                是否异步任务
+                参数说明
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.ArgumentSerializeType">
@@ -1583,9 +1584,14 @@
             反序列化类型
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.ResultSerializeType">
+        <member name="T:ZeroTeam.MessageMVC.Documents.ApiArgument">
             <summary>
-            序列化类型
+                Api方法的信息
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Documents.ApiArgument.ParameterInfo">
+            <summary>
+                参数类型
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Documents.DocumentItem">
@@ -1614,6 +1620,12 @@
             </summary>
             <param name="document"></param>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.Documents.DocumentItem.Copy(ZeroTeam.MessageMVC.Documents.XmlMember)">
+            <summary>
+                复制
+            </summary>
+            <param name="document"></param>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Documents.ObjectType">
             <summary>
                 对象类型
@@ -1627,11 +1639,6 @@
         <member name="F:ZeroTeam.MessageMVC.Documents.ObjectType.Array">
             <summary>
                 数组
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Documents.ObjectType.Dictionary">
-            <summary>
-                字典
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.Documents.ObjectType.Object">
@@ -1679,7 +1686,17 @@
                 Api结构的信息
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Documents.TypeDocument.TypeName">
+            <summary>
+                类型
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.Documents.TypeDocument.ClassName">
+            <summary>
+                类型
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Documents.TypeDocument.IsBaseType">
             <summary>
                 类型
             </summary>
@@ -1689,19 +1706,14 @@
                 枚举
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Documents.TypeDocument.IsArray">
+            <summary>
+                数组
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.Documents.TypeDocument.JsonName">
             <summary>
                 Json名称
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Documents.TypeDocument.ObjectType">
-            <summary>
-                类型
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Documents.TypeDocument.TypeName">
-            <summary>
-                类型
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Documents.TypeDocument.CanNull">
@@ -1727,6 +1739,27 @@
         <member name="P:ZeroTeam.MessageMVC.Documents.TypeDocument.Fields">
             <summary>
                 字段
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Documents.TypeDocument.Copy(ZeroTeam.MessageMVC.Documents.DocumentItem)">
+            <summary>
+                复制
+            </summary>
+            <param name="document"></param>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Documents.TypeDocument.DocDesc">
+            <summary>
+            文档说明
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Documents.TypeDocument.DocName">
+            <summary>
+            文档名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Documents.TypeDocument.DocExample">
+            <summary>
+            文档名称
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Documents.XmlMember">
@@ -1867,6 +1900,11 @@
         <member name="M:ZeroTeam.MessageMVC.ILifeFlow.Check(ZeroTeam.MessageMVC.ZeroAppOption)">
             <summary>
                 预检
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ILifeFlow.Discover">
+            <summary>
+             发现
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ILifeFlow.Initialize">
@@ -2944,6 +2982,11 @@
             当前中间件序号
             </summary>
         </member>
+        <member name="F:ZeroTeam.MessageMVC.Messages.MessageProcessor.Local">
+            <summary>
+            活动实例
+            </summary>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.MessageProcessor.Prepare">
             <summary>
             准备处理
@@ -3580,6 +3623,68 @@
             <returns></returns>
         </member>
         <member name="M:ZeroTeam.MessageMVC.MessagePoster.CallAsync(System.String,System.String,System.String)">
+            <summary>
+            远程调用
+            </summary>
+            <param name="service">服务名称</param>
+            <param name="api">接口名称</param>
+            <param name="args">接口参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.MessagePoster.CallApi``1(System.String,System.String,``0)">
+            <summary>
+            远程调用
+            </summary>
+            <param name="service">服务名称</param>
+            <param name="api">接口名称</param>
+            <param name="args">接口参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.MessagePoster.CallApiAsync``1(System.String,System.String,``0)">
+            <summary>
+            远程调用
+            </summary>
+            <param name="service">服务名称</param>
+            <param name="api">接口名称</param>
+            <param name="args">接口参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.MessagePoster.CallApiAsync(System.String,System.String,System.String)">
+            <summary>
+            远程调用
+            </summary>
+            <param name="service">服务名称</param>
+            <param name="api">接口名称</param>
+            <param name="args">接口参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.MessagePoster.CallApiAsync(System.String,System.String)">
+            <summary>
+            远程调用
+            </summary>
+            <param name="service">服务名称</param>
+            <param name="api">接口名称</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.MessagePoster.CallApi``1(System.String,System.String,System.String)">
+            <summary>
+            远程调用
+            </summary>
+            <param name="service">服务名称</param>
+            <param name="api">接口名称</param>
+            <param name="args">接口参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.MessagePoster.CallApi``2(System.String,System.String,``0)">
+            <summary>
+            远程调用
+            </summary>
+            <param name="service">服务名称</param>
+            <param name="api">接口名称</param>
+            <param name="args">接口参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.MessagePoster.CallApiAsync``2(System.String,System.String,``0)">
             <summary>
             远程调用
             </summary>

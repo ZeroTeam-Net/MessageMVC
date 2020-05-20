@@ -1,7 +1,7 @@
-﻿using System;
-using System.Text;
-using Agebull.Common;
+﻿using Agebull.Common;
 using Agebull.Common.Ioc;
+using System;
+using System.Text;
 
 namespace ZeroTeam.MessageMVC.Messages
 {

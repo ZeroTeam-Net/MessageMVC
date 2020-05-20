@@ -1,12 +1,10 @@
-﻿using Agebull.Common;
-using Agebull.Common.Ioc;
+﻿using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using CSRedis;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using static CSRedis.CSRedisClient;
 
@@ -15,18 +13,18 @@ namespace ZeroTeam.MessageMVC.RedisMQ
     /// <summary>
     /// RedisMQ消费者
     /// </summary>
-    internal class CSRedisQueue : MessageReceiverBase, IMessageConsumer
+    internal class CSRedisQueueReceiver : MessageReceiverBase, IMessageConsumer
     {
         /// <summary>
         /// 构造
         /// </summary>
-        public CSRedisQueue() : base(nameof(CSRedisQueue))
+        public CSRedisQueueReceiver() : base(nameof(CSRedisQueueReceiver))
         {
         }
         /// <summary>
         /// 对应发送器名称
         /// </summary>
-        string IMessageReceiver.PosterName => nameof(CsRedisPoster);
+        string IMessageReceiver.PosterName => nameof(CSRedisQueueReceiver);
         ILogger logger;
 
         /// <summary>
@@ -47,7 +45,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// </summary>
         void IMessagePoster.Initialize()
         {
-            logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(CSRedisQueue));
+            logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(CSRedisQueueReceiver));
 
 
             jobList = $"msg:{Service.ServiceName}";
@@ -332,7 +330,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <returns>是否需要发送回执</returns>
         async Task<bool> IMessageReceiver.OnResult(IInlineMessage item, object tag)
         {
-            if(item.Trace.Context != null)
+            if (item.Trace.Context != null)
                 item.Trace.Context.Option["Receipt"] = "false";
             var key = $"msg:{Service.ServiceName}:{item.ID}";
             var guard = $"guard:{Service.ServiceName}:{item.ID}";

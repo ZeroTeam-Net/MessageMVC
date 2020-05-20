@@ -3,6 +3,7 @@ using Agebull.Common.Logging;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Documents;
@@ -445,19 +446,26 @@ namespace ZeroTeam.MessageMVC.Services
         void IService.RegistAction(string route, ApiActionInfo info)
         {
             logger ??= DependencyHelper.LoggerFactory.CreateLogger($"ZeroService({ServiceName})");
+            
             var action = new ApiAction
             {
                 RouteName = route,
                 Function = info.Action,
                 Access = info.AccessOption,
-                ArgumentName = info.ArgumentName,
-                ArgumentType = info.ArgumentType,
                 ResultType = info.ResultType,
                 IsAsync = info.IsAsync,
                 ResultSerializeType = info.ResultSerializeType,
                 ArgumentSerializeType = info.ArgumentSerializeType
             };
-
+            if (info.HaseArgument)
+            {
+                var arg = info.Arguments.Values.First();
+                if(!arg.IsBaseType)
+                {
+                    action.ArgumentName = arg.Name;
+                    action.ArgumentType = arg.ParameterInfo.ParameterType;
+                }
+            }
             action.Initialize();
             if (!ApiActions.TryAdd(route, action))
             {

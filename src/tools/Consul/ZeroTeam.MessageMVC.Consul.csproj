@@ -19,7 +19,7 @@
     <Company>ZeroTeam</Company>
     <PackageReleaseNotes></PackageReleaseNotes>
     <Product>ZeroTeam.MessageMVC.Consul</Product>
-    <Version>1.0.0.97</Version>
+    <Version>1.0.0.132</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.1|AnyCPU'">
@@ -31,6 +31,12 @@
     <DefineConstants>TRACE;LogMonitor</DefineConstants>
     <DocumentationFile>ZeroTeam.MessageMVC.Consul.xml</DocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Event\**" />
+    <EmbeddedResource Remove="Event\**" />
+    <None Remove="Event\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Core\ZeroTeam.MessageMVC.Core.csproj" />

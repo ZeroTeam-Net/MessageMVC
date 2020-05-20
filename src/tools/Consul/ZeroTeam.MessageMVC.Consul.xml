@@ -14,17 +14,6 @@
             注册
             </summary>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.Consul.ConsulFlow">
-            <summary>
-            Consul注册流程控制
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Consul.ConsulFlow.Level">
-            <inheritdoc/>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Consul.ConsulFlow.Name">
-            <inheritdoc/>
-        </member>
         <member name="T:ZeroTeam.MessageMVC.Consul.ConsulOption">
             <summary>
             Consul对应配置
@@ -79,6 +68,17 @@
             <summary>
             代理服务检查配置
             </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Consul.ServiceAutoRegister">
+            <summary>
+            Consul注册流程控制
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Consul.ServiceAutoRegister.Level">
+            <inheritdoc/>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Consul.ServiceAutoRegister.Name">
+            <inheritdoc/>
         </member>
     </members>
 </doc>

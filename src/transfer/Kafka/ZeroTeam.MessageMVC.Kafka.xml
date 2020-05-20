@@ -15,6 +15,22 @@
             </summary>
             <param name="services"></param>
         </member>
+        <member name="T:ZeroTeam.MessageMVC.Kafka.KafkaAttribute">
+            <summary>
+                表示Redis事件
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaAttribute.#ctor(System.String)">
+            <summary>
+            构造
+            </summary>
+            <param name="name"></param>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaAttribute.ServiceName">
+            <summary>
+            消息节点
+            </summary>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Kafka.KafkaConsumer">
             <summary>
             Kafka消息队列消费者

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using ZeroTeam.MessageMVC.Context;
+﻿using ZeroTeam.MessageMVC.Context;
 
 namespace ZeroTeam.MessageMVC.Messages
 {
@@ -12,7 +11,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 分类
         /// </summary>
-        string ID { get; }
+        string ID { get; set; }
 
         /// <summary>
         /// 分类

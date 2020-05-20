@@ -1,5 +1,4 @@
-﻿using Agebull.Common;
-using Agebull.Common.Ioc;
+﻿using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
@@ -7,7 +6,6 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace ZeroTeam.MessageMVC.AddIn
@@ -42,7 +40,7 @@ namespace ZeroTeam.MessageMVC.AddIn
         /// <summary>
         /// 插件对象
         /// </summary>
-        List<IAutoRegister> Registers = new List<IAutoRegister>();
+        readonly List<IAutoRegister> Registers = new List<IAutoRegister>();
 
         /// <summary>
         /// 检查
@@ -54,82 +52,58 @@ namespace ZeroTeam.MessageMVC.AddIn
 
             if (string.IsNullOrEmpty(ZeroAppOption.Instance.AddInPath))
             {
-                //using var catalog = new AggregateCatalog();
-                var path = Path.GetDirectoryName(GetType().Assembly.Location);
-                var files = Directory.GetFiles(path, "*.dll", SearchOption.TopDirectoryOnly);
-                foreach(var file in files)
-                {
-                    var name = Path.GetFileName(file);
-                    var first = name.Split('.',2)[0];
-                    switch(first)
-                    {
-                        case "System":
-                        case "Microsoft":
-                        case "NuGet":
-                        case "Newtonsoft":
-                            break;
-                        default:
-                            // 通过容器对象将宿主和部件组装到一起。 
-                            try
-                            {
-                                using var provider = new DirectoryCatalog(path, name);
-                                using var c = new CompositionContainer(provider);
-                                c.ComposeParts(this);
-                                if (Import != null && Import.Any())
-                                {
-                                    Registers.AddRange(Import);
-                                }
-                                Import = null;
-                            }
-                            catch (System.Exception e2)
-                            {
-                                logger.Exception(e2);
-                            }
-                            break;
-                    }
-                }
-                // 通过容器对象将宿主和部件组装到一起。 
-                //try
-                //{
-                //    using var provider = new CompositionContainer(catalog);
-                //    using var c = new CompositionContainer(provider);
-                //    c.ComposeParts(this);
-                //}
-                //catch (System.Exception e2)
-                //{
-                //    logger.Exception(e2);
-                //}
-            }
-            else
-            {
-                var path = ZeroAppOption.Instance.AddInPath[0] == '/'
-                        ? ZeroAppOption.Instance.AddInPath
-                        : Path.Combine(ZeroAppOption.Instance.RootPath, ZeroAppOption.Instance.AddInPath);
-                if (!Directory.Exists(path))
-                    return;
-                // 通过容器对象将宿主和部件组装到一起。 
-                try
-                {
-                    using var provider = new DirectoryCatalog(path, "*.dll");
-                    using var c = new CompositionContainer(provider);
-                    c.ComposeParts(this);
-                }
-                catch (System.Exception e2)
-                {
-                    logger.Exception(e2);
-                }
-            }
+                ZeroAppOption.Instance.AddInPath = Path.GetDirectoryName(GetType().Assembly.Location);
 
+            }
+            else if (ZeroAppOption.Instance.AddInPath[0] != '/')
+            {
+                ZeroAppOption.Instance.AddInPath = Path.Combine(ZeroAppOption.Instance.RootPath, ZeroAppOption.Instance.AddInPath);
+            }
+            if (!Directory.Exists(ZeroAppOption.Instance.AddInPath))
+                return;
+            var files = Directory.GetFiles(ZeroAppOption.Instance.AddInPath, "*.dll", SearchOption.TopDirectoryOnly);
+            foreach (var file in files)
+            {
+                var name = Path.GetFileName(file);
+                var first = name.Split('.', 2)[0];
+                switch (first)
+                {
+                    case "System":
+                    case "Microsoft":
+                    case "NuGet":
+                    case "Newtonsoft":
+                        break;
+                    default:
+                        // 通过容器对象将宿主和部件组装到一起。 
+                        try
+                        {
+                            using var provider = new DirectoryCatalog(ZeroAppOption.Instance.AddInPath, name);
+                            using var c = new CompositionContainer(provider);
+                            c.ComposeParts(this);
+                            if (Import != null && Import.Any())
+                            {
+                                Registers.AddRange(Import);
+                            }
+                            Import = null;
+                        }
+                        catch (System.Exception e2)
+                        {
+                            logger.Exception(e2);
+                        }
+                        break;
+                }
+            }
 
             if (Registers.Count == 0)
             {
                 return;
             }
-            foreach (var reg in Registers)
+            foreach (var reg in Registers.ToArray())
             {
                 try
                 {
-                    await reg.AutoRegist(DependencyHelper.ServiceCollection);
+                    if (!await reg.AutoRegist(DependencyHelper.ServiceCollection))
+                        Registers.Remove(reg);
                     logger.Information(() => $"插件【{reg.GetType().Assembly.FullName}】注册成功");
                 }
                 catch (System.Exception ex)
@@ -149,6 +123,22 @@ namespace ZeroTeam.MessageMVC.AddIn
                     logger.Information(() => $"插件【{reg.GetType().Assembly.FullName}】预检异常.{ex.Message}");
                     logger.Exception(ex);
                 }
+            }
+        }
+
+        /// <summary>
+        /// 发现
+        /// </summary>
+        async Task ILifeFlow.Discover()
+        {
+            logger.Information("AddInImporter >>> 发现");
+            if (Registers == null)
+            {
+                return;
+            }
+            foreach (var reg in Registers)
+            {
+                await reg.Discover();
             }
         }
 

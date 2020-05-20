@@ -2,7 +2,6 @@ using Agebull.Common.Logging;
 using System;
 using System.Linq;
 using System.Text;
-using ZeroTeam.MessageMVC;
 
 namespace ZeroTeam.ZeroMQ.ZeroRPC
 {
@@ -73,7 +72,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <param name="frames"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public static TZeroResultData Unpack<TZeroResultData>(ZMessage frames, bool showError, Func<TZeroResultData, byte, byte[],bool> action=null)
+        public static TZeroResultData Unpack<TZeroResultData>(ZMessage frames, bool showError, Func<TZeroResultData, byte, byte[], bool> action = null)
             where TZeroResultData : ZeroResultData, new()
         {
             try
@@ -140,7 +139,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// 返回值
         /// </summary>
         public string Result { get; set; }
-        
+
         /// <summary>
         /// 二进制内容
         /// </summary>

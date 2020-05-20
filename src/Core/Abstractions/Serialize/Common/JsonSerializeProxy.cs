@@ -65,7 +65,7 @@ namespace ZeroTeam.MessageMVC.Messages
         {
             return obj == null
                 ? null
-                : JsonSerializer.Serialize(obj, indented ? bOptions: aOptions);
+                : JsonSerializer.Serialize(obj, indented ? bOptions : aOptions);
         }
     }
 }

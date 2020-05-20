@@ -87,7 +87,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// 参数错误
         /// </summary>
         ArgumentInvalid = 0xD2,
-        
+
         /// <summary>
         /// 发生错误
         /// </summary>
@@ -120,7 +120,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// 远端发送错误
         /// </summary>
         RemoteSendError = 0xF7,
-        
+
         /// <summary>
         /// 远端接收错误
         /// </summary>
@@ -132,7 +132,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         /// 拒绝服务
         /// </summary>
-        Unavailable = 0xFA, 
+        Unavailable = 0xFA,
         /// <summary>
         /// 未准备好
         /// </summary>

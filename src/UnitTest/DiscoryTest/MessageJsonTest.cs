@@ -80,9 +80,9 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
                 SmartSerializer.SerializeMessage(message);
 
                 DateTime start = DateTime.Now;
-                for(int i=0;i<short.MaxValue;i++)
+                for (int i = 0; i < short.MaxValue; i++)
                     SmartSerializer.SerializeMessage(message);
-                var time =  (DateTime.Now - start).TotalSeconds;
+                var time = (DateTime.Now - start).TotalSeconds;
                 Console.WriteLine($"{time}s {short.MaxValue / time} qps");
                 Assert.IsTrue(time < 2, "性能不好");
             }
@@ -168,7 +168,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             };
             message.Reset();
             message.ArgumentInline(typeof(Argument), null, ApiResultHelper.State);
-            message.State =  MessageState.Failed;
+            message.State = MessageState.Failed;
             message.OfflineResult();
             Assert.IsTrue(message.Result != null, message.Result);
             Assert.IsTrue(message.DataState == (MessageDataState.ArgumentOffline | MessageDataState.ArgumentInline | MessageDataState.ResultOffline | MessageDataState.ResultInline),
@@ -197,7 +197,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
                 }
             };
             message.PrepareInline();
-            Assert.IsTrue(message.DataState == (MessageDataState.ArgumentOffline  | MessageDataState.ResultInline),
+            Assert.IsTrue(message.DataState == (MessageDataState.ArgumentOffline | MessageDataState.ResultInline),
                 message.DataState.ToString());
 
             message.OfflineResult();

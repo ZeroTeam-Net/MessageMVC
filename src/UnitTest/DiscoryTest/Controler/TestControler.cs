@@ -1,15 +1,14 @@
-﻿using ZeroTeam.MessageMVC.ZeroApis;
-using Microsoft.Extensions.Logging;
+﻿using Agebull.Common.Configuration;
 using Agebull.Common.Ioc;
-using ZeroTeam.MessageMVC.Messages;
-using System.Threading.Tasks;
-using Agebull.Common.Configuration;
-using ZeroTeam.MessageMVC.Context;
 using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using System;
-using System.Linq;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.ApiContract;
+using ZeroTeam.MessageMVC.Context;
+using ZeroTeam.MessageMVC.Messages;
+using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Sample.Controllers
 {
@@ -116,7 +115,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         /// <param name="msg"></param>
         /// <param name="msg2"></param>
         /// <returns></returns>
-        [Route("v1/context"),ApiOption(ApiOption.ArgumentCanNil)]
+        [Route("v1/context"), ApiOption(ApiOption.ArgumentCanNil)]
         public IZeroContext ZeroContext(IUser user, IZeroContext context, IInlineMessage msg, IInlineMessage msg2)
         {
             logger.LogInformation($"Call {nameof(ZeroContext)} user:{user.NickName} context:{context?.Trace.CallApp}");

@@ -215,7 +215,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <param name="state"></param>
         /// <param name="remote">是否远程状态</param>
         /// <returns></returns>
-        public static UserOperatorStateType ToOperatorStatus(this ZeroOperatorStateType state,bool remote)
+        public static UserOperatorStateType ToOperatorStatus(this ZeroOperatorStateType state, bool remote)
         {
             if (state < ZeroOperatorStateType.Failed)
                 return UserOperatorStateType.Success;

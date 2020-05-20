@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ZeroTeam.MessageMVC.ZeroApis
+﻿namespace ZeroTeam.MessageMVC.ZeroApis
 {
     /// <summary>
     ///     API接口跟踪

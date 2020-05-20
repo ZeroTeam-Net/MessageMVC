@@ -66,7 +66,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     CallMachine = message.Trace.CallMachine,
                     Headers = message.Trace.Headers,
                     Token = message.Trace.Token,
-                    Context= message.Trace.Context,
+                    Context = message.Trace.Context,
                     Level = message.Trace.Level + 1
                 };
             }

@@ -1,12 +1,12 @@
 ﻿namespace ZeroTeam.ZeroMQ
 {
-	using System;
+    using System;
     /// <summary>
     /// pool事件
     /// </summary>
 	[Flags]
-	public enum ZPollEvent : short
-	{
+    public enum ZPollEvent : short
+    {
         /// <summary>
         /// 无
         /// </summary>
@@ -23,13 +23,13 @@
         /// 两者
         /// </summary>
         InOut = 0x3,
-	    /// <summary>
-	    /// 数据错误
-	    /// </summary>
-	    Err = 0x4,
-	    /// <summary>
-	    /// 全部
-	    /// </summary>
-	    All = 0x7,
+        /// <summary>
+        /// 数据错误
+        /// </summary>
+        Err = 0x4,
+        /// <summary>
+        /// 全部
+        /// </summary>
+        All = 0x7,
     }
 }

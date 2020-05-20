@@ -80,7 +80,7 @@ namespace ZeroTeam.MessageMVC.Tools
                     Result = message.Result
                 }
             };
-            if(link.Trace != null)
+            if (link.Trace != null)
             {
                 link.Trace.Context = new StaticContext
                 {

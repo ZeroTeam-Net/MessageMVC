@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile></DocumentationFile>
+    <DocumentationFile>C:\Projects\ZeroTeam\MessageMVC\src\UnitTest\DiscoryTest\DiscoryTest.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -15,7 +15,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controler\ConsumerControler.cs" />
     <Compile Remove="Controler\TestControler - 复制.cs" />
+    <Compile Remove="Controler\TestControler.cs" />
+    <Compile Remove="Controler\TestControler2.cs" />
     <Compile Remove="UnitTest1.cs" />
   </ItemGroup>
 
@@ -40,6 +43,13 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="DiscoryTest.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="MarkDown\" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="http://json-schema.org/draft-04/schema" /></VisualStudio></ProjectExtensions>

@@ -18,9 +18,14 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             if (isUsed)
                 return;
             isUsed = true;
-            UseRedisPoster(services);
-            UseRedisQueue(services);
-            UseRedisEvent(services);
+
+            services.AddSingleton<IFlowMiddleware>(RedisBackPoster.Instance);
+            services.AddSingleton<IHealthCheck>(RedisBackPoster.Instance);
+
+            services.TryAddTransient<INetEvent, CSRedisEventReceiver>();//Redis订阅
+            services.TryAddTransient<IMessageConsumer, CSRedisQueueReceiver>();//Redis订阅
+            services.AddSingleton<IMessagePoster, CsRedisQueuePoster>();//Redis发布
+            services.AddSingleton<IMessagePoster, CsRedisEventPoster>();//Redis发布
         }
 
         /// <summary>
@@ -28,9 +33,11 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// </summary>
         public static void UseRedisPoster(this IServiceCollection services)
         {
-            services.AddSingleton<IFlowMiddleware>(CsRedisPoster.Instance);//Redis环境准备
-            services.AddSingleton<IMessagePoster>(CsRedisPoster.Instance);//Redis发布
-            services.AddSingleton<IHealthCheck>(CsRedisPoster.Instance);
+            services.AddSingleton<IFlowMiddleware>(RedisBackPoster.Instance);
+            services.AddSingleton<IHealthCheck>(RedisBackPoster.Instance);
+
+            services.AddSingleton<IMessagePoster, CsRedisQueuePoster>();//Redis发布
+            services.AddSingleton<IMessagePoster, CsRedisEventPoster>();//Redis发布
         }
 
         /// <summary>
@@ -38,7 +45,20 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// </summary>
         public static void UseRedisQueue(this IServiceCollection services)
         {
-            services.TryAddTransient<IMessageConsumer, CSRedisQueue>();//Redis订阅
+            services.AddSingleton<IFlowMiddleware>(RedisBackPoster.Instance);
+            services.AddSingleton<IHealthCheck>(RedisBackPoster.Instance);
+            services.TryAddTransient<IMessageConsumer, CSRedisQueueReceiver>();//Redis订阅
+            services.AddSingleton<IMessagePoster, CsRedisQueuePoster>();//Redis发布
+        }
+
+        /// <summary>
+        /// 使用Redis消息队列
+        /// </summary>
+        public static void UseRedisQueueClient(this IServiceCollection services)
+        {
+            services.AddSingleton<IFlowMiddleware>(RedisBackPoster.Instance);
+            services.AddSingleton<IHealthCheck>(RedisBackPoster.Instance);
+            services.AddSingleton<IMessagePoster, CsRedisQueuePoster>();//Redis发布
         }
 
         /// <summary>
@@ -46,7 +66,20 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// </summary>
         public static void UseRedisEvent(this IServiceCollection services)
         {
-            services.TryAddTransient<INetEvent, CSRedisConsumer>();//Redis订阅
+            services.AddSingleton<IFlowMiddleware>(RedisBackPoster.Instance);
+            services.AddSingleton<IHealthCheck>(RedisBackPoster.Instance);
+            services.TryAddTransient<INetEvent, CSRedisEventReceiver>();//Redis订阅
+            services.AddSingleton<IMessagePoster, CsRedisEventPoster>();//Redis发布
+        }
+
+        /// <summary>
+        /// 使用Redis事件
+        /// </summary>
+        public static void UseRedisEventClient(this IServiceCollection services)
+        {
+            services.AddSingleton<IFlowMiddleware>(RedisBackPoster.Instance);
+            services.AddSingleton<IHealthCheck>(RedisBackPoster.Instance);
+            services.AddSingleton<IMessagePoster, CsRedisEventPoster>();//Redis发布
         }
     }
 }

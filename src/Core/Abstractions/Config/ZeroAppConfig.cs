@@ -1,5 +1,3 @@
-using System;
-using System.Runtime.Serialization;
 using System.Collections.Generic;
 
 namespace ZeroTeam.MessageMVC
@@ -59,10 +57,10 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public string AddInPath { get; set; }
 
-        /// <summary>
+        /*// <summary>
         ///     启用插件自动加载
         /// </summary>
-        public bool EnableAddIn { get; set; }
+        public bool EnableAddIn { get; set; }*/
 
         /// <summary>
         ///     服务映射，即将对应服务名称替换成另一个服务
@@ -118,10 +116,10 @@ namespace ZeroTeam.MessageMVC
                 DataFolder = option.DataFolder;
             }
 
-            if (option.EnableAddIn)
-            {
-                EnableAddIn = option.EnableAddIn;
-            }
+            //if (option.EnableAddIn)
+            //{
+            //    EnableAddIn = option.EnableAddIn;
+            //}
             if (option.IsOpenAccess)
             {
                 IsOpenAccess = option.IsOpenAccess;
@@ -131,7 +129,6 @@ namespace ZeroTeam.MessageMVC
             {
                 AddInPath = option.AddInPath;
             }
-
         }
 
         /// <summary>
@@ -165,7 +162,7 @@ namespace ZeroTeam.MessageMVC
             {
                 AppName = option.AppName;
             }
-            if (IsolateFolder)
+            if (!IsolateFolder)
             {
                 IsolateFolder = option.IsolateFolder;
             }
@@ -180,11 +177,11 @@ namespace ZeroTeam.MessageMVC
                 DataFolder = option.DataFolder;
             }
 
-            if (EnableAddIn)
-            {
-                EnableAddIn = option.EnableAddIn;
-            }
-            if (IsOpenAccess)
+            //if (!EnableAddIn)
+            //{
+            //    EnableAddIn = option.EnableAddIn;
+            //}
+            if (!IsOpenAccess)
             {
                 IsOpenAccess = option.IsOpenAccess;
             }

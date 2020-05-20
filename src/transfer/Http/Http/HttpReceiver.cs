@@ -73,13 +73,13 @@ namespace ZeroTeam.MessageMVC.Http
                     context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                     break;
                 case MessageState.NetworkError:
-                    context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                    context.Response.StatusCode = (int)HttpStatusCode.ServiceUnavailable;
                     break;
                 case MessageState.FrameworkError:
                     context.Response.StatusCode = (int)HttpStatusCode.ExpectationFailed;
                     break;
                 case MessageState.Deny:
-                    context.Response.StatusCode = (int)HttpStatusCode.NonAuthoritativeInformation;
+                    context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
                     break;
                 case MessageState.None:
                 case MessageState.Accept:
@@ -89,10 +89,10 @@ namespace ZeroTeam.MessageMVC.Http
                     break;
             }
             // 写入返回
+            message.OfflineResult();
             string json;
             if (message.IsOutAccess)
             {
-                message.OfflineResult();
                 json = message.Result;
             }
             else

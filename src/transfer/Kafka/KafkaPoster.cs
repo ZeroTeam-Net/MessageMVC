@@ -326,7 +326,7 @@ namespace ZeroTeam.MessageMVC.Kafka
             });
             semaphore.Release();
             message.RealState = MessageState.AsyncQueue;
-            LogRecorder.MonitorDetails(() =>"[KafkaPoster.Post] 消息已投入发送队列,将在后台静默发送直到成功");
+            LogRecorder.MonitorDetails(() => "[KafkaPoster.Post] 消息已投入发送队列,将在后台静默发送直到成功");
             return Task.FromResult<IMessageResult>(null);//直接使用状态
         }
         #endregion

@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Messages
 {
@@ -52,7 +51,7 @@ namespace ZeroTeam.MessageMVC.Messages
             {
                 dictionary = value;
                 DataState |= MessageDataState.ArgumentInline;
-                if (Content == null && value == null && argumentData==null)
+                if (Content == null && value == null && argumentData == null)
                     DataState |= MessageDataState.ArgumentOffline;
                 else
                     DataState &= ~MessageDataState.ArgumentOffline;

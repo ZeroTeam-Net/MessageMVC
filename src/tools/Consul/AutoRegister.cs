@@ -15,11 +15,21 @@ namespace ZeroTeam.MessageMVC.Consul
         /// <summary>
         /// 注册
         /// </summary>
-        Task IAutoRegister.AutoRegist(IServiceCollection services)
+        Task<bool> IAutoRegister.AutoRegist(IServiceCollection services)
         {
-            //ApiResult构造
-            services.AddSingleton<IFlowMiddleware, ConsulFlow>();
-            return Task.CompletedTask;
+            services.AddSingleton<IFlowMiddleware, ServiceAutoRegister>();
+            //services.AddSingleton<IFlowMiddleware>(ConsulEventPoster.Instance);
+            //services.AddSingleton<IMessagePoster>(ConsulEventPoster.Instance);
+
+            //ReceiverDiscover.Regist(type =>
+            //{
+            //    var na = type.GetCustomAttribute<ConsulEventAttribute>();
+            //    return na != null ? (true, na.Name) : (false, null);
+            //},
+            //name => new ConsulEventConsumer()
+            //);
+
+            return Task.FromResult(false);
         }
     }
 }

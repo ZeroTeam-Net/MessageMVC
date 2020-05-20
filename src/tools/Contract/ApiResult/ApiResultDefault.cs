@@ -1,7 +1,6 @@
 using Agebull.Common.Ioc;
 using System;
 using System.Collections.Generic;
-using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
 
@@ -44,7 +43,7 @@ namespace ZeroTeam.MessageMVC.ApiContract
         {
             return Serializer.ToObject<ApiResult<T>>(str);
         }
-        static Dictionary<Type, Type> interfaceMap = new Dictionary<Type, Type>();
+        static readonly Dictionary<Type, Type> interfaceMap = new Dictionary<Type, Type>();
 
         /// <summary>
         /// 反序列化(BUG:interface构造)
@@ -54,15 +53,14 @@ namespace ZeroTeam.MessageMVC.ApiContract
         public IApiResult<T> DeserializeInterface<T>(string json)
         {
             var baseType = typeof(T);
-            if (!interfaceMap.TryGetValue(baseType, out var supType))
+            if (!interfaceMap.TryGetValue(baseType, out var supType) || supType == null)
             {
                 var def = DependencyHelper.GetService<T>();
                 if (def == null)
-                    interfaceMap.TryAdd(baseType, null);
-                else interfaceMap.TryAdd(baseType, typeof(ApiResult<>).MakeGenericType(def.GetType()));
+                    throw new DependencyException(baseType, $"接口未注册依赖构造");
+                else
+                    interfaceMap[baseType] = supType = typeof(ApiResult<>).MakeGenericType(def.GetType());
             }
-            if (supType == null)
-                throw new DependencyException(baseType, $"接口未注册依赖构造");
             dynamic res = Serializer.ToObject(json, supType);
             return new ApiResult<T>
             {

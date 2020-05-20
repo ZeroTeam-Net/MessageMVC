@@ -1,14 +1,11 @@
 using Agebull.Common;
-using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Agebull.EntityModel.Common;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
-using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant;
 
@@ -289,7 +286,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         {
             try
             {
-                if(!ZeroRpcFlow.ZerCenterIsRun)
+                if (!ZeroRpcFlow.ZerCenterIsRun)
                     return Task.FromResult(false);
                 if (!CheckConfig())
                     return Task.FromResult(false);

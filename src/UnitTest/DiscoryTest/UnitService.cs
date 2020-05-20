@@ -1,10 +1,10 @@
+using Agebull.Common.Ioc;
+using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
-using NUnit.Framework;
-using Agebull.Common.Ioc;
+using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
-using ZeroTeam.MessageMVC.Context;
 
 namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
 {
@@ -14,7 +14,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         [SetUp]
         public void Setup()
         {
-            ZeroApp.UseTest(DependencyHelper.ServiceCollection, typeof(TestControler).Assembly);
+            ZeroApp.UseTest(DependencyHelper.ServiceCollection, typeof(NetEventControler).Assembly).Wait();
         }
 
         [TearDown]

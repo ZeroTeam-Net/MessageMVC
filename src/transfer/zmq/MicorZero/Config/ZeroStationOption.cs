@@ -19,45 +19,45 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         ///     ApiClient休眠直到等待数量 低于 MaxWait
         ///     ApiStation返回服务器忙(熔断)
         /// </remarks>
-        
+
         public SpeedLimitType SpeedLimitModel { get; set; }
 
         /// <summary>
         ///     最大等待数(0xFF-0xFFFFF)
         /// </summary>
-        
+
         public int MaxWait { get; set; }
 
 
         /// <summary>
         ///     最大Task与Cpu核心数的倍数关系(0-128)
         /// </summary>
-        
+
         public decimal TaskCpuMultiple { get; set; }
 
         /// <summary>
         ///     API最大执行超时时间(单位秒)
         /// </summary>
-        
+
         public int ApiTimeout { get; set; }
 
         /// <summary>
         ///     服务名称
         /// </summary>
-        
+
         public string ServiceName { get; set; }
 
 
         /// <summary>
         ///     短名称
         /// </summary>
-        
+
         public string ShortName { get; set; }
 
         /// <summary>
         ///     站点名称，注意唯一性
         /// </summary>
-        
+
         public string StationName { get; set; }
 
         /// <summary>

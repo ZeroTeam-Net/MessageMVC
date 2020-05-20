@@ -1,7 +1,5 @@
-﻿using Agebull.Common.Ioc;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using ZeroTeam.MessageMVC.Context;
-using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Messages
 {
@@ -70,6 +68,10 @@ namespace ZeroTeam.MessageMVC.Messages
             {
                 resultData = value;
                 DataState |= MessageDataState.ResultInline;
+                if (Result == null && value == null)
+                    DataState |= MessageDataState.ResultOffline;
+                else
+                    DataState &= ~MessageDataState.ResultOffline;
             }
         }
     }

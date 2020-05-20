@@ -16,12 +16,12 @@ namespace ZeroTeam.ZeroMQ
         /// Sockt数量
         /// </summary>
         public int Size { get; set; }
-                
+
         /// <summary>
         /// 超时
         /// </summary>
-        public int TimeoutMs => SocketOption.Instance.PoolTimeOut <= 100 
-            ? 1000 
+        public int TimeoutMs => SocketOption.Instance.PoolTimeOut <= 100
+            ? 1000
             : SocketOption.Instance.PoolTimeOut;
 
         /// <summary>

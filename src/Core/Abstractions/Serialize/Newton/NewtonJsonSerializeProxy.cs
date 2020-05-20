@@ -1,5 +1,5 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace ZeroTeam.MessageMVC.Messages
 {
@@ -25,7 +25,7 @@ namespace ZeroTeam.MessageMVC.Messages
             {
                 case '{':
                 case '[':
-                    return JsonConvert.DeserializeObject<T>(json, numberConverter,enumConverter);
+                    return JsonConvert.DeserializeObject<T>(json, numberConverter, enumConverter);
             }
             return default;
         }
@@ -40,7 +40,7 @@ namespace ZeroTeam.MessageMVC.Messages
             {
                 case '{':
                 case '[':
-                    return JsonConvert.DeserializeObject(json, type, numberConverter,enumConverter);
+                    return JsonConvert.DeserializeObject(json, type, numberConverter, enumConverter);
             }
             return default;
         }
@@ -50,8 +50,8 @@ namespace ZeroTeam.MessageMVC.Messages
             return obj == null
                 ? null
                 : indented
-                    ? JsonConvert.SerializeObject(obj, Formatting.Indented, numberConverter,enumConverter)
-                    : JsonConvert.SerializeObject(obj, numberConverter,enumConverter);
+                    ? JsonConvert.SerializeObject(obj, Formatting.Indented, numberConverter, enumConverter)
+                    : JsonConvert.SerializeObject(obj, numberConverter, enumConverter);
         }
     }
 }

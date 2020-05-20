@@ -1,8 +1,6 @@
-﻿using Agebull.Common.Ioc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using ZeroTeam.MessageMVC.Context;
 
 namespace ZeroTeam.MessageMVC.Messages
 {
@@ -310,7 +308,6 @@ namespace ZeroTeam.MessageMVC.Messages
             {
                 var res = SmartSerializer.ToObject<TRes>(Result);
                 ResultData = res;
-                DataState |= MessageDataState.ResultInline;
                 return res;
             }
             ResultData = ResultCreater?.Invoke(State.ToErrorCode(), Result);

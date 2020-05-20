@@ -66,70 +66,70 @@ namespace ZeroTeam.ZeroMQ.lib
         }
 
 
-        public static unsafe explicit operator void* (MarshalPtr dispoIntPtr)
+        public static unsafe explicit operator void*(MarshalPtr dispoIntPtr)
 
         {
             return dispoIntPtr == null ? null : (void*)dispoIntPtr.Ptr;
         }
 
 
-        public static unsafe explicit operator byte* (MarshalPtr dispoIntPtr)
+        public static unsafe explicit operator byte*(MarshalPtr dispoIntPtr)
 
         {
             return dispoIntPtr == null ? null : (byte*)dispoIntPtr.Ptr;
         }
 
 
-        public static unsafe explicit operator sbyte* (MarshalPtr dispoIntPtr)
+        public static unsafe explicit operator sbyte*(MarshalPtr dispoIntPtr)
 
         {
             return dispoIntPtr == null ? null : (sbyte*)dispoIntPtr.Ptr;
         }
 
 
-        public static unsafe explicit operator short* (MarshalPtr dispoIntPtr)
+        public static unsafe explicit operator short*(MarshalPtr dispoIntPtr)
 
         {
             return dispoIntPtr == null ? null : (short*)dispoIntPtr.Ptr;
         }
 
 
-        public static unsafe explicit operator ushort* (MarshalPtr dispoIntPtr)
+        public static unsafe explicit operator ushort*(MarshalPtr dispoIntPtr)
 
         {
             return dispoIntPtr == null ? null : (ushort*)dispoIntPtr.Ptr;
         }
 
 
-        public static unsafe explicit operator char* (MarshalPtr dispoIntPtr)
+        public static unsafe explicit operator char*(MarshalPtr dispoIntPtr)
 
         {
             return dispoIntPtr == null ? null : (char*)dispoIntPtr.Ptr;
         }
 
 
-        public static unsafe explicit operator int* (MarshalPtr dispoIntPtr)
+        public static unsafe explicit operator int*(MarshalPtr dispoIntPtr)
 
         {
             return dispoIntPtr == null ? null : (int*)dispoIntPtr.Ptr;
         }
 
 
-        public static unsafe explicit operator uint* (MarshalPtr dispoIntPtr)
+        public static unsafe explicit operator uint*(MarshalPtr dispoIntPtr)
 
         {
             return dispoIntPtr == null ? null : (uint*)dispoIntPtr.Ptr;
         }
 
 
-        public static unsafe explicit operator long* (MarshalPtr dispoIntPtr)
+        public static unsafe explicit operator long*(MarshalPtr dispoIntPtr)
 
         {
             return dispoIntPtr == null ? null : (long*)dispoIntPtr.Ptr;
         }
 
 
-        public static unsafe explicit operator ulong* (MarshalPtr dispoIntPtr)
+        public static unsafe explicit operator ulong*(MarshalPtr dispoIntPtr)
 
         {
             return dispoIntPtr == null ? null : (ulong*)dispoIntPtr.Ptr;

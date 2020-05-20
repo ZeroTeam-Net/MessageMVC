@@ -101,7 +101,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// <param name="json"></param>
         void IUser.FormJson(string json)
         {
-            if(SmartSerializer.TryDeserialize(json,GetType(),out var dest) && dest is UserInfo user)
+            if (SmartSerializer.TryDeserialize(json, GetType(), out var dest) && dest is UserInfo user)
             {
                 UserId = user.UserId;
                 UserCode = user.UserCode;

@@ -1,5 +1,4 @@
-﻿using Agebull.Common.Ioc;
-using Agebull.Common.Logging;
+﻿using Agebull.Common.Logging;
 using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;

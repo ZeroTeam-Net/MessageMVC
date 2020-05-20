@@ -18,73 +18,73 @@ namespace ZeroTeam.ZeroMQ.lib
 	} /**/
 
     public enum PlatformKind : int
-	{
-		__Internal = 0,
-		Posix,
-		Win32,
-	}
+    {
+        __Internal = 0,
+        Posix,
+        Win32,
+    }
 
-	public enum PlatformName : int
-	{
-		__Internal = 0,
-		Posix,
-		Windows,
-		MacOSX,
-	}
+    public enum PlatformName : int
+    {
+        __Internal = 0,
+        Posix,
+        Windows,
+        MacOSX,
+    }
 
-	public static class Platform
-	{
-		public static readonly string[] Compilers = new string[] {
-			"msvc2008",
-			"msvc2010",
-			"msvc2012",
-			"msvc2013",
-			"msvc2015",
-			"gcc3",
-			"gcc4",
-			"gcc5",
-			"mingw32",
-		};
+    public static class Platform
+    {
+        public static readonly string[] Compilers = new string[] {
+            "msvc2008",
+            "msvc2010",
+            "msvc2012",
+            "msvc2013",
+            "msvc2015",
+            "gcc3",
+            "gcc4",
+            "gcc5",
+            "mingw32",
+        };
 
-		// public static readonly string LibraryName;
+        // public static readonly string LibraryName;
 
-		// public static readonly string LibraryFileExtension;
+        // public static readonly string LibraryFileExtension;
 
-		public static readonly string[] LibraryPaths;
-
-
+        public static readonly string[] LibraryPaths;
 
 
-		public delegate bool ReleaseHandleDelegate(IntPtr handle);
-		public static readonly ReleaseHandleDelegate ReleaseHandle;
 
-		public delegate Exception GetLastLibraryErrorDelegate();
-		public static readonly GetLastLibraryErrorDelegate GetLastLibraryError;
 
-		public static readonly bool Is__Internal;
+        public delegate bool ReleaseHandleDelegate(IntPtr handle);
+        public static readonly ReleaseHandleDelegate ReleaseHandle;
 
-		public static readonly PlatformKind Kind;
+        public delegate Exception GetLastLibraryErrorDelegate();
+        public static readonly GetLastLibraryErrorDelegate GetLastLibraryError;
 
-		public static readonly PlatformName Name;
+        public static readonly bool Is__Internal;
 
-		public static readonly ImageFileMachine Architecture;
+        public static readonly PlatformKind Kind;
 
-		public static readonly string Compiler;
+        public static readonly PlatformName Name;
 
-		static Platform()
-		{
+        public static readonly ImageFileMachine Architecture;
+
+        public static readonly string Compiler;
+
+        static Platform()
+        {
             typeof(object).Module.GetPEKind(out var peKinds, out Architecture);
 
             //Version osVersion;
-			switch (Environment.OSVersion.Platform)
-			{
-				case PlatformID.Win32Windows: // Win9x supported?
-				case PlatformID.Win32S: // Win16 NTVDM on Win x86?
-				case PlatformID.Win32NT: // Windows NT
-					Kind = PlatformKind.Win32;
-					Name = PlatformName.Windows;
+            switch (Environment.OSVersion.Platform)
+            {
+                case PlatformID.Win32Windows: // Win9x supported?
+                case PlatformID.Win32S: // Win16 NTVDM on Win x86?
+                case PlatformID.Win32NT: // Windows NT
+                    Kind = PlatformKind.Win32;
+                    Name = PlatformName.Windows;
 
-					/* osVersion = Environment.OSVersion.Version;
+                    /* osVersion = Environment.OSVersion.Version;
 					if (osVersion.Major <= 4) {
 						// WinNT 4
 					} else if (osVersion.Major <= 5) {
@@ -97,39 +97,39 @@ namespace ZeroTeam.ZeroMQ.lib
 						// info: technet .. msdn .. microsoft research
 
 					} */
-					break;
+                    break;
 
-				case PlatformID.WinCE:
-					// case PlatformID.Xbox:
-					Kind = PlatformKind.Win32;
-					Name = PlatformName.Windows;
-					break;
+                case PlatformID.WinCE:
+                    // case PlatformID.Xbox:
+                    Kind = PlatformKind.Win32;
+                    Name = PlatformName.Windows;
+                    break;
 
-				case PlatformID.Unix:
-					// note: current Mono versions still indicate Unix for Mac OS X
-					Kind = PlatformKind.Posix;
-					Name = PlatformName.Posix;
-					break;
+                case PlatformID.Unix:
+                    // note: current Mono versions still indicate Unix for Mac OS X
+                    Kind = PlatformKind.Posix;
+                    Name = PlatformName.Posix;
+                    break;
 
-				case PlatformID.MacOSX:
-					Kind = PlatformKind.Posix;
-					Name = PlatformName.MacOSX;
-					break;
+                case PlatformID.MacOSX:
+                    Kind = PlatformKind.Posix;
+                    Name = PlatformName.MacOSX;
+                    break;
 
-				default:
-					if ((int)Environment.OSVersion.Platform == 128)
-					{
-						// Mono formerly used 128 for MacOSX
-						Kind = PlatformKind.Posix;
-						Name = PlatformName.MacOSX;
-					}
+                default:
+                    if ((int)Environment.OSVersion.Platform == 128)
+                    {
+                        // Mono formerly used 128 for MacOSX
+                        Kind = PlatformKind.Posix;
+                        Name = PlatformName.MacOSX;
+                    }
 
-					break;
-			}
+                    break;
+            }
 
-			// TODO: Detect and distinguish available Compilers and Runtimes
+            // TODO: Detect and distinguish available Compilers and Runtimes
 
-			/* switch (Kind) {
+            /* switch (Kind) {
 
 			case PlatformKind.Windows:
 				LibraryFileNameFormat = Platform.Windows.LibraryFileNameFormat;
@@ -152,212 +152,212 @@ namespace ZeroTeam.ZeroMQ.lib
 				throw new PlatformNotSupportedException ();
 			} */
 
-			IsMono = Type.GetType("Mono.Runtime") != null;
+            IsMono = Type.GetType("Mono.Runtime") != null;
 
-			var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-			IsMonoTouch = assemblies.Any(a => a.GetName().Name.Equals("MonoTouch", StringComparison.InvariantCultureIgnoreCase));
-			IsMonoMac = assemblies.Any(a => a.GetName().Name.Equals("MonoMac", StringComparison.InvariantCultureIgnoreCase));
-			IsXamarinIOS = assemblies.Any(a => a.GetName().Name.Equals("Xamarin.iOS", StringComparison.InvariantCultureIgnoreCase));
-			IsXamarinAndroid = assemblies.Any(a => a.GetName().Name.Equals("Xamarin.Android", StringComparison.InvariantCultureIgnoreCase));
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            IsMonoTouch = assemblies.Any(a => a.GetName().Name.Equals("MonoTouch", StringComparison.InvariantCultureIgnoreCase));
+            IsMonoMac = assemblies.Any(a => a.GetName().Name.Equals("MonoMac", StringComparison.InvariantCultureIgnoreCase));
+            IsXamarinIOS = assemblies.Any(a => a.GetName().Name.Equals("Xamarin.iOS", StringComparison.InvariantCultureIgnoreCase));
+            IsXamarinAndroid = assemblies.Any(a => a.GetName().Name.Equals("Xamarin.Android", StringComparison.InvariantCultureIgnoreCase));
 
-			if (IsMonoMac)
-			{
-				Kind = PlatformKind.Posix;
-				Name = PlatformName.MacOSX;
-			}
+            if (IsMonoMac)
+            {
+                Kind = PlatformKind.Posix;
+                Name = PlatformName.MacOSX;
+            }
 
-			if (Name == PlatformName.Posix && File.Exists("/System/Library/CoreServices/SystemVersion.plist")) 
-			{
-				Name = PlatformName.MacOSX;
-			}
+            if (Name == PlatformName.Posix && File.Exists("/System/Library/CoreServices/SystemVersion.plist"))
+            {
+                Name = PlatformName.MacOSX;
+            }
 
-			if (IsXamarinIOS || IsMonoTouch)
-			{
-				// Kind = PlatformKind.__Internal;
-				// Name = PlatformName.__Internal;
+            if (IsXamarinIOS || IsMonoTouch)
+            {
+                // Kind = PlatformKind.__Internal;
+                // Name = PlatformName.__Internal;
 
-				Is__Internal = true;
-			}
+                Is__Internal = true;
+            }
 
-			SetupImplementation(typeof(Platform));
-		}
+            SetupImplementation(typeof(Platform));
+        }
 
-		public static bool IsMono { get; private set; }
+        public static bool IsMono { get; private set; }
 
-		public static bool IsMonoMac { get; private set; }
+        public static bool IsMonoMac { get; private set; }
 
-		public static bool IsMonoTouch { get; private set; }
+        public static bool IsMonoTouch { get; private set; }
 
-		public static bool IsXamarinIOS { get; private set; }
+        public static bool IsXamarinIOS { get; private set; }
 
-		public static bool IsXamarinAndroid { get; private set; }
+        public static bool IsXamarinAndroid { get; private set; }
 
-		public static void ExpandPaths(IList<string> stream,
-			string extension, string path)
-		{
-			ExpandPaths(stream, extension, path != null ? new string[] { path } : null);
-		}
+        public static void ExpandPaths(IList<string> stream,
+            string extension, string path)
+        {
+            ExpandPaths(stream, extension, path != null ? new string[] { path } : null);
+        }
 
-		public static void ExpandPaths(IList<string> stream,
-			string extension, IEnumerable<string> paths) 
-		{
-			var pathsC = paths == null ? 0 : paths.Count();
+        public static void ExpandPaths(IList<string> stream,
+            string extension, IEnumerable<string> paths)
+        {
+            var pathsC = paths == null ? 0 : paths.Count();
 
-			foreach (var libraryPath in stream.ToArray())
-			{
-				if (-1 == libraryPath.IndexOf(extension)) continue;
+            foreach (var libraryPath in stream.ToArray())
+            {
+                if (-1 == libraryPath.IndexOf(extension)) continue;
 
-				var libraryPathI = stream.IndexOf(libraryPath);
-				stream.RemoveAt(libraryPathI);
+                var libraryPathI = stream.IndexOf(libraryPath);
+                stream.RemoveAt(libraryPathI);
 
-				if (pathsC == 0)
-				{
-					// just continue, don't Insert them again
-					continue;
-				}
+                if (pathsC == 0)
+                {
+                    // just continue, don't Insert them again
+                    continue;
+                }
 
-				if (pathsC == 1)
-				{
-					stream.Insert(libraryPathI, libraryPath.Replace(extension, paths.ElementAt(0)));
-					continue;
-				}
+                if (pathsC == 1)
+                {
+                    stream.Insert(libraryPathI, libraryPath.Replace(extension, paths.ElementAt(0)));
+                    continue;
+                }
 
-				foreach (var realLibraryPath in paths)
-				{
-					stream.Insert(libraryPathI, libraryPath.Replace(extension, realLibraryPath));
-					++libraryPathI;
-				}
+                foreach (var realLibraryPath in paths)
+                {
+                    stream.Insert(libraryPathI, libraryPath.Replace(extension, realLibraryPath));
+                    ++libraryPathI;
+                }
 
-			}
-		}
+            }
+        }
 
-		public static void SetupImplementation(Type platformDependant)
-		{
-			// Baseline by PlatformKind
-			var platformKind = Enum.GetName(typeof(PlatformKind), Kind);
-			AssignImplementations(platformDependant, platformKind);
+        public static void SetupImplementation(Type platformDependant)
+        {
+            // Baseline by PlatformKind
+            var platformKind = Enum.GetName(typeof(PlatformKind), Kind);
+            AssignImplementations(platformDependant, platformKind);
 
-			// Overwrite by PlatformName
-			var platformName = Enum.GetName(typeof(PlatformName), Name);
-			if (platformName != platformKind)
-			{
-				AssignImplementations(platformDependant, platformName);
-			}
+            // Overwrite by PlatformName
+            var platformName = Enum.GetName(typeof(PlatformName), Name);
+            if (platformName != platformKind)
+            {
+                AssignImplementations(platformDependant, platformName);
+            }
 
-			if (Is__Internal) 
-			{
-				AssignImplementations(platformDependant, "__Internal");
-			}
-		}
+            if (Is__Internal)
+            {
+                AssignImplementations(platformDependant, "__Internal");
+            }
+        }
 
-		private const BindingFlags bindings = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+        private const BindingFlags bindings = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 
-		private static void AssignImplementations(Type platformDependant, string implementationName)
-		{
-			var platformImplementation = platformDependant.GetNestedType(implementationName, bindings);
-			// if (platformImplementation == null) return;
+        private static void AssignImplementations(Type platformDependant, string implementationName)
+        {
+            var platformImplementation = platformDependant.GetNestedType(implementationName, bindings);
+            // if (platformImplementation == null) return;
 
-			var fields = platformDependant.GetFields(bindings);
-			foreach (var field in fields)
-			{
-				var fieldType = field.FieldType;
-				var delegateName = fieldType.Name;
-				MethodInfo methodInfo__internal = null;
-				FieldInfo fieldInfo__internal = null;
+            var fields = platformDependant.GetFields(bindings);
+            foreach (var field in fields)
+            {
+                var fieldType = field.FieldType;
+                var delegateName = fieldType.Name;
+                MethodInfo methodInfo__internal = null;
+                FieldInfo fieldInfo__internal = null;
 
-				// TODO: This is mapping sodium.crypto_box to sodium.crypto_box__Internal. Should we also map them to sodium.__Internal.crypto_box?
-				if (implementationName == "__Internal")
-				{
-					if (delegateName.EndsWith("_delegate"))
-					{
-						// YOU now have
-						// public static readonly crypto_box_delegate box = crypto_box;
+                // TODO: This is mapping sodium.crypto_box to sodium.crypto_box__Internal. Should we also map them to sodium.__Internal.crypto_box?
+                if (implementationName == "__Internal")
+                {
+                    if (delegateName.EndsWith("_delegate"))
+                    {
+                        // YOU now have
+                        // public static readonly crypto_box_delegate box = crypto_box;
 
-						// YOU need
-						// public static readonly crypto_box_delegate box = crypto_box__Internal;
+                        // YOU need
+                        // public static readonly crypto_box_delegate box = crypto_box__Internal;
 
-						delegateName = delegateName.Substring(0, delegateName.Length - "_delegate".Length);
-						if (delegateName.Length > 0)
-						{
-							methodInfo__internal = platformDependant.GetMethod(delegateName + "__Internal", bindings);
-						}
-					}
-				}
-				if (methodInfo__internal == null && platformImplementation != null)
-				{
-					if (delegateName.EndsWith("Delegate"))
-					{
-						// YOU now have
-						// public static readonly UnmanagedLibrary LoadUnmanagedLibraryDelegate;
+                        delegateName = delegateName.Substring(0, delegateName.Length - "_delegate".Length);
+                        if (delegateName.Length > 0)
+                        {
+                            methodInfo__internal = platformDependant.GetMethod(delegateName + "__Internal", bindings);
+                        }
+                    }
+                }
+                if (methodInfo__internal == null && platformImplementation != null)
+                {
+                    if (delegateName.EndsWith("Delegate"))
+                    {
+                        // YOU now have
+                        // public static readonly UnmanagedLibrary LoadUnmanagedLibraryDelegate;
 
-						// YOU need
-						// public static readonly LoadUnmanagedLibraryDelegate LoadUnmanagedLibrary 
-						//     = Platform.__Internal.LoadUnmanagedLibrary;
+                        // YOU need
+                        // public static readonly LoadUnmanagedLibraryDelegate LoadUnmanagedLibrary 
+                        //     = Platform.__Internal.LoadUnmanagedLibrary;
 
-						delegateName = delegateName.Substring(0, delegateName.Length - "Delegate".Length);
+                        delegateName = delegateName.Substring(0, delegateName.Length - "Delegate".Length);
 
-						methodInfo__internal = platformImplementation.GetMethod(delegateName, bindings);
-					}
-					else
-					{
-						methodInfo__internal = platformImplementation.GetMethod(field.Name, bindings);
-					}
+                        methodInfo__internal = platformImplementation.GetMethod(delegateName, bindings);
+                    }
+                    else
+                    {
+                        methodInfo__internal = platformImplementation.GetMethod(field.Name, bindings);
+                    }
 
-					if (methodInfo__internal == null)
-					{
-						fieldInfo__internal = platformImplementation.GetField(field.Name, bindings);
-					}
-				}
+                    if (methodInfo__internal == null)
+                    {
+                        fieldInfo__internal = platformImplementation.GetField(field.Name, bindings);
+                    }
+                }
 
-				if (methodInfo__internal != null)
-				{
-					var delegat = Delegate.CreateDelegate(fieldType, methodInfo__internal);
-					field.SetValue(null, delegat);
-				}
-				else if (fieldInfo__internal != null)
-				{
-					var value = fieldInfo__internal.GetValue(null);
-					field.SetValue(null, value);
-				}
-				// else { field.SetValue(null, null); }
-			}
-		}
+                if (methodInfo__internal != null)
+                {
+                    var delegat = Delegate.CreateDelegate(fieldType, methodInfo__internal);
+                    field.SetValue(null, delegat);
+                }
+                else if (fieldInfo__internal != null)
+                {
+                    var value = fieldInfo__internal.GetValue(null);
+                    field.SetValue(null, value);
+                }
+                // else { field.SetValue(null, null); }
+            }
+        }
 
-		private static bool ExtractManifestResource(string resourceName, string outputPath)
-		{
-			if (File.Exists(outputPath))
-			{
-				// This is necessary to prevent access conflicts if multiple processes are run from the
-				// same location. The naming scheme implemented in UnmanagedLibrary should ensure that
-				// the correct version is always used.
-				return true;
-			}
+        private static bool ExtractManifestResource(string resourceName, string outputPath)
+        {
+            if (File.Exists(outputPath))
+            {
+                // This is necessary to prevent access conflicts if multiple processes are run from the
+                // same location. The naming scheme implemented in UnmanagedLibrary should ensure that
+                // the correct version is always used.
+                return true;
+            }
 
-			var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
+            var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
 
-			if (resourceStream == null)
-			{
-				// No manifest resources were compiled into the current assembly. This is likely a 'manual
-				// deployment' situation, so do not throw an exception at this point and allow all deployment
-				// paths to be searched.
-				return false;
-			}
+            if (resourceStream == null)
+            {
+                // No manifest resources were compiled into the current assembly. This is likely a 'manual
+                // deployment' situation, so do not throw an exception at this point and allow all deployment
+                // paths to be searched.
+                return false;
+            }
 
-			try
-			{
-				using (var fileStream = File.Create(outputPath))
-				{
-					resourceStream.CopyTo(fileStream);
-				}
-			}
-			catch (UnauthorizedAccessException)
-			{
-				// Caller does not have write permission for the current file
-				return false;
-			}
+            try
+            {
+                using (var fileStream = File.Create(outputPath))
+                {
+                    resourceStream.CopyTo(fileStream);
+                }
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // Caller does not have write permission for the current file
+                return false;
+            }
 
-			return true;
-		}
+            return true;
+        }
 
-	}
+    }
 }

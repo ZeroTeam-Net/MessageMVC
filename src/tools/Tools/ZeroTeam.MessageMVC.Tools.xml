@@ -4,6 +4,80 @@
         <name>ZeroTeam.MessageMVC.Tools</name>
     </assembly>
     <members>
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiJson">
+            <summary>
+            API扩展功能
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiJson.JsonExample(ZeroTeam.MessageMVC.Documents.TypeDocument,System.Boolean)">
+            <summary>
+            转为Json内容
+            </summary>
+            <param name="type">类型</param>
+            <param name="isRoot">是否顶级</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiJson.ArgumentJson(ZeroTeam.MessageMVC.Documents.ApiDocument)">
+            <summary>
+            参数的Json
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiMarkDown">
+            <summary>
+            API扩展功能
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiMarkDown.ServiceInfos">
+            <summary>
+            站点文档信息
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiMarkDown.MarkDown(System.String)">
+            <summary>
+            生成单元测试代码
+            </summary>
+            <param name="path"></param>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiSqlCode">
+            <summary>
+            API扩展功能
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiSqlCode.ServiceInfos">
+            <summary>
+            站点文档信息
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiSqlCode.ApiSql(System.String)">
+            <summary>
+            生成单元测试代码
+            </summary>
+            <param name="path"></param>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiUnitTestCode">
+            <summary>
+            API扩展功能
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiUnitTestCode.ServiceInfos">
+            <summary>
+            站点文档信息
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiUnitTestCode.NUnitCode(System.String)">
+            <summary>
+            生成单元测试代码
+            </summary>
+            <param name="path"></param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiUnitTestCode.XUnitCode(System.String)">
+            <summary>
+            生成单元测试代码
+            </summary>
+            <param name="path"></param>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Tools.AutoRegister">
             <summary>
               组件注册
@@ -12,11 +86,6 @@
         <member name="M:ZeroTeam.MessageMVC.Tools.AutoRegister.ZeroTeam#MessageMVC#AddIn#IAutoRegister#AutoRegist(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             注册
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Tools.AutoRegister.ZeroTeam#MessageMVC#ILifeFlow#Initialize">
-            <summary>
-            初始化
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Tools.ExceptionMiddleware">

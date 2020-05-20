@@ -19,7 +19,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         ///     终止符号(一般返回值)
         /// </summary>
         public const byte ResultEnd = 0xFE;
-        
+
         /// <summary>
         ///     终止符号(文件返回值)
         /// </summary>
@@ -203,53 +203,53 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             switch (value)
             {
                 //终止符号
-                case End: return nameof(End); 
+                case End: return nameof(End);
                 //终止符号
-                case ExtendEnd: return nameof(ExtendEnd); 
+                case ExtendEnd: return nameof(ExtendEnd);
                 //终止符号
-                case ResultEnd: return nameof(ResultEnd); 
+                case ResultEnd: return nameof(ResultEnd);
                 //全局标识
-                case GlobalId: return nameof(GlobalId); 
+                case GlobalId: return nameof(GlobalId);
                 //站点名称帧
-                case Station: return nameof(Station); 
+                case Station: return nameof(Station);
                 //状态帧
-                case Status: return nameof(Status) + "/" + nameof(InnerCommand); 
+                case Status: return nameof(Status) + "/" + nameof(InnerCommand);
                 //请求ID
-                case RequestId: return nameof(RequestId); 
+                case RequestId: return nameof(RequestId);
                 //执行计划
-                case Plan: return nameof(Plan); 
+                case Plan: return nameof(Plan);
                 //计划时间
-                case PlanTime: return nameof(PlanTime); 
+                case PlanTime: return nameof(PlanTime);
                 //服务认证标识
-                case SerivceKey: return nameof(SerivceKey); 
+                case SerivceKey: return nameof(SerivceKey);
                 //服务认证标识
-                case LocalId: return nameof(LocalId); 
+                case LocalId: return nameof(LocalId);
                 //调用方的站点类型
-                case StationType: return nameof(StationType); 
+                case StationType: return nameof(StationType);
                 //调用方的全局标识
-                case CallId: return nameof(CallId); 
+                case CallId: return nameof(CallId);
                 //数据方向
-                case DataDirection: return nameof(DataDirection); 
+                case DataDirection: return nameof(DataDirection);
                 //原样参数
-                case Original1: return nameof(Original1); 
+                case Original1: return nameof(Original1);
                 //原样参数
-                case Original2: return nameof(Original2); 
+                case Original2: return nameof(Original2);
                 //原样参数
-                case Original3: return nameof(Original3); 
+                case Original3: return nameof(Original3);
                 //原样参数
-                case Original4: return nameof(Original4); 
+                case Original4: return nameof(Original4);
                 //原样参数
-                case Original5: return nameof(Original5); 
+                case Original5: return nameof(Original5);
                 //原样参数
-                case Original6: return nameof(Original6); 
+                case Original6: return nameof(Original6);
                 //原样参数
-                case Original7: return nameof(Original7); 
+                case Original7: return nameof(Original7);
                 //原样参数
-                case Original8: return nameof(Original8); 
+                case Original8: return nameof(Original8);
                 //参数
-                case Argument: return nameof(Argument); 
+                case Argument: return nameof(Argument);
                 //请求者
-                case Requester: return nameof(Requester) + "/" + nameof(Publisher); 
+                case Requester: return nameof(Requester) + "/" + nameof(Publisher);
                 //回复者
                 case Responser: return nameof(Responser) + "/" + nameof(Subscriber);
                 //网络上下文信息

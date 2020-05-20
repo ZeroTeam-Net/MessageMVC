@@ -3,7 +3,6 @@ using Agebull.Common.Logging;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
-using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Documents;
 using ZeroTeam.MessageMVC.Messages;
 
@@ -84,7 +83,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     continue;
                 }
 
-                var result = CallCommand("doc", doc.Name, JsonHelper.NewtonJson.ToString(doc,false));
+                var result = CallCommand("doc", doc.Name, JsonHelper.NewtonJson.ToString(doc, false));
                 if (result.InteractiveSuccess && result.State == ZeroOperatorStateType.Ok)
                 {
                     continue;

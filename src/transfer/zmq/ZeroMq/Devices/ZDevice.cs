@@ -13,48 +13,48 @@ namespace ZeroTeam.ZeroMQ
     /// a device with sockets that were created in separate threads or separate contexts.
     /// </remarks>
     public abstract class ZDevice : ZThread
-	{
-		/// <summary>
-		/// The polling interval in milliseconds.
-		/// </summary>
-		protected readonly TimeSpan PollingInterval = TimeSpan.FromMilliseconds(500);
+    {
+        /// <summary>
+        /// The polling interval in milliseconds.
+        /// </summary>
+        protected readonly TimeSpan PollingInterval = TimeSpan.FromMilliseconds(500);
 
-		/// <summary>
-		/// The ZContext reference, to not become finalized
-		/// </summary>
-		protected readonly ZContext Context;
+        /// <summary>
+        /// The ZContext reference, to not become finalized
+        /// </summary>
+        protected readonly ZContext Context;
 
-		/// <summary>
-		/// The frontend socket that will normally pass messages to <see cref="BackendSocket"/>.
-		/// </summary>
-		public ZSocket FrontendSocket;
+        /// <summary>
+        /// The frontend socket that will normally pass messages to <see cref="BackendSocket"/>.
+        /// </summary>
+        public ZSocket FrontendSocket;
 
-		/// <summary>
-		/// The backend socket that will normally receive messages from (and possibly send replies to) <see cref="FrontendSocket"/>.
-		/// </summary>
-		public ZSocket BackendSocket;
+        /// <summary>
+        /// The backend socket that will normally receive messages from (and possibly send replies to) <see cref="FrontendSocket"/>.
+        /// </summary>
+        public ZSocket BackendSocket;
 
-		/// <summary>
-		/// You are using ZContext.Current!
-		/// </summary>
-		protected ZDevice()
-			: this (ZContext.Current)
-		{ }
+        /// <summary>
+        /// You are using ZContext.Current!
+        /// </summary>
+        protected ZDevice()
+            : this(ZContext.Current)
+        { }
 
 #pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
-		protected ZDevice(ZContext context)
+        protected ZDevice(ZContext context)
 #pragma warning restore CS1591 // 缺少对公共可见类型或成员的 XML 注释
-		{
-			Context = context;
-		}
+        {
+            Context = context;
+        }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="frontendType"></param>
         /// <param name="backendType"></param>
         protected ZDevice(ZSocketType frontendType, ZSocketType backendType)
-			: this (ZContext.Current, frontendType, backendType)
-		{ }
+            : this(ZContext.Current, frontendType, backendType)
+        { }
         /// <summary>
         /// 
         /// </summary>
@@ -62,8 +62,8 @@ namespace ZeroTeam.ZeroMQ
         /// <param name="frontendType"></param>
         /// <param name="backendType"></param>
 		protected ZDevice(ZContext context, ZSocketType frontendType, ZSocketType backendType)
-		{
-			Context = context;
+        {
+            Context = context;
 
             if (!Initialize(frontendType, backendType, out var error))
             {
@@ -78,51 +78,51 @@ namespace ZeroTeam.ZeroMQ
         /// <param name="error"></param>
         /// <returns></returns>
 		protected bool Initialize(ZSocketType frontendType, ZSocketType backendType, out ZError error)
-		{
-			error = null;
+        {
+            error = null;
 
-			/* if (frontendType == ZSocketType.None && backendType == ZSocketType.None)
+            /* if (frontendType == ZSocketType.None && backendType == ZSocketType.None)
 			{
 				throw new InvalidOperationException();
 			} /**/
 
-			if (frontendType != ZSocketType.None)
-			{
-				if (null == (FrontendSocket = ZSocket.Create(Context, frontendType, out error)))
-				{
-					return false;
-				}
-				FrontendSetup = new ZSocketSetup(FrontendSocket);
-			}
+            if (frontendType != ZSocketType.None)
+            {
+                if (null == (FrontendSocket = ZSocket.Create(Context, frontendType, out error)))
+                {
+                    return false;
+                }
+                FrontendSetup = new ZSocketSetup(FrontendSocket);
+            }
 
-			if (backendType != ZSocketType.None)
-			{
-				if (null == (BackendSocket = ZSocket.Create(Context, backendType, out error)))
-				{
-					return false;
-				}
-				BackendSetup = new ZSocketSetup(BackendSocket);
-			}
+            if (backendType != ZSocketType.None)
+            {
+                if (null == (BackendSocket = ZSocket.Create(Context, backendType, out error)))
+                {
+                    return false;
+                }
+                BackendSetup = new ZSocketSetup(BackendSocket);
+            }
 
-			return true;
-		}
+            return true;
+        }
 
-		/// <summary>
-		/// Gets a <see cref="ZSocketSetup"/> for configuring the frontend socket.
-		/// </summary>
-		public ZSocketSetup BackendSetup { get; protected set; }
+        /// <summary>
+        /// Gets a <see cref="ZSocketSetup"/> for configuring the frontend socket.
+        /// </summary>
+        public ZSocketSetup BackendSetup { get; protected set; }
 
-		/// <summary>
-		/// Gets a <see cref="ZSocketSetup"/> for configuring the backend socket.
-		/// </summary>
-		public ZSocketSetup FrontendSetup { get; protected set; }
+        /// <summary>
+        /// Gets a <see cref="ZSocketSetup"/> for configuring the backend socket.
+        /// </summary>
+        public ZSocketSetup FrontendSetup { get; protected set; }
 
-		/*/ <summary>
+        /*/ <summary>
 		/// Gets a <see cref="ManualResetEvent"/> that can be used to block while the device is running.
 		/// </summary>
 		public ManualResetEvent DoneEvent { get; private set; } /**/
 
-		/*/ <summary>
+        /*/ <summary>
 		/// Gets an <see cref="AutoResetEvent"/> that is pulsed after every Poll call.
 		/// </summary>
 		public AutoResetEvent PollerPulse
@@ -130,60 +130,60 @@ namespace ZeroTeam.ZeroMQ
 				get { return _poller.Pulse; }
 		}*/
 
-		/// <summary>
-		/// Initializes the frontend and backend sockets. Called automatically when starting the device.
-		/// If called multiple times, will only execute once.
-		/// </summary>
-		public virtual void Initialize()
-		{
-			EnsureNotDisposed();
+        /// <summary>
+        /// Initializes the frontend and backend sockets. Called automatically when starting the device.
+        /// If called multiple times, will only execute once.
+        /// </summary>
+        public virtual void Initialize()
+        {
+            EnsureNotDisposed();
 
-		    FrontendSetup?.Configure();
-		    BackendSetup?.Configure();
-		}
+            FrontendSetup?.Configure();
+            BackendSetup?.Configure();
+        }
 
-		/// <summary>
-		/// Start the device in the current thread. Should be used by implementations of the method.
-		/// </summary>
-		protected override void Run()
-		{
-			EnsureNotDisposed();
+        /// <summary>
+        /// Start the device in the current thread. Should be used by implementations of the method.
+        /// </summary>
+        protected override void Run()
+        {
+            EnsureNotDisposed();
 
-			Initialize();
+            Initialize();
 
-			ZSocket[] sockets;
-			ZPollItem[] polls;
-			if (FrontendSocket != null && BackendSocket != null)
-			{
-				sockets = new[] {
-					FrontendSocket,
-					BackendSocket
-				};
-				polls = new[] {
-					ZPollItem.Create(FrontendHandler),
-					ZPollItem.Create(BackendHandler)
-				};
-			}
-			else if (FrontendSocket != null)
-			{
-				sockets = new[] {
-					FrontendSocket
-				}; 
-				polls = new[] {
-					ZPollItem.Create(FrontendHandler)
-				};
-			}
-			else
-			{
-				sockets = new[] {
-					BackendSocket
-				};
-				polls = new[] {
-					ZPollItem.Create(BackendHandler)
-				};
-			}
+            ZSocket[] sockets;
+            ZPollItem[] polls;
+            if (FrontendSocket != null && BackendSocket != null)
+            {
+                sockets = new[] {
+                    FrontendSocket,
+                    BackendSocket
+                };
+                polls = new[] {
+                    ZPollItem.Create(FrontendHandler),
+                    ZPollItem.Create(BackendHandler)
+                };
+            }
+            else if (FrontendSocket != null)
+            {
+                sockets = new[] {
+                    FrontendSocket
+                };
+                polls = new[] {
+                    ZPollItem.Create(FrontendHandler)
+                };
+            }
+            else
+            {
+                sockets = new[] {
+                    BackendSocket
+                };
+                polls = new[] {
+                    ZPollItem.Create(BackendHandler)
+                };
+            }
 
-			/* ZPollItem[] polls;
+            /* ZPollItem[] polls;
 			{
 				var pollItems = new List<ZPollItem>();
 				switch (FrontendSocket.SocketType)
@@ -213,18 +213,18 @@ namespace ZeroTeam.ZeroMQ
 				polls = pollItems.ToArray();
 			} */
 
-			// Because of using ZmqSocket.Forward, this field will always be null
-			ZMessage[] lastMessageFrames = null;
+            // Because of using ZmqSocket.Forward, this field will always be null
+            ZMessage[] lastMessageFrames = null;
 
             FrontendSetup?.BindConnect();
             BackendSetup?.BindConnect();
 
             ZError error = null;
-			try
-			{
-				while (!Cancellor.IsCancellationRequested)
-				{
-                    if (sockets.Poll(polls, ZPollEvent.In, ref lastMessageFrames, out error, PollingInterval)) 
+            try
+            {
+                while (!Cancellor.IsCancellationRequested)
+                {
+                    if (sockets.Poll(polls, ZPollEvent.In, ref lastMessageFrames, out error, PollingInterval))
                         continue;
                     if (error.IsError(ZError.Code.EAGAIN))
                     {
@@ -239,24 +239,24 @@ namespace ZeroTeam.ZeroMQ
                     // EFAULT
                     throw new ZException(error);
                 }
-			}
-			catch (ZException)
-			{
-				// Swallow any exceptions thrown while stopping
-				if (!Cancellor.IsCancellationRequested)
-				{
-					throw;
-				}
-			}
-
-		    FrontendSetup?.UnbindDisconnect();
-		    BackendSetup?.UnbindDisconnect();
-
-		    if (error.IsError(ZError.Code.ETERM))
+            }
+            catch (ZException)
             {
-				Close();
-			}
-		}
+                // Swallow any exceptions thrown while stopping
+                if (!Cancellor.IsCancellationRequested)
+                {
+                    throw;
+                }
+            }
+
+            FrontendSetup?.UnbindDisconnect();
+            BackendSetup?.UnbindDisconnect();
+
+            if (error.IsError(ZError.Code.ETERM))
+            {
+                Close();
+            }
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -266,31 +266,31 @@ namespace ZeroTeam.ZeroMQ
         /// <returns></returns>
 		protected abstract bool FrontendHandler(ZSocket socket, out ZMessage message, out ZError error);
 
-		/// <summary>
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="args"></param>
         /// <param name="message"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-		protected abstract bool BackendHandler(ZSocket args, out ZMessage message, out ZError error);
+        protected abstract bool BackendHandler(ZSocket args, out ZMessage message, out ZError error);
 
-		/// <summary>
-		/// Stops the device and releases the underlying sockets. Optionally disposes of managed resources.
-		/// </summary>
-		/// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-		protected override void Dispose(bool disposing)
-		{
-			if (disposing)
-			{
+        /// <summary>
+        /// Stops the device and releases the underlying sockets. Optionally disposes of managed resources.
+        /// </summary>
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
                 FrontendSocket?.Dispose();
                 BackendSocket?.Dispose();
             }
 
-			base.Dispose(disposing);
-		}
+            base.Dispose(disposing);
+        }
 
-	}
+    }
 }
 
 #pragma warning restore CS1591 // 缺少对公共可见类型或成员的 XML 注释

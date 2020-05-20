@@ -11,7 +11,8 @@ namespace ZeroTeam.MessageMVC.AddIn
         /// <summary>
         /// 执行自动注册
         /// </summary>
-        Task AutoRegist(IServiceCollection service);
+        /// <returns>返回false表示后续无操作</returns>
+        Task<bool> AutoRegist(IServiceCollection service) { return Task.FromResult(false); }
 
     }
 }

@@ -1,9 +1,9 @@
-﻿using ZeroTeam.MessageMVC.ZeroApis;
+﻿using Agebull.Common.Ioc;
 using Microsoft.Extensions.Logging;
-using Agebull.Common.Ioc;
-using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.ApiContract;
+using ZeroTeam.MessageMVC.Context;
+using ZeroTeam.MessageMVC.Messages;
+using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Sample.Controllers
 {

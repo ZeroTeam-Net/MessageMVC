@@ -1,5 +1,4 @@
 ﻿using Agebull.Common.Ioc;
-using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Kafka;
@@ -12,10 +11,7 @@ namespace MicroZero.Kafka.QueueStation
         {
             var services = DependencyHelper.ServiceCollection;
             services.UseKafka();
-            services.UseFlow(typeof(Program));
-
-            //_ = Task.Run(Test);
-            await ZeroFlowControl.WaitEnd();
+            await services.UseFlowAndWait(typeof(Program));
         }
         static async void Test()
         {

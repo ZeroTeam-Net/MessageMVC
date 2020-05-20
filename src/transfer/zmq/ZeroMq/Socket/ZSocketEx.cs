@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using Agebull.Common;
+﻿using Agebull.Common;
 using Agebull.Common.Logging;
+using System.Collections.Generic;
 
 namespace ZeroTeam.ZeroMQ
 {
@@ -252,7 +252,7 @@ namespace ZeroTeam.ZeroMQ
                 return false;
             using (message)
             {
-                _error = null; 
+                _error = null;
                 foreach (var frame in message)
                 {
                     if (!SendFrame(frame, FlagsSndmore, out _error))
@@ -271,7 +271,7 @@ namespace ZeroTeam.ZeroMQ
         public bool SendByServiceKey(byte[] desc, params string[] array)
         {
             _error = null;
-            if (!SendFrame(new ZFrame(desc), FlagsSndmore,out _error))
+            if (!SendFrame(new ZFrame(desc), FlagsSndmore, out _error))
                 return false;
             foreach (var data in array)
             {
@@ -290,7 +290,7 @@ namespace ZeroTeam.ZeroMQ
         public bool SendBy(byte[] desc, params byte[][] array)
         {
             _error = null;
-            if (!SendFrame(new ZFrame(desc), FlagsSndmore,out _error))
+            if (!SendFrame(new ZFrame(desc), FlagsSndmore, out _error))
                 return false;
             foreach (var data in array)
             {

@@ -59,14 +59,14 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         {
             var status = new Argument
             {
-                Value= "Value"
+                Value = "Value"
             };
             var microsoft = new JsonSerializeProxy();
             var newtonsoft = new NewtonJsonSerializeProxy();
             var json1 = newtonsoft.ToString(status, true);
             var status1 = newtonsoft.ToObject<Argument>(json1);
             Assert.IsTrue(status1.Value == status.Value, json1);
-            
+
             var json2 = microsoft.ToString(status, true);
             var status2 = microsoft.ToObject<Argument>(json2);
             Assert.IsTrue(status2.Value == status.Value, json2);

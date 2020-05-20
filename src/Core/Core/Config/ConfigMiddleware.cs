@@ -36,7 +36,7 @@ namespace ZeroTeam.MessageMVC
             DependencyHelper.AddSingleton(config);
             DependencyHelper.Update();
             LogRecorder.GetMachineNameFunc = () => config.TraceName;
-            if(ConfigurationHelper.IsEnable("LogRecorder:innerLogger"))
+            if (ConfigurationHelper.IsEnable("LogRecorder:innerLogger"))
             {
                 var opt = ConfigurationHelper.Get<TextLoggerOption>("Logging:Text");
                 if (string.IsNullOrWhiteSpace(opt?.LogPath))

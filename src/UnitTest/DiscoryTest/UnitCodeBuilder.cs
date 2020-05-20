@@ -1,8 +1,8 @@
 using Agebull.Common;
 using Agebull.Common.Ioc;
 using NUnit.Framework;
-using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Sample.Controllers;
 using ZeroTeam.MessageMVC.ZeroApis;
@@ -13,9 +13,9 @@ namespace DiscoverTest
     public class UnitCodeBuilder
     {
         [SetUp]
-        public void Setup()
+        public async Task Setup()
         {
-            ZeroApp.UseTest(DependencyHelper.ServiceCollection);
+            await ZeroApp.UseTest(DependencyHelper.ServiceCollection);
         }
 
         [TearDown]
@@ -34,16 +34,20 @@ namespace DiscoverTest
                     System.Environment.CurrentDirectory)));
             ApiDiscover discover = new ApiDiscover();
             discover.Discover(GetType().Assembly);
-            discover.NUnitCode(IOHelper.CheckPath(path, "AutoCode"));
+            var extend = new ApiUnitTestCode
+            {
+                ServiceInfos = discover.ServiceInfos
+            };
+            extend.NUnitCode(IOHelper.CheckPath(path, "AutoCode"));
         }
         [Test]
         public void FindAppDomain()
         {
             ApiDiscover.FindAppDomain();
         }
-        
 
-       [Test]
+
+        [Test]
         public void CreateApiSqlCode()
         {
             var path =
@@ -52,8 +56,32 @@ namespace DiscoverTest
                 Path.GetDirectoryName(
                     System.Environment.CurrentDirectory)));
             ApiDiscover discover = new ApiDiscover();
-            discover.Discover(typeof(TestControler).Assembly);
-            discover.ApiSql(IOHelper.CheckPath(path, "Sql"));
+            discover.Discover(typeof(NetEventControler).Assembly);
+            var extend = new ApiSqlCode
+            {
+                ServiceInfos = discover.ServiceInfos
+            };
+            extend.ApiSql(IOHelper.CheckPath(path, "Sql"));
+        }
+
+        [Test]
+        public void CreateMarkdown()
+        {
+            ApiDiscover discover = new ApiDiscover();
+            discover.Discover(typeof(NetEventControler).Assembly);
+
+            var path =
+                Path.GetDirectoryName(
+                Path.GetDirectoryName(
+                Path.GetDirectoryName(
+                    System.Environment.CurrentDirectory)));
+            path = IOHelper.CheckPath(path, "MarkDown");
+
+            var extend = new ApiMarkDown
+            {
+                ServiceInfos = discover.ServiceInfos
+            };
+            extend.MarkDown(path);
         }
     }
 }

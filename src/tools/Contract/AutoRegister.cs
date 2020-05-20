@@ -17,14 +17,13 @@ namespace ZeroTeam.MessageMVC.ApiContract
         /// <summary>
         /// 注册
         /// </summary>
-        Task IAutoRegister.AutoRegist(IServiceCollection services)
+        Task<bool> IAutoRegister.AutoRegist(IServiceCollection services)
         {
             //ApiResult构造
             services.TryAddTransient<IApiResultHelper, ApiResultDefault>();
             services.TryAddTransient<IOperatorStatus, OperatorStatus>();
             services.TryAddTransient<IApiResult, ApiResult>();
-
-            return Task.CompletedTask;
+            return Task.FromResult(false);
         }
     }
 }

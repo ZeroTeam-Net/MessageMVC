@@ -69,7 +69,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <param name="consumeResult"></param>
         private async Task OnMessagePush(ConsumeResult consumeResult)
         {
-            if (SmartSerializer.TryToMessage(consumeResult.Message.Value,out var message))
+            if (SmartSerializer.TryToMessage(consumeResult.Message.Value, out var message))
                 await MessageProcessor.OnMessagePush(Service, message, true, consumeResult);//BUG:应该配置化同步或异步
         }
 

@@ -1,5 +1,4 @@
 ﻿using Agebull.Common;
-using System;
 using System.IO;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Services;
@@ -25,7 +24,7 @@ namespace ZeroTeam.MessageMVC.Messages
             ? MessageHandleScope.Prepare | MessageHandleScope.End
             : MessageHandleScope.None;
 
-       static readonly string path = IOHelper.CheckPath(ZeroAppOption.Instance.DataFolder, "message");
+        static readonly string path = IOHelper.CheckPath(ZeroAppOption.Instance.DataFolder, "message");
 
         /// <summary>
         /// 准备

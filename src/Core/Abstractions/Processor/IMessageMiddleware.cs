@@ -56,7 +56,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <param name="exception">异常信息</param>
         /// <param name="tag">扩展信息</param>
         /// <returns></returns>
-        Task OnGlobalException(IService service, IInlineMessage message,Exception exception, object tag)
+        Task OnGlobalException(IService service, IInlineMessage message, Exception exception, object tag)
         {
             return Task.CompletedTask;
         }

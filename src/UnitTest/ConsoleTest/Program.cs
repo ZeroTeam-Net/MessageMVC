@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Agebull.Common.Ioc;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using System;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Agebull.Common.Ioc;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using ZeroTeam.MessageMVC.ApiContract;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;

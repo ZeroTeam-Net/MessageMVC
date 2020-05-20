@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using ZeroTeam.MessageMVC.ApiContract;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
 {

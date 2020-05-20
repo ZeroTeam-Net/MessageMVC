@@ -11,7 +11,7 @@ namespace Newtonsoft.Json
         public override bool CanRead => true;
         /// <inheritdoc />
         public override bool CanWrite => true;
-        
+
         /// <inheritdoc />
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {

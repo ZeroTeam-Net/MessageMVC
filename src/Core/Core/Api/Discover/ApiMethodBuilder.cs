@@ -33,10 +33,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         public ApiActionInfo ActionInfo;
 
-        /// <summary>
-        /// 参数类型
-        /// </summary>
-        public ParameterInfo ParameterInfo;
+        bool ParameterClass = false;
 
         /// <summary>
         /// 此调用是否异步方法
@@ -75,14 +72,22 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         }
         void Call()
         {
-            ParameterInfo = null;
             List<LocalBuilder> paras = new List<LocalBuilder>();
             foreach (var parameter in Method.GetParameters())
             {
-                Parameter(parameter);
+                var res = Parameter(parameter);
                 var arg = ilGenerator.DeclareLocal(parameter.ParameterType);
                 ilGenerator.Emit(OpCodes.Stloc, arg);
                 paras.Add(arg);
+                if (res == null)
+                    continue;
+                ActionInfo.Arguments ??= new Dictionary<string, ApiArgument>();
+                ActionInfo.Arguments.Add(parameter.Name, new ApiArgument
+                {
+                    Name = parameter.Name,
+                    ParameterInfo = parameter,
+                    IsBaseType = res.Value
+                });
             }
 
             ilGenerator.Emit(OpCodes.Ldloc, controler);
@@ -93,57 +98,50 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             ilGenerator.Emit(OpCodes.Callvirt, Method);
         }
 
-        private void Parameter(ParameterInfo parameter)
+        private bool? Parameter(ParameterInfo parameter)
         {
             if (parameter.ParameterType.IsSupperInterface(typeof(IZeroContext)))
             {
                 Context(ilGenerator);
-                return;
+                return null;
             }
             if (parameter.ParameterType.IsSupperInterface(typeof(IUser)))
             {
                 User(ilGenerator);
-                return;
+                return null;
             }
+
             var ca = parameter.GetCustomAttribute<FromConfigAttribute>();
             if (ca != null)
             {
                 ConfigCreate(ilGenerator, ca.Name, parameter.ParameterType);
-                return;
+                return null;
             }
             var fa = parameter.GetCustomAttribute<FromServicesAttribute>();
             if (fa != null)
             {
                 IocCreate(ilGenerator, parameter.ParameterType);
-                return;
+                return null;
             }
-            //SerializeTypeAttribute sa =
-            //    parameter.GetCustomAttribute<ArgumentSerializeTypeAttribute>()
-            //    ?? parameter.GetCustomAttribute<SerializeTypeAttribute>()
-            //    ?? Method.GetCustomAttribute<SerializeTypeAttribute>();
 
-            //var serializeType = (int)(sa?.Type ?? SerializeType.None);
             var scope = (int)(parameter.GetCustomAttribute<ArgumentScopeAttribute>()?.Scope ?? ArgumentScope.Content);
 
             if (parameter.ParameterType == typeof(string) || parameter.ParameterType.IsValueType)
             {
                 ReadValueArgument(ilGenerator, parameter, scope, 0);//serializeType
-                return;
+                return true;
             }
+
             //第一个不特殊构造的
-            if (ParameterInfo == null)
+            if (!ParameterClass)
             {
-                ParameterInfo = parameter;
+                ParameterClass = true;
                 ilGenerator.Emit(OpCodes.Ldarg, 2);
                 ilGenerator.Emit(OpCodes.Castclass, parameter.ParameterType);
-                return;
+                return false;
             }
-            //if (sa != null)
-            //{
-            //    ReadArgument(ilGenerator, parameter, scope, serializeType);
-            //    return;
-            //}
             IocCreate(ilGenerator, parameter.ParameterType);
+            return null;
         }
 
         void Result()
@@ -344,7 +342,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 ilGenerator.Emit(OpCodes.Ldloc, typ);
                 ilGenerator.Emit(OpCodes.Ldloc, str);
 
-                
+
                 ilGenerator.Emit(OpCodes.Call, typeof(Enum).GetMethod(nameof(Enum.Parse), new[] { typeof(Type), typeof(string) }));
 
                 ilGenerator.Emit(OpCodes.Unbox_Any, parameter.ParameterType);

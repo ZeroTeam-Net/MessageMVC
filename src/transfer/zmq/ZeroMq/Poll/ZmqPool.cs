@@ -48,7 +48,7 @@ namespace ZeroTeam.ZeroMQ
         /// </summary>
         /// <param name="sockets"></param>
         /// <param name="events"></param>
-        void Prepare(ZPollEvent events,params ZSocket[] sockets);
+        void Prepare(ZPollEvent events, params ZSocket[] sockets);
 
         /// <summary>
         /// 一次Pool

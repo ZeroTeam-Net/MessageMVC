@@ -1,9 +1,10 @@
-﻿using ZeroTeam.MessageMVC.ZeroApis;
+﻿using Agebull.Common.Ioc;
 using Microsoft.Extensions.Logging;
-using Agebull.Common.Ioc;
-using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.Context;
+using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.ApiContract;
+using ZeroTeam.MessageMVC.Context;
+using ZeroTeam.MessageMVC.Messages;
+using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Sample.Controllers
 {
@@ -27,23 +28,29 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
 
         public IZeroContext Context { get; set; }
 
-        [Route("v1/json")]
-        public string Json(Argument argument)
-        {
-            return DependencyHelper.GetService<IJsonSerializeProxy>().ToString(argument);
-        }
+        //[Route("v1/json")]
+        //public string Json(Argument argument)
+        //{
+        //    return DependencyHelper.GetService<IJsonSerializeProxy>().ToString(argument);
+        //}
 
-        [Route("v1/xml")]
-        [ResultSerializeType(SerializeType.Xml)]
-        public ApiResult Xml()
-        {
-            return new ApiResult();
-        }
+        //[Route("v1/xml")]
+        //[ResultSerializeType(SerializeType.Xml)]
+        //public ApiResult Xml()
+        //{
+        //    return new ApiResult();
+        //}
 
+        /// <summary>
+        /// 异步
+        /// </summary>
+        /// <param name="argument"></param>
+        /// <returns></returns>
         [Route("v1/void"), ArgumentScope(ArgumentScope.Dictionary)]
-        public void Void(string argument)
+        public async Task<IApiResult<TestArgument>> Task(string argument)
         {
             Logger.LogInformation("Call Void");
+            return ApiResultHelper.Succees(new TestArgument());
         }
     }
 }

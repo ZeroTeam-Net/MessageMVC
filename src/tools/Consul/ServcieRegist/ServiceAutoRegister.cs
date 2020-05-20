@@ -13,13 +13,13 @@ namespace ZeroTeam.MessageMVC.Consul
     /// <summary>
     /// Consul注册流程控制
     /// </summary>
-    internal class ConsulFlow : IFlowMiddleware
+    internal class ServiceAutoRegister : IFlowMiddleware
     {
         ///<inheritdoc/>
         public int Level => MiddlewareLevel.Last;
 
         ///<inheritdoc/>
-        public string Name => nameof(ConsulFlow);
+        public string Name => nameof(ServiceAutoRegister);
 
         List<AgentServiceRegistration> services;
 
@@ -27,7 +27,7 @@ namespace ZeroTeam.MessageMVC.Consul
         ILogger logger;
         Task ILifeFlow.Initialize()
         {
-            logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(ConsulFlow));
+            logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(ServiceAutoRegister));
             return Task.CompletedTask;
         }
         async Task ILifeFlow.Open()
@@ -50,7 +50,7 @@ namespace ZeroTeam.MessageMVC.Consul
                 var reg = new AgentServiceRegistration()
                 {
                     Checks = new[] { ConsulOption.Instance.AgentServiceCheck },
-                    ID = Guid.NewGuid().ToString(),
+                    ID = $"{ConsulOption.Instance.IP}_{ConsulOption.Instance.Port}_{service.ServiceName}",
                     Name = service.ServiceName,
                     Address = ConsulOption.Instance.IP,
                     Port = ConsulOption.Instance.Port,
@@ -78,6 +78,7 @@ namespace ZeroTeam.MessageMVC.Consul
                 var res = await consulClient.Agent.ServiceDeregister(ser.ID);//服务停止时取消注册
                 logger.Information(() => $"服务[{ser.Name}]反注册到Consul：{res.StatusCode}");
             }
+            consulClient.Dispose();
         }
     }
 }

@@ -1,9 +1,6 @@
 ﻿using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using ZeroTeam.MessageMVC.ApiContract;
 using ZeroTeam.MessageMVC.Http;
 using ZeroTeam.MessageMVC.Messages;
 
@@ -38,7 +35,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             };
 
             var res = await poster.Post(message);
-            
+
             Assert.IsTrue(message.State == MessageState.NoUs, res.Result);
         }
     }

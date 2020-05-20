@@ -1,9 +1,5 @@
-﻿using Agebull.Common;
-using Agebull.Common.Ioc;
-using Agebull.Common.Logging;
-using Agebull.EntityModel.Common;
+﻿using Agebull.Common.Logging;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
@@ -21,7 +17,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         /// 构造
         /// </summary>
-        public ZeroEventReceiver() : base(nameof(ZeroEventReceiver),false)
+        public ZeroEventReceiver() : base(nameof(ZeroEventReceiver), false)
         {
         }
 
@@ -277,7 +273,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     return Task.FromResult(false);
                 Logger.Information("LoopBegin");
 
-                var pSocket = ZSocketEx.CreateSubSocket(Config.WorkerCallAddress, Config.ServiceKey, Identity,"");
+                var pSocket = ZSocketEx.CreateSubSocket(Config.WorkerCallAddress, Config.ServiceKey, Identity, "");
                 if (pSocket == null)
                 {
                     RealState = StationRealState.Failed;

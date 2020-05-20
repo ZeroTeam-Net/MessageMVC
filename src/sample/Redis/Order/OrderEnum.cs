@@ -442,7 +442,7 @@
                 case OrderStatusType.FullPayment:
                     return "全额付款";
                 case OrderStatusType.RefundApply:
-                    return "退款申请"; 
+                    return "退款申请";
                 case OrderStatusType.OrderOvertimeShutdown:
                     return "订单超时失败";
                 case OrderStatusType.ProductChangeShutown:

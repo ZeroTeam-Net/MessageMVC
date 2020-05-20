@@ -1,7 +1,6 @@
 ﻿using Agebull.Common;
 using Agebull.Common.Logging;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Services;
@@ -42,7 +41,7 @@ namespace ZeroTeam.MessageMVC.Messages
             var files = IOHelper.GetAllFiles(path, "*.msg");
             if (files.Count == 0)
             {
-                return ;
+                return;
             }
             LogRecorder.Information($"重新消费错误消息.共{files.Count}个");
             var service = new ZeroService

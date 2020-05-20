@@ -13,8 +13,8 @@
         /// <summary>
         /// 框架级别(2)
         /// </summary>
-        public const int Framework = -0xFFFFFF; 
-            
+        public const int Framework = -0xFFFFFF;
+
         /// <summary>
         /// 高级别(3)
         /// </summary>

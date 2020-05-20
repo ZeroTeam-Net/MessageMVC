@@ -50,7 +50,7 @@ namespace ZeroTeam.ZeroMQ
                 native->ReadyEvents = (short)ZPollEvent.None;
             }
         }
-        
+
         /// <summary>
         /// 准备
         /// </summary>
@@ -102,7 +102,7 @@ namespace ZeroTeam.ZeroMQ
                 return false;
             }
 
-            if (((ZPollEvent) native->ReadyEvents).HasFlag(ZPollEvent.In))
+            if (((ZPollEvent)native->ReadyEvents).HasFlag(ZPollEvent.In))
                 return Sockets[index].Recv(out message, ZSocket.FlagsDontwait);
             message = null;
             return false;

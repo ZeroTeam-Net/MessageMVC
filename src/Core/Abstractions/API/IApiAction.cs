@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.Services;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -56,7 +55,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <param name="message"></param>
         /// <param name="info"></param>
         /// <returns></returns>
-        bool ValidateArgument(IInlineMessage message,out string info);
+        bool ValidateArgument(IInlineMessage message, out string info);
 
         /// <summary>
         /// 反序列化类型

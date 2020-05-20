@@ -23,7 +23,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 日志记录器
         /// </summary>
-        ILogger Logger {set; }
+        ILogger Logger { set; }
 
         /// <summary>
         /// 关闭

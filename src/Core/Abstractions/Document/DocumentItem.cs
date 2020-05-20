@@ -32,7 +32,45 @@ namespace ZeroTeam.MessageMVC.Documents
         ///     复制
         /// </summary>
         /// <param name="document"></param>
-        public void Copy(DocumentItem document)
+        public virtual void Copy(DocumentItem document)
+        {
+            if (document == null)
+            {
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(document.Caption))
+            {
+                Caption = document.Caption;
+            }
+
+            if (!string.IsNullOrWhiteSpace(document.Description))
+            {
+                Description = document.Description;
+            }
+
+            if (!string.IsNullOrWhiteSpace(document.Seealso))
+            {
+                Seealso = document.Seealso;
+            }
+
+            if (!string.IsNullOrWhiteSpace(document.Example))
+            {
+                Example = document.Example.Trim();
+            }
+
+            if (!string.IsNullOrWhiteSpace(document.Value))
+            {
+                Value = document.Value;
+            }
+        }
+
+
+        /// <summary>
+        ///     复制
+        /// </summary>
+        /// <param name="document"></param>
+        public void Copy(XmlMember document)
         {
             if (document == null)
             {

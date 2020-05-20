@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Agebull.Common.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Agebull.Common.Logging;
 using ZeroTeam.ZeroMQ.lib;
 
 namespace ZeroTeam.ZeroMQ
@@ -364,7 +364,7 @@ namespace ZeroTeam.ZeroMQ
                 return true;
             }
             LogRecorder.Information("Terminate the ZeroTeam.ZeroMQ context.");
-            
+
             var ptr = _contextPtr;
             _contextPtr = IntPtr.Zero;
             ZSocket[] array;

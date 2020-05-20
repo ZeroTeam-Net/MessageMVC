@@ -20,7 +20,7 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <summary>
         /// 注册
         /// </summary>
-        Task IAutoRegister.AutoRegist(IServiceCollection services)
+        Task<bool> IAutoRegister.AutoRegist(IServiceCollection services)
         {
             ////启用跟踪日志
             //if (ToolsOption.Instance.EnableMonitorLog)
@@ -56,14 +56,6 @@ namespace ZeroTeam.MessageMVC.Tools
             //异常处理
             services.AddTransient<IMessageMiddleware, ExceptionMiddleware>();
 
-            return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// 初始化
-        /// </summary>
-        Task ILifeFlow.Initialize()
-        {
             //显示
             Console.WriteLine($@"-----[Tools infomation]-----
     LinkTrace : {(ToolsOption.Instance.EnableLinkTrace ? "Enable" : "Disable")}
@@ -72,8 +64,8 @@ namespace ZeroTeam.MessageMVC.Tools
    ReConsumer : {(ToolsOption.Instance.EnableMessageReConsumer ? "Enable" : "Disable")}
     MarkPoint : {(ToolsOption.Instance.EnableMarkPoint ? "Enable" : "Disable")}({ToolsOption.Instance.MarkPointName})
 ");
-            return Task.CompletedTask;
+            return Task.FromResult(false);
         }
-    }
 
+    }
 }

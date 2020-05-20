@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 
 namespace ZeroTeam.MessageMVC.Http
 {
@@ -56,7 +55,6 @@ namespace ZeroTeam.MessageMVC.Http
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls;
             ConfigurationHelper.RegistOnChange<HttpClientOption>("Http:Client", Instance.LoadOption, true);
         }
-
         void LoadOption(HttpClientOption option)
         {
             DefaultUrl = option.DefaultUrl;

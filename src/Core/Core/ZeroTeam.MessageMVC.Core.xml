@@ -39,6 +39,11 @@
             检查
             </summary>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.AddIn.AddInImporter.ZeroTeam#MessageMVC#ILifeFlow#Discover">
+            <summary>
+            发现
+            </summary>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.AddIn.AddInImporter.ZeroTeam#MessageMVC#ILifeFlow#Initialize">
             <summary>
             准备
@@ -224,24 +229,6 @@
             </summary>
             <param name="type"></param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.NUnitCode(System.String)">
-            <summary>
-            生成单元测试代码
-            </summary>
-            <param name="path"></param>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.xUnitCode(System.String)">
-            <summary>
-            生成单元测试代码
-            </summary>
-            <param name="path"></param>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.ApiSql(System.String)">
-            <summary>
-            生成单元测试代码
-            </summary>
-            <param name="path"></param>
-        </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiMethodBuilder">
             <summary>
             接口方法生成器
@@ -257,11 +244,6 @@
             调用对象类型
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiMethodBuilder.ParameterInfo">
-            <summary>
-            参数类型
-            </summary>
-        </member>
         <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiMethodBuilder.isAsync">
             <summary>
             此调用是否异步方法
@@ -274,14 +256,6 @@
             <summary>
             默认消息接收对象发现
             </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ReceiverDiscover.ZeroTeam#MessageMVC#ZeroApis#IReceiverDiscover#DiscoverNetTransport(System.Type,System.String@)">
-            <summary>
-            发现传输对象
-            </summary>
-            <param name="type">控制器类型</param>
-            <param name="name">发现的服务名称</param>
-            <returns>传输对象构造器</returns>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApis.ReceiverDiscover.DiscoverNetTransport(System.Type,System.String@)">
             <summary>
@@ -484,7 +458,7 @@
                 发现
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.Discove(System.Collections.Generic.IEnumerable{System.Reflection.Assembly})">
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.Discove(System.Reflection.Assembly[])">
             <summary>
                 发现
             </summary>
@@ -492,11 +466,6 @@
         <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.Initialize">
             <summary>
                 初始化
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.Run">
-            <summary>
-                运行
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.RunAsync">
@@ -572,6 +541,11 @@
         <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.RegistService(ZeroTeam.MessageMVC.Services.IService@)">
             <summary>
                 注册服务
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.DiscoverAll">
+            <summary>
+                发现
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.InitializeAll">

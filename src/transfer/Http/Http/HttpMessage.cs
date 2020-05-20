@@ -62,26 +62,7 @@ namespace ZeroTeam.MessageMVC.Http
             {
                 resultData = value;
                 DataState |= MessageDataState.ResultInline;
-                if (Result == null && value == null && runtimeStatus == null)
-                    DataState |= MessageDataState.ResultOffline;
-                else
-                    DataState &= ~MessageDataState.ResultOffline;
-            }
-        }
-
-        private IOperatorStatus runtimeStatus;
-
-        /// <summary>
-        /// 执行状态
-        /// </summary>
-        public IOperatorStatus RuntimeStatus
-        {
-            get => runtimeStatus;
-            set
-            {
-                runtimeStatus = value;
-                DataState |= MessageDataState.ResultInline;
-                if (Result == null && value == null && resultData == null)
+                if (Result == null && value == null)
                     DataState |= MessageDataState.ResultOffline;
                 else
                     DataState &= ~MessageDataState.ResultOffline;
@@ -197,7 +178,6 @@ namespace ZeroTeam.MessageMVC.Http
             ID = Guid.NewGuid().ToString("N").ToUpper();
             Trace = TraceInfo.New(ID);
             Trace.CallId = HttpContext.Connection.Id;
-            Trace.CallApp = "Client";
             Trace.CallMachine = $"{HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.RemotePort}";
 
             HttpMethod = request.Method.ToUpper();
@@ -218,7 +198,7 @@ namespace ZeroTeam.MessageMVC.Http
             if (MessageRouteOption.Instance.EnableAuthToken)
             {
                 var header = request.Headers["Authorization"];
-                if(header.Count > 0)
+                if (header.Count > 0)
                 {
                     var token = header[0]?.Trim().Split(new[] { ' ', '\t' }, 2, StringSplitOptions.RemoveEmptyEntries).Last();
                     if (string.IsNullOrWhiteSpace(token) ||
@@ -339,7 +319,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// <returns>值</returns>
         public object FrameGetValueArgument(string name, int scope, int serializeType, ISerializeProxy serialize, Type type)
         {
-            var val= GetScopeArgument(name, (ArgumentScope)scope);
+            var val = GetScopeArgument(name, (ArgumentScope)scope);
 
             if (val == null && type != typeof(string))
             {
@@ -410,7 +390,7 @@ namespace ZeroTeam.MessageMVC.Http
             if (resultSerializer != null)
                 ResultSerializer = resultSerializer;
             if (errResultCreater != null)
-                ResultCreater = errResultCreater;
+                ResultCreater = errResultCreater;//BUG
 
             try
             {

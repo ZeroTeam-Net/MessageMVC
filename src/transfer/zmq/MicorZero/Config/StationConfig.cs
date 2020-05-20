@@ -1,7 +1,5 @@
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 using ZeroTeam.MessageMVC.Documents;
 
 namespace ZeroTeam.ZeroMQ.ZeroRPC
@@ -42,14 +40,14 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         ///     是否基础站点
         /// </summary>
-        
+
         [JsonProperty("is_base")]
         public bool IsBaseStation { get; set; }
 
         /// <summary>
         ///     站点类型
         /// </summary>
-        
+
         [JsonProperty("station_type")]
         public ZeroStationType StationType { get; set; }
 
@@ -97,83 +95,83 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         ///     站点简称
         /// </summary>
-        
+
         [JsonProperty("short_name")]
         public string ShortName { get; set; }
 
         /// <summary>
         ///     站点别名
         /// </summary>
-        
+
         [JsonProperty("station_alias")]
         public List<string> StationAlias { get; set; }
 
         /// <summary>
         ///     站点类型
         /// </summary>
-        
+
         [JsonProperty("type")] public string Type => StationType.ToString();
 
         /// <summary>
         ///     入站端口
         /// </summary>
-        
+
         [JsonProperty("request_port")]
         public int RequestPort { get; set; }
 
         /// <summary>
         /// 地址
         /// </summary>
-        
+
         [JsonProperty("address")]
         public string Address { get; set; }
 
         /// <summary>
         ///     入站地址
         /// </summary>
-        
+
         [JsonProperty]
         public string RequestAddress => $"tcp://{Address}:{RequestPort}";
 
         /// <summary>
         ///     入站端口
         /// </summary>
-        
+
         [JsonProperty("worker_out_port")]
         public int WorkerCallPort { get; set; }
 
         /// <summary>
         ///     入站端口
         /// </summary>
-        
+
         [JsonProperty("worker_in_port")]
         public int WorkerResultPort { get; set; }
 
         /// <summary>
         ///     出站地址
         /// </summary>
-        
+
         [JsonProperty]
         public string WorkerResultAddress => $"tcp://{Address}:{WorkerResultPort}";
 
         /// <summary>
         ///     出站地址
         /// </summary>
-        
+
         [JsonProperty]
         public string WorkerCallAddress => $"tcp://{Address}:{WorkerCallPort}";
 
         /// <summary>
         ///     出站地址
         /// </summary>
-        
+
         [JsonProperty]
         public string SubAddress => $"tcp://{Address}:{WorkerCallPort}";
 
         /// <summary>
         ///     运行状态
         /// </summary>
-        
+
         [JsonProperty("station_state")]
         public ZeroCenterState State
         {

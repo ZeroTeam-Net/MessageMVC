@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using ZeroTeam.MessageMVC;
 
 namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
 {
@@ -56,7 +55,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
                     ZeroRpcFlow.Config.Master.MonitorAddress,
                     ZeroRpcFlow.Config.Master.ServiceKey.ToBytes(),
                     ZSocketHelper.CreateIdentity(false, "Monitor"), subs);
-                if(socket == null)
+                if (socket == null)
                 {
                     success = false;
                     continue;

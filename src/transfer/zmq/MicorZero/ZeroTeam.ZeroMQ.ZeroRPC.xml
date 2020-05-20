@@ -637,6 +637,38 @@
             当前所有等待队列
             </summary>
         </member>
+        <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcAttribute">
+            <summary>
+                表示ZeroRpc服务
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcAttribute.#ctor(System.String)">
+            <summary>
+            构造
+            </summary>
+            <param name="name"></param>
+        </member>
+        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcAttribute.ServiceName">
+            <summary>
+            消息节点
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroEventAttribute">
+            <summary>
+                表示ZeroRpc事件
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroEventAttribute.#ctor(System.String)">
+            <summary>
+            构造
+            </summary>
+            <param name="name"></param>
+        </member>
+        <member name="P:ZeroTeam.ZeroMQ.ZeroRPC.ZeroEventAttribute.ServiceName">
+            <summary>
+            消息节点
+            </summary>
+        </member>
         <member name="T:ZeroTeam.ZeroMQ.ZeroRPC.ZeroEventReceiver">
             <summary>
              ZeroMQ实现的RPC

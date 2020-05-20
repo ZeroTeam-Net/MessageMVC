@@ -1,5 +1,4 @@
 ﻿using ZeroTeam.MessageMVC.Context;
-using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Messages
 {
@@ -12,7 +11,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 标识
         /// </summary>
-        string ID { get;}
+        string ID { get; }
 
         /// <summary>
         /// 处理结果,对应状态的解释信息

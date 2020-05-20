@@ -58,11 +58,6 @@
             处理成功 : 结果信息或无
             </remarks>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.RuntimeStatus">
-            <summary>
-            执行状态
-            </summary>
-        </member>
         <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.ResultSerializer">
             <summary>
                 返回值序列化对象
@@ -390,6 +385,22 @@
         <member name="F:ZeroTeam.MessageMVC.Http.MessageRouteOption.Instance">
             <summary>
             选项
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Http.HttpAttribute">
+            <summary>
+                表示Http服务
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpAttribute.#ctor(System.String)">
+            <summary>
+            构造
+            </summary>
+            <param name="name"></param>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpAttribute.ServiceName">
+            <summary>
+            消息节点
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Http.HttpPoster">

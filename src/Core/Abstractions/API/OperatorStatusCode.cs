@@ -13,7 +13,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         public const int Queue = 1;
 
         /// <summary>
-        ///     正确
+        ///     成功
         /// </summary>
         public const int Success = 0;
 
@@ -53,7 +53,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         public const int DenyAccess = -7;
 
         /// <summary>
-        ///     未知的Token
+        ///     未知的令牌
         /// </summary>
         public const int TokenUnknow = -8;
 

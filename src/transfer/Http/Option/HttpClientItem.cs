@@ -24,7 +24,7 @@
         /// 内容类型
         /// </summary>
         public string ContentType { get; set; }
-        
+
         /// <summary>
         /// 超时时间（秒）
         /// </summary>

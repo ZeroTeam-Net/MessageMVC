@@ -1,4 +1,3 @@
-using Agebull.Common.Configuration;
 using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -113,14 +111,14 @@ namespace ZeroTeam.MessageMVC
 ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
             OS : {(ZeroAppOption.Instance.IsLinux ? "Linux" : "Windows")}
           Host : {ZeroAppOption.Instance.LocalIpAddress}
-         AddIn : {(ZeroAppOption.Instance.EnableAddIn ? "Enable" : "Disable")}({ZeroAppOption.Instance.AddInPath})
+     AddInPath : {ZeroAppOption.Instance.AddInPath}
      TraceName : {ZeroAppOption.Instance.TraceName}
     ThreadPool : {ZeroAppOption.Instance.MaxWorkThreads:N0}worker|{ ZeroAppOption.Instance.MaxIOThreads:N0}threads
       RootPath : {ZeroAppOption.Instance.RootPath}
      DataFolder : {ZeroAppOption.Instance.DataFolder}
  ConfigFolder : {ZeroAppOption.Instance.ConfigFolder}
 ");
-        }
+        }//(ZeroAppOption.Instance.EnableAddIn ? "Enable" : "Disable")}(
 
         #endregion
 
@@ -129,7 +127,7 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
         /// <summary>
         ///     发现
         /// </summary>
-        public static void Discove(Assembly assembly)=> ApiDiscover.FindApies(assembly);
+        public static void Discove(Assembly assembly) => ApiDiscover.FindApies(assembly);
 
         /// <summary>
         ///     发现
@@ -139,7 +137,7 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
         /// <summary>
         ///     发现
         /// </summary>
-        public static void Discove(IEnumerable<Assembly> assemblies) => ApiDiscover.FindApies(assemblies);
+        public static void Discove(params Assembly[] assemblies) => ApiDiscover.FindApies(assemblies);
 
         #endregion
 
@@ -148,11 +146,13 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
         /// <summary>
         ///     初始化
         /// </summary>
-        public static void Initialize()
+        public static async Task Initialize()
         {
             if (ApplicationState >= StationState.Initialized)
                 return;
             ApplicationState = StationState.Initialized;
+            DependencyHelper.Update();
+            await DiscoverAll();
             DependencyHelper.Update();
             Middlewares = DependencyHelper.RootProvider.GetServices<IFlowMiddleware>().OrderBy(p => p.Level).ToArray();
             var servcies = DependencyHelper.RootProvider.GetServices<IService>();
@@ -163,23 +163,13 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
                     Services.TryAdd(service.ServiceName, service);
                 }
             }
-            InitializeAll();
+            await InitializeAll();
             DependencyHelper.Update();
         }
 
         #endregion
 
         #region Run
-
-        /// <summary>
-        ///     运行
-        /// </summary>
-        public static bool Run()
-        {
-            var task = OpenAll();
-            task.Wait();
-            return task.Result;
-        }
 
         /// <summary>
         ///     运行
@@ -449,9 +439,30 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
         }
 
         /// <summary>
+        ///     发现
+        /// </summary>
+        static async Task DiscoverAll()
+        {
+            logger.Information("【发现】开始");
+            foreach (var mid in Middlewares)
+            {
+                try
+                {
+                    logger.Information("[发现] {0}", mid.Name);
+                    await mid.Discover();
+                }
+                catch (Exception e)
+                {
+                    logger.Exception(e, "[发现] {0}", mid.Name);
+                }
+            }
+            logger.Information("【发现】完成");
+        }
+
+        /// <summary>
         ///     初始化
         /// </summary>
-        static void InitializeAll()
+        static async Task InitializeAll()
         {
             logger.Information("【初始化】开始");
             foreach (var mid in Middlewares)
@@ -459,7 +470,7 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
                 try
                 {
                     logger.Information("[初始化流程] {0}", mid.Name);
-                    mid.Initialize();
+                    await mid.Initialize();
                 }
                 catch (Exception e)
                 {
@@ -472,7 +483,7 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
                 try
                 {
                     logger.Information("[初始化服务] {0}", service.ServiceName);
-                    service.Initialize();
+                    await service.Initialize();
                 }
                 catch (Exception e)
                 {

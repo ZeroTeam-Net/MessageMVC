@@ -16,11 +16,6 @@
         Array,
 
         /// <summary>
-        ///     字典
-        /// </summary>
-        Dictionary,
-
-        /// <summary>
         ///     对象
         /// </summary>
         Object

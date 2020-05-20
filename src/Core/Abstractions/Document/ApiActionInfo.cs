@@ -11,11 +11,6 @@ namespace ZeroTeam.MessageMVC.Documents
     [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class ApiActionInfo : ApiDocument
     {
-        /// <summary>
-        ///     参数类型
-        /// </summary>
-        public Type ArgumentType;
-
         /// <summary>是否有调用参数</summary>
         public Type ResultType;
 

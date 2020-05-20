@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
-using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,7 +29,7 @@ namespace ZeroTeam.MessageMVC
             {
                 DependencyHelper.SetServiceCollection(services);
             }
-
+            
             //IZeroContext构造
             services.TryAddScoped<IZeroContext, ZeroContext>();
             services.TryAddTransient<IUser, UserInfo>();
@@ -45,14 +44,11 @@ namespace ZeroTeam.MessageMVC
             services.AddTransient<IFlowMiddleware, MessagePoster>();
             //API路由与执行
             services.AddTransient<IMessageMiddleware, ApiExecuter>();
-            //消息接收服务自动发现
-            services.AddTransient<IReceiverDiscover, ReceiverDiscover>();
             //插件载入
-            if (ZeroAppOption.Instance.EnableAddIn)
+            //if (ZeroAppOption.Instance.EnableAddIn)
             {
                 services.AddSingleton<IFlowMiddleware>(AddInImporter.Instance);
             }
-
             services.TryAddSingleton<IInlineMessage, InlineMessage>();
 
         }
@@ -73,7 +69,7 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         /// <param name="services">依赖服务</param>
         /// <param name="autoDiscover">对接口自动发现</param>
-        public static async void UseFlow(this IServiceCollection services, bool autoDiscover = true)
+        public static async Task UseFlow(this IServiceCollection services, bool autoDiscover = true)
         {
             if (Interlocked.Increment(ref isInitialized) == 1)
             {
@@ -81,9 +77,9 @@ namespace ZeroTeam.MessageMVC
                 ZeroFlowControl.Check();
                 if (autoDiscover)
                     ZeroFlowControl.Discove();
+                await ZeroFlowControl.Initialize();
+                await ZeroFlowControl.RunAsync();
             }
-            ZeroFlowControl.Initialize();
-            await ZeroFlowControl.RunAsync();
         }
 
         /// <summary>
@@ -91,9 +87,9 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         /// <param name="services"></param>
         /// <param name="type">需要发现服务的程序集的类型之一</param>
-        public static void UseFlow(this IServiceCollection services, Type type)
+        public static Task UseFlow(this IServiceCollection services, Type type)
         {
-            UseFlow(services, type.Assembly);
+            return UseFlow(services, type.Assembly);
         }
 
         /// <summary>
@@ -101,16 +97,16 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         /// <param name="services"></param>
         /// <param name="assembly">需要发现服务的程序集</param>
-        public static async void UseFlow(this IServiceCollection services, Assembly assembly)
+        public static async Task UseFlow(this IServiceCollection services, Assembly assembly)
         {
             if (Interlocked.Increment(ref isInitialized) == 1)
             {
                 AddDependency(services);
                 ZeroFlowControl.Check();
                 ZeroFlowControl.Discove(assembly);
+                await ZeroFlowControl.Initialize();
+                await ZeroFlowControl.RunAsync();
             }
-            ZeroFlowControl.Initialize();
-            await ZeroFlowControl.RunAsync();
         }
 
         /// <summary>
@@ -118,7 +114,7 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         /// <param name="services"></param>
         /// <param name="assembly">需要发现服务的程序集</param>
-        public static void UseTest(this IServiceCollection services, Assembly assembly = null)
+        public static async Task UseTest(this IServiceCollection services, Assembly assembly = null)
         {
             if (Interlocked.Increment(ref isInitialized) == 1)
             {
@@ -129,9 +125,9 @@ namespace ZeroTeam.MessageMVC
                 ZeroFlowControl.Check();
                 if (assembly != null)
                     ZeroFlowControl.Discove(assembly);
+                await ZeroFlowControl.Initialize();
+                await ZeroFlowControl.RunAsync();
             }
-            ZeroFlowControl.Initialize();
-            ZeroFlowControl.Run();
         }
 
         /// <summary>
@@ -147,10 +143,10 @@ namespace ZeroTeam.MessageMVC
                 ZeroFlowControl.Check();
                 if (autoDiscover)
                     ZeroFlowControl.Discove();
+                await ZeroFlowControl.Initialize();
+                await ZeroFlowControl.RunAsync();
+                await ZeroFlowControl.WaitEnd();
             }
-            ZeroFlowControl.Initialize();
-            await ZeroFlowControl.RunAsync();
-            await ZeroFlowControl.WaitEnd();
         }
 
         /// <summary>
@@ -175,10 +171,10 @@ namespace ZeroTeam.MessageMVC
                 AddDependency(services);
                 ZeroFlowControl.Check();
                 ZeroFlowControl.Discove(assembly);
+                await ZeroFlowControl.Initialize();
+                await ZeroFlowControl.RunAsync();
+                await ZeroFlowControl.WaitEnd();
             }
-            ZeroFlowControl.Initialize();
-            await ZeroFlowControl.RunAsync();
-            await ZeroFlowControl.WaitEnd();
         }
     }
 }

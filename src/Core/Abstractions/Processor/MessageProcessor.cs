@@ -3,6 +3,7 @@ using Agebull.Common.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Services;
@@ -73,6 +74,11 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         private int index = 0;
 
+        /// <summary>
+        /// 活动实例
+        /// </summary>
+        public static readonly AsyncLocal<ScopeData> Local = new AsyncLocal<ScopeData>();
+
         private async Task Process()
         {
             await Task.Yield();
@@ -82,12 +88,6 @@ namespace ZeroTeam.MessageMVC.Messages
                 {
                     middlewares = DependencyHelper.ServiceProvider.GetServices<IMessageMiddleware>().OrderBy(p => p.Level).ToArray();
 
-                    Message.Reset();
-                    if (IsOffline)
-                    {
-                        Message.DataState = MessageDataState.ArgumentOffline;
-                    }
-                    await Message.PrepareInline();
                     //BUG:Prepare处理需要检查
                     if (await Prepare() && Message.State <= MessageState.Processing)
                     {
@@ -111,29 +111,53 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <returns>是否需要正式处理</returns>
         private async Task<bool> Prepare()
         {
-            var array = middlewares.Where(p => p.Scope.HasFlag(MessageHandleScope.Prepare)).ToArray();
-            foreach (var middleware in array)
+            LogRecorder.BeginStepMonitor("[MessageProcessor.Prepare]");
+
+            LogRecorder.BeginStepMonitor("[Message.Prepare]");
+            Message.Reset();
+            if (IsOffline)
             {
-                try
+                Message.DataState = MessageDataState.ArgumentOffline;
+            }
+            await Message.PrepareInline();
+            LogRecorder.EndStepMonitor();
+
+            try
+            {
+                var array = middlewares.Where(p => p.Scope.HasFlag(MessageHandleScope.Prepare)).ToArray();
+                foreach (var middleware in array)
                 {
-                    LogRecorder.MonitorDetails(() => $"[MessageProcessor.Prepare>{middleware.GetTypeName()}.Prepare]");
-                    if (!await middleware.Prepare(Service, Message, Original))
+                    LogRecorder.BeginStepMonitor(middleware.GetTypeName());
+
+                    try
+                    {
+                        LogRecorder.MonitorDetails(() => $"[MessageProcessor.Prepare>{middleware.GetTypeName()}.Prepare]");
+                        if (!await middleware.Prepare(Service, Message, Original))
+                            return false;
+                    }
+                    catch (Exception ex)
+                    {
+                        LogRecorder.MonitorInfomation(() => $"[MessageProcessor.Prepare>{middleware.GetTypeName()}.Prepare]  发生异常.{ ex.Message}.");
+                        LogRecorder.Exception(ex);
+                        Message.RealState = MessageState.FrameworkError;
                         return false;
+                    }
+                    finally
+                    {
+                        LogRecorder.EndStepMonitor();
+                    }
                 }
-                catch (Exception ex)
+                if (GlobalContext.CurrentNoLazy == null)
                 {
-                    LogRecorder.MonitorInfomation(() => $"[MessageProcessor.Prepare>{middleware.GetTypeName()}.Prepare]  发生异常.{ ex.Message}.");
-                    LogRecorder.Exception(ex);
-                    Message.RealState = MessageState.FrameworkError;
-                    return false;
+                    GlobalContext.Current.Message = Message;
+                    GlobalContext.Current.Trace = Message.Trace;
                 }
+                return true;
             }
-            if (GlobalContext.CurrentNoLazy == null)
+            finally
             {
-                GlobalContext.Current.Message = Message;
-                GlobalContext.Current.Trace = Message.Trace;
+                LogRecorder.EndStepMonitor();
             }
-            return true;
         }
 
         /// <summary>
@@ -151,7 +175,10 @@ namespace ZeroTeam.MessageMVC.Messages
             {
                 await OnMessageError(ex);
             }
-            LogRecorder.EndStepMonitor();
+            finally
+            {
+                LogRecorder.EndStepMonitor();
+            }
         }
 
         /// <summary>
@@ -167,8 +194,9 @@ namespace ZeroTeam.MessageMVC.Messages
                 {
                     continue;
                 }
-                LogRecorder.MonitorDetails(() => $"[{next.GetTypeName()}.Handle]");
+                LogRecorder.BeginStepMonitor(next.GetTypeName());
                 await next.Handle(Service, Message, Original, Handle);
+                LogRecorder.EndStepMonitor();
                 return;
             }
         }
@@ -182,32 +210,31 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         private async Task Write()
         {
+            LogRecorder.BeginStepMonitor("[MessageProcessor.Write]");
             Message.Trace ??= GlobalContext.CurrentNoLazy?.Trace;
             if (Message.Trace != null)
                 Message.Trace.End = DateTime.Now;
-
-            if (Original is TaskCompletionSource<IMessageResult> task)//内部自调用,无需处理
+            try
             {
-                try
+                if (Original is TaskCompletionSource<IMessageResult> task)//内部自调用,无需处理
                 {
                     LogRecorder.MonitorDetails(() => $"[MessageProcessor.Write] 内部调用,直接返回Task");
                     task.TrySetResult(null);//本地直接使用消息
                 }
-                catch
+                else
                 {
-                    LogRecorder.MonitorInfomation(() => $"[MessageProcessor.Write] 内部调用,直接返回Task时,原始调用Task已析构.");
+                    LogRecorder.MonitorDetails(() => $"[MessageProcessor.Write>{Service.Receiver.GetTypeName()}.OnResult] 写入返回值");
+                    await Service.Receiver.OnResult(Message, Original);
                 }
-                return;
-            }
-            try
-            {
-                LogRecorder.MonitorDetails(() => $"[MessageProcessor.Write>{Service.Receiver.GetTypeName()}.OnResult] 写入返回值");
-                await Service.Receiver.OnResult(Message, Original);
             }
             catch (Exception ex)
             {
                 LogRecorder.MonitorInfomation(() => $"[MessageProcessor.Write>{Service.Receiver.GetTypeName()}.OnResult] 发生异常.{ ex.Message}.");
                 LogRecorder.Exception(ex);
+            }
+            finally
+            {
+                LogRecorder.EndStepMonitor();
             }
         }
 
@@ -260,19 +287,23 @@ namespace ZeroTeam.MessageMVC.Messages
             var array = middlewares.Where(p => p.Scope.HasFlag(MessageHandleScope.End)).ToArray();
             if (array.Length == 0)
                 return;
-            LogRecorder.BeginStepMonitor("[MessageProcessor.Last]");
+            LogRecorder.BeginStepMonitor("[MessageProcessor.OnEnd]");
             Message.Offline(null);
             foreach (var middleware in array.OrderByDescending(p => p.Level))
             {
                 try
                 {
-                    LogRecorder.MonitorDetails(() => $"[{middleware.GetTypeName()}.OnEnd]");
+                    LogRecorder.BeginStepMonitor($"[{middleware.GetTypeName()}.OnEnd]");
                     await middleware.OnEnd(Message);
                 }
                 catch (Exception ex)
                 {
                     LogRecorder.MonitorInfomation(() => $"[{middleware.GetTypeName()}.OnEnd] 发生异常.{ ex.Message}.");
                     LogRecorder.Exception(ex);
+                }
+                finally
+                {
+                    LogRecorder.EndStepMonitor();
                 }
             }
             LogRecorder.EndStepMonitor();

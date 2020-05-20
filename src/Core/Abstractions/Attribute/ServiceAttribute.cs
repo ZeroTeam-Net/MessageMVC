@@ -1,11 +1,13 @@
-﻿using System;
+﻿using Agebull.Common.Ioc;
+using System;
+using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
     /// <summary>
     /// 表明是一个服务控制器
     /// </summary>
-    public class ServiceAttribute : Attribute
+    public class ServiceAttribute : Attribute, IReceiverGet
     {
         /// <summary>
         /// 构造
@@ -13,11 +15,17 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <param name="name"></param>
         public ServiceAttribute(string name)
         {
-            Name = name;
+            ServiceName = name;
         }
+
         /// <summary>
-        /// 配置
+        /// 消息节点
         /// </summary>
-        public string Name { get; }
+        public string ServiceName { get; }
+
+        IMessageReceiver IReceiverGet.Receiver(string service)
+        {
+            return DependencyHelper.GetService<IServiceReceiver>();
+        }
     }
 }
