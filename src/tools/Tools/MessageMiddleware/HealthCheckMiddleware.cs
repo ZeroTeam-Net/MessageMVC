@@ -114,7 +114,7 @@ namespace ZeroTeam.MessageMVC.Tools
 
             Interlocked.Increment(ref col.Count);
             var time = (message.Trace.Start.Value - message.Trace.End.Value).TotalMilliseconds;
-            int level = 0;
+            int level;
             if (time < 100)
                 level = 5;
             else if (time < 500)
@@ -151,7 +151,7 @@ namespace ZeroTeam.MessageMVC.Tools
                 if (level < 3)
                 {
                     var name = $"{message.ServiceName}/{message.ApiName}";
-                    if (!item.Apis.TryGetValue(name, out var cnt))
+                    if (item.Apis.ContainsKey(name))
                         item.Apis[name] += 1;
                     else
                         item.Apis.Add(name, 1);

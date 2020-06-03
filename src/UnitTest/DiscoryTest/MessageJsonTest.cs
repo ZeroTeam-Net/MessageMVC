@@ -112,7 +112,8 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             message.PrepareInline();
             Assert.IsTrue(message.DataState == (MessageDataState.ArgumentOffline | MessageDataState.ResultOffline), message.DataState.ToString());
 
-            message.ArgumentInline(typeof(Argument), null, ApiResultHelper.State);
+            message.PrepareResult(null, ApiResultHelper.State);
+            message.RestoryContent(DependencyHelper.GetService<IJsonSerializeProxy>(), typeof(Argument));;
             Assert.IsTrue(message.ArgumentData is Argument, message.ArgumentData.GetTypeName());
             Assert.IsTrue(message.DataState == (MessageDataState.ArgumentOffline | MessageDataState.ResultOffline | MessageDataState.ArgumentInline),
                 message.DataState.ToString());
@@ -138,7 +139,8 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
                 Result = @"{""Value"": ""Result""}"
             };
             message.Reset();
-            message.ArgumentInline(typeof(Argument), null, ApiResultHelper.State);
+            message.PrepareResult(null, ApiResultHelper.State);
+            message.RestoryContent(DependencyHelper.GetService<IJsonSerializeProxy>(), typeof(Argument)); ;
             message.ResultData = new Argument<int>
             {
                 Value = 1
@@ -167,7 +169,8 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
                 Result = @"{""Value"": ""Result""}"
             };
             message.Reset();
-            message.ArgumentInline(typeof(Argument), null, ApiResultHelper.State);
+            message.PrepareResult(null, ApiResultHelper.State);
+            message.RestoryContent(DependencyHelper.GetService<IJsonSerializeProxy>(), typeof(Argument)); ;
             message.State = MessageState.Failed;
             message.OfflineResult();
             Assert.IsTrue(message.Result != null, message.Result);
@@ -238,7 +241,8 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             message.PrepareInline();
             Assert.IsTrue(message.DataState == (MessageDataState.ArgumentOffline | MessageDataState.ResultOffline), message.DataState.ToString());
 
-            message.ArgumentInline(typeof(Argument), null, ApiResultHelper.State);
+            message.PrepareResult(null, ApiResultHelper.State);
+            message.RestoryContent(DependencyHelper.GetService<IJsonSerializeProxy>(), typeof(Argument)); ;
             Assert.IsTrue(message.ArgumentData is Argument, message.ArgumentData.GetTypeName());
             Assert.IsTrue(message.DataState == (MessageDataState.ArgumentOffline | MessageDataState.ResultOffline | MessageDataState.ArgumentInline),
                 message.DataState.ToString());
@@ -256,7 +260,8 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             message.Reset();
             Assert.IsTrue(message.DataState == MessageDataState.ArgumentOffline, message.DataState.ToString());
             Assert.IsTrue(message.Result == null, message.Result);
-            message.ArgumentInline(typeof(Argument), null, ApiResultHelper.State);
+            message.PrepareResult(null, ApiResultHelper.State);
+            message.RestoryContent(DependencyHelper.GetService<IJsonSerializeProxy>(), typeof(Argument)); ;
             Assert.IsTrue(message.DataState == (MessageDataState.ArgumentOffline | MessageDataState.ArgumentInline), message.DataState.ToString());
 
             message.ResultData = new Argument<int>

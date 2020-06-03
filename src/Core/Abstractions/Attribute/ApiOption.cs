@@ -36,6 +36,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         ///     参数仅为定义,内部进行通过字典读取
         /// </summary>
-        DictionaryArgument = 0x20
+        DictionaryArgument = 0x20,
+
+        /// <summary>
+        ///     内容自定义解析
+        /// </summary>
+        CustomContent = 0x40
     }
 }

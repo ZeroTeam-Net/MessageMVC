@@ -10,9 +10,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     public interface IApiAction
     {
         /// <summary>
-        ///     访问控制
+        ///     API配置
         /// </summary>
-        ApiOption Access { get; set; }
+        ApiOption Option { get; set; }
 
         /// <summary>
         ///     Api名称
@@ -39,6 +39,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ///     参数反序列化对象
         /// </summary>
         ISerializeProxy ArgumentSerializer { get; set; }
+
         /// <summary>
         /// 反序列化类型
         /// </summary>

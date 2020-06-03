@@ -26,6 +26,11 @@ namespace ZeroTeam.MessageMVC.Messages
         }
 
         /// <summary>
+        /// 是否可用
+        /// </summary>
+        bool IMessagePoster.CanDo => LocalCall;
+
+        /// <summary>
         /// 名称
         /// </summary>
         public string Name { get; }
@@ -76,7 +81,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <returns></returns>
         async Task<IMessageResult> IMessagePoster.Post(IInlineMessage message)
         {
-            LogRecorder.MonitorDetails($"[{GetType().GetTypeName()}.Post] 进入本地隧道处理模式");
+            LogRecorder.MonitorDetails(() => $"[{GetType().GetTypeName()}.Post] 进入本地隧道处理模式");
             //如此做法,避免上下文混乱
             var task = new TaskCompletionSource<IMessageResult>();
             _ = MessageProcessor.OnMessagePush(Service, message, message.Content != null, task);

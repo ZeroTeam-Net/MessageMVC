@@ -10,6 +10,11 @@ namespace ZeroTeam.MessageMVC.Messages
     public class MessagePostBase
     {
         /// <summary>
+        /// 是否可用(框架使用)
+        /// </summary>
+        public bool CanDo => true;
+
+        /// <summary>
         /// 日志器
         /// </summary>
         protected ILogger Logger { get; private set; }

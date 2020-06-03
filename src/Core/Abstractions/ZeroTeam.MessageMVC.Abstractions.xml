@@ -200,9 +200,9 @@
                 Api方法
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IApiAction.Access">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IApiAction.Option">
             <summary>
-                访问控制
+                API配置
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.IApiAction.RouteName">
@@ -675,6 +675,11 @@
         <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiOption.DictionaryArgument">
             <summary>
                 参数仅为定义,内部进行通过字典读取
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiOption.CustomContent">
+            <summary>
+                内容自定义解析
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiOptionAttribute">
@@ -2054,14 +2059,19 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.ArgumentInline(System.Type,ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Func{System.Int32,System.String,System.Object})">
+        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.PrepareResult(ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Func{System.Int32,System.String,System.Object})">
             <summary>
             数据设置为上线状态
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.ArgumentInline(ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Type,ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Func{System.Int32,System.String,System.Object})">
+        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.RestoryContentToDictionary(ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Boolean)">
             <summary>
-            数据设置为上线状态
+            还原内容为字典
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.RestoryContent(ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Type)">
+            <summary>
+            还原内容参数
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.GetArgument(System.Int32,System.Int32,ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Type)">
@@ -2147,6 +2157,11 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.Clone">
+            <summary>
+            复制
+            </summary>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.CopyResult(ZeroTeam.MessageMVC.Messages.IMessageResult)">
             <summary>
             复制返回值
@@ -2171,6 +2186,12 @@
             <summary>
             接口参数,即Content
             </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.TraceInfo">
+            <summary>
+            跟踪消息
+            </summary>
+            <returns></returns>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Messages.IMessageItem">
             <summary>
@@ -2643,6 +2664,11 @@
             消息投递对象
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.IMessagePoster.CanDo">
+            <summary>
+            是否可用
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.IMessagePoster.State">
             <summary>
             运行状态
@@ -2738,6 +2764,11 @@
             消息投递器基类
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.MessagePostBase.CanDo">
+            <summary>
+            是否可用(框架使用)
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.MessagePostBase.Logger">
             <summary>
             日志器
@@ -2791,6 +2822,11 @@
             </summary>
             <param name="name"></param>
             <param name="localCall"></param>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.ZeroTeam#MessageMVC#Messages#IMessagePoster#CanDo">
+            <summary>
+            是否可用
+            </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.Name">
             <summary>
@@ -3498,6 +3534,11 @@
         <member name="M:ZeroTeam.MessageMVC.MessagePoster.ZeroTeam#MessageMVC#ILifeFlow#Initialize">
             <summary>
                 初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.MessagePoster.UnRegistPoster(System.String)">
+            <summary>
+                手动注销
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.MessagePoster.RegistPoster``1(System.String[])">

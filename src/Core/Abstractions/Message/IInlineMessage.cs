@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -126,40 +127,52 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 数据设置为上线状态
         /// </summary>
-        Task ArgumentInline(Type argumentType, ISerializeProxy resultSerializer, Func<int, string, object> errResultCreater)
-        {
-            return ArgumentInline(null, argumentType, resultSerializer, errResultCreater);
-        }
-
-        /// <summary>
-        /// 数据设置为上线状态
-        /// </summary>
-        Task ArgumentInline(ISerializeProxy argSerializer, Type argumentType, ISerializeProxy resultSerializer, Func<int, string, object> errResultCreater)
+        void PrepareResult(ISerializeProxy resultSerializer, Func<int, string, object> errResultCreater)
         {
             if (resultSerializer != null)
                 ResultSerializer = resultSerializer;
             if (errResultCreater != null)
                 ResultCreater = errResultCreater;
+        }
 
-            if (!DataState.AnyFlags(MessageDataState.ArgumentInline))
+        /// <summary>
+        /// 还原内容为字典
+        /// </summary>
+        void RestoryContentToDictionary(ISerializeProxy serializer, bool merge)
+        {
+            var dict2 = Dictionary;
+            if (serializer != null)
             {
-                if (argSerializer != null)
-                {
-                    if (argumentType == null || argumentType.IsBaseType())
-                        Dictionary = argSerializer.ToObject<Dictionary<string, string>>(Content);
-                    else
-                        ArgumentData = argSerializer.ToObject(Content, argumentType);
-                }
-                else
-                {
-                    if (argumentType == null || argumentType.IsBaseType())
-                        Dictionary = SmartSerializer.ToObject<Dictionary<string, string>>(Content);
-                    else
-                        ArgumentData = SmartSerializer.ToObject(Content, argumentType);
-                }
-                DataState |= MessageDataState.ArgumentInline | MessageDataState.ArgumentOffline;
+                Dictionary = serializer.ToObject<Dictionary<string, string>>(Content);
             }
-            return Task.CompletedTask;
+            else
+            {
+                Dictionary = SmartSerializer.ToObject<Dictionary<string, string>>(Content);
+            }
+            if (dict2 != null && merge)
+            {
+                foreach (var kv in dict2)
+                {
+                    Dictionary.TryAdd(kv.Key, kv.Value);
+                }
+            }
+            DataState |= MessageDataState.ArgumentInline | MessageDataState.ArgumentOffline;
+        }
+
+        /// <summary>
+        /// 还原内容参数
+        /// </summary>
+        void RestoryContent(ISerializeProxy serializer, Type argumentType)
+        {
+            if (serializer != null)
+            {
+                ArgumentData = serializer.ToObject(Content, argumentType);
+            }
+            else
+            {
+                ArgumentData = SmartSerializer.ToObject(Content, argumentType);
+            }
+            DataState |= MessageDataState.ArgumentInline | MessageDataState.ArgumentOffline;
         }
 
         /// <summary>
@@ -363,6 +376,28 @@ namespace ZeroTeam.MessageMVC.Messages
         }
 
         /// <summary>
+        /// 复制
+        /// </summary>
+        IInlineMessage Clone()
+        {
+            return new InlineMessage
+            {
+                Title = Title,
+                Topic = Topic,
+                Argument = Argument,
+                ArgumentData = ArgumentData,
+                Content = Content,
+                Dictionary = Dictionary,
+                ID = ID,
+                Result = Result,
+                ResultData = ResultData,
+                DataState = DataState,
+                State = State,
+                Trace = Trace
+            };
+        }
+
+        /// <summary>
         /// 复制返回值
         /// </summary>
         void CopyResult(IMessageResult message)
@@ -415,6 +450,18 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 接口参数,即Content
         /// </summary>
         string Argument => Content;
+
+        #endregion
+
+        #region 快捷方法
+        /// <summary>
+        /// 跟踪消息
+        /// </summary>
+        /// <returns></returns>
+        string TraceInfo()
+        {
+            return JsonConvert.SerializeObject(this, Formatting.Indented);
+        }
 
         #endregion
     }

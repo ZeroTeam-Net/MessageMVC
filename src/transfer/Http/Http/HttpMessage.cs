@@ -1,11 +1,13 @@
 using Agebull.Common.Logging;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
@@ -160,7 +162,7 @@ namespace ZeroTeam.MessageMVC.Http
 
         #endregion
 
-        #region 参数解析
+        #region 请求解析
 
         /// <summary>
         ///     调用检查
@@ -184,6 +186,7 @@ namespace ZeroTeam.MessageMVC.Http
             CheckHeaders(request);
             //Trace.TraceId = $"{Trace.Token ?? HttpContext.Connection.Id}:{RandomCode.Generate(6)}";
             DataState = MessageDataState.None;
+
             return true;
         }
 
@@ -297,13 +300,9 @@ namespace ZeroTeam.MessageMVC.Http
             }
             if (!string.IsNullOrEmpty(HttpContent))
                 return HttpContent;
-            if (HttpForms.Count > 0)
+            if (Dictionary.Count > 0)
             {
-                return serialize.ToString(HttpForms);
-            }
-            if (HttpArguments.Count > 0)
-            {
-                return serialize.ToString(HttpArguments);
+                return serialize.ToString(Dictionary);
             }
             return null;
         }
@@ -363,18 +362,19 @@ namespace ZeroTeam.MessageMVC.Http
                         return af?.ToString();
                     return null;
             }
-            if (ContentObject == null)
-            {
-                ContentObject = string.IsNullOrWhiteSpace(HttpContent)
-                    ? new JObject()
-                    : (JObject)JsonConvert.DeserializeObject(HttpContent);
-            }
-            if (ContentObject.TryGetValue(name, out var vl))
-                return vl?.ToString();
-            if (HttpForms.TryGetValue(name, out var fm))
+            if (Dictionary.TryGetValue(name, out var fm))
                 return fm?.ToString();
-            if (HttpArguments.TryGetValue(name, out var ar))
-                return ar;
+            //if (HttpForms.TryGetValue(name, out var fm))
+            //    return fm?.ToString();
+            //if (HttpArguments.TryGetValue(name, out var ar))
+            //    return ar;
+
+            //ContentObject ??= string.IsNullOrWhiteSpace(HttpContent)
+            //        ? new JObject()
+            //        : (JObject)JsonConvert.DeserializeObject(HttpContent);
+
+            //if (ContentObject.TryGetValue(name, out var vl))
+            //    return vl?.ToString();
             return null;
         }
 
@@ -438,13 +438,14 @@ namespace ZeroTeam.MessageMVC.Http
             try
             {
                 HttpArguments ??= PrepareHttpArgument();
-                Dictionary = PrepareHttpForm();
+                Dictionary ??= PrepareHttpForm();
                 foreach (var kv in HttpArguments)
                 {
                     Dictionary.TryAdd(kv.Key, kv.Value);
                 }
                 ReadFiles();
                 HttpContent ??= await PrepareContent();
+                Content = HttpContent;
             }
             catch (Exception e)
             {
@@ -533,6 +534,31 @@ namespace ZeroTeam.MessageMVC.Http
             }
             return arguments;
         }
+        #endregion
+
+
+        #region 快捷方法
+        /// <summary>
+        /// 跟踪消息
+        /// </summary>
+        /// <returns></returns>
+        string IInlineMessage.TraceInfo()
+        {
+            var code = new StringBuilder();
+            code.AppendLine($"ID:{ID}");
+            code.AppendLine($"URL:{HttpContext.Request.GetDisplayUrl()}");
+            code.AppendLine($"Trace:{JsonConvert.SerializeObject(Trace, Formatting.Indented)}");
+
+            if (HttpArguments != null && HttpArguments.Count > 0)
+                code.AppendLine($"Arguments:{JsonConvert.SerializeObject(HttpArguments, Formatting.Indented)}");
+            if (Dictionary != null && Dictionary.Count > 0)
+                code.AppendLine($"Dictionary:{JsonConvert.SerializeObject(Dictionary, Formatting.Indented)}");
+            if (HttpContent != null)
+                code.AppendLine($"Content:{HttpContent}");
+
+            return code.ToString();
+        }
+
         #endregion
     }
 }

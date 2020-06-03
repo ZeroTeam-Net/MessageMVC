@@ -204,6 +204,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpMessage.ZeroTeam#MessageMVC#Messages#IInlineMessage#TraceInfo">
+            <summary>
+            跟踪消息
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Http.HttpProtocol">
             <summary>
             HTTP协议相关的支持

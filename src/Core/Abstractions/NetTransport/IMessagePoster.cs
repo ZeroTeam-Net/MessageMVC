@@ -8,6 +8,11 @@ namespace ZeroTeam.MessageMVC.Messages
     public interface IMessagePoster : IZeroDependency
     {
         /// <summary>
+        /// 是否可用
+        /// </summary>
+        bool CanDo { get; }
+
+        /// <summary>
         /// 运行状态
         /// </summary>
         StationStateType State { get; set; }

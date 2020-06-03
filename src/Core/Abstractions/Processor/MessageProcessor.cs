@@ -56,7 +56,7 @@ namespace ZeroTeam.MessageMVC.Messages
                 IsOffline = offline,
                 WaitTask = new TaskCompletionSource<IMessageItem>()
             };
-            Task.Factory.StartNew(process.Process);
+            _= process.Process();
             return process.WaitTask.Task;
         }
 

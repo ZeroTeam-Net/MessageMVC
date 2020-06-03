@@ -31,17 +31,17 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         ///     访问控制
         /// </summary>
-        public ApiOption Access { get; set; }
+        public ApiOption Option { get; set; }
 
         /// <summary>
         ///     需要登录
         /// </summary>
-        public bool NeedLogin => !Access.HasFlag(ApiOption.Anymouse);
+        public bool NeedLogin => !Option.HasFlag(ApiOption.Anymouse);
 
         /// <summary>
         ///     是否公开接口
         /// </summary>
-        public bool IsPublic => Access.HasFlag(ApiOption.Public);
+        public bool IsPublic => Option.HasFlag(ApiOption.Public);
 
         #endregion
 
@@ -170,10 +170,18 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         public bool RestoreArgument(IInlineMessage message)
         {
-            if (ArgumentType == null || message.ArgumentData != null)
+            if (message.ArgumentData != null)
             {
                 return true;
             }
+            ArgumentSerializer ??= DependencyHelper.GetService<ISerializeProxy>();
+            if (Option.HasFlag(ApiOption.DictionaryArgument) || ArgumentType == null)
+            {
+                if (!Option.HasFlag(ApiOption.CustomContent))
+                    message.RestoryContentToDictionary(ArgumentSerializer, true);
+                return true;
+            }
+
             message.ArgumentData = message.GetArgument((int)ArgumentScope, (int)ArgumentSerializeType, ArgumentSerializer, ArgumentType);
             return true;
         }
@@ -196,7 +204,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 return arg.Validate(out message);
             }
 
-            if (data.ArgumentData != null || Access.HasFlag(ApiOption.ArgumentCanNil))
+            if (data.ArgumentData != null || Option.HasFlag(ApiOption.ArgumentCanNil))
             {
                 message = null;
                 return true;

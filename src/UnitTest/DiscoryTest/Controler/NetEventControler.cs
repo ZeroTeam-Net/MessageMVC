@@ -1,13 +1,13 @@
-﻿using Agebull.Common.Ioc;
-using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
-using ZeroTeam.MessageMVC.ApiContract;
+﻿using Microsoft.Extensions.Logging;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Sample.Controllers
 {
+    /// <summary>
+    /// 事件控制器（测试）
+    /// </summary>
     [NetEvent("NetEvent")]
     public class NetEventControler : IApiController
     {
@@ -26,6 +26,9 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         /// </summary>
         public string Why { get; set; }
 
+        /// <summary>
+        /// 上下文（依赖构造）
+        /// </summary>
         public IZeroContext Context { get; set; }
 
         //[Route("v1/json")]
@@ -42,15 +45,13 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         //}
 
         /// <summary>
-        /// 异步
+        /// 空参数，空返回
         /// </summary>
-        /// <param name="argument"></param>
         /// <returns></returns>
         [Route("v1/void"), ArgumentScope(ArgumentScope.Dictionary)]
-        public async Task<IApiResult<TestArgument>> Task(string argument)
+        public void Task()
         {
             Logger.LogInformation("Call Void");
-            return ApiResultHelper.Succees(new TestArgument());
         }
     }
 }

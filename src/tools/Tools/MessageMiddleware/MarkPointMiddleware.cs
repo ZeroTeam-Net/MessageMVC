@@ -38,7 +38,7 @@ namespace ZeroTeam.MessageMVC.Tools
             if (LogRecorder.LogMonitor)
             {
                 LogRecorder.BeginMonitor(DependencyScope.Name);
-                LogRecorder.MonitorDetails(() => JsonConvert.SerializeObject(message, Formatting.Indented));
+                LogRecorder.MonitorDetails(message.TraceInfo);
             }
             return Task.FromResult(true);
         }

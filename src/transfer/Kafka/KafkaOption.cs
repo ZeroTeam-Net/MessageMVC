@@ -86,7 +86,8 @@ namespace ZeroTeam.MessageMVC.Kafka
             Producer.Partitioner = config.Partitioner;
             Producer.MessageTimeoutMs = config.MessageTimeoutMs;
             Producer.RequestTimeoutMs = config.RequestTimeoutMs;
-            Producer.DeliveryReportFields = config.DeliveryReportFields;
+            if (!string.IsNullOrWhiteSpace(config.DeliveryReportFields))
+                Producer.DeliveryReportFields = config.DeliveryReportFields;
             Producer.EnableDeliveryReports = config.EnableDeliveryReports;
             Producer.EnableBackgroundPoll = config.EnableBackgroundPoll;
             Producer.EnableIdempotence = config.EnableIdempotence;

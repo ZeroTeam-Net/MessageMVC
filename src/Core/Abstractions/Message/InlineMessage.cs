@@ -130,6 +130,8 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <returns>值</returns>
         public object GetArgument(int scope, int serializeType, ISerializeProxy serialize, Type type)
         {
+            if (type != null)
+                ((IInlineMessage)this).RestoryContent(serialize, type);
             return ArgumentData;
         }
     }

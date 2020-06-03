@@ -44,6 +44,8 @@ namespace ZeroTeam.MessageMVC
             services.AddTransient<IFlowMiddleware, MessagePoster>();
             //API路由与执行
             services.AddTransient<IMessageMiddleware, ApiExecuter>();
+            //并行发送器
+            services.AddTransient<IFlowMiddleware, ParallelPoster>(); 
             //插件载入
             //if (ZeroAppOption.Instance.EnableAddIn)
             {

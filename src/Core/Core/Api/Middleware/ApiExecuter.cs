@@ -71,7 +71,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             }
             //2 确定调用方法及对应权限
             if (!ZeroAppOption.Instance.IsOpenAccess
-                && (!action.Access.HasFlag(ApiOption.Anymouse))
+                && (!action.Option.HasFlag(ApiOption.Anymouse))
                 && (GlobalContext.User == null || GlobalContext.User.UserId <= UserInfo.SystemOrganizationId))
             {
                 LogRecorder.MonitorInfomation("错误: 需要用户登录信息");
@@ -82,6 +82,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 }
                 return;
             }
+            Message.PrepareResult(action.ResultSerializer, action.ResultCreater);
             //参数处理
             if (!ArgumentPrepare(action))
             {
@@ -130,20 +131,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <returns></returns>
         private bool ArgumentPrepare(IApiAction action)
         {
-            //还原参数
-            Message.ArgumentInline(
-                action.ArgumentSerializer,
-                action.Access.HasFlag(ApiOption.DictionaryArgument) ? null : action.ArgumentType,
-                action.ResultSerializer,
-                action.ResultCreater);
-
-
-            //3 参数校验
-            if (action.Access.HasFlag(ApiOption.DictionaryArgument))
-            {
-                return true;
-            }
-
             try
             {
                 if (!action.RestoreArgument(Message))
@@ -163,6 +150,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 return false;
             }
 
+            if (action.Option.HasFlag(ApiOption.DictionaryArgument))
+            {
+                return true;
+            }
             try
             {
                 if (action.ValidateArgument(Message, out string info))

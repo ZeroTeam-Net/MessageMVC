@@ -33,7 +33,7 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         private static IMessagePoster Default;
 
-        private static readonly Dictionary<string, IMessagePoster> ServiceMap = new Dictionary<string, IMessagePoster>(StringComparer.OrdinalIgnoreCase);
+        private static readonly Dictionary<string, List<IMessagePoster>> ServiceMap = new Dictionary<string, List<IMessagePoster>>(StringComparer.OrdinalIgnoreCase);
 
         private static Dictionary<string, IMessagePoster> posters = new Dictionary<string, IMessagePoster>();
         private static ILogger logger;
@@ -80,11 +80,37 @@ namespace ZeroTeam.MessageMVC
                 var services = cfgs.Split(',', StringSplitOptions.RemoveEmptyEntries);
                 foreach (var service in services)
                 {
-
-                    ServiceMap[service] = poster.Value;
+                    AddPoster(poster.Value, service);
                 }
             }
             return Task.CompletedTask;
+        }
+
+        private static void AddPoster(IMessagePoster poster, string service)
+        {
+            if (!ServiceMap.TryGetValue(service, out var items))
+                ServiceMap.TryAdd(service, items = new List<IMessagePoster>());
+            items = ServiceMap[service];
+            bool hase = false;
+            foreach (var item in items)
+            {
+                if (item.GetType() == poster.GetType())
+                {
+                    hase = true;
+                    break;
+                }
+            }
+            if (!hase)
+                items.Add(poster);
+        }
+
+        /// <summary>
+        ///     手动注销
+        /// </summary>
+        public static void UnRegistPoster(string service)
+        {
+            posters.Remove(service);
+            ServiceMap.Remove(service); 
         }
 
         /// <summary>
@@ -101,7 +127,7 @@ namespace ZeroTeam.MessageMVC
             }
             foreach (var service in services)
             {
-                ServiceMap[service] = poster;
+                AddPoster(poster,service);
             }
             logger ??= DependencyHelper.LoggerFactory.CreateLogger(nameof(MessagePoster));
             logger.Information(() => $"服务[{string.Join(',', services)}]注册为使用发布器{name}");
@@ -114,7 +140,7 @@ namespace ZeroTeam.MessageMVC
         {
             foreach (var service in services.Where(p => !string.IsNullOrEmpty(p)))
             {
-                ServiceMap[service] = poster;
+                AddPoster(poster, service);
             }
             logger ??= DependencyHelper.LoggerFactory.CreateLogger(nameof(MessagePoster));
             logger.Information(() => $"服务[{string.Join(',', services)}]注册为使用发布器{poster.GetTypeName()}");
@@ -131,10 +157,13 @@ namespace ZeroTeam.MessageMVC
             {
                 return null;
             }
+            if (!ServiceMap.TryGetValue(name, out var items))
+                return Default;
+            foreach (var item in items)
+                if (item.CanDo)
+                    return item;
 
-            return ServiceMap.TryGetValue(name, out var producer)
-                ? producer
-                : Default;
+            return null;
         }
 
         /// <summary>
@@ -147,7 +176,7 @@ namespace ZeroTeam.MessageMVC
         {
             if (message == null || string.IsNullOrEmpty(message.Topic) || string.IsNullOrEmpty(message.Title))
             {
-                throw new NotSupportedException("参数[item]不能为空且[Topic]与[Title]必须为有效值");
+                throw new NotSupportedException("参数[message]不能为空且[message.Topic]与[message.Title]必须为有效值");
             }
             var producer = GetService(message.Topic);
             if (producer == null)

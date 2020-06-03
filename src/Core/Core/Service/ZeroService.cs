@@ -451,7 +451,7 @@ namespace ZeroTeam.MessageMVC.Services
             {
                 RouteName = route,
                 Function = info.Action,
-                Access = info.AccessOption,
+                Option = info.AccessOption,
                 ResultType = info.ResultType,
                 IsAsync = info.IsAsync,
                 ResultSerializeType = info.ResultSerializeType,

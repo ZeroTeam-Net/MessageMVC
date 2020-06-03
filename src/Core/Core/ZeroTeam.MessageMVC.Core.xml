@@ -79,7 +79,7 @@
                 是合符合API契约规定
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAction.Access">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAction.Option">
             <summary>
                 访问控制
             </summary>
@@ -587,6 +587,28 @@
             <summary>
             关闭
             </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ParallelPoster">
+            <summary>
+                并行生产者
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ParallelPoster.ZeroTeam#MessageMVC#ILifeFlow#Initialize">
+            <summary>
+                初始化
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ParallelPoster.ZeroTeam#MessageMVC#IZeroDependency#Name">
+            <summary>
+            名称
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ParallelPoster.ZeroTeam#MessageMVC#Messages#IMessagePoster#Post(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
+            <summary>
+            生产消息
+            </summary>
+            <param name="message">消息</param>
             <returns></returns>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Services.StateMachine.CloseStateMachine">
