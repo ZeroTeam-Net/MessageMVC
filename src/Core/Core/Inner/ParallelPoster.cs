@@ -84,7 +84,7 @@ namespace ZeroTeam.MessageMVC
                 string service = map[i];
                 var clone = message.Clone();
                 clone.Topic = service;
-                tasks[i] = MessagePoster.Post(message);
+                tasks[i] = MessagePoster.Post(clone);
             }
             await Task.WhenAll(tasks);
 

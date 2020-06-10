@@ -1,41 +1,53 @@
-﻿using Agebull.Common.Ioc;
-using Agebull.Common.Logging;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-//using ZeroTeam.MessageMVC.PlanTasks;
-using ZeroTeam.MessageMVC.ApiContract;
-using ZeroTeam.MessageMVC.Context;
+﻿using Newtonsoft.Json;
+using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Sample.Controllers
 {
-    [Service("HttpTest")]
-    public class HttpTestControler : IApiController
+
+    [Service("test")]
+    public class ParallelTest : IApiController
+    {
+        /// <summary>
+        /// 测试接口
+        /// </summary>
+        [Route("do"), ApiOption(ApiOption.CustomContent)]
+        public async Task<string> ParallelCall()
+        {
+            var res = await MessagePoster.Post(new InlineMessage
+            {
+                Topic = "ParallelTest",
+                Title= "hello"
+            });
+            return JsonConvert.SerializeObject(res.message.ResultData, Formatting.Indented);
+        }
+    }
+
+    [Service("HttpTest1")]
+    public class HttpTest1Controler : IApiController
     {
         /// <summary>
         /// 测试接口
         /// </summary>
         [Route("hello"),ApiOption(ApiOption.CustomContent)]
-        public string Hello(string signature, string timestamp, string nonce, string echostr)
+        public string Hello()
         {
-            var msg = GlobalContext.CurrentNoLazy?.Message;
-            if (msg == null || string.IsNullOrWhiteSpace(msg.Content))
-            {
-                return "hello";
-            }
-            var seri = new CDataXmlSerializeProxy();
-            var dict = seri.ToObject<Dictionary<string, string>>(msg.Content);
-            return JsonConvert.SerializeObject(dict, Formatting.Indented);
+            return "hello1";
         }
+    }
 
+
+    [Service("HttpTest2")]
+    public class HttpTest2Controler : IApiController
+    {
         /// <summary>
         /// 测试接口
         /// </summary>
-        [Route("test")]
-        public IApiResult Test(Argument arg)
+        [Route("hello"), ApiOption(ApiOption.CustomContent)]
+        public string Hello()
         {
-            return ApiResultHelper.Succees();
+            return "hello2";
         }
     }
 }

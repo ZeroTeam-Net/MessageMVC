@@ -140,21 +140,32 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         void RestoryContentToDictionary(ISerializeProxy serializer, bool merge)
         {
-            var dict2 = Dictionary;
+            Dictionary<string, string> contentDictionary;
+
             if (serializer != null)
             {
-                Dictionary = serializer.ToObject<Dictionary<string, string>>(Content);
+                contentDictionary = serializer.ToObject<Dictionary<string, string>>(Content);
             }
             else
             {
-                Dictionary = SmartSerializer.ToObject<Dictionary<string, string>>(Content);
+                contentDictionary = SmartSerializer.ToObject<Dictionary<string, string>>(Content);
             }
-            if (dict2 != null && merge)
+
+            if (contentDictionary != null && contentDictionary.Count >= 0)
             {
-                foreach (var kv in dict2)
+                var dict2 = Dictionary;
+                Dictionary = contentDictionary;
+                if (dict2 != null && merge)
                 {
-                    Dictionary.TryAdd(kv.Key, kv.Value);
+                    foreach (var kv in dict2)
+                    {
+                        Dictionary.TryAdd(kv.Key, kv.Value);
+                    }
                 }
+            }
+            else
+            {
+                Dictionary ??= new Dictionary<string, string>();
             }
             DataState |= MessageDataState.ArgumentInline | MessageDataState.ArgumentOffline;
         }
@@ -406,17 +417,17 @@ namespace ZeroTeam.MessageMVC.Messages
             if (message.Trace != null)
                 Trace = message.Trace;
 
-            if (message.DataState.HasFlag(MessageDataState.ResultOffline))
+            ResultData = message.ResultData;
+            if (message.DataState.HasFlag(MessageDataState.ResultInline))
             {
-                ResultData = message.ResultData;
+                DataState |= MessageDataState.ResultInline;
             }
             else
             {
-                ResultData = null;
                 DataState &= ~MessageDataState.ResultInline;
             }
             Result = message.Result;
-            if (message.DataState.HasFlag(MessageDataState.ResultInline))
+            if (message.DataState.HasFlag(MessageDataState.ResultOffline))
             {
                 DataState |= MessageDataState.ResultOffline;
             }
