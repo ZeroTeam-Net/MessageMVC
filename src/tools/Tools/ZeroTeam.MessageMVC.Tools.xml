@@ -56,6 +56,22 @@
             </summary>
             <param name="path"></param>
         </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiTAPDMarkDown">
+            <summary>
+            API扩展功能
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiTAPDMarkDown.ServiceInfos">
+            <summary>
+            站点文档信息
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiTAPDMarkDown.MarkDown(System.String)">
+            <summary>
+            生成单元测试代码
+            </summary>
+            <param name="path"></param>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiUnitTestCode">
             <summary>
             API扩展功能

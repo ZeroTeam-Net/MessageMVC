@@ -70,6 +70,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
             return dynamicMethod.CreateDelegate(typeof(ApiFunc)) as ApiFunc;
         }
+
         void Call()
         {
             List<LocalBuilder> paras = new List<LocalBuilder>();
@@ -96,6 +97,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 ilGenerator.Emit(OpCodes.Ldloc, builder);
             }
             ilGenerator.Emit(OpCodes.Callvirt, Method);
+
         }
 
         private bool? Parameter(ParameterInfo parameter)

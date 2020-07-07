@@ -54,9 +54,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ///     参数校验
         /// </summary>
         /// <param name="message"></param>
-        /// <param name="info"></param>
+        /// <param name="status"></param>
         /// <returns></returns>
-        bool ValidateArgument(IInlineMessage message, out string info);
+        bool ValidateArgument(IInlineMessage message, out IOperatorStatus status);
 
         /// <summary>
         /// 反序列化类型

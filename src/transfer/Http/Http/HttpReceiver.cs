@@ -1,45 +1,80 @@
+using Agebull.Common.Ioc;
+using Agebull.Common.Logging;
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Http;
+using System;
 using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
+using ZeroTeam.MessageMVC.Services;
+using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Http
 {
     /// <summary>
     ///     Http进站出站的处理类
     /// </summary>
-    internal sealed class HttpReceiver : MessageReceiverBase, IServiceReceiver
+    public sealed class HttpReceiver : MessageReceiverBase, IServiceReceiver
     {
-        /// <summary>
-        /// 构造
-        /// </summary>
-        public HttpReceiver() : base(nameof(HttpReceiver))
-        {
-        }
+        #region 外部调用
 
         /// <summary>
-        /// 对应发送器名称
+        ///     调用
         /// </summary>
-        string IMessageReceiver.PosterName => nameof(HttpPoster);
-
-        private TaskCompletionSource<bool> task;
-
-        Task<bool> IMessageReceiver.Loop(CancellationToken token)
-        {
-            task = new TaskCompletionSource<bool>();
-            return task.Task;
-        }
-
-        /// <summary>
-        /// 关闭
-        /// </summary>
+        /// <param name="context"></param>
         /// <returns></returns>
-        Task IMessageReceiver.Close()
+        public static async Task Call(HttpContext context)
         {
-            task.SetResult(true);
-            return Task.CompletedTask;
+            HttpProtocol.CrosCall(context.Response);
+            if (string.Equals(context.Request.Method, "OPTIONS", StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+            var uri = context.Request.GetUri();
+            if (uri.AbsolutePath == "/")
+            {
+                //response.Redirect("/index.html");
+                await context.Response.WriteAsync("Wecome MessageMVC,Lucky every day!", Encoding.UTF8);
+                return;
+            }
+            HttpProtocol.FormatResponse(context.Request, context.Response);
+            DependencyHelper.Update(context.RequestServices);
+            try
+            {
+
+                //命令
+                var data = new HttpMessage();
+                //开始调用
+                if (data.CheckRequest(context))
+                {
+                    var service = ZeroFlowControl.GetService(data.ServiceName) ??
+                         new ZeroService
+                         {
+                             ServiceName = "***",
+                             Receiver = new HttpReceiver(),
+                             Serialize = DependencyHelper.GetService<ISerializeProxy>()
+                         };
+                    await MessageProcessor.OnMessagePush(service, data, false, context);
+                }
+                else
+                {
+                    await context.Response.WriteAsync(ApiResultHelper.NotSupportJson, Encoding.UTF8);
+                }
+            }
+            catch (Exception e)
+            {
+                LogRecorder.Exception(e);
+                try
+                {
+                    await context.Response.WriteAsync(ApiResultHelper.BusinessErrorJson, Encoding.UTF8);
+                }
+                catch (Exception exception)
+                {
+                    LogRecorder.Exception(exception);
+                }
+            }
         }
 
         /// <summary>
@@ -90,18 +125,50 @@ namespace ZeroTeam.MessageMVC.Http
             }
             // 写入返回
             message.OfflineResult();
-            string json;
-            if (message.IsOutAccess)
+            if (!message.IsOutAccess)
             {
-                json = message.Result;
+                context.Response.Headers.Add("zeroID", message.ID);
+                //context.Response.Headers.Add("zeroTrace", SmartSerializer.ToInnerString(message.Trace));
+                context.Response.Headers.Add("zeroState", message.State.ToString());
             }
-            else
-            {
-                json = SmartSerializer.SerializeResult(message);
-            }
-            await context.Response.WriteAsync(json ?? "", Encoding.UTF8);
+            await context.Response.WriteAsync(message.Result ?? "", Encoding.UTF8);
             return true;
         }
+        #endregion
+
+        #region IServiceReceiver
+
+        /// <summary>
+        /// 构造
+        /// </summary>
+        public HttpReceiver() : base(nameof(HttpReceiver))
+        {
+        }
+
+        /// <summary>
+        /// 对应发送器名称
+        /// </summary>
+        string IMessageReceiver.PosterName => nameof(HttpPoster);
+
+        private TaskCompletionSource<bool> task;
+
+        Task<bool> IMessageReceiver.Loop(CancellationToken token)
+        {
+            task = new TaskCompletionSource<bool>();
+            return task.Task;
+        }
+
+        /// <summary>
+        /// 关闭
+        /// </summary>
+        /// <returns></returns>
+        Task IMessageReceiver.Close()
+        {
+            task.SetResult(true);
+            return Task.CompletedTask;
+        }
+
+        #endregion
 
     }
 }

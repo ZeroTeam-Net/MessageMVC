@@ -235,6 +235,19 @@
                 Http进站出站的处理类
             </summary>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpReceiver.Call(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+                调用
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpReceiver.ZeroTeam#MessageMVC#Messages#IMessageReceiver#OnResult(ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
+            <summary>
+            标明调用结束
+            </summary>
+            <returns>是否发送成功</returns>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.Http.HttpReceiver.#ctor">
             <summary>
             构造
@@ -249,45 +262,6 @@
             <summary>
             关闭
             </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpReceiver.ZeroTeam#MessageMVC#Messages#IMessageReceiver#OnResult(ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
-            <summary>
-            标明调用结束
-            </summary>
-            <returns>是否发送成功</returns>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.Http.HttpRoute">
-            <summary>
-                调用映射核心类
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpRoute.Call(Microsoft.AspNetCore.Http.HttpContext)">
-            <summary>
-                POST调用
-            </summary>
-            <param name="context"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpRoute.CallTask(Microsoft.AspNetCore.Http.HttpContext)">
-            <summary>
-                调用
-            </summary>
-            <param name="context"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpRoute.InnerCall(Microsoft.AspNetCore.Http.HttpContext)">
-            <summary>
-            外部调用
-            </summary>
-            <param name="context"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpRoute.OutCall(Microsoft.AspNetCore.Http.HttpContext)">
-            <summary>
-            外部调用
-            </summary>
-            <param name="context"></param>
             <returns></returns>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Http.HttpClientItem">

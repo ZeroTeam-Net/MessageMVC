@@ -141,8 +141,12 @@ namespace ZeroTeam.MessageMVC.Documents
                         case "Guid":
                             code.Append($"\"{Guid.NewGuid()}\"");
                             break;
+                        case "int":
+                        case "long":
+                            code.Append("1");
+                            break;
                         default:
-                            code.Append("true");
+                            code.Append("");
                             break;
                     }
                 }

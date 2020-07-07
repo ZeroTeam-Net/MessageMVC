@@ -17,7 +17,8 @@ namespace ZeroTeam.MessageMVC.ApiContract
         /// </summary>
         public ApiResult()
         {
-            Trace = new OperatorTrace();
+            if (ContractOption.Instance.EnableResultTrace)
+                Trace = new OperatorTrace();
             Success = true;
         }
 

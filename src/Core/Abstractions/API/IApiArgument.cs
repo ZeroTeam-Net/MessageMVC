@@ -8,8 +8,8 @@
         /// <summary>
         ///     数据校验
         /// </summary>
-        /// <param name="message">返回的消息</param>
+        /// <param name="status">返回的状态</param>
         /// <returns>成功则返回真</returns>
-        bool Validate(out string message);
+        bool Validate(out IOperatorStatus status);
     }
 }

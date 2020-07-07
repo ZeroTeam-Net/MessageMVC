@@ -144,12 +144,12 @@
                 还原参数
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiAction.ValidateArgument(ZeroTeam.MessageMVC.Messages.IInlineMessage,System.String@)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiAction.ValidateArgument(ZeroTeam.MessageMVC.Messages.IInlineMessage,ZeroTeam.MessageMVC.ZeroApis.IOperatorStatus@)">
             <summary>
                 参数校验
             </summary>
             <param name="data"></param>
-            <param name="message"></param>
+            <param name="status"></param>
             <returns></returns>
         </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAction.IsAsync">

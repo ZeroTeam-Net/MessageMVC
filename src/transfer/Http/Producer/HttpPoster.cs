@@ -1,5 +1,6 @@
 using Agebull.Common.Logging;
 using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -34,13 +35,22 @@ namespace ZeroTeam.MessageMVC.Http
             LogRecorder.BeginStepMonitor("[HttpPoster.Post]");
             try
             {
-                message.Offline();
+                message.ArgumentOffline();
                 var client = HttpClientOption.HttpClientFactory.CreateClient(name);
                 LogRecorder.MonitorDetails(() => $"URL : {client.BaseAddress }{message.Topic}/{message.Title}");
 
-                using var content = new StringContent(SmartSerializer.SerializeMessage(message));
-                using var response = await client.PostAsync($"/{message.Topic}/{message.Title}", content);
+                using var content = new StringContent(message.Content);
+                using var requestMessage = new HttpRequestMessage
+                {
+                    RequestUri = new Uri($"/{message.Topic}/{message.Title}"),
+                    Content = content,
+                    Method = HttpMethod.Post
+                };
+                requestMessage.Headers.Add("zeroID", message.ID);
+                message.Trace.CallMachine = null;
+                requestMessage.Headers.Add("zeroTrace", SmartSerializer.ToInnerString(message.Trace));
 
+                using var response = await client.SendAsync(requestMessage);
                 var json = await response.Content.ReadAsStringAsync();
 
                 LogRecorder.MonitorDetails(() => $"StatusCode : {response.StatusCode}");
@@ -49,13 +59,16 @@ namespace ZeroTeam.MessageMVC.Http
                 {
                     result = re2;
                     re2.DataState = MessageDataState.ResultOffline;
+                    if (response.Headers.TryGetValues("zeroState", out var state))
+                    {
+                        result.State = Enum.Parse<MessageState>(state.FirstOrDefault());
+                    }
                 }
                 else
                 {
                     result = new MessageResult
                     {
                         ID = message.ID,
-                        Trace = message.Trace,
                         State = HttpCodeToMessageState(response.StatusCode)
                     };
                 }

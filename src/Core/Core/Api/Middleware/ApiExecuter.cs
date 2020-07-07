@@ -1,3 +1,4 @@
+using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using System;
 using System.Threading.Tasks;
@@ -72,10 +73,17 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             //2 确定调用方法及对应权限
             if (!ZeroAppOption.Instance.IsOpenAccess
                 && (!action.Option.HasFlag(ApiOption.Anymouse))
-                && (GlobalContext.User == null || GlobalContext.User.UserId <= UserInfo.SystemOrganizationId))
+                && (GlobalContext.User == null 
+                || GlobalContext.User.UserId == UserInfo.SystemUserId 
+                || GlobalContext.User.UserId == UserInfo.UnknownUserId))
             {
                 LogRecorder.MonitorInfomation("错误: 需要用户登录信息");
                 Message.RealState = MessageState.Deny;
+                var status = DependencyHelper.GetService<IOperatorStatus>();
+                status.Code = OperatorStatusCode.BusinessException;
+                status.Message = "拒绝访问";
+                Message.ResultData = status;
+                
                 if (next != null)
                 {
                     await next();
@@ -104,14 +112,21 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 LogRecorder.Exception(ex);
                 LogRecorder.MonitorDetails(() => $"参数转换出错误, 请检查调用参数是否合适:{ex.Message}");
                 Message.RealState = MessageState.FormalError;
-                Message.Result = "参数转换出错误, 请检查调用参数是否合适";
+
+                var status = DependencyHelper.GetService<IOperatorStatus>();
+                status.Code = OperatorStatusCode.ArgumentError;
+                status.Message = "参数转换出错误, 请检查调用参数是否合适";
+                Message.ResultData = status;
             }
             catch (MessageArgumentNullException b)
             {
                 var msg = $"参数{b.ParamName}不能为空";
                 LogRecorder.MonitorDetails(msg);
                 Message.RealState = MessageState.FormalError;
-                Message.Result = msg;
+                var status = DependencyHelper.GetService<IOperatorStatus>();
+                status.Code = OperatorStatusCode.ArgumentError;
+                status.Message = msg;
+                Message.ResultData = status;
             }
 
             if (next != null)
@@ -145,7 +160,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 var msg = $"错误 : 还原参数异常{ex.Message}";
                 LogRecorder.MonitorInfomation(msg);
-                Message.Result = msg;
+                var status = DependencyHelper.GetService<IOperatorStatus>();
+                status.Code = OperatorStatusCode.BusinessException;
+                status.Message = msg;
+                Message.ResultData = status;
                 Message.RealState = MessageState.FormalError;
                 return false;
             }
@@ -156,13 +174,14 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             }
             try
             {
-                if (action.ValidateArgument(Message, out string info))
+                if (action.ValidateArgument(Message, out var status))
                 {
                     return true;
                 }
-                var msg = $"参数校验失败 : {info}";
+                var msg = $"参数校验失败 : {status.Message}";
                 LogRecorder.MonitorInfomation(msg);
-                Message.Result = msg;
+                Message.ResultData = status;
+                Message.Result = SmartSerializer.ToInnerString(status);
                 Message.RealState = MessageState.FormalError;
                 return false;
             }
@@ -170,7 +189,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 var msg = $"错误 : 参数校验异常{ex.Message}";
                 LogRecorder.MonitorInfomation(msg);
-                Message.Result = msg;
+                var status = DependencyHelper.GetService<IOperatorStatus>();
+                status.Code = OperatorStatusCode.ArgumentError;
+                status.Message = msg;
+                Message.ResultData = status;
                 Message.RealState = MessageState.FormalError;
                 return false;
             }

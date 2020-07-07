@@ -240,12 +240,12 @@
                 还原参数
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiAction.ValidateArgument(ZeroTeam.MessageMVC.Messages.IInlineMessage,System.String@)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiAction.ValidateArgument(ZeroTeam.MessageMVC.Messages.IInlineMessage,ZeroTeam.MessageMVC.ZeroApis.IOperatorStatus@)">
             <summary>
                 参数校验
             </summary>
             <param name="message"></param>
-            <param name="info"></param>
+            <param name="status"></param>
             <returns></returns>
         </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.IApiAction.ResultSerializeType">
@@ -284,11 +284,11 @@
                 表示API请求参数
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiArgument.Validate(System.String@)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiArgument.Validate(ZeroTeam.MessageMVC.ZeroApis.IOperatorStatus@)">
             <summary>
                 数据校验
             </summary>
-            <param name="message">返回的消息</param>
+            <param name="status">返回的状态</param>
             <returns>成功则返回真</returns>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.IApiController">
@@ -550,87 +550,87 @@
                 操作状态码
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.Queue">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.Queue">
             <summary>
                 正在排队
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.Success">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.Success">
             <summary>
                 成功
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.ArgumentError">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.ArgumentError">
             <summary>
                 参数错误
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.BusinessError">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.BusinessError">
             <summary>
                 发生处理业务错误
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.BusinessException">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.BusinessException">
             <summary>
                 发生未处理业务异常
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.UnhandleException">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.UnhandleException">
             <summary>
                 发生未处理系统异常
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.NetworkError">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.NetworkError">
             <summary>
                 网络错误
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.TimeOut">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.TimeOut">
             <summary>
                 执行超时
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.DenyAccess">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.DenyAccess">
             <summary>
                 拒绝访问
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.TokenUnknow">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.TokenUnknow">
             <summary>
                 未知的令牌
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.TokenTimeOut">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.TokenTimeOut">
             <summary>
                 令牌过期
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.NoReady">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.NoReady">
             <summary>
                 系统未就绪
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.Ignore">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.Ignore">
             <summary>
                 异常中止
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.ReTry">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.ReTry">
             <summary>
                 重试
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.NoFind">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.NoFind">
             <summary>
                 方法不存在
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.Unavailable">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.Unavailable">
             <summary>
                 服务不可用
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.Unknow">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.OperatorStatusCode.Unknow">
             <summary>
                 未知结果
             </summary>
@@ -641,6 +641,196 @@
             </summary>
             <param name="eid">错误码</param>
             <returns>消息文本</returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.IOperatorStatusCode">
+            <summary>
+                操作状态码
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IOperatorStatusCode.Map">
+            <summary>
+            文本表
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IOperatorStatusCode.Queue">
+            <summary>
+                正在排队
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IOperatorStatusCode.Success">
+            <summary>
+                成功
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IOperatorStatusCode.ArgumentError">
+            <summary>
+                参数错误
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IOperatorStatusCode.BusinessError">
+            <summary>
+                发生处理业务错误
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IOperatorStatusCode.BusinessException">
+            <summary>
+                发生未处理业务异常
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IOperatorStatusCode.UnhandleException">
+            <summary>
+                发生未处理系统异常
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IOperatorStatusCode.NetworkError">
+            <summary>
+                网络错误
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IOperatorStatusCode.TimeOut">
+            <summary>
+                执行超时
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IOperatorStatusCode.DenyAccess">
+            <summary>
+                拒绝访问
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IOperatorStatusCode.TokenUnknow">
+            <summary>
+                未知的令牌
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IOperatorStatusCode.TokenTimeOut">
+            <summary>
+                令牌过期
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IOperatorStatusCode.NoReady">
+            <summary>
+                系统未就绪
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IOperatorStatusCode.Ignore">
+            <summary>
+                异常中止
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IOperatorStatusCode.ReTry">
+            <summary>
+                重试
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IOperatorStatusCode.NoFind">
+            <summary>
+                方法不存在
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IOperatorStatusCode.Unavailable">
+            <summary>
+                服务不可用
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IOperatorStatusCode.Unknow">
+            <summary>
+                未知结果
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.DefaultOperatorStatusCode">
+            <summary>
+                操作状态码
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.DefaultOperatorStatusCode.Map">
+            <summary>
+            文本表
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.DefaultOperatorStatusCode.Queue">
+            <summary>
+                正在排队
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.DefaultOperatorStatusCode.Success">
+            <summary>
+                成功
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.DefaultOperatorStatusCode.ArgumentError">
+            <summary>
+                参数错误
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.DefaultOperatorStatusCode.BusinessError">
+            <summary>
+                发生处理业务错误
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.DefaultOperatorStatusCode.BusinessException">
+            <summary>
+                发生未处理业务异常
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.DefaultOperatorStatusCode.UnhandleException">
+            <summary>
+                发生未处理系统异常
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.DefaultOperatorStatusCode.NetworkError">
+            <summary>
+                网络错误
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.DefaultOperatorStatusCode.TimeOut">
+            <summary>
+                执行超时
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.DefaultOperatorStatusCode.DenyAccess">
+            <summary>
+                拒绝访问
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.DefaultOperatorStatusCode.TokenUnknow">
+            <summary>
+                未知的令牌
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.DefaultOperatorStatusCode.TokenTimeOut">
+            <summary>
+                令牌过期
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.DefaultOperatorStatusCode.NoReady">
+            <summary>
+                系统未就绪
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.DefaultOperatorStatusCode.Ignore">
+            <summary>
+                异常中止
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.DefaultOperatorStatusCode.ReTry">
+            <summary>
+                重试
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.DefaultOperatorStatusCode.NoFind">
+            <summary>
+                方法不存在
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.DefaultOperatorStatusCode.Unavailable">
+            <summary>
+                服务不可用
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.DefaultOperatorStatusCode.Unknow">
+            <summary>
+                未知结果
+            </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiOption">
             <summary>

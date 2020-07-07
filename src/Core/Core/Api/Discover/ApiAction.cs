@@ -190,27 +190,27 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ///     参数校验
         /// </summary>
         /// <param name="data"></param>
-        /// <param name="message"></param>
+        /// <param name="status"></param>
         /// <returns></returns>
-        public bool ValidateArgument(IInlineMessage data, out string message)
+        public bool ValidateArgument(IInlineMessage data, out IOperatorStatus status)
         {
             if (ArgumentType == null)
             {
-                message = null;
+                status = null;
                 return true;
             }
             if (data.ArgumentData is IApiArgument arg)
             {
-                return arg.Validate(out message);
+                return arg.Validate(out status);
             }
 
             if (data.ArgumentData != null || Option.HasFlag(ApiOption.ArgumentCanNil))
             {
-                message = null;
+                status = null;
                 return true;
             }
 
-            message = "参数不能为空";
+            status = ApiResultHelper.State(OperatorStatusCode.ArgumentError, "参数不能为空");
             return false;
         }
 

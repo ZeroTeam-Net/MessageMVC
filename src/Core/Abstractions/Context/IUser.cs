@@ -12,7 +12,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         ///    用户数字标识
         /// </summary>
-        long UserId { get; set; }
+        string UserId { get; set; }
 
         /// <summary>
         ///     用户编码
@@ -27,7 +27,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         ///     用户组织数字标识
         /// </summary>
-        long OrganizationId { get; set; }
+        string OrganizationId { get; set; }
 
         /// <summary>
         ///     用户组织名称
@@ -50,25 +50,25 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         /// 系统用户标识
         /// </summary>
-        public const long SystemUserId = 0;
+        public const string SystemUserId = "0";
         /// <summary>
         /// 系统组织标识
         /// </summary>
-        public const long SystemOrganizationId = 0;
+        public const string SystemOrganizationId = "0";
 
         /// <summary>
         /// 未知用户标识
         /// </summary>
-        public const long UnknownUserId = -1;
+        public const string UnknownUserId = "-1";
         /// <summary>
         /// 未知组织标识
         /// </summary>
-        public const long UnknownOrganizationId = -1;
+        public const string UnknownOrganizationId = "-1";
         /// <summary>
         ///     应用用户数字标识
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate), DefaultValue(UnknownUserId)]
-        public long UserId { get; set; } = UnknownUserId;
+        public string UserId { get; set; } = UnknownUserId;
 
         /// <summary>
         ///     用户编码
@@ -86,7 +86,7 @@ namespace ZeroTeam.MessageMVC.Context
         ///     用户组织数字标识
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate), DefaultValue(UnknownOrganizationId)]
-        public long OrganizationId { get; set; } = UnknownOrganizationId;
+        public string OrganizationId { get; set; } = UnknownOrganizationId;
 
         /// <summary>
         ///     用户组织名称

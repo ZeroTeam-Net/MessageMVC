@@ -48,28 +48,10 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             var req = GlobalContext.CurrentNoLazy?.Trace;
             var offline = new MessageItem
             {
-                Trace = message.Trace?.Copy(),
-                State = message.State
+                State = message.State,
+                Trace = message.Trace
             };
-            if (message.Trace != null)
-            {
-                offline.Trace = new TraceInfo
-                {
-                    //TraceId = message.Trace.TraceId,
-                    Start = message.Trace.Start,
-                    //LocalId = message.Trace.LocalId,
-                    //LocalApp = message.Trace.LocalApp,
-                    //LocalMachine = message.Trace.LocalMachine,
-                    CallId = message.Trace.CallId,
-                    CallPage = message.Trace.CallPage,
-                    CallApp = message.Trace.CallApp,
-                    CallMachine = message.Trace.CallMachine,
-                    Headers = message.Trace.Headers,
-                    Token = message.Trace.Token,
-                    Context = message.Trace.Context,
-                    Level = message.Trace.Level + 1
-                };
-            }
+
             message.ArgumentOffline();
 
             return await ZeroPostProxy.Instance.CallZero(message,

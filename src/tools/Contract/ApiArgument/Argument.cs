@@ -20,11 +20,11 @@ namespace ZeroTeam.MessageMVC.ApiContract
         /// <summary>
         ///     数据校验
         /// </summary>
-        /// <param name="message">返回的消息</param>
+        /// <param name="status">返回的消息</param>
         /// <returns>成功则返回真</returns>
-        public bool Validate(out string message)
+        public bool Validate(out IOperatorStatus status)
         {
-            message = null;
+            status = null;
             return true;
         }
     }
@@ -44,11 +44,11 @@ namespace ZeroTeam.MessageMVC.ApiContract
         /// <summary>
         ///     数据校验
         /// </summary>
-        /// <param name="message">返回的消息</param>
+        /// <param name="status">返回的消息</param>
         /// <returns>成功则返回真</returns>
-        public bool Validate(out string message)
+        public bool Validate(out IOperatorStatus status)
         {
-            message = null;
+            status = null;
             return true;
         }
     }

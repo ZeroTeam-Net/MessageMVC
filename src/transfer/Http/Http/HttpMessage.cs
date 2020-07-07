@@ -19,7 +19,7 @@ namespace ZeroTeam.MessageMVC.Http
     ///     路由数据
     /// </summary>
     [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
-    internal class HttpMessage : MessageItem, IInlineMessage
+    public class HttpMessage : MessageItem, IInlineMessage
     {
 
         #region IMessageItem
@@ -27,7 +27,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// <summary>
         /// 是否外部访问
         /// </summary>
-        public bool IsOutAccess => true;
+        public bool IsOutAccess { get; set; }
 
         /// <summary>
         /// 实体参数
@@ -177,14 +177,30 @@ namespace ZeroTeam.MessageMVC.Http
             {
                 return false;
             }
-            ID = Guid.NewGuid().ToString("N").ToUpper();
-            Trace = TraceInfo.New(ID);
-            Trace.CallId = HttpContext.Connection.Id;
+            if(request.Headers.TryGetValue("zeroID",out var vl))
+            {
+                IsOutAccess = false;
+                ID = vl[0];
+                if(request.Headers.TryGetValue("zeroTrace", out vl))
+                {
+                    Trace = SmartSerializer.ToObject<TraceInfo>(vl[0]);
+                }
+                else
+                {
+                    Trace = TraceInfo.New(ID);
+                    Trace.CallId = HttpContext.Connection.Id;
+                }
+            }
+            else
+            {
+                IsOutAccess = true;
+                HttpMethod = request.Method.ToUpper();
+                ID = Guid.NewGuid().ToString("N").ToUpper();
+                Trace = TraceInfo.New(ID);
+                Trace.CallId = HttpContext.Connection.Id;
+                CheckHeaders(request);
+            }
             Trace.CallMachine = $"{HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.RemotePort}";
-
-            HttpMethod = request.Method.ToUpper();
-            CheckHeaders(request);
-            //Trace.TraceId = $"{Trace.Token ?? HttpContext.Connection.Id}:{RandomCode.Generate(6)}";
             DataState = MessageDataState.None;
 
             return true;
@@ -364,17 +380,17 @@ namespace ZeroTeam.MessageMVC.Http
             }
             if (Dictionary.TryGetValue(name, out var fm))
                 return fm?.ToString();
-            //if (HttpForms.TryGetValue(name, out var fm))
-            //    return fm?.ToString();
-            //if (HttpArguments.TryGetValue(name, out var ar))
-            //    return ar;
+            if (HttpForms.TryGetValue(name, out fm))
+                return fm?.ToString();
+            if (HttpArguments.TryGetValue(name, out var ar))
+                return ar;
 
-            //ContentObject ??= string.IsNullOrWhiteSpace(HttpContent)
-            //        ? new JObject()
-            //        : (JObject)JsonConvert.DeserializeObject(HttpContent);
+            ContentObject ??= string.IsNullOrWhiteSpace(HttpContent)
+                    ? new JObject()
+                    : (JObject)JsonConvert.DeserializeObject(HttpContent);
 
-            //if (ContentObject.TryGetValue(name, out var vl))
-            //    return vl?.ToString();
+            if (ContentObject.TryGetValue(name, out var vl))
+                return vl?.ToString();
             return null;
         }
 

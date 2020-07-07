@@ -19,16 +19,16 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         /// <summary>
         ///     数据校验
         /// </summary>
-        /// <param name="message">返回的消息</param>
+        /// <param name="message">status</param>
         /// <returns>成功则返回真</returns>
-        public bool Validate(out string message)
+        public bool Validate(out IOperatorStatus status)
         {
             if (Value == null)
             {
-                message = "参数不能为空";
+                status = ApiResultHelper.State(OperatorStatusCode.ArgumentError, "参数不能为空");
                 return false;
             }
-            message = null;
+            status = null;
             return true;
         }
     }

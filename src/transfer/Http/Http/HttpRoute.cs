@@ -36,7 +36,7 @@ namespace ZeroTeam.MessageMVC.Http
 
             //跨域支持
             return string.Equals(context.Request.Method, "OPTIONS", StringComparison.OrdinalIgnoreCase)
-                ? Task.Run(() => HttpProtocol.CrosOption(context.Response))
+                ? HttpProtocol.CrosOption(context.Response)
                 : CallTask(context);
         }
 
@@ -45,23 +45,36 @@ namespace ZeroTeam.MessageMVC.Http
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        private static async Task CallTask(HttpContext context)
+        public static Task CallTask(HttpContext context)
         {
-            if (context.Request.Headers.TryGetValue("User-Agent", out var agent) &&
-                agent.Count == 1 && agent[0] == MessageRouteOption.AgentName)
+            if(!string.Equals(context.Request.Method, "OPTIONS", StringComparison.OrdinalIgnoreCase))
             {
-                await InnerCall(context);
+                return HttpProtocol.CrosOption(context.Response);
             }
-            else
+            HttpProtocol.CrosCall(context.Response);
+            var uri = context.Request.GetUri();
+            if (uri.AbsolutePath == "/")
             {
-                await OutCall(context);
+                //response.Redirect("/index.html");
+                return context.Response.WriteAsync("Wecome MessageMVC,Lucky every day!", Encoding.UTF8);
             }
+            HttpProtocol.FormatResponse(context.Request, context.Response);
+            return HttpReceiver.OutCall(context);
+            //if (context.Request.Headers.TryGetValue("User-Agent", out var agent) &&
+            //    agent.Count == 1 && agent[0] == MessageRouteOption.AgentName)
+            //{
+            //    return InnerCall(context);
+            //}
+            //else
+            //{
+            //    return OutCall(context);
+            //}
         }
 
         #endregion
 
         #region 内部调用
-
+        /*
         /// <summary>
         /// 外部调用
         /// </summary>
@@ -172,7 +185,7 @@ namespace ZeroTeam.MessageMVC.Http
                 }
             }
         }
-
+        */
         #endregion
 
     }

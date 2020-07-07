@@ -236,10 +236,10 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             };
             traceInfo.Context.UserJson = new UserInfo
             {
-                UserId = 20200312,
+                UserId = "20200312",
                 NickName = "agebull",
                 UserCode = "20200312",
-                OrganizationId = 20200312,
+                OrganizationId = "20200312",
                 OrganizationName = "ZeroTeam"
             }.ToJson();
 

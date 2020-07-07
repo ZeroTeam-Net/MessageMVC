@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-using System.Threading.Tasks;
-using ZeroTeam.MessageMVC.ZeroApis;
+﻿using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Sample.Controllers
 {
@@ -11,20 +9,9 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         /// 测试接口
         /// </summary>
         [Route("hello"), ApiOption(ApiOption.CustomContent)]
-        public string Hello(string abc)
+        public IApiResult<string> Hello(string abc)
         {
-            return "hello1";
-        }
-        
-        /// <summary>
-         /// 获取设备标识
-         /// </summary>
-         /// <returns></returns>
-        [Route("v1/did/refresh"), Category("令牌")]
-        [ApiOption(ApiOption.Public | ApiOption.Anymouse)]
-        public async Task<IApiResult<string>> GetDeviceToken(string did)
-        {
-            return ApiResultHelper.Succees("hello1");
+            return ApiResultHelper.Helper.Succees($"hello1:{abc}");
         }
     }
 }

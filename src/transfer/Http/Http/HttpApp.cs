@@ -23,7 +23,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// </summary>
         public static void RunMessageMVC(this IApplicationBuilder app)
         {
-            app.Run(HttpRoute.Call);
+            app.Run(HttpReceiver.Call);
         }
     }
 }
