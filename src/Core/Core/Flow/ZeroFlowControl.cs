@@ -83,7 +83,7 @@ namespace ZeroTeam.MessageMVC
             if (ApplicationState >= StationState.Check)
                 return;
             ApplicationState = StationState.Check;
-            LogRecorder.DoInitialize();
+            LoggerExtend.DoInitialize();
             logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(ZeroFlowControl));
 
             DependencyHelper.Update();

@@ -1,3 +1,4 @@
+using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using System;
 
@@ -49,7 +50,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
             catch (Exception e)
             {
-                LogRecorder.Trace(() => $"ZeroCommandExtend receive err({e.Message })");
+                DependencyScope.Logger.Trace(() => $"ZeroCommandExtend receive err({e.Message })");
                 return new TZeroResultData
                 {
                     State = ZeroOperatorStateType.LocalException,
@@ -62,7 +63,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
             catch (Exception e)
             {
-                LogRecorder.Trace(() => $"ZMessage unpack err({e.Message })");
+                DependencyScope.Logger.Trace(() => $"ZMessage unpack err({e.Message })");
                 return new TZeroResultData
                 {
                     State = ZeroOperatorStateType.LocalException,

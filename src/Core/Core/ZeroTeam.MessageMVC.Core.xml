@@ -285,6 +285,11 @@
             当前站点
             </summary>
         </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.logger">
+            <summary>
+            调用的内容
+            </summary>
+        </member>
         <member name="F:ZeroTeam.MessageMVC.ZeroApis.ApiExecuter.Message">
             <summary>
             调用的内容
@@ -315,6 +320,11 @@
         <member name="T:ZeroTeam.MessageMVC.ConfigMiddleware">
             <summary>
             配置的全局对象
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ConfigMiddleware.logger">
+            <summary>
+            调用的内容
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.ConfigMiddleware.ZeroTeam#MessageMVC#IZeroDependency#Name">
@@ -592,6 +602,11 @@
         <member name="T:ZeroTeam.MessageMVC.ParallelPoster">
             <summary>
                 并行生产者
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ParallelPoster.logger">
+            <summary>
+            调用的内容
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ParallelPoster.ZeroTeam#MessageMVC#ILifeFlow#Initialize">

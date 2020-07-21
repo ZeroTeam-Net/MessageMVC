@@ -1,4 +1,5 @@
 using Agebull.Common;
+using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Newtonsoft.Json;
 using System;
@@ -284,7 +285,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         {
             if (stationName == null || string.IsNullOrEmpty(json) || json[0] != '{')
             {
-                LogRecorder.Error($"Update station({stationName}) config argument error.");
+                DependencyScope.Logger.Error($"Update station({stationName}) config argument error.");
                 config = null;
                 return false;
             }
@@ -300,7 +301,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
             catch (Exception e)
             {
-                LogRecorder.Error($"Update station({stationName}) config exception({e.Message}).");
+                DependencyScope.Logger.Error($"Update station({stationName}) config exception({e.Message}).");
                 config = null;
                 return false;
             }
@@ -351,7 +352,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
             catch (Exception e)
             {
-                LogRecorder.Error($"Flush configs exception({e.Message}).");
+                DependencyScope.Logger.Error($"Flush configs exception({e.Message}).");
                 return false;
             }
         }

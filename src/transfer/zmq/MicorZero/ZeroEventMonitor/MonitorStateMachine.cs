@@ -162,7 +162,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
             }
             catch (Exception e)
             {
-                LogRecorder.Exception(e);
+                Logger.Exception(e);
             }
         }
         internal static void station_update(string name, string content)

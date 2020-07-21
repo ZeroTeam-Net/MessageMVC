@@ -65,14 +65,14 @@ namespace ZeroTeam.MessageMVC.Http
             }
             catch (Exception e)
             {
-                LogRecorder.Exception(e);
+                DependencyScope.Logger.Exception(e);
                 try
                 {
                     await context.Response.WriteAsync(ApiResultHelper.BusinessErrorJson, Encoding.UTF8);
                 }
                 catch (Exception exception)
                 {
-                    LogRecorder.Exception(exception);
+                    DependencyScope.Logger.Exception(exception);
                 }
             }
         }

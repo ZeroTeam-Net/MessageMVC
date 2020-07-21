@@ -28,7 +28,7 @@ namespace ZeroTeam.MessageMVC.Tools
             //    services.AddTransient<IMessageMiddleware, LoggerMiddleware>();
             //}
             //启用数据与日志记录埋点
-            if (ToolsOption.Instance.EnableMarkPoint | LogRecorder.LogMonitor)
+            if (ToolsOption.Instance.EnableMarkPoint | FlowTracer.LogMonitor)
             {
                 services.AddSingleton<IMessageMiddleware, MarkPointMiddleware>();
             }
@@ -37,8 +37,8 @@ namespace ZeroTeam.MessageMVC.Tools
             if (ToolsOption.Instance.EnableLinkTrace)
             {
                 GlobalContext.EnableLinkTrace = true;
-                LogRecorder.GetUserNameFunc = () => GlobalContext.CurrentNoLazy?.User?.UserId.ToString() ?? "-1";
-                LogRecorder.GetRequestIdFunc = () => GlobalContext.CurrentNoLazy?.Trace?.TraceId ?? RandomCode.Generate(10);
+                //FlowTracer.GetUserNameFunc = () => GlobalContext.CurrentNoLazy?.User?.UserId.ToString() ?? "-1";
+                //FlowTracer.GetRequestIdFunc = () => GlobalContext.CurrentNoLazy?.Trace?.TraceId ?? RandomCode.Generate(10);
             }
             //消息存储与异常消息重新消费
             if (ToolsOption.Instance.EnableMessageReConsumer)

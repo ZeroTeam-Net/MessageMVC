@@ -2,6 +2,7 @@
 using Agebull.Common.Configuration;
 using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,6 +19,11 @@ namespace ZeroTeam.MessageMVC
     public class ConfigMiddleware : IFlowMiddleware
     {
         /// <summary>
+        /// 调用的内容
+        /// </summary>
+        internal ILogger logger;
+
+        /// <summary>
         /// 实例名称
         /// </summary>
         string IZeroDependency.Name => nameof(ConfigMiddleware);
@@ -32,20 +38,11 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         Task ILifeFlow.Check(ZeroAppOption config)
         {
+            logger = DependencyHelper.LoggerFactory.CreateLogger<ConfigMiddleware>();
             CheckConfig(config);
             DependencyHelper.AddSingleton(config);
             DependencyHelper.Update();
-            LogRecorder.GetMachineNameFunc = () => config.TraceName;
-            if (ConfigurationHelper.IsEnable("LogRecorder:innerLogger"))
-            {
-                var opt = ConfigurationHelper.Get<TextLoggerOption>("Logging:Text");
-                if (string.IsNullOrWhiteSpace(opt?.LogPath))
-                {
-                    LogRecorder.LogPath = config.IsolateFolder
-                         ? IOHelper.CheckPath(config.RootPath, "logs", config.AppName)
-                         : IOHelper.CheckPath(config.RootPath, "logs");
-                }
-            }
+
             //线程数
             if (config.MaxIOThreads > 0 && config.MaxWorkThreads > 0)
             {
@@ -110,7 +107,7 @@ namespace ZeroTeam.MessageMVC
             }
             catch (Exception e)
             {
-                LogRecorder.Exception(e);
+                logger.Exception(e);
                 config.ServiceName = config.ServiceName;
             }
             config.LocalIpAddress = GetHostIps();
@@ -183,7 +180,7 @@ namespace ZeroTeam.MessageMVC
             }
             catch (Exception e)
             {
-                LogRecorder.Exception(e);
+                logger.Exception(e);
             }
 
             return ips.ToString();

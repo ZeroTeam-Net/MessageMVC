@@ -1,4 +1,4 @@
-﻿using Agebull.Common.Logging;
+﻿using System;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
@@ -11,7 +11,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         [Route("post"), SerializeType(SerializeType.NewtonJson)]
         public IApiResult Result(TraceLinkMessage argument)
         {
-            LogRecorder.Trace(GetType().FullName);
+            Console.WriteLine(GetType().FullName);
             return ApiResultHelper.Succees();
         }
     }

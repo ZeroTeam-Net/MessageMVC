@@ -1,6 +1,8 @@
 using Agebull.Common.Configuration;
+using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,12 +18,18 @@ namespace ZeroTeam.MessageMVC
 
         int IZeroMiddleware.Level => MiddlewareLevel.General;
 
+        /// <summary>
+        /// 调用的内容
+        /// </summary>
+        internal ILogger logger;
+
 
         /// <summary>
         ///     初始化
         /// </summary>
         Task ILifeFlow.Initialize()
         {
+            logger = DependencyHelper.LoggerFactory.CreateLogger<ParallelPoster>();
             ConfigurationHelper.RegistOnChange("MessageMVC:ParallelService", ReloadOption, true);
             return Task.CompletedTask;
         }
@@ -45,7 +53,7 @@ namespace ZeroTeam.MessageMVC
             }
             catch (System.Exception ex)
             {
-                LogRecorder.Exception(ex);
+                logger.Exception(ex);
             }
             foreach (var o in ServiceMap.Keys)
             {

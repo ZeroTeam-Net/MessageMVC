@@ -6,7 +6,7 @@
     <StartupObject />
     <Description>ZeroTeam.MessageMVC抽象定义
 以MVC方式进行消息处理,支持常用消息队列以及其它RPC方式的消息处理</Description>
-    <Version>1.0.0.148</Version>
+    <Version>1.0.0.149</Version>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/ZeroTeam-Net/MessageMVC</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ZeroTeam-Net/MessageMVC.git</RepositoryUrl>
@@ -47,7 +47,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Agebull.Common.LogRecorder" Version="4.0.0.30" />
+    <PackageReference Include="Agebull.Common.Extend" Version="4.0.0.32" />
     <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
   </ItemGroup>
 

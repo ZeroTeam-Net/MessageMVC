@@ -1,3 +1,4 @@
+using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Newtonsoft.Json;
 using System;
@@ -107,7 +108,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
             catch (Exception e)
             {
-                LogRecorder.Trace(() => $"ZMessage unpack err({e.Message })");
+                DependencyScope.Logger.Trace(() => $"ZMessage unpack err({e.Message })");
                 publishItem = null;
                 return false;
             }
@@ -156,7 +157,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
             catch (Exception e)
             {
-                LogRecorder.Trace(() => $"ZMessage unpack err({e.Message })");
+                DependencyScope.Logger.Trace(() => $"ZMessage unpack err({e.Message })");
                 publishItem = null;
                 return false;
             }

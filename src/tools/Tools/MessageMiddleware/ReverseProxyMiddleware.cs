@@ -37,7 +37,7 @@ namespace ZeroTeam.MessageMVC.Tools
                 await next();
                 return;
             }
-            LogRecorder.BeginStepMonitor($"通过反向代理调用[{message.ServiceName}/{message.ApiName}]");
+            FlowTracer.BeginStepMonitor($"通过反向代理调用[{message.ServiceName}/{message.ApiName}]");
             try
             {
                 message.ResultCreater ??= ApiResultHelper.State;
@@ -45,7 +45,7 @@ namespace ZeroTeam.MessageMVC.Tools
             }
             finally
             {
-                LogRecorder.EndStepMonitor();
+                FlowTracer.EndStepMonitor();
             }
         }
     }

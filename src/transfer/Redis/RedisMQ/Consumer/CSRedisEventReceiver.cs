@@ -115,7 +115,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             }
             catch (Exception ex)
             {
-                LogRecorder.Exception(ex);
+                logger.Exception(ex);
             }
         }
 

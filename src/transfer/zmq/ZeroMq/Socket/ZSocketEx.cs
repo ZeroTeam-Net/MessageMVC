@@ -1,4 +1,5 @@
 ﻿using Agebull.Common;
+using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using System.Collections.Generic;
 
@@ -39,14 +40,14 @@ namespace ZeroTeam.ZeroMQ
             var socket = new ZSocketEx(ZContext.Current, type, out var error);
             if (error != null)
             {
-                LogRecorder.Error($"CreateSocket: {error.Text} > Address:{address} > type:{type}.");
+                DependencyScope.Logger.Error($"CreateSocket: {error.Text} > Address:{address} > type:{type}.");
                 return null;
             }
             ConfigSocket(socket, null, true, false);
             socket.ServiceKey = serviceKey;
             if (socket.Bind(address, out error))
                 return socket;
-            LogRecorder.Error($"CreateSocket: {error.Text} > Address:{address} > type:{type}.");
+            DependencyScope.Logger.Error($"CreateSocket: {error.Text} > Address:{address} > type:{type}.");
             socket.Dispose();
             return null;
         }
@@ -93,14 +94,14 @@ namespace ZeroTeam.ZeroMQ
             var socket = new ZSocketEx(ZContext.Current, type, out var error);
             if (error != null)
             {
-                LogRecorder.Error($"CreateSocket: {error.Text} > Address:{address} > type:{type}.");
+                DependencyScope.Logger.Error($"CreateSocket: {error.Text} > Address:{address} > type:{type}.");
                 return null;
             }
             ConfigSocket(socket, identity, false, true);
             socket.ServiceKey = serviceKey;
             if (socket.Connect(address, out error))
                 return socket;
-            LogRecorder.Error($"CreateSocket: {error.Text} > Address:{address} > type:{type}.");
+            DependencyScope.Logger.Error($"CreateSocket: {error.Text} > Address:{address} > type:{type}.");
             socket.Dispose();
             return socket;
         }
@@ -175,7 +176,7 @@ namespace ZeroTeam.ZeroMQ
             var socket = new ZSocketEx(ZContext.Current, type, out var error);
             if (error != null)
             {
-                LogRecorder.Error($"CreateSocket: {error.Text} > Address:{address} > type:{type}.");
+                DependencyScope.Logger.Error($"CreateSocket: {error.Text} > Address:{address} > type:{type}.");
                 return null;
             }
 
@@ -184,7 +185,7 @@ namespace ZeroTeam.ZeroMQ
 
             if (socket.Connect(address, out error))
                 return socket;
-            LogRecorder.Error($"CreateSocket: {error.Text} > Address:{address} > type:{type}.");
+            DependencyScope.Logger.Error($"CreateSocket: {error.Text} > Address:{address} > type:{type}.");
             socket.Dispose();
             return null;
         }

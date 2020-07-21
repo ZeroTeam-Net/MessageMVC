@@ -76,7 +76,7 @@ namespace ZeroTeam.MessageMVC.Http
 
         public static void Main(string[] args)
         {
-            LogRecorder.LogPath = Path.Combine(Environment.CurrentDirectory, "logs", ConfigurationHelper.Root["AppName"]);
+            FlowTracer.LogPath = Path.Combine(Environment.CurrentDirectory, "logs", ConfigurationHelper.Root["AppName"]);
 
             CreateHostBuilder(args).Build().Run();
         }
@@ -110,9 +110,9 @@ namespace ZeroTeam.MessageMVC.Http
 }
 ```
 
-1. 设置LogRecorder.LogPath,保存路径相同,如果不启用LogRecorder的文本记录器,可跳过
+1. 设置FlowTracer.LogPath,保存路径相同,如果不启用FlowTracer的文本记录器,可跳过
 2. UseConfiguration(ConfigurationHelper.Root),保证ConfigurationHelper用途的一致性.
-3. 日志配置ConfigureLogging ,此处响应Logging的扩展配置,用于更合理的使用LogRecorder
+3. 日志配置ConfigureLogging ,此处响应Logging的扩展配置,用于更合理的使用FlowTracer
 4. UseUrls,是为了不跳出默认使用5000及5001端口的讨厌Warning
 5. UseKestrel,使用Core的标准配置,可参考MSDN了解更多配置的详情.
 

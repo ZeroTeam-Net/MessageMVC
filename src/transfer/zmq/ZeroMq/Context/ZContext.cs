@@ -1,4 +1,5 @@
-﻿using Agebull.Common.Logging;
+﻿using Agebull.Common.Ioc;
+using Agebull.Common.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -363,7 +364,7 @@ namespace ZeroTeam.ZeroMQ
             {
                 return true;
             }
-            LogRecorder.Information("Terminate the ZeroTeam.ZeroMQ context.");
+            DependencyScope.Logger.Information("Terminate the ZeroTeam.ZeroMQ context.");
 
             var ptr = _contextPtr;
             _contextPtr = IntPtr.Zero;
@@ -374,7 +375,7 @@ namespace ZeroTeam.ZeroMQ
 
             foreach (var alive in array)
             {
-                LogRecorder.Information($"Endpoint : {alive.Endpoint}");
+                DependencyScope.Logger.Information($"Endpoint : {alive.Endpoint}");
                 alive.Dispose();
             }
             if (zmq.ctx_shutdown(ptr) != -1)

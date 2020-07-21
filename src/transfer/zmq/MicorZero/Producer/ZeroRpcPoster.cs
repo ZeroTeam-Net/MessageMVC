@@ -44,7 +44,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <returns></returns>
         async Task<IMessageResult> IMessagePoster.Post(IInlineMessage message)
         {
-            LogRecorder.MonitorDetails("[ZeroRPCPoster.Post] 开始发送");
+            FlowTracer.MonitorDetails("[ZeroRPCPoster.Post] 开始发送");
             var req = GlobalContext.CurrentNoLazy?.Trace;
             var offline = new MessageItem
             {

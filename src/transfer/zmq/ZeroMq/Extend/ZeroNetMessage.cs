@@ -1,3 +1,4 @@
+using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Newtonsoft.Json;
 using System;
@@ -211,10 +212,10 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             {
                 if (idx >= description.Length)
                 {
-                    LogRecorder.Trace("RPC Frame Failed");
+                    DependencyScope.Logger.Trace("RPC Frame Failed");
                     foreach (var line in messages)
                     {
-                        LogRecorder.Trace(Encoding.UTF8.GetString(line));
+                        DependencyScope.Logger.Trace(Encoding.UTF8.GetString(line));
                     }
                     break;
                 }

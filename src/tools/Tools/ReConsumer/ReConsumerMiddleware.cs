@@ -1,5 +1,7 @@
 ﻿using Agebull.Common;
+using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
+using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -43,7 +45,8 @@ namespace ZeroTeam.MessageMVC.Messages
             {
                 return;
             }
-            LogRecorder.Information($"重新消费错误消息.共{files.Count}个");
+            ILogger logger = DependencyHelper.LoggerFactory.CreateLogger< ReConsumerMiddleware>();
+            logger.Information($"重新消费错误消息.共{files.Count}个");
             var service = new ZeroService
             {
                 Receiver = new EmptyReceiver()
@@ -68,7 +71,7 @@ namespace ZeroTeam.MessageMVC.Messages
                 }
                 catch (Exception e)
                 {
-                    LogRecorder.Exception(e, "异常消息重新处理出错");
+                    logger.Exception(e, "异常消息重新处理出错");
                 }
             }
         }

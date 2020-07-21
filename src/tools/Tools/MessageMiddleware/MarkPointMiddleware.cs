@@ -21,7 +21,7 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <summary>
         /// 消息中间件的处理范围
         /// </summary>
-        MessageHandleScope IMessageMiddleware.Scope => ToolsOption.Instance.EnableMarkPoint | LogRecorder.LogMonitor
+        MessageHandleScope IMessageMiddleware.Scope => ToolsOption.Instance.EnableMarkPoint | FlowTracer.LogMonitor
                 ? MessageHandleScope.Prepare | MessageHandleScope.End
                 : MessageHandleScope.None;
 
@@ -35,10 +35,10 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <returns></returns>
         Task<bool> IMessageMiddleware.Prepare(IService service, IInlineMessage message, object tag)
         {
-            if (LogRecorder.LogMonitor)
+            if (FlowTracer.LogMonitor)
             {
-                LogRecorder.BeginMonitor(DependencyScope.Name);
-                LogRecorder.MonitorDetails(message.TraceInfo);
+                FlowTracer.BeginMonitor(DependencyScope.Name);
+                FlowTracer.MonitorDetails(message.TraceInfo);
             }
             return Task.FromResult(true);
         }
@@ -51,18 +51,18 @@ namespace ZeroTeam.MessageMVC.Tools
         async Task IMessageMiddleware.OnEnd(IInlineMessage message)
         {
             TraceStep root = null;
-            if (LogRecorder.LogMonitor)
+            if (FlowTracer.LogMonitor)
             {
-                LogRecorder.MonitorInfomation("State => {0}", message.State);
-                LogRecorder.MonitorDetails(() => $"Result => {message.Result}");
+                FlowTracer.MonitorInfomation("State => {0}", message.State);
+                FlowTracer.MonitorDetails(() => $"Result => {message.Result}");
                 if (message.Trace != null)
                 {
                     var trace = message.Trace;
-                    LogRecorder.MonitorDetails(() => $"Trace => {SmartSerializer.ToInnerString(trace)}");
+                    FlowTracer.MonitorDetails(() => $"Trace => {SmartSerializer.ToInnerString(trace)}");
                     message.Trace = null;
                 }
-                root = LogRecorder.EndMonitor();
-                LogRecorder.TraceMonitor(root);
+                root = FlowTracer.EndMonitor();
+                DependencyScope.Logger.TraceMonitor(root);
             }
             if (!ToolsOption.Instance.EnableMarkPoint || (message.Topic == ToolsOption.Instance.MarkPointName && message.ApiName == "post"))
                 return;

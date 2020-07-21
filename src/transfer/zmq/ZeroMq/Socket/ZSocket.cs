@@ -1,4 +1,5 @@
-﻿using Agebull.Common.Logging;
+﻿using Agebull.Common.Ioc;
+using Agebull.Common.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -123,13 +124,13 @@ namespace ZeroTeam.ZeroMQ
             var socket = Create(type, out var error);
             if (error != null)
             {
-                LogRecorder.Error($"CreateSocket: {error.Text} > Address:{address} > type:{type}.");
+                FlowTracer.Error($"CreateSocket: {error.Text} > Address:{address} > type:{type}.");
                 return null;
             }
             ConfigSocket(socket, null, true, false);
             if (socket.Bind(address, out error))
                 return socket;
-            LogRecorder.SystemLog($"CreateSocket: {error.Text} > Address:{address} > type:{type}.");
+            FlowTracer.SystemLog($"CreateSocket: {error.Text} > Address:{address} > type:{type}.");
             socket.Dispose();
             return null;
         }
@@ -173,13 +174,13 @@ namespace ZeroTeam.ZeroMQ
             var socket = Create(type, out var error);
             if (error != null)
             {
-                LogRecorder.Error($"CreateSocket: {error.Text} > Address:{address} > type:{type}.");
+                FlowTracer.Error($"CreateSocket: {error.Text} > Address:{address} > type:{type}.");
                 return null;
             }
             ConfigSocket(socket, identity, false, true);
             if (socket.Connect(address, out error))
                 return socket;
-            LogRecorder.Error($"CreateSocket: {error.Text} > Address:{address} > type:{type}.");
+            FlowTracer.Error($"CreateSocket: {error.Text} > Address:{address} > type:{type}.");
             socket.Dispose();
             return socket;
         }
@@ -246,7 +247,7 @@ namespace ZeroTeam.ZeroMQ
             var socket = Create(type, out var error);
             if (error != null)
             {
-                LogRecorder.Error($"CreateSocket: {error.Text} > Address:{address} > type:{type}.");
+                FlowTracer.Error($"CreateSocket: {error.Text} > Address:{address} > type:{type}.");
                 return null;
             }
 
@@ -254,7 +255,7 @@ namespace ZeroTeam.ZeroMQ
 
             if (socket.Connect(address, out error))
                 return socket;
-            LogRecorder.Error($"CreateSocket: {error.Text} > Address:{address} > type:{type}.");
+            FlowTracer.Error($"CreateSocket: {error.Text} > Address:{address} > type:{type}.");
             socket.Dispose();
             return null;
         }*/
@@ -1270,7 +1271,7 @@ namespace ZeroTeam.ZeroMQ
         /// <summary>
         ///     Gets or sets the Identity.
         ///     Note: The string contains chars like \0 (null terminator,
-        ///     which are NOT printed (in LogRecorder.Debug)!
+        ///     which are NOT printed (in FlowTracer.Debug)!
         /// </summary>
         /// <value>Identity as string</value>
         public string IdentityString
@@ -1765,7 +1766,7 @@ namespace ZeroTeam.ZeroMQ
             if (zmq.msg_send(frame.Ptr, SocketPtr, flags) >= 0)
                 return true;
             _error = ZError.GetLastErr();
-            LogRecorder.Error($"Send Error: {_error.Text} | {Endpoint} | Socket Ptr:{SocketPtr}");
+            DependencyScope.Logger.Error($"Send Error: {_error.Text} | {Endpoint} | Socket Ptr:{SocketPtr}");
             return false;
         }
 
@@ -1813,8 +1814,8 @@ namespace ZeroTeam.ZeroMQ
                 return true;
             _error = ZError.GetLastErr();
             frame.Dispose();
-            //LogRecorder.Error($"Recv Error: {_error.Text} | {Endpoint} | {SocketPtr}");
-            LogRecorder.DebugByStackTrace($"Recv Error: {_error.Text} | {Endpoint} | {SocketPtr}");
+            //FlowTracer.Error($"Recv Error: {_error.Text} | {Endpoint} | {SocketPtr}");
+            DependencyScope.Logger.DebugByStackTrace($"Recv Error: {_error.Text} | {Endpoint} | {SocketPtr}");
             return false;
         }
 
@@ -1890,7 +1891,7 @@ namespace ZeroTeam.ZeroMQ
                     if (-1 == zmq.close(SocketPtr))
                     {
                         error = _error = ZError.GetLastErr();
-                        LogRecorder.Error($"Socket Close Error:{_error}");
+                        DependencyScope.Logger.Error($"Socket Close Error:{_error}");
                         State |= SocketState.Failed;
                         success = false;
                     }
@@ -1902,7 +1903,7 @@ namespace ZeroTeam.ZeroMQ
             }
             catch (Exception e)
             {
-                LogRecorder.Exception(e);
+                DependencyScope.Logger.Exception(e);
                 error = new ZError(ZError.Code.ENETDOWN);
             }
             return false;
@@ -1942,7 +1943,7 @@ namespace ZeroTeam.ZeroMQ
             }
             catch (Exception e)
             {
-                LogRecorder.Exception(e);
+                DependencyScope.Logger.Exception(e);
                 error = new ZError(ZError.Code.ENETDOWN);
             }
             return false;
@@ -1989,7 +1990,7 @@ namespace ZeroTeam.ZeroMQ
             }
             catch (Exception e)
             {
-                LogRecorder.Exception(e);
+                DependencyScope.Logger.Exception(e);
                 error = new ZError(ZError.Code.ENETDOWN);
             }
             return false;
@@ -2021,7 +2022,7 @@ namespace ZeroTeam.ZeroMQ
                 }
             }
             State = SocketState.Binding;
-            LogRecorder.Information($"Bind:{endpoint}");
+            DependencyScope.Logger.Information($"Bind:{endpoint}");
             Endpoint = endpoint;
             return true;
         }
@@ -2051,7 +2052,7 @@ namespace ZeroTeam.ZeroMQ
                 }
             }
             State |= SocketState.Close;
-            LogRecorder.Information($"Unbind:{endpoint}");
+            DependencyScope.Logger.Information($"Unbind:{endpoint}");
             return true;
         }
         private bool SetOptionInner(ZSocketOption option, IntPtr optionValue, int optionLength)

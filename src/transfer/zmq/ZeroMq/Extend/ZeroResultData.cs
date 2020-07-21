@@ -1,3 +1,4 @@
+using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using System;
 using System.Linq;
@@ -85,14 +86,14 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 if (!Unpack(true, messages, out TZeroResultData result, action))
                 {
                     if (showError)
-                        LogRecorder.Trace("ZMessage unpack err");
+                        DependencyScope.Logger.Trace("ZMessage unpack err");
                 }
                 result.InteractiveSuccess = true;
                 return result;
             }
             catch (Exception e)
             {
-                LogRecorder.Trace(() => $"ZMessage unpack err({e.Message })");
+                DependencyScope.Logger.Trace(() => $"ZMessage unpack err({e.Message })");
                 return new TZeroResultData
                 {
                     State = ZeroOperatorStateType.LocalRecvError,

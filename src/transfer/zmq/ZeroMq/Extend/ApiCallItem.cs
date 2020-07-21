@@ -1,4 +1,5 @@
-﻿using Agebull.Common.Logging;
+﻿using Agebull.Common.Ioc;
+using Agebull.Common.Logging;
 using Agebull.EntityModel.Common;
 using Newtonsoft.Json;
 using System;
@@ -114,7 +115,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
             catch (Exception e)
             {
-                LogRecorder.Trace(() => $"ZMessage unpack err({e.Message }).FrameSize:{buffers.Length}");
+                DependencyScope.Logger.Trace(() => $"ZMessage unpack err({e.Message }).FrameSize:{buffers.Length}");
                 callItem = new ApiCallItem
                 {
                     ZeroState = (byte)ZeroOperatorStateType.FrameInvalid

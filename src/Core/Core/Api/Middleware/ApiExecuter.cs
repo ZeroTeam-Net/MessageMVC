@@ -1,5 +1,6 @@
 using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
@@ -33,6 +34,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// 调用的内容
         /// </summary>
+        internal ILogger logger;
+
+        /// <summary>
+        /// 调用的内容
+        /// </summary>
         internal IInlineMessage Message;
 
         /// <summary>
@@ -54,6 +60,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <returns></returns>
         async Task IMessageMiddleware.Handle(IService service, IInlineMessage message, object tag, Func<Task> next)
         {
+            logger = DependencyHelper.LoggerFactory.CreateLogger($"{message.Topic}/{message.Title}");
             Service = service;
             Message = message;
             Tag = tag;
@@ -62,7 +69,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             //1 查找调用方法
             if (action == null)
             {
-                LogRecorder.MonitorInfomation("错误: 接口({0})不存在", Message.Title);
+                FlowTracer.MonitorInfomation("错误: 接口({0})不存在", Message.Title);
                 Message.RealState = MessageState.Unhandled;
                 if (next != null)
                 {
@@ -77,7 +84,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 || GlobalContext.User.UserId == UserInfo.SystemUserId 
                 || GlobalContext.User.UserId == UserInfo.UnknownUserId))
             {
-                LogRecorder.MonitorInfomation("错误: 需要用户登录信息");
+                FlowTracer.MonitorInfomation("错误: 需要用户登录信息");
                 Message.RealState = MessageState.Deny;
                 var status = DependencyHelper.GetService<IOperatorStatus>();
                 status.Code = OperatorStatusCode.BusinessException;
@@ -109,8 +116,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             }
             catch (FormatException ex)
             {
-                LogRecorder.Exception(ex);
-                LogRecorder.MonitorDetails(() => $"参数转换出错误, 请检查调用参数是否合适:{ex.Message}");
+                logger.Exception(ex);
+                FlowTracer.MonitorDetails(() => $"参数转换出错误, 请检查调用参数是否合适:{ex.Message}");
                 Message.RealState = MessageState.FormalError;
 
                 var status = DependencyHelper.GetService<IOperatorStatus>();
@@ -121,7 +128,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             catch (MessageArgumentNullException b)
             {
                 var msg = $"参数{b.ParamName}不能为空";
-                LogRecorder.MonitorDetails(msg);
+                FlowTracer.MonitorDetails(msg);
                 Message.RealState = MessageState.FormalError;
                 var status = DependencyHelper.GetService<IOperatorStatus>();
                 status.Code = OperatorStatusCode.ArgumentError;
@@ -150,7 +157,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 if (!action.RestoreArgument(Message))
                 {
-                    LogRecorder.MonitorInfomation("错误 : 无法还原参数");
+                    FlowTracer.MonitorInfomation("错误 : 无法还原参数");
                     Message.Result = "错误 : 无法还原参数";
                     Message.RealState = MessageState.FormalError;
                     return false;
@@ -159,7 +166,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             catch (Exception ex)
             {
                 var msg = $"错误 : 还原参数异常{ex.Message}";
-                LogRecorder.MonitorInfomation(msg);
+                FlowTracer.MonitorInfomation(msg);
                 var status = DependencyHelper.GetService<IOperatorStatus>();
                 status.Code = OperatorStatusCode.BusinessException;
                 status.Message = msg;
@@ -179,7 +186,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     return true;
                 }
                 var msg = $"参数校验失败 : {status.Message}";
-                LogRecorder.MonitorInfomation(msg);
+                FlowTracer.MonitorInfomation(msg);
                 Message.ResultData = status;
                 Message.Result = SmartSerializer.ToInnerString(status);
                 Message.RealState = MessageState.FormalError;
@@ -188,7 +195,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             catch (Exception ex)
             {
                 var msg = $"错误 : 参数校验异常{ex.Message}";
-                LogRecorder.MonitorInfomation(msg);
+                FlowTracer.MonitorInfomation(msg);
                 var status = DependencyHelper.GetService<IOperatorStatus>();
                 status.Code = OperatorStatusCode.ArgumentError;
                 status.Message = msg;

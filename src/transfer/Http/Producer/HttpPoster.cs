@@ -32,12 +32,12 @@ namespace ZeroTeam.MessageMVC.Http
                 name = HttpClientOption.DefaultName;
             }
             IMessageResult result;
-            LogRecorder.BeginStepMonitor("[HttpPoster.Post]");
+            FlowTracer.BeginStepMonitor("[HttpPoster.Post]");
             try
             {
                 message.ArgumentOffline();
                 var client = HttpClientOption.HttpClientFactory.CreateClient(name);
-                LogRecorder.MonitorDetails(() => $"URL : {client.BaseAddress }{message.Topic}/{message.Title}");
+                FlowTracer.MonitorDetails(() => $"URL : {client.BaseAddress }{message.Topic}/{message.Title}");
 
                 using var content = new StringContent(message.Content);
                 using var requestMessage = new HttpRequestMessage
@@ -53,7 +53,7 @@ namespace ZeroTeam.MessageMVC.Http
                 using var response = await client.SendAsync(requestMessage);
                 var json = await response.Content.ReadAsStringAsync();
 
-                LogRecorder.MonitorDetails(() => $"StatusCode : {response.StatusCode}");
+                FlowTracer.MonitorDetails(() => $"StatusCode : {response.StatusCode}");
 
                 if (SmartSerializer.TryDeserialize<MessageResult>(json, out var re2))
                 {
@@ -73,24 +73,24 @@ namespace ZeroTeam.MessageMVC.Http
                     };
                 }
                 message.State = result.State;
-                LogRecorder.MonitorDetails(() => $"State : {result.State} Result : {result.Result}");
+                FlowTracer.MonitorDetails(() => $"State : {result.State} Result : {result.Result}");
                 return result;
             }
             catch (HttpRequestException ex)
             {
-                LogRecorder.MonitorInfomation(() => $"发生异常.{ex.Message}");
+                FlowTracer.MonitorInfomation(() => $"发生异常.{ex.Message}");
                 message.State = MessageState.Unsend;
                 return null;//直接使用状态
             }
             catch (Exception ex)
             {
-                LogRecorder.MonitorInfomation(() => $"发生异常.{ex.Message}");
+                FlowTracer.MonitorInfomation(() => $"发生异常.{ex.Message}");
                 message.State = MessageState.NetworkError;
                 return null;//直接使用状态
             }
             finally
             {
-                LogRecorder.EndStepMonitor();
+                FlowTracer.EndStepMonitor();
             }
         }
 
@@ -148,11 +148,11 @@ namespace ZeroTeam.MessageMVC.Http
             {
                 name = HttpClientOption.DefaultName;
             }
-            LogRecorder.BeginStepMonitor("[HttpPoster.CallOut]");
+            FlowTracer.BeginStepMonitor("[HttpPoster.CallOut]");
             try
             {
                 var client = HttpClientOption.HttpClientFactory.CreateClient(name);
-                LogRecorder.MonitorDetails(() => $"URL : {client.BaseAddress}{api}");
+                FlowTracer.MonitorDetails(() => $"URL : {client.BaseAddress}{api}");
 
                 using var response = await client.GetAsync(api);
 
@@ -160,23 +160,23 @@ namespace ZeroTeam.MessageMVC.Http
 
                 MessageState state = HttpCodeToMessageState(response.StatusCode);
 
-                LogRecorder.MonitorDetails(() => $"HttpStatus : {response.StatusCode} MessageState : {state} Result : {json}");
+                FlowTracer.MonitorDetails(() => $"HttpStatus : {response.StatusCode} MessageState : {state} Result : {json}");
 
                 return (state, json);
             }
             catch (HttpRequestException ex)
             {
-                LogRecorder.MonitorInfomation(() => $"发生异常.{ex.Message}");
+                FlowTracer.MonitorInfomation(() => $"发生异常.{ex.Message}");
                 return (MessageState.Unsend, null);
             }
             catch (Exception ex)
             {
-                LogRecorder.MonitorInfomation(() => $"发生异常.{ex.Message}");
+                FlowTracer.MonitorInfomation(() => $"发生异常.{ex.Message}");
                 return (MessageState.NetworkError, null);
             }
             finally
             {
-                LogRecorder.EndStepMonitor();
+                FlowTracer.EndStepMonitor();
             }
         }
 
@@ -194,11 +194,11 @@ namespace ZeroTeam.MessageMVC.Http
             {
                 name = HttpClientOption.DefaultName;
             }
-            LogRecorder.BeginStepMonitor("[HttpPoster.CallOut]");
+            FlowTracer.BeginStepMonitor("[HttpPoster.CallOut]");
             try
             {
                 var client = HttpClientOption.HttpClientFactory.CreateClient(name);
-                LogRecorder.MonitorDetails(() => $"URL : {client.BaseAddress}{api}");
+                FlowTracer.MonitorDetails(() => $"URL : {client.BaseAddress}{api}");
 
                 using var httpContent = new StringContent(content);
                 using var response = await client.PostAsync(api, httpContent);
@@ -207,23 +207,23 @@ namespace ZeroTeam.MessageMVC.Http
 
                 MessageState state = HttpCodeToMessageState(response.StatusCode);
 
-                LogRecorder.MonitorDetails(() => $"HttpStatus : {response.StatusCode} MessageState : {state} Result : {json}");
+                FlowTracer.MonitorDetails(() => $"HttpStatus : {response.StatusCode} MessageState : {state} Result : {json}");
 
                 return (state, json);
             }
             catch (HttpRequestException ex)
             {
-                LogRecorder.MonitorInfomation(() => $"发生异常.{ex.Message}");
+                FlowTracer.MonitorInfomation(() => $"发生异常.{ex.Message}");
                 return (MessageState.Unsend, null);
             }
             catch (Exception ex)
             {
-                LogRecorder.MonitorInfomation(() => $"发生异常.{ex.Message}");
+                FlowTracer.MonitorInfomation(() => $"发生异常.{ex.Message}");
                 return (MessageState.NetworkError, null);
             }
             finally
             {
-                LogRecorder.EndStepMonitor();
+                FlowTracer.EndStepMonitor();
             }
         }
 

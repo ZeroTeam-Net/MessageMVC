@@ -181,7 +181,7 @@ namespace ZeroTeam.MessageMVC
             var producer = GetService(message.Topic);
             if (producer == null)
             {
-                LogRecorder.MonitorInfomation(() => $"服务{message.Topic}不存在");
+                FlowTracer.MonitorInfomation(() => $"服务{message.Topic}不存在");
                 return (null, MessageState.Unhandled);
             }
             var inline = CheckMessage(message);
@@ -193,7 +193,7 @@ namespace ZeroTeam.MessageMVC
                 if (autoOffline)
                 {
                     inline.OfflineResult();
-                    LogRecorder.MonitorDetails(() => $"返回 => {SmartSerializer.ToInnerString(msg)}");
+                    FlowTracer.MonitorDetails(() => $"返回 => {SmartSerializer.ToInnerString(msg)}");
                 }
                 return (inline, inline.State);
             }

@@ -498,13 +498,13 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             {
                 Interlocked.Increment(ref SendError);
                 Logger.Error(state);
-                LogRecorder.MonitorInfomation(state);
+                FlowTracer.MonitorInfomation(state);
                 return Task.FromResult(false);
             }
             else
             {
                 Interlocked.Increment(ref SendCount);
-                LogRecorder.MonitorDetails(state);
+                FlowTracer.MonitorDetails(state);
                 return Task.FromResult(true);
             }
         }

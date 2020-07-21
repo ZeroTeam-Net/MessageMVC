@@ -1,3 +1,4 @@
+using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -436,7 +437,7 @@ namespace ZeroTeam.MessageMVC.Http
             }
             catch (Exception e)
             {
-                LogRecorder.Exception(e);
+                DependencyScope.Logger.Exception(e);
                 State = MessageState.FormalError;
             }
             return Task.CompletedTask;
@@ -465,7 +466,7 @@ namespace ZeroTeam.MessageMVC.Http
             }
             catch (Exception e)
             {
-                LogRecorder.Exception(e);
+                DependencyScope.Logger.Exception(e);
                 State = MessageState.FormalError;
             }
             DataState &= ~(MessageDataState.ArgumentInline | MessageDataState.ArgumentOffline);

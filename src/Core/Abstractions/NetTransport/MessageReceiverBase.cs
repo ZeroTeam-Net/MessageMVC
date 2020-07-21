@@ -81,7 +81,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <returns></returns>
         async Task<IMessageResult> IMessagePoster.Post(IInlineMessage message)
         {
-            LogRecorder.MonitorDetails(() => $"[{GetType().GetTypeName()}.Post] 进入本地隧道处理模式");
+            FlowTracer.MonitorDetails(() => $"[{GetType().GetTypeName()}.Post] 进入本地隧道处理模式");
             //如此做法,避免上下文混乱
             var task = new TaskCompletionSource<IMessageResult>();
             _ = MessageProcessor.OnMessagePush(Service, message, message.Content != null, task);

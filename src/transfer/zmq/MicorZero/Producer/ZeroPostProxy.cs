@@ -197,7 +197,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             var socket = CreateProxySocket(info.Argument);
             if (socket == null)
             {
-                LogRecorder.MonitorInfomation(() => $"[ZeroPostProxy.CallZero] 本地Sock构造失败.{argument.ID}");
+                FlowTracer.MonitorInfomation(() => $"[ZeroPostProxy.CallZero] 本地Sock构造失败.{argument.ID}");
                 return Task.FromResult<IMessageResult>(null);
             }
             using var zMessage = new ZMessage
@@ -223,13 +223,13 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
             if (!res)
             {
-                LogRecorder.MonitorInfomation(() => $"[ZeroPostProxy.CallZero] 发送到队列失败.{InprocAddress}");
+                FlowTracer.MonitorInfomation(() => $"[ZeroPostProxy.CallZero] 发送到队列失败.{InprocAddress}");
                 argument.RealState = MessageState.NetworkError;
                 info.TaskSource.TrySetResult(null);
             }
             else
             {
-                LogRecorder.MonitorDetails(() => $"[ZeroPostProxy.CallZero] 已发送到异步队列");
+                FlowTracer.MonitorDetails(() => $"[ZeroPostProxy.CallZero] 已发送到异步队列");
                 argument.RealState = MessageState.Send;
             }
             return info.TaskSource.Task;

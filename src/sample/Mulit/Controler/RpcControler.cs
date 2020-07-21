@@ -1,5 +1,4 @@
-﻿using Agebull.Common.Logging;
-using ZeroTeam.MessageMVC.ZeroApis;
+﻿using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Sample.Controllers
 {
@@ -9,7 +8,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         [Route("test")]
         public IApiResult Result()
         {
-            LogRecorder.Trace(GetType().FullName);
+            System.Console.WriteLine(GetType().FullName);
             return ApiResultHelper.Succees();
         }
     }

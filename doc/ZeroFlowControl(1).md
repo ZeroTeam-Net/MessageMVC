@@ -15,7 +15,7 @@
 
 
 1.日志对象初始化
->  LogRecorder.Initialize
+>  FlowTracer.Initialize
 
 2. 生成配置对象
 > Config : ZeroAppConfigRuntime

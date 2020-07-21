@@ -14,7 +14,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <param name="exception">原始异常</param>
         public MessagePostException(string msg, Exception exception) : base(msg, exception)
         {
-            //LogRecorder.Exception(exception, msg);
+            //FlowTracer.Exception(exception, msg);
         }
     }
 }

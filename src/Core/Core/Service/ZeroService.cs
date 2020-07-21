@@ -178,7 +178,7 @@ namespace ZeroTeam.MessageMVC.Services
             }
             catch (Exception e)
             {
-                LogRecorder.Exception(e);
+                logger.Exception(e);
                 return false;
             }
         }

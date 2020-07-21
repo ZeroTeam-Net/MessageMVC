@@ -75,7 +75,7 @@ namespace ZeroTeam.MessageMVC.Web
                 }
                 catch (Exception e)
                 {
-                    LogRecorder.Exception(e);
+                    DependencyScope.Logger.Exception(e);
                     return _config = new WebSocketConfig();
                 }
             }
