@@ -33,7 +33,7 @@ namespace ZeroTeam.MessageMVC.Kafka
             return info;
         }
 
-        private static async Task<HealthItem> ProduceTest()
+        private async Task<HealthItem> ProduceTest()
         {
             HealthItem item = new HealthItem
             {

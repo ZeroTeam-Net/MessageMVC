@@ -67,7 +67,14 @@ namespace ZeroTeam.MessageMVC.MessageQueue
         /// <summary>
         /// 关闭处理
         /// </summary>
-        protected abstract Task OnClose();
+        protected virtual Task OnClose()
+        {
+            cancellation.Dispose();
+            cancellation = null;
+            State = StationStateType.Closed;
+
+            return Task.CompletedTask;
+        }
 
         #endregion
 
@@ -81,16 +88,25 @@ namespace ZeroTeam.MessageMVC.MessageQueue
         Task<IMessageResult> IMessagePoster.Post(IInlineMessage message)
         {
             message.Offline();
-
-            queues.Enqueue(new TQueueItem
+            message.RealState = MessageState.AsyncQueue;
+            return Post(new TQueueItem
             {
                 ID = message.ID,
                 Topic = message.Topic,
                 Message = SmartSerializer.SerializeMessage(message)
-            });
+            });//直接使用状态
+        }
+
+        /// <summary>
+        /// 生产消息
+        /// </summary>
+        /// <param name="item">消息</param>
+        /// <returns></returns>
+        protected Task<IMessageResult> Post(TQueueItem item)
+        {
+            queues.Enqueue(item);
             semaphore.Release();
-            message.RealState = MessageState.AsyncQueue;
-            Logger.Trace(() => $"[异步消息投递]  {message.ID} 消息已投入发送队列,将在后台静默发送直到成功");
+            Logger.Trace(() => $"[异步消息投递]  {item.ID} 消息已投入发送队列,将在后台静默发送直到成功");
             return Task.FromResult<IMessageResult>(null);//直接使用状态
         }
         #endregion

@@ -70,6 +70,36 @@
             </summary>
             <returns>是否发送成功</returns>
         </member>
+        <member name="T:ZeroTeam.MessageMVC.Kafka.KafkaFlow">
+            <summary>
+                RabbitMQ流程处理
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Kafka.KafkaFlow.Instance">
+            <summary>
+            单例
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaFlow.ZeroTeam#MessageMVC#IZeroDependency#Name">
+            <summary>
+            实例名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaFlow.ZeroTeam#MessageMVC#IZeroMiddleware#Level">
+            <summary>
+            等级
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaFlow.ZeroTeam#MessageMVC#ILifeFlow#Open">
+            <summary>
+            关闭
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaFlow.ZeroTeam#MessageMVC#ILifeFlow#Close">
+            <summary>
+            关闭
+            </summary>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Kafka.KafkaOption">
             <summary>
             Kafka配置
@@ -105,44 +135,10 @@
                 Kafka消息发布
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#IZeroDependency#Name">
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.OnClose">
             <summary>
-            实例名称
+            关闭处理
             </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#IZeroMiddleware#Level">
-            <summary>
-            等级
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#ILifeFlow#Open">
-            <summary>
-            关闭
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#ILifeFlow#Close">
-            <summary>
-            关闭
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Kafka.KafkaPoster.Instance">
-            <summary>
-            单例
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ReQueueErrorMessage(System.String)">
-            <summary>
-            还原发送异常文件
-            </summary>
-            <param name="path"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.ZeroTeam#MessageMVC#Messages#IMessagePoster#Post(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
-            <summary>
-            生产消息
-            </summary>
-            <param name="message">消息</param>
-            <returns></returns>
         </member>
     </members>
 </doc>

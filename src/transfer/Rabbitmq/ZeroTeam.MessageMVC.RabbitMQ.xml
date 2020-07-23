@@ -231,6 +231,16 @@
             交换机
             </summary>
         </member>
+        <member name="T:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQQueueItem">
+            <summary>
+            队列内容
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQQueueItem.Option">
+            <summary>
+            配置
+            </summary>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQPoster">
             <summary>
                 RabbitMQ消息发布
@@ -252,16 +262,6 @@
             </summary>
             <param name="item">消息</param>
             <returns></returns>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQQueueItem">
-            <summary>
-            队列内容
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQQueueItem.Option">
-            <summary>
-            配置
-            </summary>
         </member>
     </members>
 </doc>

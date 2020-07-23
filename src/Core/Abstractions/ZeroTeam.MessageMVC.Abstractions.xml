@@ -3816,105 +3816,112 @@
         <member name="M:ZeroTeam.MessageMVC.Messages.XmlSerializeProxy.ToString(System.Object,System.Boolean)">
             <inheritdoc/>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.RabbitMQ.BackgroundPoster`1">
+        <member name="T:ZeroTeam.MessageMVC.MessageQueue.BackgroundPoster`1">
             <summary>
                后台消息发布
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.RabbitMQ.BackgroundPoster`1.Name">
+        <member name="P:ZeroTeam.MessageMVC.MessageQueue.BackgroundPoster`1.Name">
             <summary>
             实例名称
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.RabbitMQ.BackgroundPoster`1.cancellation">
+        <member name="F:ZeroTeam.MessageMVC.MessageQueue.BackgroundPoster`1.cancellation">
             <summary>
             取消凭据
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.BackgroundPoster`1.ZeroTeam#MessageMVC#Messages#IMessagePoster#Open">
+        <member name="M:ZeroTeam.MessageMVC.MessageQueue.BackgroundPoster`1.ZeroTeam#MessageMVC#Messages#IMessagePoster#Open">
             <summary>
             开启
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.BackgroundPoster`1.ZeroTeam#MessageMVC#Messages#IMessagePoster#Close">
+        <member name="M:ZeroTeam.MessageMVC.MessageQueue.BackgroundPoster`1.ZeroTeam#MessageMVC#Messages#IMessagePoster#Close">
             <summary>
             关闭
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.BackgroundPoster`1.DoPost(`0)">
+        <member name="M:ZeroTeam.MessageMVC.MessageQueue.BackgroundPoster`1.DoPost(`0)">
             <summary>
             投递消息
             </summary>
             <param name="item"></param>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.BackgroundPoster`1.OnOpen">
+        <member name="M:ZeroTeam.MessageMVC.MessageQueue.BackgroundPoster`1.OnOpen">
             <summary>
             关闭处理
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.BackgroundPoster`1.OnClose">
+        <member name="M:ZeroTeam.MessageMVC.MessageQueue.BackgroundPoster`1.OnClose">
             <summary>
             关闭处理
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.BackgroundPoster`1.ZeroTeam#MessageMVC#Messages#IMessagePoster#Post(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
+        <member name="M:ZeroTeam.MessageMVC.MessageQueue.BackgroundPoster`1.ZeroTeam#MessageMVC#Messages#IMessagePoster#Post(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
             <summary>
             生产消息
             </summary>
             <param name="message">消息</param>
             <returns></returns>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.RabbitMQ.BackgroundPoster`1.BackupFolder">
+        <member name="M:ZeroTeam.MessageMVC.MessageQueue.BackgroundPoster`1.Post(`0)">
+            <summary>
+            生产消息
+            </summary>
+            <param name="item">消息</param>
+            <returns></returns>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.MessageQueue.BackgroundPoster`1.BackupFolder">
             <summary>
             备份目录
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.BackgroundPoster`1.ReQueueErrorMessage">
+        <member name="M:ZeroTeam.MessageMVC.MessageQueue.BackgroundPoster`1.ReQueueErrorMessage">
             <summary>
             还原发送异常文件
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.BackgroundPoster`1.RemoveBackup(`0)">
+        <member name="M:ZeroTeam.MessageMVC.MessageQueue.BackgroundPoster`1.RemoveBackup(`0)">
             <summary>
             删除备份
             </summary>
             <param name="item"></param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.BackgroundPoster`1.Backup(`0)">
+        <member name="M:ZeroTeam.MessageMVC.MessageQueue.BackgroundPoster`1.Backup(`0)">
             <summary>
             备份消息
             </summary>
             <param name="item"></param>
             <returns></returns>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.RabbitMQ.QueueItem">
+        <member name="T:ZeroTeam.MessageMVC.MessageQueue.QueueItem">
             <summary>
             队列内容
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.RabbitMQ.QueueItem.ID">
+        <member name="P:ZeroTeam.MessageMVC.MessageQueue.QueueItem.ID">
             <summary>
             消息ID
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.RabbitMQ.QueueItem.Topic">
+        <member name="P:ZeroTeam.MessageMVC.MessageQueue.QueueItem.Topic">
             <summary>
             主题
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.RabbitMQ.QueueItem.Message">
+        <member name="P:ZeroTeam.MessageMVC.MessageQueue.QueueItem.Message">
             <summary>
             消息体的JSON
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.RabbitMQ.QueueItem.FileName">
+        <member name="P:ZeroTeam.MessageMVC.MessageQueue.QueueItem.FileName">
             <summary>
             备份文本名
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.RabbitMQ.QueueItem.Try">
+        <member name="P:ZeroTeam.MessageMVC.MessageQueue.QueueItem.Try">
             <summary>
             重试次数
             </summary>
