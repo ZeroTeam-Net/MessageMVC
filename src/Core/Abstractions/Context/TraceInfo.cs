@@ -12,10 +12,22 @@ namespace ZeroTeam.MessageMVC.Context
     public class TraceInfo
     {
         /// <summary>
+        /// 跟踪信息内容
+        /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public TraceInfoType ContentInfo { get; set; }
+
+        /// <summary>
         /// 全局请求标识（源头为用户请求）
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string TraceId { get; set; }
+
+        /// <summary>
+        ///     调用层级
+        /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public int Level { get; set; }
 
         /// <summary>
         ///     开始时间
@@ -28,13 +40,6 @@ namespace ZeroTeam.MessageMVC.Context
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public DateTime? End { get; set; }
-
-        /// <summary>
-        ///     调用层级
-        /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public int Level { get; set; }
-
 
         /// <summary>
         /// 本地的全局标识
@@ -102,13 +107,21 @@ namespace ZeroTeam.MessageMVC.Context
         /// </summary>
         public static TraceInfo New(string id)
         {
+            if(ZeroAppOption.Instance.TraceInfo.HasFlag(TraceInfoType.LinkTrace))
+                return new TraceInfo
+                {
+                    TraceId = id,
+                    ContentInfo = ZeroAppOption.Instance.TraceInfo,
+                    Start = DateTime.Now,
+                    LocalId = id,
+                    LocalApp = $"{ZeroAppOption.Instance.ShortName ?? ZeroAppOption.Instance.AppName}({ZeroAppOption.Instance.AppVersion})",
+                    LocalMachine = $"{ZeroAppOption.Instance.ServiceName}({ZeroAppOption.Instance.LocalIpAddress})"
+                };
             return new TraceInfo
             {
                 TraceId = id,
-                Start = DateTime.Now,
-                LocalId = id,
-                LocalApp = $"{ZeroAppOption.Instance.ShortName ?? ZeroAppOption.Instance.AppName}({ZeroAppOption.Instance.AppVersion})",
-                LocalMachine = $"{ZeroAppOption.Instance.ServiceName}({ZeroAppOption.Instance.LocalIpAddress})"
+                ContentInfo = ZeroAppOption.Instance.TraceInfo,
+                Start = DateTime.Now
             };
         }
 
@@ -138,7 +151,7 @@ namespace ZeroTeam.MessageMVC.Context
 
 
     /// <summary>
-    ///     全局上下文(用于序列化)
+    ///     跟踪上下文(用于序列化)
     /// </summary>
     [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class StaticContext

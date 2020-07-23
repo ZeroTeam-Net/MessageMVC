@@ -17,7 +17,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         /// 构造
         /// </summary>
-        public ZeroEventReceiver() : base(nameof(ZeroEventReceiver), false)
+        public ZeroEventReceiver() : base(nameof(ZeroEventReceiver))
         {
         }
 

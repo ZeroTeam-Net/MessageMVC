@@ -54,7 +54,7 @@ namespace ZeroTeam.MessageMVC.Messages
             await Task.Yield();
             foreach (var file in files)
             {
-                if (!ZeroFlowControl.IsRuning)
+                if (!ZeroAppOption.Instance.IsRuning)
                 {
                     return;
                 }

@@ -141,7 +141,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         /// </summary>
         internal static void worker_sound_off()
         {
-            if (ZeroFlowControl.ApplicationState != StationRealState.Run || ZeroRpcFlow.ZeroCenterState != ZeroCenterState.Run)
+            if (ZeroAppOption.Instance.ApplicationState != StationRealState.Run || ZeroRpcFlow.ZeroCenterState != ZeroCenterState.Run)
             {
                 return;
             }
@@ -193,7 +193,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC.ZeroManagemant
         }
         internal static void ChangeStationState(string name, ZeroCenterState state, ZeroNetEventType eventType)
         {
-            if (ZeroFlowControl.ApplicationState != StationRealState.Run || ZeroRpcFlow.ZeroCenterState != ZeroCenterState.Run)
+            if (ZeroAppOption.Instance.ApplicationState != StationRealState.Run || ZeroRpcFlow.ZeroCenterState != ZeroCenterState.Run)
             {
                 return;
             }

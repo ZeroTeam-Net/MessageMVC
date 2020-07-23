@@ -3,6 +3,7 @@ using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
+using System.Threading;
 
 namespace ZeroTeam.MessageMVC
 {
@@ -54,6 +55,45 @@ namespace ZeroTeam.MessageMVC
         [IgnoreDataMember]
         public bool IsLinux { get; set; }
 
+        #region State
+
+        /// <summary>
+        ///     运行状态
+        /// </summary>
+        private int _appState;
+
+        /// <summary>
+        ///     状态
+        /// </summary>
+        public int ApplicationState => _appState;
+
+        /// <summary>
+        /// 设置应用状态
+        /// </summary>
+        /// <param name="state"></param>
+        public void SetApplicationState(int state) => Interlocked.Exchange(ref _appState, state);
+
+        /// <summary>
+        ///     本地应用是否正在运行
+        /// </summary>
+        public bool IsRuning => ApplicationState == StationState.BeginRun || ApplicationState == StationState.Run;
+
+        /// <summary>
+        ///     运行状态（本地未关闭）
+        /// </summary>
+        public bool IsAlive => ApplicationState < StationState.Closing;
+
+        /// <summary>
+        ///     已注销
+        /// </summary>
+        public bool IsDestroy => ApplicationState == StationState.Destroy;
+
+        /// <summary>
+        ///     已关闭
+        /// </summary>
+        public bool IsClosed => ApplicationState >= StationState.Closed;
+
+        #endregion
         /// <summary>
         /// 实例
         /// </summary>
@@ -70,7 +110,8 @@ namespace ZeroTeam.MessageMVC
                 IsLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
             };
             Instance.CopyByHase(ConfigurationHelper.Get<ZeroAppConfig>("MessageMVC:Option"));
+            if (Instance.TraceInfo == TraceInfoType.None)
+                Instance.TraceInfo = TraceInfoType.All;
         }
-
     }
 }

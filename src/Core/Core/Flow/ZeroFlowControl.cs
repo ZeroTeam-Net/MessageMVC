@@ -19,58 +19,9 @@ namespace ZeroTeam.MessageMVC
     /// </summary>
     public partial class ZeroFlowControl
     {
-        #region State
+        #region Flow
 
         private static IFlowMiddleware[] Middlewares;
-
-        /// <summary>
-        ///     运行状态
-        /// </summary>
-        private static int _appState;
-
-        /// <summary>
-        ///     状态
-        /// </summary>
-        public static int ApplicationState
-        {
-            get => _appState;
-            private set
-            {
-                Interlocked.Exchange(ref _appState, value);
-            }
-        }
-
-        /// <summary>
-        /// 设置ZeroCenter与Application状态都为Failed
-        /// </summary>
-        public static void SetFailed()
-        {
-            ApplicationState = StationState.Failed;
-        }
-
-        /// <summary>
-        ///     本地应用是否正在运行
-        /// </summary>
-        public static bool IsRuning => ApplicationState == StationState.BeginRun || ApplicationState == StationState.Run;
-
-        /// <summary>
-        ///     运行状态（本地未关闭）
-        /// </summary>
-        public static bool IsAlive => ApplicationState < StationState.Closing;
-
-        /// <summary>
-        ///     已注销
-        /// </summary>
-        public static bool IsDestroy => ApplicationState == StationState.Destroy;
-
-        /// <summary>
-        ///     已关闭
-        /// </summary>
-        public static bool IsClosed => ApplicationState >= StationState.Closed;
-
-        #endregion
-
-        #region Flow
 
         #region Check
         private static ILogger logger;
@@ -80,9 +31,9 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public static void Check()
         {
-            if (ApplicationState >= StationState.Check)
+            if (ZeroAppOption.Instance.ApplicationState >= StationState.Check)
                 return;
-            ApplicationState = StationState.Check;
+            ZeroAppOption.Instance.SetApplicationState(StationState.Check);
             LoggerExtend.DoInitialize();
             logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(ZeroFlowControl));
 
@@ -148,9 +99,9 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
         /// </summary>
         public static async Task Initialize()
         {
-            if (ApplicationState >= StationState.Initialized)
+            if (ZeroAppOption.Instance.ApplicationState >= StationState.Initialized)
                 return;
-            ApplicationState = StationState.Initialized;
+            ZeroAppOption.Instance.SetApplicationState(StationState.Initialized);
             DependencyHelper.Update();
             await DiscoverAll();
             DependencyHelper.Update();
@@ -222,17 +173,17 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
         /// </summary>
         public static void Shutdown()
         {
-            if (ApplicationState >= StationState.Closing)
+            if (ZeroAppOption.Instance.ApplicationState >= StationState.Closing)
             {
                 return;
             }
             logger.Information("【正在退出...】");
-            ApplicationState = StationState.Closing;
+            ZeroAppOption.Instance.SetApplicationState(StationState.Closing);
             CloseAll();
             WaitAllObjectSafeClose();
-            ApplicationState = StationState.Closed;
+            ZeroAppOption.Instance.SetApplicationState(StationState.Closed);
             DestoryAll();
-            ApplicationState = StationState.Destroy;
+            ZeroAppOption.Instance.SetApplicationState(StationState.Destroy);
 
             DependencyHelper.LoggerFactory.Dispose();
             DependencyScope.Local.Value?.Scope?.Dispose();
@@ -364,7 +315,7 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
             }
             logger?.Information("[注册服务] {0}", service.ServiceName);
 
-            if (ApplicationState >= StationState.Initialized)
+            if (ZeroAppOption.Instance.ApplicationState >= StationState.Initialized)
             {
                 try
                 {
@@ -376,7 +327,7 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
                     logger.Exception(e, "[初始化服务] {0}", service.ServiceName);
                 }
             }
-            if (ApplicationState != StationState.Run)
+            if (ZeroAppOption.Instance.ApplicationState != StationState.Run)
             {
                 return true;
             }
@@ -410,7 +361,7 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
             }
             logger?.Information("[注册服务] {0}", service.ServiceName);
 
-            if (ApplicationState >= StationState.Initialized)
+            if (ZeroAppOption.Instance.ApplicationState >= StationState.Initialized)
             {
                 try
                 {
@@ -422,7 +373,7 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
                     logger.Exception(e, "[初始化服务] {0}", service.ServiceName);
                 }
             }
-            if (ApplicationState != StationState.Run)
+            if (ZeroAppOption.Instance.ApplicationState != StationState.Run)
             {
                 return true;
             }
@@ -498,9 +449,9 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
         /// </summary>
         static async Task<bool> OpenAll()
         {
-            if (ApplicationState >= StationState.BeginRun)
+            if (ZeroAppOption.Instance.ApplicationState >= StationState.BeginRun)
                 return false;
-            ApplicationState = StationState.BeginRun;
+            ZeroAppOption.Instance.SetApplicationState(StationState.BeginRun);
             logger.Information("【启动】开始");
             foreach (var mid in Middlewares)
             {
@@ -531,7 +482,7 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
             if (Services.Count > 0)
                 await ActiveSemaphore.WaitAsync();
 
-            ApplicationState = StationState.Run;
+            ZeroAppOption.Instance.SetApplicationState(StationState.Run);
             logger.Information("【启动】完成");
             return true;
         }

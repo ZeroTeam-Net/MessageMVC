@@ -1,10 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <ApplicationIcon />
-    <IsPackable>true</IsPackable>
+    <StartupObject />
+    <Description>以MVC方式进行消息处理,此包为RabbitMQ的实现</Description>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/ZeroTeam-Net/MessageMVC</PackageProjectUrl>
@@ -13,19 +14,25 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>ZeroTeam.MessageMVC.WebSocketBridge.xml</DocumentationFile>
+    <DocumentationFile>ZeroTeam.MessageMVC.RabbitMQ.xml</DocumentationFile>
+    <DefineConstants>TRACE;monitor</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>ZeroTeam.MessageMVC.WebSocketBridge.xml</DocumentationFile>
+    <DocumentationFile>ZeroTeam.MessageMVC.RabbitMQ.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="ZeroTeam.MessageMVC.WebSocketBridge.xml" />
+    <PackageReference Include="RabbitMQ.Client" Version="6.1.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\Core\ZeroTeam.MessageMVC.Core.csproj" />
+    <ProjectReference Include="..\..\Core\Abstractions\ZeroTeam.MessageMVC.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

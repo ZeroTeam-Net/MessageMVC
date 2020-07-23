@@ -1,24 +1,39 @@
-﻿using Agebull.Common.Ioc;
+﻿using System;
+using Agebull.Common.Ioc;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
-using ZeroTeam.MessageMVC.Kafka;
-
-namespace MicroZero.Kafka.QueueStation
+using ZeroTeam.MessageMVC.RabbitMQ;
+using Microsoft.Extensions.DependencyInjection;
+using Agebull.Common.Configuration;
+using Microsoft.Extensions.Logging;
+namespace Rabbit
 {
     class Program
     {
-        static async Task Main()
+        static async Task Main(string[] args)
         {
+            DependencyHelper.ServiceCollection.AddLogging(builder =>
+            {
+                builder.AddConfiguration(ConfigurationHelper.Root.GetSection("Logging"));
+                builder.AddConsole();
+                DependencyHelper.Update();
+            });
             var services = DependencyHelper.ServiceCollection;
-            services.UseKafka();
+            services.UseRabbitMQ();
+            DependencyHelper.Update();
+            _ = Test();
             await services.UseFlowAndWait(typeof(Program));
         }
-        static async void Test()
+        static async Task Test()
         {
-            //for (int i = 0; ZeroAppOption.Instance.IsRuning && i < 10; i++)
+            for (int i = 0; ZeroAppOption.Instance.IsAlive && i < 100000; i++)
             {
-                await Task.Delay(100);
-
+                if (!ZeroAppOption.Instance.IsRuning)
+                {
+                    await Task.Delay(1000);
+                    continue;
+                }
+                //await Task.Delay(1);
                 //await MessagePoster.PublishAsync("test1", "test/res", "agebull");
                 //await MessagePoster.PublishAsync("test1", "test/arg", "{'Value':'test'}");
                 await MessagePoster.PublishAsync("test1", "test/full", "{'name':'test'}");

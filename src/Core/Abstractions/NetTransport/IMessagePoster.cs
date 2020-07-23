@@ -13,6 +13,11 @@ namespace ZeroTeam.MessageMVC.Messages
         bool CanDo { get; }
 
         /// <summary>
+        /// 是否本地接收者
+        /// </summary>
+        bool IsLocalReceiver { get; }
+
+        /// <summary>
         /// 运行状态
         /// </summary>
         StationStateType State { get; set; }
@@ -23,6 +28,16 @@ namespace ZeroTeam.MessageMVC.Messages
         void Initialize() { }
 
         /// <summary>
+        /// 开启
+        /// </summary>
+        Task Open() => Task.CompletedTask;
+
+        /// <summary>
+        /// 关闭
+        /// </summary>
+        Task Close() => Task.CompletedTask;
+
+        /// <summary>
         /// 投递消息
         /// </summary>
         /// <param name="message">消息</param>
@@ -31,77 +46,3 @@ namespace ZeroTeam.MessageMVC.Messages
 
     }
 }
-
-/*
- 
-        /// <summary>
-        /// 生产消息
-        /// </summary>
-        /// <param name="topic">消息分类</param>
-        /// <param name="title">消息标题</param>
-        /// <param name="content">消息内容</param>
-        /// <returns></returns>
-        TRes Producer<TArg, TRes>(string topic, string title, TArg content);
-
-        /// <summary>
-        /// 生产消息
-        /// </summary>
-        /// <param name="topic">消息分类</param>
-        /// <param name="title">消息标题</param>
-        /// <param name="content">消息内容</param>
-        /// <returns></returns>
-        void Producer<TArg>(string topic, string title, TArg content);
-
-        /// <summary>
-        /// 生产消息
-        /// </summary>
-        /// <param name="topic">消息分类</param>
-        /// <param name="title">消息标题</param>
-        /// <returns></returns>
-        TRes Producer<TRes>(string topic, string title);
-
-        /// <summary>
-        /// 生产消息
-        /// </summary>
-        /// <param name="topic">消息分类</param>
-        /// <param name="title">消息标题</param>
-        /// <param name="content">消息内容</param>
-        /// <returns></returns>
-        string Producer(string topic, string title, string content);
-
-        /// <summary>
-        /// 生产消息
-        /// </summary>
-        /// <param name="topic">消息分类</param>
-        /// <param name="title">消息标题</param>
-        /// <param name="content">消息内容</param>
-        /// <returns></returns>
-        Task<TRes> ProducerAsync<TArg, TRes>(string topic, string title, TArg content);
-
-        /// <summary>
-        /// 生产消息
-        /// </summary>
-        /// <param name="topic">消息分类</param>
-        /// <param name="title">消息标题</param>
-        /// <param name="content">消息内容</param>
-        /// <returns></returns>
-        Task ProducerAsync<TArg>(string topic, string title, TArg content);
-
-        /// <summary>
-        /// 生产消息
-        /// </summary>
-        /// <param name="topic">消息分类</param>
-        /// <param name="title">消息标题</param>
-        /// <returns></returns>
-        Task<TRes> ProducerAsync<TRes>(string topic, string title);
-
-        /// <summary>
-        /// 生产消息
-        /// </summary>
-        /// <param name="topic">消息分类</param>
-        /// <param name="title">消息标题</param>
-        /// <param name="content">消息内容</param>
-        /// <returns></returns>
-        Task<string> ProducerAsync(string topic, string title, string content);
-
-     */

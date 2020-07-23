@@ -163,9 +163,9 @@ namespace ZeroTeam.MessageMVC.Services
             logger.Information(() => $"Try start by {StationState.Text(RealState)}");
             try
             {
-                if (ConfigState == StationStateType.None || ConfigState >= StationStateType.Stop || !ZeroFlowControl.IsRuning)
+                if (ConfigState == StationStateType.None || ConfigState >= StationStateType.Stop || !ZeroAppOption.Instance.IsRuning)
                 {
-                    logger.Warning(() => $"Start failed. ConfigState :{ConfigState} ,ZeroFlowControl.CanDo {ZeroFlowControl.IsRuning}");
+                    logger.Warning(() => $"Start failed. ConfigState :{ConfigState} ,ZeroFlowControl.CanDo {ZeroAppOption.Instance.IsRuning}");
                     return false;
                 }
                 RealState = StationState.Start;
@@ -206,7 +206,7 @@ namespace ZeroTeam.MessageMVC.Services
                 {
                     success = await Receiver.Loop(CancelToken.Token);
                 }
-                catch (TaskCanceledException)
+                catch (OperationCanceledException)
                 {
                     success = true;
                 }
@@ -224,7 +224,7 @@ namespace ZeroTeam.MessageMVC.Services
                 CancelToken = null;
                 if (ConfigState < StationStateType.Stop)
                 {
-                    if (!ZeroFlowControl.IsRuning)
+                    if (!ZeroAppOption.Instance.IsRuning)
                     {
                         ConfigState = StationStateType.Stop;
                     }

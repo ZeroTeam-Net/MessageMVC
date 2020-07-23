@@ -1,7 +1,5 @@
-﻿using Agebull.Common.Ioc;
-using Agebull.Common.Logging;
+﻿using Agebull.Common.Logging;
 using Confluent.Kafka;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,13 +13,11 @@ namespace ZeroTeam.MessageMVC.Kafka
     /// </summary>
     internal class KafkaConsumer : MessageReceiverBase, IMessageConsumer
     {
-        ILogger logger;
         /// <summary>
         /// 构造
         /// </summary>
         public KafkaConsumer() : base(nameof(KafkaConsumer))
         {
-            logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(KafkaConsumer));
         }
 
         /// <summary>
@@ -50,7 +46,7 @@ namespace ZeroTeam.MessageMVC.Kafka
                     }
                     catch (Exception e)
                     {
-                        logger.Exception(e);
+                        Logger.Exception(e);
                         consumer.Commit();//无法处理的消息,直接确认
                         continue;
                     }
@@ -61,7 +57,7 @@ namespace ZeroTeam.MessageMVC.Kafka
                 }
                 catch (Exception ex)
                 {
-                    logger.Exception(ex, "KafkaConsumer.Loop");
+                    Logger.Exception(ex, "KafkaConsumer.Loop");
                 }
             }
             return true;
@@ -117,7 +113,7 @@ namespace ZeroTeam.MessageMVC.Kafka
             }
             catch (KafkaException ex)
             {
-                logger.Exception(ex);
+                Logger.Exception(ex);
                 return Task.FromResult(false);
             }
         }

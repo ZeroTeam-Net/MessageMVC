@@ -198,12 +198,12 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         ///     运行状态（本地与服务器均正常）
         /// </summary>
-        public static bool CanDo => ZeroFlowControl.IsRuning && ZerCenterIsRun;
+        public static bool CanDo => ZeroAppOption.Instance.IsRuning && ZerCenterIsRun;
 
         /// <summary>
         ///     运行状态（本地未关闭）
         /// </summary>
-        public static bool IsAlive => ZeroFlowControl.ApplicationState < StationRealState.Destroy;
+        public static bool IsAlive => ZeroAppOption.Instance.ApplicationState < StationRealState.Destroy;
 
         /// <summary>
         /// 中心事件监控对象
@@ -246,7 +246,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
             }
             Logger.Information("be connected successfully,start local stations.");
 
-            if (ZeroFlowControl.ApplicationState == StationRealState.Run)
+            if (ZeroAppOption.Instance.ApplicationState == StationRealState.Run)
             {
                 if (WorkModel == ZeroWorkModel.Service)
                 {

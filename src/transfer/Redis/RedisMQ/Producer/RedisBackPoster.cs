@@ -167,7 +167,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             var isFailed = ReQueueErrorMessage(path);
 
             Logger.Information("异步消息投递已启动");
-            while (ZeroFlowControl.IsAlive)
+            while (ZeroAppOption.Instance.IsAlive)
             {
                 if (isFailed)
                 {
@@ -180,7 +180,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                     {
                         await semaphore.WaitAsync(60000, tokenSource.Token);
                     }
-                    catch (TaskCanceledException)
+                    catch (OperationCanceledException)
                     {
                         Logger.Information("收到系统退出消息,正在退出...");
                         return;

@@ -324,7 +324,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         /// 能不能循环处理
         /// </summary>
-        protected bool CanLoopEx => WaitCount > 0 || ZeroFlowControl.IsRuning;
+        protected bool CanLoopEx => WaitCount > 0 || ZeroAppOption.Instance.IsRuning;
         /// <summary>
         /// 同步站点配置
         /// </summary>

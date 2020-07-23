@@ -197,15 +197,15 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                         {
                             ServiceCollection(ilGenerator);
                         }
-                        else if (parameter.ParameterType.IsSupperInterface(typeof(ILogger)))
+                        else if (parameter.ParameterType == typeof(IServiceCollection))
                         {
-                            Logger(ilGenerator, parameter.ParameterType);
+                            Logger(ilGenerator);
                         }
-                        else if (parameter.ParameterType.IsSupperInterface(typeof(IUser)))
+                        else if (parameter.ParameterType == typeof(IServiceCollection))
                         {
                             User(ilGenerator);
                         }
-                        else if (parameter.ParameterType.IsSupperInterface(typeof(IZeroContext)))
+                        else if (parameter.ParameterType == typeof(IServiceCollection))
                         {
                             Context(ilGenerator);
                         }
@@ -245,17 +245,17 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     {
                         IocCreate(ilGenerator, pro.PropertyType);
                     }
-                    else if (pro.PropertyType.IsSupperInterface(typeof(IZeroContext)))
+                    else if (pro.PropertyType== typeof(IZeroContext))
                     {
                         Context(ilGenerator);
                     }
-                    else if (pro.PropertyType.IsSupperInterface(typeof(IUser)))
+                    else if (pro.PropertyType== typeof(IUser))
                     {
                         User(ilGenerator);
                     }
-                    else if (pro.PropertyType.IsSupperInterface(typeof(ILogger)))
+                    else if (pro.PropertyType== typeof(ILogger))
                     {
-                        Logger(ilGenerator, pro.PropertyType);
+                        Logger(ilGenerator);
                     }
                     else
                     {
@@ -397,7 +397,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             ilGenerator.Emit(OpCodes.Call, method);
         }
 
-        private static void Logger(ILGenerator ilGenerator, Type type)
+        private void Logger(ILGenerator ilGenerator)
         {
             var method = typeof(DependencyHelper).GetProperty($"LoggerFactory").GetGetMethod();
             ilGenerator.Emit(OpCodes.Call, method);
@@ -406,7 +406,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             ilGenerator.Emit(OpCodes.Ldloc, local);
             var methods = typeof(LoggerFactoryExtensions).GetMethods();
             method = methods.First(p => p.Name == "CreateLogger" && p.GetParameters().Length == 1);
-            method = method.MakeGenericMethod(type);
+            method = method.MakeGenericMethod(TypeInfo.AsType());
             ilGenerator.Emit(OpCodes.Call, method);
         }
 

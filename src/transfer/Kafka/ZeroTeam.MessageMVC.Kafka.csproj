@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\Core\ZeroTeam.MessageMVC.Core.csproj" />
+    <ProjectReference Include="..\..\Core\Abstractions\ZeroTeam.MessageMVC.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

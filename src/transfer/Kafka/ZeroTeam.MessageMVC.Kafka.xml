@@ -17,7 +17,7 @@
         </member>
         <member name="T:ZeroTeam.MessageMVC.Kafka.KafkaAttribute">
             <summary>
-                表示Redis事件
+                表示Kafka消费者
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaAttribute.#ctor(System.String)">

@@ -14,10 +14,10 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <param name="services"></param>
         public static void UseKafka(this IServiceCollection services)
         {
-            services.AddSingleton<IFlowMiddleware>(KafkaPoster.Instance);//Kafka环境
-            services.AddSingleton<IMessagePoster>(KafkaPoster.Instance);//采用Kafka生产端
+            services.AddSingleton<IHealthCheck>(KafkaFlow.Instance);
+            services.AddSingleton<IFlowMiddleware>(KafkaFlow.Instance);//Kafka环境
+            services.AddSingleton<IMessagePoster, KafkaPoster>();//采用Kafka生产端
             services.AddTransient<IMessageConsumer, KafkaConsumer>();//采用Kafka消费客户端
-            services.AddSingleton<IHealthCheck>(KafkaPoster.Instance);
         }
     }
 }

@@ -33,6 +33,7 @@ namespace ZeroTeam.MessageMVC.Context
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public Dictionary<string, string> Option { get; set; }
 
+        private IInlineMessage message;
         /// <summary>
         /// 当前消息
         /// </summary>
@@ -40,7 +41,6 @@ namespace ZeroTeam.MessageMVC.Context
         public IInlineMessage Message { get => message; set => message = value; }
 
         private TraceInfo trace;
-        private IInlineMessage message;
 
         /// <summary>
         ///     跟踪信息
@@ -50,9 +50,10 @@ namespace ZeroTeam.MessageMVC.Context
         {
             get
             {
-                return trace ??= TraceInfo.New(Message?.ID);
+                return ZeroAppOption.Instance.TraceInfo == TraceInfoType.None || trace != null 
+                    ? trace 
+                    : trace = TraceInfo.New(Message?.ID);
             }
-
             set => trace = value;
         }
 

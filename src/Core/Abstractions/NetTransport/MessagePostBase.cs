@@ -20,6 +20,11 @@ namespace ZeroTeam.MessageMVC.Messages
         protected ILogger Logger { get; private set; }
 
         /// <summary>
+        /// 是否本地接收者
+        /// </summary>
+        public bool IsLocalReceiver => false;
+
+        /// <summary>
         /// 运行状态
         /// </summary>
         public StationStateType State { get; set; }

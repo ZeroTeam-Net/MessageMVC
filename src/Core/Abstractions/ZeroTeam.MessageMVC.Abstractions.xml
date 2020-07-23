@@ -1164,6 +1164,46 @@
             已被移除
             </summary>
         </member>
+        <member name="T:ZeroTeam.MessageMVC.TraceInfoType">
+            <summary>
+            跟踪内容
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.TraceInfoType.None">
+            <summary>
+            无
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.TraceInfoType.App">
+            <summary>
+            应用信息
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.TraceInfoType.Headers">
+            <summary>
+            头信息
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.TraceInfoType.Token">
+            <summary>
+            令牌
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.TraceInfoType.Context">
+            <summary>
+            上下文
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.TraceInfoType.LinkTrace">
+            <summary>
+            链路
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.TraceInfoType.All">
+            <summary>
+            应用信息
+            </summary>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroAppConfig">
             <summary>
                 本地站点配置
@@ -1224,6 +1264,11 @@
                 服务映射，即将对应服务名称替换成另一个服务
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.TraceInfo">
+            <summary>
+            跟踪信息内容
+            </summary>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroAppConfig.CopyByHase(ZeroTeam.MessageMVC.ZeroAppConfig)">
             <summary>
             如果目标配置存在,则复制之
@@ -1279,6 +1324,42 @@
         <member name="P:ZeroTeam.MessageMVC.ZeroAppOption.IsLinux">
             <summary>
                 是否在Linux黑环境下
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroAppOption._appState">
+            <summary>
+                运行状态
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppOption.ApplicationState">
+            <summary>
+                状态
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroAppOption.SetApplicationState(System.Int32)">
+            <summary>
+            设置应用状态
+            </summary>
+            <param name="state"></param>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppOption.IsRuning">
+            <summary>
+                本地应用是否正在运行
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppOption.IsAlive">
+            <summary>
+                运行状态（本地未关闭）
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppOption.IsDestroy">
+            <summary>
+                已注销
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppOption.IsClosed">
+            <summary>
+                已关闭
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroAppOption.Instance">
@@ -1527,9 +1608,19 @@
             跟踪信息
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.TraceInfo.ContentInfo">
+            <summary>
+            跟踪信息内容
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.Context.TraceInfo.TraceId">
             <summary>
             全局请求标识（源头为用户请求）
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.TraceInfo.Level">
+            <summary>
+                调用层级
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Context.TraceInfo.Start">
@@ -1540,11 +1631,6 @@
         <member name="P:ZeroTeam.MessageMVC.Context.TraceInfo.End">
             <summary>
                 结束时间
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Context.TraceInfo.Level">
-            <summary>
-                调用层级
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Context.TraceInfo.LocalId">
@@ -1609,7 +1695,7 @@
         </member>
         <member name="T:ZeroTeam.MessageMVC.Context.StaticContext">
             <summary>
-                全局上下文(用于序列化)
+                跟踪上下文(用于序列化)
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Context.StaticContext.UserJson">
@@ -2859,6 +2945,11 @@
             是否可用
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.IMessagePoster.IsLocalReceiver">
+            <summary>
+            是否本地接收者
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.IMessagePoster.State">
             <summary>
             运行状态
@@ -2867,6 +2958,16 @@
         <member name="M:ZeroTeam.MessageMVC.Messages.IMessagePoster.Initialize">
             <summary>
                 初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.IMessagePoster.Open">
+            <summary>
+            开启
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.IMessagePoster.Close">
+            <summary>
+            关闭
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.IMessagePoster.Post(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
@@ -2964,6 +3065,11 @@
             日志器
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.MessagePostBase.IsLocalReceiver">
+            <summary>
+            是否本地接收者
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.MessagePostBase.State">
             <summary>
             运行状态
@@ -3006,12 +3112,16 @@
             实现了IMessagePoster自注册,可以做到本进程调用不会提升到网络层面
             </remarks>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.#ctor(System.String,System.Boolean)">
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.#ctor(System.String)">
             <summary>
             内部构造
             </summary>
             <param name="name"></param>
-            <param name="localCall"></param>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.ZeroTeam#MessageMVC#Messages#IMessagePoster#IsLocalReceiver">
+            <summary>
+            是否本地接收者
+            </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.ZeroTeam#MessageMVC#Messages#IMessagePoster#CanDo">
             <summary>
@@ -3036,11 +3146,6 @@
         <member name="F:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.state">
             <summary>
             运行状态
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.LocalCall">
-            <summary>
-            允许本地调用
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.ZeroTeam#MessageMVC#Messages#IMessagePoster#State">
@@ -3711,9 +3816,132 @@
         <member name="M:ZeroTeam.MessageMVC.Messages.XmlSerializeProxy.ToString(System.Object,System.Boolean)">
             <inheritdoc/>
         </member>
+        <member name="T:ZeroTeam.MessageMVC.RabbitMQ.BackgroundPoster`1">
+            <summary>
+               后台消息发布
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RabbitMQ.BackgroundPoster`1.Name">
+            <summary>
+            实例名称
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.RabbitMQ.BackgroundPoster`1.cancellation">
+            <summary>
+            取消凭据
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.BackgroundPoster`1.ZeroTeam#MessageMVC#Messages#IMessagePoster#Open">
+            <summary>
+            开启
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.BackgroundPoster`1.ZeroTeam#MessageMVC#Messages#IMessagePoster#Close">
+            <summary>
+            关闭
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.BackgroundPoster`1.DoPost(`0)">
+            <summary>
+            投递消息
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.BackgroundPoster`1.OnOpen">
+            <summary>
+            关闭处理
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.BackgroundPoster`1.OnClose">
+            <summary>
+            关闭处理
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.BackgroundPoster`1.ZeroTeam#MessageMVC#Messages#IMessagePoster#Post(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
+            <summary>
+            生产消息
+            </summary>
+            <param name="message">消息</param>
+            <returns></returns>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.RabbitMQ.BackgroundPoster`1.BackupFolder">
+            <summary>
+            备份目录
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.BackgroundPoster`1.ReQueueErrorMessage">
+            <summary>
+            还原发送异常文件
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.BackgroundPoster`1.RemoveBackup(`0)">
+            <summary>
+            删除备份
+            </summary>
+            <param name="item"></param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.BackgroundPoster`1.Backup(`0)">
+            <summary>
+            备份消息
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.RabbitMQ.QueueItem">
+            <summary>
+            队列内容
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RabbitMQ.QueueItem.ID">
+            <summary>
+            消息ID
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RabbitMQ.QueueItem.Topic">
+            <summary>
+            主题
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RabbitMQ.QueueItem.Message">
+            <summary>
+            消息体的JSON
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RabbitMQ.QueueItem.FileName">
+            <summary>
+            备份文本名
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RabbitMQ.QueueItem.Try">
+            <summary>
+            重试次数
+            </summary>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.MessagePoster">
             <summary>
             消息投递
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.MessagePoster.ZeroTeam#MessageMVC#ILifeFlow#Initialize">
+            <summary>
+                初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.MessagePoster.ZeroTeam#MessageMVC#ILifeFlow#Open">
+            <summary>
+            开启
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.MessagePoster.ZeroTeam#MessageMVC#ILifeFlow#Close">
+            <summary>
+            关闭
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.MessagePoster.localTunnel">
+            <summary>
+            启用本地隧道（即本地接收器存在的话，本地处理）
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.MessagePoster.Default">
@@ -3721,9 +3949,19 @@
             默认的生产者
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.MessagePoster.ZeroTeam#MessageMVC#ILifeFlow#Initialize">
+        <member name="F:ZeroTeam.MessageMVC.MessagePoster.ServiceMap">
             <summary>
-                初始化
+            服务查找表
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.MessagePoster.posters">
+            <summary>
+            服务查找表
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.MessagePoster.logger">
+            <summary>
+            日志对象
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.MessagePoster.UnRegistPoster(System.String)">

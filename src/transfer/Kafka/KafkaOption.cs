@@ -36,6 +36,8 @@ namespace ZeroTeam.MessageMVC.Kafka
             TestTopic = "HealthCheck"
         };
 
+        #region 配置自动更新
+
         const string sectionName = "MessageMVC:Kafka";
 
         const string ConfigName = "MessageMVC:Kafka:Client";
@@ -184,6 +186,7 @@ namespace ZeroTeam.MessageMVC.Kafka
             dest.ClientRack = config.ClientRack;
 
         }
+        #endregion
     }
 }
 

@@ -418,41 +418,6 @@
                 主流程控制器
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ZeroFlowControl._appState">
-            <summary>
-                运行状态
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroFlowControl.ApplicationState">
-            <summary>
-                状态
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.SetFailed">
-            <summary>
-            设置ZeroCenter与Application状态都为Failed
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroFlowControl.IsRuning">
-            <summary>
-                本地应用是否正在运行
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroFlowControl.IsAlive">
-            <summary>
-                运行状态（本地未关闭）
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroFlowControl.IsDestroy">
-            <summary>
-                已注销
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroFlowControl.IsClosed">
-            <summary>
-                已关闭
-            </summary>
-        </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.Check">
             <summary>
                 配置校验,作为第一步

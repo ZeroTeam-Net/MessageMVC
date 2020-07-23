@@ -67,6 +67,11 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public Dictionary<string, string> ServiceMap { get; set; }
 
+        /// <summary>
+        /// 跟踪信息内容
+        /// </summary>
+        public TraceInfoType TraceInfo { get; set; }
+
 
         #region 复制
 
@@ -80,6 +85,7 @@ namespace ZeroTeam.MessageMVC
             {
                 return;
             }
+            TraceInfo |= option.TraceInfo;
             if (ServiceMap == null)
             {
                 ServiceMap = option.ServiceMap;
@@ -141,6 +147,7 @@ namespace ZeroTeam.MessageMVC
             {
                 return;
             }
+            TraceInfo |= option.TraceInfo;
             if (ServiceMap == null)
             {
                 ServiceMap = option.ServiceMap;

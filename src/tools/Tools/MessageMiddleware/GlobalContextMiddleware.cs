@@ -38,9 +38,9 @@ namespace ZeroTeam.MessageMVC.Context
             else
             {
                 GlobalContext.Reset();
+                GlobalContext.Current.Message = message;
             }
 
-            GlobalContext.Current.Message = message;
             if (GlobalContext.Current.User == null)
             {
                 GlobalContext.Current.User = GlobalContext.Anymouse;
@@ -60,20 +60,18 @@ namespace ZeroTeam.MessageMVC.Context
                 }
             }
 
-            if (message.Trace != null)
-            {
-                GlobalContext.Current.Trace = message.Trace;
-                //message.Trace.Level += 1;
-                if (!message.IsOutAccess)
-                {
-                    message.Trace.LocalId = message.ID;
-                    message.Trace.LocalApp = $"{ZeroAppOption.Instance.AppName}({ZeroAppOption.Instance.AppVersion})";
-                    message.Trace.LocalMachine = $"{ZeroAppOption.Instance.ServiceName}({ZeroAppOption.Instance.LocalIpAddress})";
-                }
-            }
             if (GlobalContext.Current.Trace == null)
             {
                 GlobalContext.Current.Trace = TraceInfo.New(message.ID);
+            }
+            else
+            {
+                message.Trace.LocalId = message.ID;
+                if (!message.IsOutAccess && message.Trace.ContentInfo.HasFlag(TraceInfoType.LinkTrace))
+                {
+                    message.Trace.LocalApp = $"{ZeroAppOption.Instance.AppName}({ZeroAppOption.Instance.AppVersion})";
+                    message.Trace.LocalMachine = $"{ZeroAppOption.Instance.ServiceName}({ZeroAppOption.Instance.LocalIpAddress})";
+                }
             }
             return Task.FromResult(true);
         }

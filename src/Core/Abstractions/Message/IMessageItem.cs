@@ -29,11 +29,6 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         string Content { get; set; }
 
-        /*// <summary>
-        /// 其他二进制内容
-        /// </summary>
-        Dictionary<string, byte[]> Binary { get; set; }*/
-
         /// <summary>
         /// 处理结果,对应状态的解释信息
         /// </summary>

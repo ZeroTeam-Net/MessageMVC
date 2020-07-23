@@ -24,20 +24,6 @@ namespace ZeroTeam.MessageMVC
 
         int IZeroMiddleware.Level => MiddlewareLevel.Last;
 
-        #endregion
-
-        #region 消息生产者
-
-        /// <summary>
-        /// 默认的生产者
-        /// </summary>
-        private static IMessagePoster Default;
-
-        private static readonly Dictionary<string, List<IMessagePoster>> ServiceMap = new Dictionary<string, List<IMessagePoster>>(StringComparer.OrdinalIgnoreCase);
-
-        private static Dictionary<string, IMessagePoster> posters = new Dictionary<string, IMessagePoster>();
-        private static ILogger logger;
-
         /// <summary>
         ///     初始化
         /// </summary>
@@ -62,6 +48,7 @@ namespace ZeroTeam.MessageMVC
                 }
                 return Task.CompletedTask;
             }
+            localTunnel = sec.GetBool("default", false);
             var def = sec.GetStr("default", "");
             if (posters.TryGetValue(def, out Default))
             {
@@ -86,11 +73,67 @@ namespace ZeroTeam.MessageMVC
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// 开启
+        /// </summary>
+        Task ILifeFlow.Open()
+        {
+            foreach (var poster in posters.Values.Where(p => !p.IsLocalReceiver))
+            {
+                _ = poster.Open();
+            }
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// 关闭
+        /// </summary>
+        async Task ILifeFlow.Close()
+        {
+            var tasks = new List<Task>();
+            foreach (var poster in posters.Values.Where(p => !p.IsLocalReceiver))
+            {
+                tasks.Add(poster.Close());
+            }
+            foreach (var task in tasks)
+            {
+                await task;
+            }
+        }
+        #endregion
+
+        #region 消息生产者
+
+        /// <summary>
+        /// 启用本地隧道（即本地接收器存在的话，本地处理）
+        /// </summary>
+        private static bool localTunnel;
+
+        /// <summary>
+        /// 默认的生产者
+        /// </summary>
+        private static IMessagePoster Default;
+        /// <summary>
+        /// 服务查找表
+        /// </summary>
+        private static readonly Dictionary<string, List<IMessagePoster>> ServiceMap = new Dictionary<string, List<IMessagePoster>>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// 服务查找表
+        /// </summary>
+        private static Dictionary<string, IMessagePoster> posters = new Dictionary<string, IMessagePoster>();
+
+        /// <summary>
+        /// 日志对象
+        /// </summary>
+        private static ILogger logger;
+
+
         private static void AddPoster(IMessagePoster poster, string service)
         {
-            if (!ServiceMap.TryGetValue(service, out var items))
-                ServiceMap.TryAdd(service, items = new List<IMessagePoster>());
-            items = ServiceMap[service];
+            if (!ServiceMap.TryGetValue(service, out _))
+                _ = ServiceMap.TryAdd(service, new List<IMessagePoster>());
+            var items = ServiceMap[service];
             bool hase = false;
             foreach (var item in items)
             {
@@ -110,7 +153,7 @@ namespace ZeroTeam.MessageMVC
         public static void UnRegistPoster(string service)
         {
             posters.Remove(service);
-            ServiceMap.Remove(service); 
+            ServiceMap.Remove(service);
         }
 
         /// <summary>
@@ -127,7 +170,7 @@ namespace ZeroTeam.MessageMVC
             }
             foreach (var service in services)
             {
-                AddPoster(poster,service);
+                AddPoster(poster, service);
             }
             logger ??= DependencyHelper.LoggerFactory.CreateLogger(nameof(MessagePoster));
             logger.Information(() => $"服务[{string.Join(',', services)}]注册为使用发布器{name}");
@@ -151,18 +194,16 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         /// <param name="name">服务名称</param>
         /// <returns>传输对象构造器</returns>
-        public static IMessagePoster GetService(string name)
+        static IMessagePoster GetService(string name)
         {
-            if (name == null)
-            {
-                return null;
-            }
             if (!ServiceMap.TryGetValue(name, out var items))
                 return Default;
             foreach (var item in items)
-                if (item.CanDo)
-                    return item;
-
+            {
+                if (item.IsLocalReceiver && !localTunnel)
+                    continue;
+                return item;
+            }
             return null;
         }
 
@@ -178,6 +219,7 @@ namespace ZeroTeam.MessageMVC
             {
                 throw new NotSupportedException("参数[message]不能为空且[message.Topic]与[message.Title]必须为有效值");
             }
+
             var producer = GetService(message.Topic);
             if (producer == null)
             {
@@ -189,11 +231,17 @@ namespace ZeroTeam.MessageMVC
             {
                 var msg = await producer.Post(inline);
                 if (msg != null)
+                {
                     inline.CopyResult(msg);
+                    FlowTracer.MonitorDetails(() => $"返回 => {SmartSerializer.ToInnerString(msg)}");
+                }
+                else
+                {
+                    FlowTracer.MonitorDetails(() => $"返回 => {SmartSerializer.ToInnerString(inline)}");
+                }
                 if (autoOffline)
                 {
                     inline.OfflineResult();
-                    FlowTracer.MonitorDetails(() => $"返回 => {SmartSerializer.ToInnerString(msg)}");
                 }
                 return (inline, inline.State);
             }
@@ -269,7 +317,7 @@ namespace ZeroTeam.MessageMVC
 
         #endregion
 
-        #region 消息生产
+        #region Publish
 
         /// <summary>
         /// 生产消息
@@ -325,7 +373,7 @@ namespace ZeroTeam.MessageMVC
 
         #endregion
 
-        #region 远程调用
+        #region Call
 
         /// <summary>
         /// 远程调用
@@ -351,7 +399,7 @@ namespace ZeroTeam.MessageMVC
         public static (string res, MessageState state) Call<TArg>(string service, string api, TArg args)
         {
             var (msg, state) = Post(MessageHelper.NewRemote(service, api)).Result;
-            if((msg.DataState & MessageDataState.ResultOffline) == MessageDataState.ResultOffline)
+            if ((msg.DataState & MessageDataState.ResultOffline) == MessageDataState.ResultOffline)
                 return (msg?.Result, state);
 
             msg.OfflineResult();
@@ -447,7 +495,7 @@ namespace ZeroTeam.MessageMVC
 
         #endregion
 
-        #region ApiResult
+        #region CallApi
 
         /// <summary>
         /// 远程调用

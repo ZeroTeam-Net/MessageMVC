@@ -5,7 +5,7 @@ using ZeroTeam.MessageMVC.ZeroApis;
 namespace ZeroTeam.MessageMVC.Kafka
 {
     /// <summary>
-    ///     表示Redis事件
+    ///     表示Kafka消费者
     /// </summary>
     public class KafkaAttribute : Attribute, IReceiverGet
     {

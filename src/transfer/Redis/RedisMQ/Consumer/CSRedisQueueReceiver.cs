@@ -148,7 +148,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                 client.LPush(jobList, key);
             }
             //非正常处理还原
-            while (ZeroFlowControl.IsAlive)
+            while (ZeroAppOption.Instance.IsAlive)
             {
                 await Task.Delay(RedisOption.Instance.GuardCheckTime, token);
                 try
