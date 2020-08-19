@@ -19,7 +19,7 @@
     <Company>ZeroTeam</Company>
     <PackageReleaseNotes></PackageReleaseNotes>
     <Product>ZeroTeam.MessageMVC.Consul</Product>
-    <Version>1.0.0.150</Version>
+    <Version>1.0.0.153</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.1|AnyCPU'">
@@ -43,6 +43,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Consul" Version="0.7.2.6" />
+    <PackageReference Include="Consul" Version="1.6.1.1" />
   </ItemGroup>
 </Project>

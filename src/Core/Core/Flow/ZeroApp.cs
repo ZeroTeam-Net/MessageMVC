@@ -1,4 +1,5 @@
 ﻿using Agebull.Common.Ioc;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
@@ -23,11 +24,11 @@ namespace ZeroTeam.MessageMVC
         /// 检查并注入配置
         /// </summary>
         /// <param name="services"></param>
-        public static void AddDependency(this IServiceCollection services)
+        static void AddDependency(this IServiceCollection services)
         {
             if (DependencyHelper.ServiceCollection != services)
             {
-                DependencyHelper.SetServiceCollection(services);
+                DependencyHelper.ServiceCollection = services;
             }
             
             //IZeroContext构造
@@ -59,7 +60,7 @@ namespace ZeroTeam.MessageMVC
         /// 使用System.Text.Json序列化工具
         /// </summary>
         /// <param name="services"></param>
-        public static void UseMsJson(this IServiceCollection services)
+        public static void AddZeroJson(this IServiceCollection services)
         {
             services.TryAddTransient<ISerializeProxy, JsonSerializeProxy>();
             services.TryAddTransient<IJsonSerializeProxy, JsonSerializeProxy>();
@@ -71,7 +72,7 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         /// <param name="services">依赖服务</param>
         /// <param name="autoDiscover">对接口自动发现</param>
-        public static async Task UseFlow(this IServiceCollection services, bool autoDiscover = true)
+        public static void AddMessageMvc(this IServiceCollection services, bool autoDiscover = true)
         {
             if (Interlocked.Increment(ref isInitialized) == 1)
             {
@@ -79,8 +80,6 @@ namespace ZeroTeam.MessageMVC
                 ZeroFlowControl.Check();
                 if (autoDiscover)
                     ZeroFlowControl.Discove();
-                await ZeroFlowControl.Initialize();
-                await ZeroFlowControl.RunAsync();
             }
         }
 
@@ -89,9 +88,9 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         /// <param name="services"></param>
         /// <param name="type">需要发现服务的程序集的类型之一</param>
-        public static Task UseFlow(this IServiceCollection services, Type type)
+        public static void AddMessageMvc(this IServiceCollection services, Type type)
         {
-            return UseFlow(services, type.Assembly);
+            AddMessageMvc(services, type.Assembly);
         }
 
         /// <summary>
@@ -99,15 +98,13 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         /// <param name="services"></param>
         /// <param name="assembly">需要发现服务的程序集</param>
-        public static async Task UseFlow(this IServiceCollection services, Assembly assembly)
+        public static void AddMessageMvc(this IServiceCollection services, Assembly assembly)
         {
             if (Interlocked.Increment(ref isInitialized) == 1)
             {
                 AddDependency(services);
                 ZeroFlowControl.Check();
                 ZeroFlowControl.Discove(assembly);
-                await ZeroFlowControl.Initialize();
-                await ZeroFlowControl.RunAsync();
             }
         }
 
@@ -137,7 +134,7 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         /// <param name="services">依赖服务</param>
         /// <param name="autoDiscover">对接口自动发现</param>
-        public static async Task UseFlowAndWait(this IServiceCollection services, bool autoDiscover = true)
+        public static async Task UseMessageMvc(this IServiceCollection services, bool autoDiscover = true)
         {
             if (Interlocked.Increment(ref isInitialized) == 1)
             {
@@ -156,9 +153,9 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         /// <param name="services"></param>
         /// <param name="type">需要发现服务的程序集的类型之一</param>
-        public static Task UseFlowAndWait(this IServiceCollection services, Type type)
+        public static Task UseMessageMvc(this IServiceCollection services, Type type)
         {
-            return UseFlowAndWait(services, type.Assembly);
+            return UseMessageMvc(services, type.Assembly);
         }
 
         /// <summary>
@@ -166,7 +163,7 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         /// <param name="services"></param>
         /// <param name="assembly">需要发现服务的程序集</param>
-        public static async Task UseFlowAndWait(this IServiceCollection services, Assembly assembly)
+        public static async Task UseMessageMvc(this IServiceCollection services, Assembly assembly)
         {
             if (Interlocked.Increment(ref isInitialized) == 1)
             {

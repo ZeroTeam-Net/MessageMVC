@@ -48,7 +48,7 @@ namespace ZeroTeam.MessageMVC
                 }
                 return Task.CompletedTask;
             }
-            localTunnel = sec.GetBool("default", false);
+            localTunnel = sec.GetBool("localTunnel", false);
             var def = sec.GetStr("default", "");
             if (posters.TryGetValue(def, out Default))
             {
@@ -193,11 +193,12 @@ namespace ZeroTeam.MessageMVC
         /// 发现传输对象
         /// </summary>
         /// <param name="name">服务名称</param>
+        /// <param name="def">是否使用默认投递器</param>
         /// <returns>传输对象构造器</returns>
-        static IMessagePoster GetService(string name)
+        static IMessagePoster GetService(string name, bool def)
         {
             if (!ServiceMap.TryGetValue(name, out var items))
-                return Default;
+                return def ? Default : null;
             foreach (var item in items)
             {
                 if (item.IsLocalReceiver && !localTunnel)
@@ -213,14 +214,26 @@ namespace ZeroTeam.MessageMVC
         /// <param name="message">消息</param>
         /// <param name="autoOffline">是否自动离线</param>
         /// <returns>返回值,如果未进行离线交换message返回为空,此时请检查state</returns>
-        public static async Task<(IInlineMessage message, MessageState state)> Post(IMessageItem message, bool autoOffline = true)
+        public static async Task<(IInlineMessage message, MessageState state)> Post(IMessageItem message, bool autoOffline=true)
+        {
+            return await Post( message,true, autoOffline);
+        }
+
+        /// <summary>
+        /// 投递消息
+        /// </summary>
+        /// <param name="message">消息</param>
+        /// <param name="defPoster">服务未注册时，是否使用缺省投递器</param>
+        /// <param name="autoOffline">是否自动离线</param>
+        /// <returns>返回值,如果未进行离线交换message返回为空,此时请检查state</returns>
+        static async Task<(IInlineMessage message, MessageState state)> Post(IMessageItem message,bool defPoster, bool autoOffline)
         {
             if (message == null || string.IsNullOrEmpty(message.Topic) || string.IsNullOrEmpty(message.Title))
             {
                 throw new NotSupportedException("参数[message]不能为空且[message.Topic]与[message.Title]必须为有效值");
             }
 
-            var producer = GetService(message.Topic);
+            var producer = GetService(message.Topic, defPoster);
             if (producer == null)
             {
                 FlowTracer.MonitorInfomation(() => $"服务{message.Topic}不存在");
@@ -328,7 +341,7 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static MessageState Publish<TArg>(string topic, string title, TArg content)
         {
-            var (_, state) = Post(MessageHelper.NewRemote(topic, title, content), false).Result;
+            var (_, state) = Post(MessageHelper.NewRemote(topic, title, content), false, true).Result;
             return state;
         }
 
@@ -341,7 +354,7 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static MessageState Publish(string topic, string title, string content)
         {
-            var (_, state) = Post(MessageHelper.NewRemote(topic, title, content), false).Result;
+            var (_, state) = Post(MessageHelper.NewRemote(topic, title, content), false, true).Result;
             return state;
         }
 
@@ -354,7 +367,7 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static async Task<MessageState> PublishAsync<TArg>(string topic, string title, TArg content)
         {
-            var (_, state) = await Post(MessageHelper.NewRemote(topic, title, content), false);
+            var (_, state) = await Post(MessageHelper.NewRemote(topic, title, content), false, true);
             return state;
         }
 
@@ -367,7 +380,7 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static async Task<MessageState> PublishAsync(string topic, string title, string content)
         {
-            var (_, state) = await Post(MessageHelper.NewRemote(topic, title, content), false);
+            var (_, state) = await Post(MessageHelper.NewRemote(topic, title, content),false, true);
             return state;
         }
 
@@ -385,7 +398,7 @@ namespace ZeroTeam.MessageMVC
         public static (TRes res, MessageState state) Call<TArg, TRes>(string service, string api, TArg args)
             where TRes : class
         {
-            var (msg, state) = Post(MessageHelper.NewRemote(service, api, args)).Result;
+            var (msg, state) = Post(MessageHelper.NewRemote(service, api, args), true, true).Result;
             return (msg?.GetResultData<TRes>(), state);
         }
 
@@ -398,7 +411,7 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static (string res, MessageState state) Call<TArg>(string service, string api, TArg args)
         {
-            var (msg, state) = Post(MessageHelper.NewRemote(service, api)).Result;
+            var (msg, state) = Post(MessageHelper.NewRemote(service, api),true,true).Result;
             if ((msg.DataState & MessageDataState.ResultOffline) == MessageDataState.ResultOffline)
                 return (msg?.Result, state);
 
@@ -415,7 +428,7 @@ namespace ZeroTeam.MessageMVC
         public static (TRes res, MessageState state) Call<TRes>(string service, string api)
               where TRes : class
         {
-            var (msg, state) = Post(MessageHelper.NewRemote(service, api)).Result;
+            var (msg, state) = Post(MessageHelper.NewRemote(service, api), true, true).Result;
             return (msg?.GetResultData<TRes>(), state);
         }
 
@@ -428,7 +441,7 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static (string res, MessageState state) Call(string service, string api, string args)
         {
-            var (msg, state) = Post(MessageHelper.NewRemote(service, api, args)).Result;
+            var (msg, state) = Post(MessageHelper.NewRemote(service, api, args), true, true).Result;
             msg?.OfflineResult();
             return (msg.Result, state);
         }
@@ -443,7 +456,7 @@ namespace ZeroTeam.MessageMVC
         public static async Task<(TRes res, MessageState state)> CallAsync<TArg, TRes>(string service, string api, TArg args)
                      where TRes : class
         {
-            var (msg, state) = await Post(MessageHelper.NewRemote(service, api, args));
+            var (msg, state) = await Post(MessageHelper.NewRemote(service, api, args), true, true);
             return (msg?.GetResultData<TRes>(), state);
         }
 
@@ -456,7 +469,7 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static async Task<(string res, MessageState state)> CallAsync<TArg>(string service, string api, TArg args)
         {
-            var (msg, state) = await Post(MessageHelper.NewRemote(service, api, args));
+            var (msg, state) = await Post(MessageHelper.NewRemote(service, api, args), true, true);
 
             if ((msg.DataState & MessageDataState.ResultOffline) == MessageDataState.ResultOffline)
                 return (msg?.Result, state);
@@ -474,7 +487,7 @@ namespace ZeroTeam.MessageMVC
         public static async Task<(TRes res, MessageState state)> CallAsync<TRes>(string service, string api)
                      where TRes : class
         {
-            var (msg, state) = await Post(MessageHelper.NewRemote(service, api));
+            var (msg, state) = await Post(MessageHelper.NewRemote(service, api), true, true);
             return (msg?.GetResultData<TRes>(), state);
         }
 
@@ -487,7 +500,7 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static async Task<(string res, MessageState state)> CallAsync(string service, string api, string args)
         {
-            var (msg, state) = await Post(MessageHelper.NewRemote(service, api, args));
+            var (msg, state) = await Post(MessageHelper.NewRemote(service, api, args), true, true);
             msg.OfflineResult();
             msg?.OfflineResult();
             return (msg.Result, state);
@@ -506,7 +519,7 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static (IApiResult res, MessageState state) CallApi<TArg>(string service, string api, TArg args)
         {
-            var (msg, state) = Post(MessageHelper.NewRemote(service, api, args)).Result;
+            var (msg, state) = Post(MessageHelper.NewRemote(service, api, args), true, true).Result;
             if (!state.IsSuccess() || msg == null)
             {
                 return (null, state);
@@ -525,7 +538,7 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static async Task<(IApiResult res, MessageState state)> CallApiAsync<TArg>(string service, string api, TArg args)
         {
-            var (msg, state) = await Post(MessageHelper.NewRemote(service, api, args));
+            var (msg, state) = await Post(MessageHelper.NewRemote(service, api, args), true, true);
             if (!state.IsSuccess() || msg == null)
             {
                 return (null, state);
@@ -544,7 +557,7 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static async Task<(IApiResult res, MessageState state)> CallApiAsync(string service, string api, string args)
         {
-            var (msg, state) = await Post(MessageHelper.NewRemote(service, api, args));
+            var (msg, state) = await Post(MessageHelper.NewRemote(service, api, args), true, true);
             if (!state.IsSuccess() || msg == null)
             {
                 return (null, state);
@@ -561,7 +574,7 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         public static async Task<(IApiResult res, MessageState state)> CallApiAsync(string service, string api)
         {
-            var (msg, state) = await Post(MessageHelper.NewRemote(service, api));
+            var (msg, state) = await Post(MessageHelper.NewRemote(service, api), true, true);
             if (!state.IsSuccess() || msg == null)
             {
                 return (null, state);
@@ -581,7 +594,7 @@ namespace ZeroTeam.MessageMVC
         public static (IApiResult<TRes> res, MessageState state) CallApi<TRes>(string service, string api, string args)
              where TRes : class
         {
-            var (msg, state) = Post(MessageHelper.NewRemote(service, api, args)).Result;
+            var (msg, state) = Post(MessageHelper.NewRemote(service, api, args), true, true).Result;
             if (!state.IsSuccess() || msg == null)
             {
                 return (null, state);
@@ -602,7 +615,7 @@ namespace ZeroTeam.MessageMVC
         public static (IApiResult<TRes> res, MessageState state) CallApi<TArg, TRes>(string service, string api, TArg args)
              where TRes : class
         {
-            var (msg, state) = Post(MessageHelper.NewRemote(service, api, args)).Result;
+            var (msg, state) = Post(MessageHelper.NewRemote(service, api, args), true, true).Result;
             if (!state.IsSuccess() || msg == null)
             {
                 return (null, state);
@@ -622,7 +635,7 @@ namespace ZeroTeam.MessageMVC
         public static async Task<(IApiResult<TRes> res, MessageState state)> CallApiAsync<TArg, TRes>(string service, string api, TArg args)
              where TRes : class
         {
-            var (msg, state) = await Post(MessageHelper.NewRemote(service, api, args));
+            var (msg, state) = await Post(MessageHelper.NewRemote(service, api, args), true, true);
             if (!state.IsSuccess() || msg == null)
             {
                 return (null, state);

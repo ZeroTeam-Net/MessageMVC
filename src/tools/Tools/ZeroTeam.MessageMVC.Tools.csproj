@@ -19,7 +19,7 @@
     <Company>ZeroTeam</Company>
     <PackageReleaseNotes></PackageReleaseNotes>
     <Product>ZeroTeam.MessageMVC.ApiContract</Product>
-    <Version>1.0.0.150</Version>
+    <Version>1.0.0.153</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.1|AnyCPU'">
@@ -28,7 +28,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp3.1|AnyCPU'">
-    <DefineConstants>TRACE;LogMonitor</DefineConstants>
+    <DefineConstants>TRACE;monitor</DefineConstants>
     <DocumentationFile>ZeroTeam.MessageMVC.Tools.xml</DocumentationFile>
   </PropertyGroup>
 

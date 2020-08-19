@@ -27,7 +27,7 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
     {
         #region IMessagePoster 
 
-        internal RabbitMQPoster()
+        public RabbitMQPoster()
         {
             Name = nameof(RabbitMQPoster);
         }
@@ -74,7 +74,7 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
                 }
                 channel = ch;
             }
-            Logger.Trace(() => $"[异步消息投递] 正在投递消息({RabbitMQOption.Instance.HostName}:{RabbitMQOption.Instance.Port})");
+            Logger.Trace(() => $"[异步消息投递] {item.ID} 正在投递消息({RabbitMQOption.Instance.HostName}:{RabbitMQOption.Instance.Port})");
             byte[] body = Encoding.UTF8.GetBytes(item.Message);
             //发送消息
             switch (channel.option.WrokType)
@@ -90,7 +90,6 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
                     channel.model.BasicPublish(exchange: "", routingKey: item.Topic, basicProperties: null, body: body);
                     break;
             }
-            Logger.Trace(() => $"[异步消息投递] 投递成功");
             return Task.FromResult(true);
         }
 

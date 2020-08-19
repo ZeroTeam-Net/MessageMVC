@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Agebull.Common.Ioc;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC.Http
@@ -21,9 +23,15 @@ namespace ZeroTeam.MessageMVC.Http
         /// <summary>
         ///     初始化
         /// </summary>
-        public static void RunMessageMVC(this IApplicationBuilder app)
+        public static async void RunMessageMVC(this IApplicationBuilder app, bool handerHttp)
         {
-            app.Run(HttpReceiver.Call);
+            if (handerHttp)
+                app.Run(HttpReceiver.Call);
+
+            DependencyHelper.LoggerFactory = app.ApplicationServices.GetService<ILoggerFactory>();
+            DependencyHelper.Update(app.ApplicationServices);
+            await ZeroFlowControl.Initialize();
+            await ZeroFlowControl.RunAsync();
         }
     }
 }

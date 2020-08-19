@@ -1168,7 +1168,7 @@
             通过ZeroRpc实现的远程通讯
             </summary>
         </member>
-        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcApp.UseZeroRpc(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:ZeroTeam.ZeroMQ.ZeroRPC.ZeroRpcApp.AddZeroRpc(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             使用ZeroRpc
             </summary>

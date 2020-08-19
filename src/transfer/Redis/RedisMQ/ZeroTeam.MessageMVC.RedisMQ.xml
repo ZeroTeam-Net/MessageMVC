@@ -240,32 +240,32 @@
             RedisMQ
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisApp.UseCsRedis(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisApp.AddCsRedis(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             使用RedisMQ
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisApp.UseRedisPoster(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisApp.AddRedisPoster(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             使用RedisMQ
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisApp.UseRedisQueue(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisApp.AddRedisQueue(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             使用Redis消息队列
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisApp.UseRedisQueueClient(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisApp.AddRedisQueueClient(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             使用Redis消息队列
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisApp.UseRedisEvent(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisApp.AddRedisEvent(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             使用Redis事件
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisApp.UseRedisEventClient(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisApp.AddRedisEventClient(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             使用Redis事件
             </summary>

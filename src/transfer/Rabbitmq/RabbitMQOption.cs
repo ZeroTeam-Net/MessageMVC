@@ -229,12 +229,16 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
         /// </summary>
         public bool Durable { get; set; }
 
+        /// <summary>
+        /// 是否成功后确认Ack
+        /// </summary>
+        public bool AckBySuccess { get; set; }
 
+        
         /// <summary>
         /// 自动删除
         /// </summary>
         public bool AutoDelete { get; set; }
-
 
         /// <summary>
         /// 排外

@@ -12,7 +12,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// 使用KafkaMVC
         /// </summary>
         /// <param name="services"></param>
-        public static void UseKafka(this IServiceCollection services)
+        public static void AddKafka(this IServiceCollection services)
         {
             services.AddSingleton<IHealthCheck>(KafkaFlow.Instance);
             services.AddSingleton<IFlowMiddleware>(KafkaFlow.Instance);//Kafka环境

@@ -34,7 +34,7 @@ namespace ZeroTeam.MessageMVC
             if (ZeroAppOption.Instance.ApplicationState >= StationState.Check)
                 return;
             ZeroAppOption.Instance.SetApplicationState(StationState.Check);
-            LoggerExtend.DoInitialize();
+            //LoggerExtend.DoInitialize();
             logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(ZeroFlowControl));
 
             DependencyHelper.Update();

@@ -19,6 +19,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <PlatformTarget>x64</PlatformTarget>
+    <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -48,6 +49,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\tools\Contract\ZeroTeam.MessageMVC.ApiContract.csproj" />
+    <ProjectReference Include="..\..\tools\Tools\ZeroTeam.MessageMVC.Tools.csproj" />
     <ProjectReference Include="..\..\transfer\Http\ZeroTeam.MessageMVC.Http.csproj" />
   </ItemGroup>
 

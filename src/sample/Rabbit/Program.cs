@@ -19,20 +19,21 @@ namespace Rabbit
                 DependencyHelper.Update();
             });
             var services = DependencyHelper.ServiceCollection;
-            services.UseRabbitMQ();
+            services.AddRabbitMQ();
             DependencyHelper.Update();
             _ = Test();
-            await services.UseFlowAndWait(typeof(Program));
+            await services.UseMessageMvc(typeof(Program));
         }
         static async Task Test()
         {
-            for (int i = 0; ZeroAppOption.Instance.IsAlive && i < 100000; i++)
+            for (int i = 0; ZeroAppOption.Instance.IsAlive && i < 100; i++)
             {
                 if (!ZeroAppOption.Instance.IsRuning)
                 {
                     await Task.Delay(1000);
                     continue;
                 }
+                await Task.Delay(100);
                 //await Task.Delay(1);
                 //await MessagePoster.PublishAsync("test1", "test/res", "agebull");
                 //await MessagePoster.PublishAsync("test1", "test/arg", "{'Value':'test'}");

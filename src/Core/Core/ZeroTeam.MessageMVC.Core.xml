@@ -358,27 +358,27 @@
             </summary>
             <param name="services"></param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseMsJson(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.AddZeroJson(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             使用System.Text.Json序列化工具
             </summary>
             <param name="services"></param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlow(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Boolean)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.AddMessageMvc(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Boolean)">
             <summary>
             启动主流程控制器
             </summary>
             <param name="services">依赖服务</param>
             <param name="autoDiscover">对接口自动发现</param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlow(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Type)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.AddMessageMvc(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Type)">
             <summary>
             启动主流程控制器，发现指定类型所在的程序集的Api，由参数决定是否等待系统退出
             </summary>
             <param name="services"></param>
             <param name="type">需要发现服务的程序集的类型之一</param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlow(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.AddMessageMvc(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly)">
             <summary>
             启动主流程控制器，发现指定程序集的Api，由参数决定是否等待系统退出
             </summary>
@@ -392,21 +392,21 @@
             <param name="services"></param>
             <param name="assembly">需要发现服务的程序集</param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlowAndWait(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Boolean)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseMessageMvc(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Boolean)">
             <summary>
             启动主流程控制器并等待退出
             </summary>
             <param name="services">依赖服务</param>
             <param name="autoDiscover">对接口自动发现</param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlowAndWait(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Type)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseMessageMvc(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Type)">
             <summary>
             启动主流程控制器，发现指定类型所在的程序集的Api，由参数决定是否等待系统退出
             </summary>
             <param name="services"></param>
             <param name="type">需要发现服务的程序集的类型之一</param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseFlowAndWait(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseMessageMvc(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly)">
             <summary>
             启动主流程控制器，发现指定程序集的Api，由参数决定是否等待系统退出
             </summary>

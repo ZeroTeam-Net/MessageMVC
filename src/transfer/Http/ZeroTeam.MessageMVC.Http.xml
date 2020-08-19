@@ -14,7 +14,7 @@
                 初始化
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpApp.RunMessageMVC(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpApp.RunMessageMVC(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.Boolean)">
             <summary>
                 初始化
             </summary>

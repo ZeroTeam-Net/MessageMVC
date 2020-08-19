@@ -1,7 +1,10 @@
 {
   "profiles": {
     "ZeroTeam.MessageMVC.Http.Sample": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "http://localhost:8088",
+      "applicationUrl": "http://localhost:8088"
     }
   }
 }

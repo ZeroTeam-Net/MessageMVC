@@ -52,7 +52,7 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
                 OnMessagePush(ea);
             };
             //消费者开启监听
-            channel.BasicConsume(queue: Service.ServiceName, autoAck: false, consumer: consumer);
+            channel.BasicConsume(queue: Service.ServiceName, autoAck: !Option.AckBySuccess, consumer: consumer);
             completionSource = new TaskCompletionSource<bool>();
             return completionSource.Task;
         }
@@ -78,10 +78,12 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
         /// <returns>是否发送成功</returns>
         Task<bool> IMessageReceiver.OnResult(IInlineMessage item, object tag)
         {
+            if(!Option.AckBySuccess)
+                return Task.FromResult(false);
             var ea = (BasicDeliverEventArgs)tag;
             try
             {
-                channel.BasicAck(ea.DeliveryTag, true);
+                channel?.BasicAck(ea.DeliveryTag, true);
                 return Task.FromResult(true);
             }
             catch (Exception ex)

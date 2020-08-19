@@ -9,7 +9,7 @@
             RabbitMQ
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQApp.UseRabbitMQ(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQApp.AddRabbitMQ(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             使用KafkaMVC
             </summary>
@@ -214,6 +214,11 @@
         <member name="P:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQItemOption.Durable">
             <summary>
             是否缓存
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQItemOption.AckBySuccess">
+            <summary>
+            是否成功后确认Ack
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQItemOption.AutoDelete">

@@ -17,7 +17,7 @@ namespace MicroZero.Kafka.QueueStation
             DependencyHelper.AddSingleton<INetEvent, ZeroEventReceiver>();
 
 
-            await DependencyHelper.ServiceCollection.UseFlowAndWait();
+            await DependencyHelper.ServiceCollection.UseMessageMvc();
         }
     }
 }

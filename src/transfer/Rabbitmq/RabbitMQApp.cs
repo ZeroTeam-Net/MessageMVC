@@ -12,7 +12,7 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
         /// 使用KafkaMVC
         /// </summary>
         /// <param name="services"></param>
-        public static void UseRabbitMQ(this IServiceCollection services)
+        public static void AddRabbitMQ(this IServiceCollection services)
         {
             services.AddSingleton<IHealthCheck>(RabbitMQFlow.Instance);
             services.AddSingleton<IFlowMiddleware>(RabbitMQFlow.Instance);//RabbitMQ环境

@@ -40,7 +40,7 @@ namespace ZeroTeam.MessageMVC.Http
                 return;
             }
             HttpProtocol.FormatResponse(context.Request, context.Response);
-            DependencyHelper.Update(context.RequestServices);
+            //DependencyHelper.Update(context.RequestServices);
             try
             {
 

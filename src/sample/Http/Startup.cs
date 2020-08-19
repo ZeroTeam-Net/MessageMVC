@@ -1,5 +1,4 @@
-﻿using Agebull.Common.Ioc;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,9 +15,9 @@ namespace ZeroTeam.MessageMVC.Http
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
             services.UseHttp();
-            DependencyHelper.SetServiceCollection(services);
+            services.AddMessageMvc();
+            //services.AddControllers();
         }
 
         /// <summary>
@@ -28,15 +27,15 @@ namespace ZeroTeam.MessageMVC.Http
         public void Configure(IApplicationBuilder app,IWebHostEnvironment _)
         {
             app.UseStaticFiles();
-            app.UseRouting();
+            //app.UseRouting();
+            app.RunMessageMVC(true);
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    endpoints.MapControllers();
+            //});
 
-            app.RunMessageMVC();
-            DependencyHelper.ServiceCollection.UseFlow(typeof(Startup));
         }
     }
 }

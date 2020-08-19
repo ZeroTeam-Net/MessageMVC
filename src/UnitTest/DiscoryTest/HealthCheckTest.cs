@@ -13,8 +13,8 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         [SetUp]
         public void Setup()
         {
-            DependencyHelper.ServiceCollection.UseCsRedis();
-            DependencyHelper.ServiceCollection.UseKafka();
+            DependencyHelper.ServiceCollection.AddCsRedis();
+            DependencyHelper.ServiceCollection.AddKafka();
             DependencyHelper.Update();
             DependencyHelper.ServiceCollection.UseTest(typeof(ApiContraceJsonTest).Assembly);
         }

@@ -18,7 +18,7 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
 
         #region IHealthCheck
 
-        async Task<HealthInfo> IHealthCheck.Check()
+        Task<HealthInfo> IHealthCheck.Check()
         {
             var info = new HealthInfo
             {
@@ -26,13 +26,12 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
                 Items = new List<HealthItem>()
             };
 
-
-            info.Items.Add(await ProduceTest());
+            info.Items.Add(ProduceTest());
             info.Items.Add(ConsumerTest());
-            return info;
+            return Task.FromResult(info);
         }
 
-        private static async Task<HealthItem> ProduceTest()
+        private static HealthItem ProduceTest()
         {
             HealthItem item = new HealthItem
             {

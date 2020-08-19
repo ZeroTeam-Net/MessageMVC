@@ -122,7 +122,7 @@ namespace ZeroTeam.MessageMVC.Http
                     {
                         State = MessageState.FrameworkError
                     }), Encoding.UTF8);
-                    LogRecorder.Exception(e);
+                    Agebull.Common.Ioc.DependencyScope.Logger.Exception(e);
                 }
                 catch
                 {
@@ -174,14 +174,14 @@ namespace ZeroTeam.MessageMVC.Http
             }
             catch (Exception e)
             {
-                LogRecorder.Exception(e);
+                Agebull.Common.Ioc.DependencyScope.Logger.Exception(e);
                 try
                 {
                     await context.Response.WriteAsync(ApiResultHelper.BusinessErrorJson, Encoding.UTF8);
                 }
                 catch (Exception exception)
                 {
-                    LogRecorder.Exception(exception);
+                    Agebull.Common.Ioc.DependencyScope.Logger.Exception(exception);
                 }
             }
         }

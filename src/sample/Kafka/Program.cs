@@ -10,8 +10,8 @@ namespace MicroZero.Kafka.QueueStation
         static async Task Main()
         {
             var services = DependencyHelper.ServiceCollection;
-            services.UseKafka();
-            await services.UseFlowAndWait(typeof(Program));
+            services.AddKafka();
+            await services.UseMessageMvc(typeof(Program));
         }
         static async void Test()
         {
