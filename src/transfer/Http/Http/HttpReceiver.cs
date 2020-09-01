@@ -92,9 +92,6 @@ namespace ZeroTeam.MessageMVC.Http
                 case MessageState.Success:
                     context.Response.StatusCode = (int)HttpStatusCode.OK;
                     break;
-                case MessageState.NonSupport:
-                    context.Response.StatusCode = (int)HttpStatusCode.MethodNotAllowed;
-                    break;
                 case MessageState.Unhandled:
                     context.Response.StatusCode = (int)HttpStatusCode.NotFound;
                     break;

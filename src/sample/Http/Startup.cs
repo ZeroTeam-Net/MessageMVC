@@ -17,6 +17,8 @@ namespace ZeroTeam.MessageMVC.Http
         {
             services.UseHttp();
             services.AddMessageMvc();
+            services.AddHttpClient();
+            services.AddHttpContextAccessor();
             //services.AddControllers();
         }
 

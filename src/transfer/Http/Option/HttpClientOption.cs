@@ -25,9 +25,9 @@ namespace ZeroTeam.MessageMVC.Http
         public int DefaultTimeOut { get; set; }
 
         /// <summary>
-        /// 所有节点
+        /// 所有服务
         /// </summary>
-        public List<HttpClientItem> Clients { get; set; }
+        public List<HttpClientItem> Services { get; set; }
 
 
         /// <summary>
@@ -75,14 +75,14 @@ namespace ZeroTeam.MessageMVC.Http
                     client.DefaultRequestHeaders.Add("User-Agent", MessageRouteOption.AgentName);
                 });
             }
-            if (option.Clients != null)
+            if (option.Services != null)
             {
-                foreach (var item in option.Clients)
+                foreach (var item in option.Services)
                 {
                     foreach (var service in ServiceMap.Where(p => p.Value == item.Name).Select(p => p.Key).ToArray())
                         ServiceMap.Remove(service);
 
-                    if (string.IsNullOrEmpty(item.Services))
+                    if (string.IsNullOrEmpty(item.Alias))
                     {
                         Options.Remove(item.Name);
                         continue;
@@ -106,7 +106,7 @@ namespace ZeroTeam.MessageMVC.Http
                         });
                     }
 
-                    foreach (var service in item.Services.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                    foreach (var service in item.Alias.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                     {
                         if (ServiceMap.ContainsKey(service))
                             ServiceMap[service] = item.Name;

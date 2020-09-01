@@ -303,7 +303,6 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                             await client.DelAsync(key);
                         break;
                     case MessageState.Unhandled:
-                    case MessageState.NonSupport:
                         if (RedisOption.Instance.NoSupperIsError)
                             await client.LPushAsync(errList, id);
                         else

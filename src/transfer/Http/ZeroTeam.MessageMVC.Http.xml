@@ -294,9 +294,9 @@
             超时时间（秒）
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.HttpClientItem.Services">
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpClientItem.Alias">
             <summary>
-            绑定的服务列表,组合结果为 [Url]/[Service]/[ApiName]
+            绑定的服务别名,组合结果为 [Url]/[Service]/[ApiName]
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Http.HttpClientOption">
@@ -314,9 +314,9 @@
             默认超时（秒）
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.HttpClientOption.Clients">
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpClientOption.Services">
             <summary>
-            所有节点
+            所有服务
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.Http.HttpClientOption.Instance">

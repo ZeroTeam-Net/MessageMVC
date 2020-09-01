@@ -164,7 +164,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 case ZeroOperatorStateType.NotFind:
                 case ZeroOperatorStateType.NoWorker:
                 case ZeroOperatorStateType.NonSupport:
-                    return MessageState.NonSupport;
+                    return MessageState.Unhandled;
                 case ZeroOperatorStateType.FrameInvalid:
                 case ZeroOperatorStateType.ArgumentInvalid:
                     return MessageState.FormalError;

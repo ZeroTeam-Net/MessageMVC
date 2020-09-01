@@ -25,12 +25,12 @@
     <Company>ZeroTeam</Company>
     <PackageReleaseNotes></PackageReleaseNotes>
     <Product>ZeroTeam.MessageMVC.Core</Product>
-    <Version>1.0.0.153</Version>
+    <Version>1.0.0.154</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>TRACE;DEBUG;UseStateMachine</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;monitor</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -39,7 +39,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.1|AnyCPU'">
     <Optimize>true</Optimize>
-    <DefineConstants>UseStateMachine</DefineConstants>
+    <DefineConstants>monitor</DefineConstants>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>ZeroTeam.MessageMVC.Core.xml</DocumentationFile>
   </PropertyGroup>

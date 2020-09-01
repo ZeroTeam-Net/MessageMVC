@@ -2817,11 +2817,6 @@
             取消处理
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.NonSupport">
-            <summary>
-            不支持处理
-            </summary>
-        </member>
         <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.Accept">
             <summary>
             已接受
@@ -2864,7 +2859,7 @@
         </member>
         <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.Unhandled">
             <summary>
-            无处理结果
+            无处理方法
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.Messages.MessageState.Deny">

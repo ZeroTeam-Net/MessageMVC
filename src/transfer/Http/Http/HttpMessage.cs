@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.ZeroApis;
+using JsonIgnoreAttribute = System.Text.Json.Serialization.JsonIgnoreAttribute;
 
 namespace ZeroTeam.MessageMVC.Http
 {
@@ -22,27 +22,30 @@ namespace ZeroTeam.MessageMVC.Http
     [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class HttpMessage : MessageItem, IInlineMessage
     {
-
         #region IMessageItem
 
         /// <summary>
         /// 是否外部访问
         /// </summary>
+        [JsonIgnore]
         public bool IsOutAccess { get; set; }
 
         /// <summary>
         /// 实体参数
         /// </summary>
+        [JsonIgnore]
         public object ArgumentData { get; set; }
 
         /// <summary>
         /// 字典参数
         /// </summary>
+        [JsonIgnore]
         public Dictionary<string, string> Dictionary { get; set; }
 
         /// <summary>
         /// 数据状态
         /// </summary>
+        [JsonIgnore]
         public MessageDataState DataState { get; set; }
 
         private object resultData;
@@ -58,6 +61,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// 处理失败 : 失败内容或原因
         /// 处理成功 : 结果信息或无
         /// </remarks>
+        [JsonIgnore]
         public object ResultData
         {
             get => resultData;
@@ -75,12 +79,14 @@ namespace ZeroTeam.MessageMVC.Http
         /// <summary>
         ///     返回值序列化对象
         /// </summary>
+        [JsonIgnore]
         public ISerializeProxy ResultSerializer { get; set; }
 
 
         /// <summary>
         ///     返回值构造对象
         /// </summary>
+        [JsonIgnore]
         public Func<int, string, object> ResultCreater { get; set; }
 
 
@@ -91,56 +97,67 @@ namespace ZeroTeam.MessageMVC.Http
         /// <summary>
         ///     Http上下文
         /// </summary>
+        [JsonIgnore]
         public HttpContext HttpContext { get; set; }
 
         /// <summary>
         /// 服务名称,即Topic
         /// </summary>
+        [JsonIgnore]
         public string ServiceName { get => Topic; set => Topic = value; }
 
         /// <summary>
         ///     当前请求调用的主机名称
         /// </summary>
+        [JsonIgnore]
         public string ApiHost { get => Topic; internal set => Topic = value; }
 
         /// <summary>
         ///     当前请求调用的API名称
         /// </summary>
+        [JsonIgnore]
         public string ApiName { get => Title; internal set => Title = value; }
 
         /// <summary>
         ///     请求地址
         /// </summary>
+        [JsonIgnore]
         public string Uri { get; private set; }
 
         /// <summary>
         ///     HTTP method
         /// </summary>
+        [JsonIgnore]
         public string HttpMethod { get; private set; }
 
         /// <summary>
         /// 接口参数,即Content
         /// </summary>
+        [JsonIgnore]
         public string Argument { get => Content; set => Content = value; }
 
         /// <summary>
         ///     请求的内容
         /// </summary>
+        [JsonIgnore]
         public string HttpContent { get; set; }
 
         /// <summary>
         ///     请求的表单
         /// </summary>
+        [JsonIgnore]
         public Dictionary<string, string> HttpArguments { get; set; }
 
         /// <summary>
         ///     请求的表单
         /// </summary>
+        [JsonIgnore]
         public Dictionary<string, string> HttpForms { get => Dictionary; set => Dictionary = value; }
 
         /// <summary>
         ///     请求的内容字典
         /// </summary>
+        [JsonIgnore]
         public JObject ContentObject { get; set; }
 
         #endregion
@@ -261,13 +278,13 @@ namespace ZeroTeam.MessageMVC.Http
             var words = Uri.Split('/', StringSplitOptions.RemoveEmptyEntries);
             if (words.Length <= 1)
             {
-                State = MessageState.NonSupport;
+                State = MessageState.Unhandled;
                 return false;
             }
             MessageRouteOption.Instance.HostPaths.TryGetValue(words[0], out var idx);
             if (words.Length <= idx + 1)
             {
-                State = MessageState.NonSupport;
+                State = MessageState.Unhandled;
                 return false;
             }
             ApiHost = words[idx];

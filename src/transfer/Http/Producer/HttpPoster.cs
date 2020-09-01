@@ -37,6 +37,12 @@ namespace ZeroTeam.MessageMVC.Http
             {
                 message.ArgumentOffline();
                 var client = HttpClientOption.HttpClientFactory.CreateClient(name);
+                if (client.BaseAddress == null)
+                {
+                    FlowTracer.MonitorInfomation(() => $"[{message.Topic}/{message.Title}]服务未注册");
+                    message.State = MessageState.Unhandled;
+                    return null;//直接使用状态
+                }
                 FlowTracer.MonitorDetails(() => $"URL : {client.BaseAddress }{message.Topic}/{message.Title}");
 
                 using var content = new StringContent(message.Content);

@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using JsonIgnoreAttribute = System.Text.Json.Serialization.JsonIgnoreAttribute;
 
 namespace ZeroTeam.MessageMVC.Messages
 {
@@ -13,27 +14,32 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 服务名称,即Topic
         /// </summary>
+        [JsonIgnore]
         public string ServiceName { get => Topic; set => Topic = value; }
 
         /// <summary>
         /// 接口名称,即Title
         /// </summary>
+        [JsonIgnore]
         public string ApiName { get => Title; set => Title = value; }
 
         /// <summary>
         /// 接口参数,即Content
         /// </summary>
+        [JsonIgnore]
         public string Argument { get => Content; set => Content = value; }
 
 
         /// <summary>
         /// 是否外部访问
         /// </summary>
+        [JsonIgnore]
         public bool IsOutAccess => false;
 
         /// <summary>
         /// 数据状态
         /// </summary>
+        [JsonIgnore]
         public MessageDataState DataState { get; set; }
 
         /// <summary>
@@ -44,6 +50,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 字典参数
         /// </summary>
+        [JsonIgnore]
         public Dictionary<string, string> Dictionary
         {
             get => dictionary;
@@ -63,6 +70,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 实体参数
         /// </summary>
+        [JsonIgnore]
         public object ArgumentData
         {
             get => argumentData;
@@ -90,6 +98,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 处理失败 : 失败内容或原因
         /// 处理成功 : 结果信息或无
         /// </remarks>
+        [JsonIgnore]
         public object ResultData
         {
             get => resultData;
@@ -107,17 +116,20 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         ///     返回值序列化对象
         /// </summary>
+        [JsonIgnore]
         public ISerializeProxy ResultSerializer { get; set; }
 
 
         /// <summary>
         ///     返回值构造对象
         /// </summary>
+        [JsonIgnore]
         public Func<int, string, object> ResultCreater { get; set; }
 
         /// <summary>
         /// 参数序列化器
         /// </summary>
+        [JsonIgnore]
         public ISerializeProxy ArgumentSerializer { get; set; }
 
         /// <summary>

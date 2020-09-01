@@ -18,11 +18,6 @@ namespace ZeroTeam.MessageMVC.Messages
         Cancel = 1,
 
         /// <summary>
-        /// 不支持处理
-        /// </summary>
-        NonSupport = 3,
-
-        /// <summary>
         /// 已接受
         /// </summary>
         Accept = 0x10,
@@ -63,7 +58,7 @@ namespace ZeroTeam.MessageMVC.Messages
         Failed = 0x22,
 
         /// <summary>
-        /// 无处理结果
+        /// 无处理方法
         /// </summary>
         Unhandled = 0x23,
 
@@ -112,11 +107,7 @@ namespace ZeroTeam.MessageMVC.Messages
         {
             switch (state)
             {
-                case MessageState.None:
-                    return OperatorStatusCode.Unknow;
                 case MessageState.Cancel:
-                    return OperatorStatusCode.Unavailable;
-                case MessageState.NonSupport:
                     return OperatorStatusCode.Ignore;
                 case MessageState.Accept:
                 case MessageState.Send:

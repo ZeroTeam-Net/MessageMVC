@@ -31,8 +31,8 @@
         public int TimeOut { get; set; }
 
         /// <summary>
-        /// 绑定的服务列表,组合结果为 [Url]/[Service]/[ApiName]
+        /// 绑定的服务别名,组合结果为 [Url]/[Service]/[ApiName]
         /// </summary>
-        public string Services { get; set; }
+        public string Alias { get; set; }
     }
 }
