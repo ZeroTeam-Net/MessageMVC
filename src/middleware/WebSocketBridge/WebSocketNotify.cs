@@ -90,7 +90,7 @@ namespace ZeroTeam.MessageMVC.Web
             {
                 return;
             }
-            DependencyHelper.Update();
+            DependencyHelper.Reload();
             foreach (var folder in Config.Folders)
             {
                 ZeroFlowControl.RegistService(new ZeroService

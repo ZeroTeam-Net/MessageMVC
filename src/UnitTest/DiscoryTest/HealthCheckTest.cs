@@ -15,7 +15,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         {
             DependencyHelper.ServiceCollection.AddCsRedis();
             DependencyHelper.ServiceCollection.AddKafka();
-            DependencyHelper.Update();
+            DependencyHelper.Reload();
             DependencyHelper.ServiceCollection.UseTest(typeof(ApiContraceJsonTest).Assembly);
         }
 

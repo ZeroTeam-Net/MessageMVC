@@ -3,7 +3,7 @@
     "ZeroTeam.MessageMVC.Http.Sample": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:8088",
+      "launchUrl": "test2/hello",
       "applicationUrl": "http://localhost:8088"
     }
   }

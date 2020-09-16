@@ -268,7 +268,7 @@
                 参数类型
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiAction.Execute(ZeroTeam.MessageMVC.Messages.IInlineMessage,ZeroTeam.MessageMVC.Messages.ISerializeProxy)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.IApiAction.Execute(System.Threading.Tasks.TaskCompletionSource{System.ValueTuple{ZeroTeam.MessageMVC.Messages.MessageState,System.Object}},ZeroTeam.MessageMVC.Messages.IInlineMessage,ZeroTeam.MessageMVC.Messages.ISerializeProxy)">
             <summary>
                 执行
             </summary>
@@ -1372,14 +1372,9 @@
             保存于上下文的状态
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Context.ContextStatus.IsManageMode">
+        <member name="P:ZeroTeam.MessageMVC.Context.ContextStatus.IsKernelMode">
             <summary>
-                是否工作在管理模式下(数据全看模式)
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Context.ContextStatus.IsSystemMode">
-            <summary>
-                是否工作在系统模式下
+                是否工作在系统内核模式下
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Context.ContextStatus.Feature">
@@ -1578,6 +1573,16 @@
                 全局上下文
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.IZeroContext.IsDelay">
+            <summary>
+                是否延迟处理
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.IZeroContext.DependencyScope">
+            <summary>
+            依赖范围
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.Context.IZeroContext.User">
             <summary>
                 当前调用的客户信息
@@ -1601,6 +1606,11 @@
         <member name="P:ZeroTeam.MessageMVC.Context.IZeroContext.Message">
             <summary>
             当前消息
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.IZeroContext.Task">
+            <summary>
+            当前任务，用于提前返回
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Context.TraceInfo">
@@ -1738,6 +1748,16 @@
             构造
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.ZeroContext.IsDelay">
+            <summary>
+                是否延迟处理
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.ZeroContext.DependencyScope">
+            <summary>
+            依赖范围
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.Context.ZeroContext.User">
             <summary>
                 当前调用的客户信息
@@ -1761,6 +1781,11 @@
         <member name="P:ZeroTeam.MessageMVC.Context.ZeroContext.Status">
             <summary>
             全局状态
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.ZeroContext.Task">
+            <summary>
+            当前任务，用于提前返回
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Documents.AnnotationsConfig">
@@ -2255,6 +2280,12 @@
                 注册方法
             </summary>
             <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
+            <param name="info">反射信息</param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Services.IService.RegistWildcardAction(ZeroTeam.MessageMVC.Documents.ApiActionInfo)">
+            <summary>
+                注册通配方法
+            </summary>
             <param name="info">反射信息</param>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Services.IService.ResetStateMachine">

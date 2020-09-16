@@ -215,13 +215,17 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     try
                     {
                         var info = (ApiActionInfo)api.Value;
-                        service.RegistAction(api.Key, info);
+                        if (api.Key == "*")
+                            service.RegistWildcardAction(info);
+                        else
+                            service.RegistAction(api.Key, info);
                     }
                     catch (Exception ex)
                     {
                         logger.Exception(ex, api.Key);
                     }
                 }
+
             }
         }
         #endregion

@@ -55,12 +55,14 @@ namespace ZeroTeam.MessageMVC.Http
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls;
             ConfigurationHelper.RegistOnChange<HttpClientOption>("Http:Client", Instance.LoadOption, true);
         }
+        bool isLoaded;
         void LoadOption(HttpClientOption option)
         {
             DefaultUrl = option.DefaultUrl;
             if (option.DefaultTimeOut >= 1)
                 DefaultTimeOut = option.DefaultTimeOut;
-            if (!Options.ContainsKey(DefaultName))
+
+            if (!isLoaded && !Options.ContainsKey(DefaultName))
             {
                 Options.TryAdd(DefaultName, new HttpClientItem
                 {
@@ -115,7 +117,9 @@ namespace ZeroTeam.MessageMVC.Http
                     }
                 }
             }
-            DependencyHelper.Update();
+            if (!isLoaded)
+                DependencyHelper.Reload();
+            isLoaded = true;
             HttpClientFactory = DependencyHelper.GetService<IHttpClientFactory>();
         }
     }

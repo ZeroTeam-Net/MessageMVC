@@ -54,6 +54,12 @@ namespace ZeroTeam.MessageMVC.Services
         void RegistAction(string name, ApiActionInfo info);
 
         /// <summary>
+        ///     注册通配方法
+        /// </summary>
+        /// <param name="info">反射信息</param>
+        void RegistWildcardAction(ApiActionInfo info);
+        
+        /// <summary>
         /// 重置状态机,请谨慎使用
         /// </summary>
         void ResetStateMachine();

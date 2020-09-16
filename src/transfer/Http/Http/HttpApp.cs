@@ -14,8 +14,10 @@ namespace ZeroTeam.MessageMVC.Http
         /// <summary>
         ///     初始化
         /// </summary>
-        public static void UseHttp(this IServiceCollection services)
+        public static void AddMessageMvcHttp(this IServiceCollection services)
         {
+            services.AddHttpClient();
+            services.AddHttpContextAccessor();
             services.AddTransient<IMessagePoster, HttpPoster>();
             services.AddTransient<IServiceReceiver, HttpReceiver>();
         }
@@ -23,14 +25,14 @@ namespace ZeroTeam.MessageMVC.Http
         /// <summary>
         ///     初始化
         /// </summary>
-        public static async void RunMessageMVC(this IApplicationBuilder app, bool handerHttp)
+        public static async void UseMessageMVC(this IApplicationBuilder app, bool handerHttp)
         {
             if (handerHttp)
                 app.Run(HttpReceiver.Call);
 
             DependencyHelper.LoggerFactory = app.ApplicationServices.GetService<ILoggerFactory>();
-            DependencyHelper.Update(app.ApplicationServices);
             await ZeroFlowControl.Initialize();
+            DependencyHelper.BindingMessageMvc(app.ApplicationServices);
             await ZeroFlowControl.RunAsync();
         }
     }

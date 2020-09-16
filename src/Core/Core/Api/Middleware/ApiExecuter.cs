@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.Services;
+using ActionTask = System.Threading.Tasks.TaskCompletionSource<(ZeroTeam.MessageMVC.Messages.MessageState state, object result)>;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -65,23 +66,30 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             Message = message;
             Tag = tag;
             Message.RealState = MessageState.Processing;
+            if (await Handle() || next == null)
+                return;
+            await next();
+        }
+
+        /// <summary>
+        /// 处理
+        /// </summary>
+        /// <returns></returns>
+        async Task<bool> Handle()
+        {
             var action = Service.GetApiAction(Message.Title);
             //1 查找调用方法
             if (action == null)
             {
                 FlowTracer.MonitorInfomation("错误: 接口({0})不存在", Message.Title);
                 Message.RealState = MessageState.Unhandled;
-                if (next != null)
-                {
-                    await next();
-                }
-                return;
+                return false;
             }
             //2 确定调用方法及对应权限
             if (!ZeroAppOption.Instance.IsOpenAccess
                 && (!action.Option.HasFlag(ApiOption.Anymouse))
-                && (GlobalContext.User == null 
-                || GlobalContext.User.UserId == UserInfo.SystemUserId 
+                && (GlobalContext.User == null
+                || GlobalContext.User.UserId == UserInfo.SystemUserId
                 || GlobalContext.User.UserId == UserInfo.UnknownUserId))
             {
                 FlowTracer.MonitorInfomation("错误: 需要用户登录信息");
@@ -90,34 +98,39 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 status.Code = OperatorStatusCode.BusinessException;
                 status.Message = "拒绝访问";
                 Message.ResultData = status;
-                
-                if (next != null)
-                {
-                    await next();
-                }
-                return;
+                return true;
             }
             Message.PrepareResult(action.ResultSerializer, action.ResultCreater);
             //参数处理
             if (!ArgumentPrepare(action))
             {
-                if (next != null)
-                {
-                    await next();
-                }
-                return;
+                return false;
             }
+            GlobalContext.Current.IsDelay = true;
+            //方法执行
+            GlobalContext.Current.Task = new ActionTask();
             try
             {
-                //方法执行
-                var (state, result) = await action.Execute(Message, Service.Serialize);
+                _ = action.Execute(GlobalContext.Current.Task, Message, Service.Serialize);
+                Console.WriteLine("Task await");
+                await GlobalContext.Current.Task.Task;
+                Console.WriteLine("Task end");
+                var (state, result) = GlobalContext.Current.Task.Task.Result;
                 Message.State = state;
                 Message.ResultData = result;
+                return false;
             }
-            catch (FormatException ex)
+            //catch (TaskCanceledException)
+            //{
+            //    Message.State = MessageState.Cancel;
+            //    var status = DependencyHelper.GetService<IOperatorStatus>();
+            //    status.Code = OperatorStatusCode.TimeOut;
+            //    status.Message = "操作被取消";
+            //    Message.ResultData = status;
+            //}
+            catch (FormatException fe)
             {
-                logger.Exception(ex);
-                FlowTracer.MonitorDetails(() => $"参数转换出错误, 请检查调用参数是否合适:{ex.Message}");
+                FlowTracer.MonitorDetails(() => $"参数转换出错误, 请检查调用参数是否合适:{fe.Message}");
                 Message.RealState = MessageState.FormalError;
 
                 var status = DependencyHelper.GetService<IOperatorStatus>();
@@ -135,11 +148,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 status.Message = msg;
                 Message.ResultData = status;
             }
-
-            if (next != null)
-            {
-                await next();
-            }
+            return false;
         }
 
         #endregion

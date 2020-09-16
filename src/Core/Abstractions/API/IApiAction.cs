@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
+using ActionTask = System.Threading.Tasks.TaskCompletionSource<(ZeroTeam.MessageMVC.Messages.MessageState state, object result)>;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -83,7 +84,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ///     执行
         /// </summary>
         /// <returns></returns>
-        Task<(MessageState state, object result)> Execute(IInlineMessage message, ISerializeProxy serializer);
+        Task Execute(ActionTask task, IInlineMessage message, ISerializeProxy serializer);
 
         /// <summary>
         /// 初始化检查

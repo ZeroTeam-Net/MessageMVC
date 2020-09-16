@@ -17,6 +17,7 @@ namespace ZeroTeam.MessageMVC.Messages
     public class MessageProcessor
     {
         #region 处理入口
+
         ILogger logger;
         TaskCompletionSource<IMessageItem> WaitTask;
         /// <summary>
@@ -51,7 +52,6 @@ namespace ZeroTeam.MessageMVC.Messages
             message.RealState = MessageState.Recive;
             var process = new MessageProcessor
             {
-                logger = DependencyHelper.LoggerFactory.CreateLogger($"{message.Topic}/{message.Title}"),
                 Service = service,
                 Message = message,
                 Original = original,
@@ -84,27 +84,36 @@ namespace ZeroTeam.MessageMVC.Messages
         private async Task Process()
         {
             await Task.Yield();
-            using (DependencyScope.CreateScope($"[MessageProcessor.Process] {Message.Topic}/{Message.Title}"))
+            var name = $"{Message.Topic}/{Message.Title}";
+            DependencyScope.CreateScope(name);
+            logger = DependencyHelper.LoggerFactory.CreateLogger(name);
+            try
             {
-                try
-                {
-                    middlewares = DependencyHelper.ServiceProvider.GetServices<IMessageMiddleware>().OrderBy(p => p.Level).ToArray();
+                middlewares = DependencyHelper.ServiceProvider.GetServices<IMessageMiddleware>().OrderBy(p => p.Level).ToArray();
 
-                    //BUG:Prepare处理需要检查
-                    if (await Prepare() && Message.State <= MessageState.Processing)
-                    {
-                        index = 0;
-                        await DoHandle();
-                    }
-
-                    await Write();
-                }
-                finally
+                //BUG:Prepare处理需要检查
+                if (await Prepare() && Message.State <= MessageState.Processing)
                 {
-                    WaitTask.SetResult(Message);
+                    index = 0;
+                    await DoHandle();
                 }
-                await OnEnd();
+                await Write();
             }
+            finally
+            {
+                WaitTask.SetResult(Message);
+            }
+            await OnEnd();
+            if (GlobalContext.Current.IsDelay)//标记为需要延迟处理依赖范围
+            {
+                GlobalContext.Current.IsDelay = false;//让另一个处理不再等等
+            }
+            else
+            {
+                //正常清理范围
+                DependencyScope.Local.Value.Scope.Dispose();
+            }
+            Console.WriteLine("MessageProcessor end");
         }
 
         /// <summary>
@@ -114,15 +123,12 @@ namespace ZeroTeam.MessageMVC.Messages
         private async Task<bool> Prepare()
         {
             FlowTracer.BeginStepMonitor("[MessageProcessor.Prepare]");
-
-            FlowTracer.BeginStepMonitor("[Message.Prepare]");
             Message.Reset();
             if (IsOffline)
             {
                 Message.DataState = MessageDataState.ArgumentOffline;
             }
             await Message.PrepareInline();
-            FlowTracer.EndStepMonitor();
 
             try
             {
@@ -140,8 +146,7 @@ namespace ZeroTeam.MessageMVC.Messages
                     catch (Exception ex)
                     {
                         FlowTracer.MonitorInfomation(() => $"[MessageProcessor.Prepare>{middleware.GetTypeName()}.Prepare]  发生异常.{ ex.Message}.");
-                        logger.Exception(ex);
-                        Message.RealState = MessageState.FrameworkError;
+                        await OnMessageError(ex);
                         return false;
                     }
                     finally
@@ -175,6 +180,7 @@ namespace ZeroTeam.MessageMVC.Messages
             }
             catch (Exception ex)
             {
+                FlowTracer.MonitorInfomation(() => $"[MessageProcessor.DoHandle]  发生异常.{ ex.Message}.");
                 await OnMessageError(ex);
             }
             finally
@@ -257,7 +263,7 @@ namespace ZeroTeam.MessageMVC.Messages
 
             Message.RealState = MessageState.FrameworkError;
             var array = middlewares.Where(p => p.Scope.HasFlag(MessageHandleScope.Exception)).ToArray();
-            if (array.Length != 0)
+            if (array.Length == 0)
             {
                 return;
             }

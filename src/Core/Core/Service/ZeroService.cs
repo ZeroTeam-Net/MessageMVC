@@ -422,6 +422,10 @@ namespace ZeroTeam.MessageMVC.Services
             get => serialize ??= DependencyHelper.GetService<ISerializeProxy>();
             set => serialize = value;
         }
+        /// <summary>
+        /// 通配事件
+        /// </summary>
+        IApiAction WildcardAction;
 
         /// <summary>
         /// 注册的方法
@@ -435,7 +439,31 @@ namespace ZeroTeam.MessageMVC.Services
         /// <returns></returns>
         public IApiAction GetApiAction(string api)
         {
-            return api != null && ApiActions.TryGetValue(api, out var info) ? info : null;
+            return api != null && ApiActions.TryGetValue(api, out var info) ? info : WildcardAction;
+        }
+
+        /// <summary>
+        ///     注册通配方法
+        /// </summary>
+        /// <param name="info">反射信息</param>
+        void IService.RegistWildcardAction(ApiActionInfo info)
+        {
+            logger ??= DependencyHelper.LoggerFactory.CreateLogger($"ZeroService({ServiceName})");
+
+            WildcardAction = new ApiAction
+            {
+                Function = info.Action,
+                Option = info.AccessOption,
+                ResultType = info.ResultType,
+                IsAsync = info.IsAsync,
+                ResultSerializeType = info.ResultSerializeType,
+                ArgumentSerializeType = info.ArgumentSerializeType
+            };
+
+            WildcardAction.Initialize();
+
+            logger.Information(() => $"[注册接口] {ServiceName}/* => {info.Caption} {info.ControllerName}.{info.Name}");
+
         }
 
         /// <summary>
@@ -471,7 +499,7 @@ namespace ZeroTeam.MessageMVC.Services
             {
                 logger.Error($"[注册接口]失败，因为路由名称已存在 {ServiceName}/{route} => {info.Caption} {info.ControllerName}.{info.Name}");
             }
-            logger.Trace(() => $"[注册接口] {ServiceName}/{route} => {info.Caption} {info.ControllerName}.{info.Name}");
+            logger.Information(() => $"[注册接口] {ServiceName}/{route} => {info.Caption} {info.ControllerName}.{info.Name}");
         }
 
         #endregion

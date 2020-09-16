@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.Services;
+using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Tools
 {
@@ -59,11 +60,18 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <returns></returns>
         Task IMessageMiddleware.OnGlobalException(IService service, IInlineMessage message, Exception exception, object tag)
         {
+            message.DataState |= MessageDataState.ResultOffline;
             var ex = ResourceExceptions.FirstOrDefault(p => exception.GetType().IsSubclassOf(p.Key));
             if (ex.Value != null)
             {
                 message.Result = ex.Value.Name;
                 message.RealState = ex.Value.Value;
+            }
+            else
+            {
+                message.Result = "*内部错误*";
+                
+                message.RealState = MessageState.FrameworkError;
             }
             return Task.CompletedTask;
         }

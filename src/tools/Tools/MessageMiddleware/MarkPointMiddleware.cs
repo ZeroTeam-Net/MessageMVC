@@ -21,7 +21,8 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <summary>
         /// 消息中间件的处理范围
         /// </summary>
-        MessageHandleScope IMessageMiddleware.Scope => ToolsOption.Instance.EnableMarkPoint | FlowTracer.LogMonitor
+        MessageHandleScope IMessageMiddleware.Scope =>
+            ToolsOption.Instance.EnableMarkPoint || FlowTracer.LogMonitor
                 ? MessageHandleScope.Prepare | MessageHandleScope.End
                 : MessageHandleScope.None;
 
@@ -62,7 +63,8 @@ namespace ZeroTeam.MessageMVC.Tools
                     message.Trace = null;
                 }
                 root = FlowTracer.EndMonitor();
-                DependencyScope.Logger.TraceMonitor(root);
+                if (root != null)
+                    DependencyScope.Logger.TraceMonitor(root);
             }
             if (!ToolsOption.Instance.EnableMarkPoint || (message.Topic == ToolsOption.Instance.MarkPointName && message.ApiName == "post"))
                 return;

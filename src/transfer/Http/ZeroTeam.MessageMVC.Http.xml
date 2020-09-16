@@ -9,12 +9,12 @@
             Http应用
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpApp.UseHttp(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpApp.AddMessageMvcHttp(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
                 初始化
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpApp.RunMessageMVC(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.Boolean)">
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpApp.UseMessageMVC(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.Boolean)">
             <summary>
                 初始化
             </summary>

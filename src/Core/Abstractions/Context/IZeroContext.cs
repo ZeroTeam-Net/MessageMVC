@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using ZeroTeam.MessageMVC.Messages;
+using ActionTask = System.Threading.Tasks.TaskCompletionSource<(ZeroTeam.MessageMVC.Messages.MessageState state, object result)>;
 
 namespace ZeroTeam.MessageMVC.Context
 {
@@ -8,6 +10,16 @@ namespace ZeroTeam.MessageMVC.Context
     /// </summary>
     public interface IZeroContext
     {
+        /// <summary>
+        ///     是否延迟处理
+        /// </summary>
+        bool IsDelay { get; set; }
+
+        /// <summary>
+        /// 依赖范围
+        /// </summary>
+        IDisposable  DependencyScope { get; set; }
+
         /// <summary>
         ///     当前调用的客户信息
         /// </summary>
@@ -33,6 +45,10 @@ namespace ZeroTeam.MessageMVC.Context
         /// </summary>
         IInlineMessage Message { get; set; }
 
+        /// <summary>
+        /// 当前任务，用于提前返回
+        /// </summary>
+        ActionTask Task { get; set; }
     }
 }
 

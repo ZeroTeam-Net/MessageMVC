@@ -37,7 +37,7 @@ namespace ZeroTeam.MessageMVC
             //LoggerExtend.DoInitialize();
             logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(ZeroFlowControl));
 
-            DependencyHelper.Update();
+            DependencyHelper.Reload();
             Middlewares = DependencyHelper.RootProvider.GetServices<IFlowMiddleware>().OrderBy(p => p.Level).ToArray();
             foreach (var mid in Middlewares)
             {
@@ -51,7 +51,7 @@ namespace ZeroTeam.MessageMVC
                     throw;
                 }
             }
-            DependencyHelper.Update();
+            DependencyHelper.Reload();
 
             //显示
             Console.WriteLine($@"Wecome ZeroTeam MessageMVC
@@ -102,9 +102,9 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
             if (ZeroAppOption.Instance.ApplicationState >= StationState.Initialized)
                 return;
             ZeroAppOption.Instance.SetApplicationState(StationState.Initialized);
-            DependencyHelper.Update();
+            DependencyHelper.Reload();
             await DiscoverAll();
-            DependencyHelper.Update();
+            DependencyHelper.Reload();
             Middlewares = DependencyHelper.RootProvider.GetServices<IFlowMiddleware>().OrderBy(p => p.Level).ToArray();
             var servcies = DependencyHelper.RootProvider.GetServices<IService>();
             if (servcies != null)
@@ -115,7 +115,7 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
                 }
             }
             await InitializeAll();
-            DependencyHelper.Update();
+            DependencyHelper.Reload();
         }
 
         #endregion

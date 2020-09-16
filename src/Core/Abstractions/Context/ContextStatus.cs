@@ -13,17 +13,10 @@ namespace ZeroTeam.MessageMVC.Context
     public class ContextStatus
     {
         /// <summary>
-        ///     是否工作在管理模式下(数据全看模式)
+        ///     是否工作在系统内核模式下
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public bool IsManageMode { get; set; }
-
-        /// <summary>
-        ///     是否工作在系统模式下
-        /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public bool IsSystemMode { get; set; }
-
+        public bool IsKernelMode { get; set; }
 
         /// <summary>
         ///     其它特性

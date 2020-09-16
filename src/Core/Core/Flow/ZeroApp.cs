@@ -26,11 +26,6 @@ namespace ZeroTeam.MessageMVC
         /// <param name="services"></param>
         static void AddDependency(this IServiceCollection services)
         {
-            if (DependencyHelper.ServiceCollection != services)
-            {
-                DependencyHelper.ServiceCollection = services;
-            }
-            
             //IZeroContext构造
             services.TryAddScoped<IZeroContext, ZeroContext>();
             services.TryAddTransient<IUser, UserInfo>();

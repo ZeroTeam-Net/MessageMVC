@@ -3,6 +3,7 @@ using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
+using ActionTask = System.Threading.Tasks.TaskCompletionSource<(ZeroTeam.MessageMVC.Messages.MessageState state, object result)>;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -237,17 +238,47 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ///     执行
         /// </summary>
         /// <returns></returns>
-        public Task<(MessageState state, object result)> Execute(IInlineMessage message, ISerializeProxy serializer)
+        public async Task Execute(ActionTask task, IInlineMessage message, ISerializeProxy serializer)
         {
-            if (IsAsync)
+            await Task.Yield();
+            Console.WriteLine("Execute start");
+            (MessageState state, object result) res;
+            try
             {
-                return FuncAsync(message, ArgumentSerializer ?? serializer, message.ArgumentData);
+                if (IsAsync)
+                {
+                    res = await FuncAsync(message, ArgumentSerializer ?? serializer, message.ArgumentData);
+                }
+                else
+                {
+                    res = FuncSync(message, ArgumentSerializer ?? serializer, message.ArgumentData);
+                }
+                if (task.Task.Status < TaskStatus.RanToCompletion)
+                {
+                    GlobalContext.Current.IsDelay = false;
+                    task.SetResult(res);
+                }
+                else if (!GlobalContext.Current.IsDelay)//
+                {
+                    //清理范围
+                    DependencyScope.Local.Value.Scope.Dispose();
+                }
             }
-
-            var res = FuncSync(message, ArgumentSerializer ?? serializer, message.ArgumentData);
-            return Task.FromResult(res);
+            catch (Exception ex)
+            {
+                if (task.Task.Status < TaskStatus.RanToCompletion)
+                {
+                    GlobalContext.Current.IsDelay = false;
+                    task.SetException(ex);
+                }
+                else if (!GlobalContext.Current.IsDelay)//
+                {
+                    //清理范围
+                    DependencyScope.Local.Value.Scope.Dispose();
+                }
+            }
+            Console.WriteLine("Execute end");
         }
-
 
         #endregion
 
