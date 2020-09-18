@@ -86,7 +86,7 @@ namespace ZeroTeam.MessageMVC
                     State = MessageState.Cancel
                 };
             }
-            var tasks = new Task<(IInlineMessage msg, MessageState state)>[map.Length];
+            var tasks = new Task<IInlineMessage>[map.Length];
             for (int i = 0; i < map.Length; i++)
             {
                 string service = map[i];
@@ -100,14 +100,14 @@ namespace ZeroTeam.MessageMVC
 
             foreach (var task in tasks)
             {
-                if (task.Result.state == MessageState.Success)
-                    results.Add(task.Result.msg.ToMessageResult(true));
+                if (task.Result.State == MessageState.Success)
+                    results.Add(task.Result.ToMessageResult(true));
                 else
                     results.Add(new MessageResult
                     {
                         ID = message.ID,
                         Trace = message.Trace,
-                        State = task.Result.state
+                        State = task.Result.State
                     });
             }
 

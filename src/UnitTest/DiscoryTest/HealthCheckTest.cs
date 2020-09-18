@@ -13,8 +13,8 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         [SetUp]
         public void Setup()
         {
-            DependencyHelper.ServiceCollection.AddCsRedis();
-            DependencyHelper.ServiceCollection.AddKafka();
+            DependencyHelper.ServiceCollection.AddMessageMvcRedis();
+            DependencyHelper.ServiceCollection.AddMessageMvcKafka();
             DependencyHelper.Reload();
             DependencyHelper.ServiceCollection.UseTest(typeof(ApiContraceJsonTest).Assembly);
         }
@@ -31,7 +31,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         [Test]
         public async Task Test()
         {
-            var (msg, _) = await MessagePoster.Post(new InlineMessage
+            var msg = await MessagePoster.Post(new InlineMessage
             {
                 ServiceName = "UnitService",
                 ApiName = "_health_"

@@ -415,7 +415,7 @@ namespace ZeroTeam.MessageMVC.Http
         #endregion
 
         #region 状态
-
+        /*
         /// <summary>
         /// 如果未上线且还原参数为字典,否则什么也不做
         /// </summary>
@@ -459,6 +459,7 @@ namespace ZeroTeam.MessageMVC.Http
             }
             return Task.CompletedTask;
         }
+        */
         #endregion
 
         #region 原始参数读取

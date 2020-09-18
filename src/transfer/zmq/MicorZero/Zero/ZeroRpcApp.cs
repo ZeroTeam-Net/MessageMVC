@@ -12,7 +12,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         /// 使用ZeroRpc
         /// </summary>
-        public static void AddZeroRpc(this IServiceCollection services)
+        public static void AddMessageMvcZeroRpc(this IServiceCollection services)
         {
             services.AddSingleton<IFlowMiddleware, ZeroRpcFlow>();
             services.AddSingleton<IFlowMiddleware>(ZeroPostProxy.Instance);

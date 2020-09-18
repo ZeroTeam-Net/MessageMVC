@@ -19,7 +19,7 @@ namespace Rabbit
                 DependencyHelper.Reload();
             });
             var services = DependencyHelper.ServiceCollection;
-            services.AddRabbitMQ();
+            services.AddMessageMvcRabbitMQ();
             DependencyHelper.Reload();
             _ = Test();
             await services.UseMessageMvc(typeof(Program));

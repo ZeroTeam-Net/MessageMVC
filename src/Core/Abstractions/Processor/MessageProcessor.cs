@@ -113,7 +113,6 @@ namespace ZeroTeam.MessageMVC.Messages
                 //正常清理范围
                 DependencyScope.Local.Value.Scope.Dispose();
             }
-            Console.WriteLine("MessageProcessor end");
         }
 
         /// <summary>

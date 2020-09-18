@@ -125,17 +125,6 @@ namespace ZeroTeam.MessageMVC.Messages
         }
 
         /// <summary>
-        /// 数据设置为上线状态
-        /// </summary>
-        void PrepareResult(ISerializeProxy resultSerializer, Func<int, string, object> errResultCreater)
-        {
-            if (resultSerializer != null)
-                ResultSerializer = resultSerializer;
-            if (errResultCreater != null)
-                ResultCreater = errResultCreater;
-        }
-
-        /// <summary>
         /// 还原内容为字典
         /// </summary>
         void RestoryContentToDictionary(ISerializeProxy serializer, bool merge)

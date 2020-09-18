@@ -17,7 +17,7 @@
     <PackageReleaseNotes>ClrZmq的ZeroTeam专用版本</PackageReleaseNotes>
     <Product>ClrZmq</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.1.0</Version>
+    <Version>1.0.1.17</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -27,11 +27,11 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <NoWarn>1701;1702;1705;1591</NoWarn>
     <DocumentationFile>ZeroTeam.ZeroMQ.xml</DocumentationFile>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;monitor</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp3.1|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;monitor</DefineConstants>
     <DocumentationFile>ZeroTeam.ZeroMQ.xml</DocumentationFile>
   </PropertyGroup>
 

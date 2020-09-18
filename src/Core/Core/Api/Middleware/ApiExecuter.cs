@@ -100,7 +100,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 Message.ResultData = status;
                 return true;
             }
-            Message.PrepareResult(action.ResultSerializer, action.ResultCreater);
+            Message.ResultSerializer = action.ResultSerializer;
+            Message.ResultCreater = action.ResultCreater;
+
             //参数处理
             if (!ArgumentPrepare(action))
             {
@@ -112,9 +114,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             try
             {
                 _ = action.Execute(GlobalContext.Current.Task, Message, Service.Serialize);
-                Console.WriteLine("Task await");
                 await GlobalContext.Current.Task.Task;
-                Console.WriteLine("Task end");
                 var (state, result) = GlobalContext.Current.Task.Task.Result;
                 Message.State = state;
                 Message.ResultData = result;

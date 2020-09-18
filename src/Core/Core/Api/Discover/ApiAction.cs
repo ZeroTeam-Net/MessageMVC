@@ -241,7 +241,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         public async Task Execute(ActionTask task, IInlineMessage message, ISerializeProxy serializer)
         {
             await Task.Yield();
-            Console.WriteLine("Execute start");
             (MessageState state, object result) res;
             try
             {
@@ -271,13 +270,12 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     GlobalContext.Current.IsDelay = false;
                     task.SetException(ex);
                 }
-                else if (!GlobalContext.Current.IsDelay)//
+                else if (!GlobalContext.Current.IsDelay)
                 {
                     //清理范围
                     DependencyScope.Local.Value.Scope.Dispose();
                 }
             }
-            Console.WriteLine("Execute end");
         }
 
         #endregion

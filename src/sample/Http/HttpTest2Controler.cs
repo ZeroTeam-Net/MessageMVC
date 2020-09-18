@@ -13,7 +13,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         [Route("hello"), ApiOption(ApiOption.CustomContent)]
         public IApiResult<string> Hello(string abc)
         {
-            Thread.Sleep(10);
+            MessagePoster.Call("abc","test","");
             return ApiResultHelper.Helper.Succees($"hello1:{abc}");
         }
         /// <summary>

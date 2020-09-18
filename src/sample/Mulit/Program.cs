@@ -10,12 +10,9 @@ namespace MicroZero.Kafka.QueueStation
     {
         static void Main()
         {
-            DependencyHelper.ServiceCollection.AddKafka();
-            DependencyHelper.ServiceCollection.AddZeroRpc();
+            DependencyHelper.ServiceCollection.AddMessageMvcKafka();
+            DependencyHelper.ServiceCollection.AddMessageMvcZeroRpc();
             DependencyHelper.ServiceCollection.AddMessageMvc(typeof(Program));
-
-            MessagePoster.Publish("test1", "test", "");
-            MessagePoster.Publish("Inproc", "test", "");
 
             Console.ReadKey();
             Console.WriteLine("Bye bye.");

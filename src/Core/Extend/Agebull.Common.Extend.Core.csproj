@@ -10,7 +10,7 @@
   <PropertyGroup>
     <Description>一些常用的基础功能扩展</Description>
     <AssemblyTitle>Agebull.Common.Extend</AssemblyTitle>
-    <Version>4.0.0.42</Version>
+    <Version>4.0.0.43</Version>
     <!--monoandroid60;xamarinios10-->
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <DebugType>portable</DebugType>
@@ -48,6 +48,10 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.1|AnyCPU'">
     <DocumentationFile>Agebull.Common.Extend.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">

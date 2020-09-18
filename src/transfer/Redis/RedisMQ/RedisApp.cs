@@ -13,7 +13,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <summary>
         /// 使用RedisMQ
         /// </summary>
-        public static void AddCsRedis(this IServiceCollection services)
+        public static void AddMessageMvcRedis(this IServiceCollection services)
         {
             if (isUsed)
                 return;
@@ -31,7 +31,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <summary>
         /// 使用RedisMQ
         /// </summary>
-        public static void AddRedisPoster(this IServiceCollection services)
+        public static void AddMessageMvcRedisPoster(this IServiceCollection services)
         {
             services.AddSingleton<IFlowMiddleware>(RedisFlow.Instance);
             services.AddSingleton<IHealthCheck>(RedisFlow.Instance);
@@ -43,7 +43,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <summary>
         /// 使用Redis消息队列
         /// </summary>
-        public static void AddRedisQueue(this IServiceCollection services)
+        public static void AddMessageMvcRedisQueue(this IServiceCollection services)
         {
             services.AddSingleton<IFlowMiddleware>(RedisFlow.Instance);
             services.AddSingleton<IHealthCheck>(RedisFlow.Instance);
@@ -54,7 +54,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <summary>
         /// 使用Redis消息队列
         /// </summary>
-        public static void AddRedisQueueClient(this IServiceCollection services)
+        public static void AddMessageMvcRedisQueueClient(this IServiceCollection services)
         {
             services.AddSingleton<IFlowMiddleware>(RedisFlow.Instance);
             services.AddSingleton<IHealthCheck>(RedisFlow.Instance);
@@ -64,7 +64,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <summary>
         /// 使用Redis事件
         /// </summary>
-        public static void AddRedisEvent(this IServiceCollection services)
+        public static void AddMessageMvcRedisEvent(this IServiceCollection services)
         {
             services.AddSingleton<IFlowMiddleware>(RedisFlow.Instance);
             services.AddSingleton<IHealthCheck>(RedisFlow.Instance);
@@ -75,7 +75,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <summary>
         /// 使用Redis事件
         /// </summary>
-        public static void AddRedisEventClient(this IServiceCollection services)
+        public static void AddMessageMvcRedisEventClient(this IServiceCollection services)
         {
             services.AddSingleton<IFlowMiddleware>(RedisFlow.Instance);
             services.AddSingleton<IHealthCheck>(RedisFlow.Instance);

@@ -32,7 +32,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         {
             try
             {
-                var (msg, ser) = await MessagePoster.Post(null);
+                var msg = await MessagePoster.Post(null);
                 Assert.Fail("不应执行");
             }
             catch (Exception ex)
@@ -42,7 +42,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
 
             try
             {
-                var (msg, ser) = await MessagePoster.Post(new InlineMessage());
+                var msg = await MessagePoster.Post(new InlineMessage());
                 Assert.Fail("不应执行");
             }
             catch (Exception ex)
@@ -53,7 +53,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             try
             {
 
-                var (msg, ser) = await MessagePoster.Post(new InlineMessage
+                var msg = await MessagePoster.Post(new InlineMessage
                 {
                     ServiceName = "abbc"
                 });
@@ -65,7 +65,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             }
             try
             {
-                var (msg, ser) = await MessagePoster.Post(new InlineMessage
+                var msg = await MessagePoster.Post(new InlineMessage
                 {
                     ServiceName = "UnitService"
                 });
@@ -86,7 +86,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         [Test]
         public async Task NonSupport()
         {
-            var (msg, _) = await MessagePoster.Post(new InlineMessage
+            var msg = await MessagePoster.Post(new InlineMessage
             {
                 ServiceName = "UnitService",
                 ApiName = "abcccceerw"
@@ -103,7 +103,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         [Test]
         public async Task Argument()
         {
-            var (msg, _) = await MessagePoster.Post(new InlineMessage
+            var msg = await MessagePoster.Post(new InlineMessage
             {
                 ServiceName = "UnitService",
                 ApiName = "v1/argument",
@@ -122,7 +122,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         [Test]
         public async Task CustomSerialize()
         {
-            var (msg, _) = await MessagePoster.Post(new InlineMessage
+            var msg = await MessagePoster.Post(new InlineMessage
             {
                 ServiceName = "UnitService",
                 ApiName = "v1/customSerialize",
@@ -139,7 +139,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         [Test]
         public async Task Validate()
         {
-            var (msg, _) = await MessagePoster.Post(new InlineMessage
+            var msg = await MessagePoster.Post(new InlineMessage
             {
                 ServiceName = "UnitService",
                 ApiName = "v1/validate",
@@ -161,7 +161,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         [Test]
         public async Task Validate2()
         {
-            var (msg, _) = await MessagePoster.Post(new InlineMessage
+            var msg = await MessagePoster.Post(new InlineMessage
             {
                 ServiceName = "UnitService",
                 ApiName = "v1/validate",
@@ -181,7 +181,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         [Test]
         public async Task Error()
         {
-            var (msg, _) = await MessagePoster.Post(new InlineMessage
+            var msg = await MessagePoster.Post(new InlineMessage
             {
                 ServiceName = "UnitService",
                 ApiName = "v1/err"
@@ -196,7 +196,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         [Test]
         public async Task Empty()
         {
-            var (msg, _) = await MessagePoster.Post(new InlineMessage
+            var msg = await MessagePoster.Post(new InlineMessage
             {
                 ServiceName = "UnitService",
                 ApiName = "v1/empty"
@@ -211,7 +211,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         [Test]
         public async Task Async()
         {
-            var (msg, _) = await MessagePoster.Post(new InlineMessage
+            var msg = await MessagePoster.Post(new InlineMessage
             {
                 ServiceName = "UnitService",
                 ApiName = "v1/async",
@@ -243,7 +243,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
                 OrganizationName = "ZeroTeam"
             }.ToJson();
 
-            var (msg, _) = await MessagePoster.Post(new InlineMessage
+            var msg = await MessagePoster.Post(new InlineMessage
             {
                 ServiceName = "UnitService",
                 ApiName = "v1/context",
@@ -264,7 +264,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         [Test]
         public async Task Exception()
         {
-            var (msg, _) = await MessagePoster.Post(new InlineMessage
+            var msg = await MessagePoster.Post(new InlineMessage
             {
                 ServiceName = "UnitService",
                 ApiName = "v1/exception"
@@ -279,7 +279,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         [Test]
         public async Task VoidCall()
         {
-            var (msg, _) = await MessagePoster.Post(new InlineMessage
+            var msg = await MessagePoster.Post(new InlineMessage
             {
                 ServiceName = "UnitService",
                 ApiName = "v1/void",
@@ -295,7 +295,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         [Test]
         public async Task JsonString()
         {
-            var (msg, _) = await MessagePoster.Post(new InlineMessage
+            var msg = await MessagePoster.Post(new InlineMessage
             {
                 ServiceName = "UnitService",
                 ApiName = "v1/json",
@@ -311,7 +311,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         [Test]
         public async Task XmlString()
         {
-            var (msg, _) = await MessagePoster.Post(new InlineMessage
+            var msg = await MessagePoster.Post(new InlineMessage
             {
                 ServiceName = "UnitService",
                 ApiName = "v1/xml",
@@ -328,7 +328,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         [Test]
         public async Task TaskTest()
         {
-            var (msg, _) = await MessagePoster.Post(new InlineMessage
+            var msg = await MessagePoster.Post(new InlineMessage
             {
                 ServiceName = "UnitService",
                 ApiName = "v1/task",
@@ -348,7 +348,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         [Test]
         public async Task FromServices()
         {
-            var (msg, _) = await MessagePoster.Post(new InlineMessage
+            var msg = await MessagePoster.Post(new InlineMessage
             {
                 ServiceName = "UnitService",
                 ApiName = "v1/FromServices",
@@ -367,7 +367,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         [Test]
         public async Task FromConfig()
         {
-            var (msg, _) = await MessagePoster.Post(new InlineMessage
+            var msg = await MessagePoster.Post(new InlineMessage
             {
                 ServiceName = "UnitService",
                 ApiName = "v1/FromConfig",
@@ -394,7 +394,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         [Test]
         public async Task MulitArg()
         {
-            var (msg, _) = await MessagePoster.Post(new InlineMessage
+            var msg = await MessagePoster.Post(new InlineMessage
             {
                 ServiceName = "UnitService",
                 ApiName = "v1/mulitArg",

@@ -2366,11 +2366,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.PrepareResult(ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Func{System.Int32,System.String,System.Object})">
-            <summary>
-            数据设置为上线状态
-            </summary>
-        </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.RestoryContentToDictionary(ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Boolean)">
             <summary>
             还原内容为字典
@@ -4019,14 +4014,6 @@
             <param name="name">服务名称</param>
             <param name="def">是否使用默认投递器</param>
             <returns>传输对象构造器</returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.MessagePoster.Post(ZeroTeam.MessageMVC.Messages.IMessageItem,System.Boolean)">
-            <summary>
-            投递消息
-            </summary>
-            <param name="message">消息</param>
-            <param name="autoOffline">是否自动离线</param>
-            <returns>返回值,如果未进行离线交换message返回为空,此时请检查state</returns>
         </member>
         <member name="M:ZeroTeam.MessageMVC.MessagePoster.Post(ZeroTeam.MessageMVC.Messages.IMessageItem,System.Boolean,System.Boolean)">
             <summary>

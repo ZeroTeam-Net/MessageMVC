@@ -9,7 +9,7 @@
             KafkaMvc
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaApp.AddKafka(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaApp.AddMessageMvcKafka(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             使用KafkaMVC
             </summary>

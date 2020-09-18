@@ -17,7 +17,7 @@ namespace WebNotifyTest
         public async Task ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IMessageMiddleware, WebSocketNotify>();
-            services.AddCsRedis();
+            services.AddMessageMvcRedis();
             WebSocketNotify.CreateService();
             await services.UseMessageMvc();
         }

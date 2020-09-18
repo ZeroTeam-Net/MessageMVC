@@ -25,7 +25,7 @@
     <Company>ZeroTeam</Company>
     <PackageReleaseNotes></PackageReleaseNotes>
     <Product>ZeroTeam.MessageMVC</Product>
-    <Version>1.0.1.0</Version>
+    <Version>1.0.1.17</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>ZeroTeam.MessageMVC.RedisMQ.xml</DocumentationFile>
@@ -36,7 +36,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp3.1|AnyCPU'">
-    <DefineConstants>TRACE;LogMonitor</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;monitor</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.1|AnyCPU'">
+    <DefineConstants>monitor</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

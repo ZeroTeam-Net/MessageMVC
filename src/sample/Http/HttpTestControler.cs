@@ -20,7 +20,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
                 Topic = "ParallelTest",
                 Title= "hello"
             });
-            return JsonConvert.SerializeObject(res.message.ResultData, Formatting.Indented);
+            return JsonConvert.SerializeObject(res.ResultData, Formatting.Indented);
         }
     }
 

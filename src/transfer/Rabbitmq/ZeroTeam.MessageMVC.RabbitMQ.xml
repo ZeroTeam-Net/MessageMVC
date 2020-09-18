@@ -9,9 +9,9 @@
             RabbitMQ
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQApp.AddRabbitMQ(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQApp.AddMessageMvcRabbitMQ(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
-            使用KafkaMVC
+            使用RabbitMQ
             </summary>
             <param name="services"></param>
         </member>

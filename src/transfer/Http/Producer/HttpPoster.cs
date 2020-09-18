@@ -48,7 +48,7 @@ namespace ZeroTeam.MessageMVC.Http
                 using var content = new StringContent(message.Content);
                 using var requestMessage = new HttpRequestMessage
                 {
-                    RequestUri = new Uri($"/{message.Topic}/{message.Title}"),
+                    RequestUri = new Uri($"{client.BaseAddress }/{message.Topic}/{message.Title}"),
                     Content = content,
                     Method = HttpMethod.Post
                 };
@@ -57,26 +57,37 @@ namespace ZeroTeam.MessageMVC.Http
                 requestMessage.Headers.Add("zeroTrace", SmartSerializer.ToInnerString(message.Trace));
 
                 using var response = await client.SendAsync(requestMessage);
-                var json = await response.Content.ReadAsStringAsync();
-
-                FlowTracer.MonitorDetails(() => $"StatusCode : {response.StatusCode}");
-
-                if (SmartSerializer.TryDeserialize<MessageResult>(json, out var re2))
-                {
-                    result = re2;
-                    re2.DataState = MessageDataState.ResultOffline;
-                    if (response.Headers.TryGetValues("zeroState", out var state))
-                    {
-                        result.State = Enum.Parse<MessageState>(state.FirstOrDefault());
-                    }
-                }
-                else
+                if (response.StatusCode != HttpStatusCode.OK)
                 {
                     result = new MessageResult
                     {
                         ID = message.ID,
                         State = HttpCodeToMessageState(response.StatusCode)
                     };
+                }
+                else
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+
+                    FlowTracer.MonitorDetails(() => $"StatusCode : {response.StatusCode}");
+
+                    if (SmartSerializer.TryDeserialize<MessageResult>(json, out var re2))
+                    {
+                        result = re2;
+                        re2.DataState = MessageDataState.ResultOffline;
+                        if (response.Headers.TryGetValues("zeroState", out var state))
+                        {
+                            result.State = Enum.Parse<MessageState>(state.FirstOrDefault());
+                        }
+                    }
+                    else
+                    {
+                        result = new MessageResult
+                        {
+                            ID = message.ID,
+                            State = HttpCodeToMessageState(response.StatusCode)
+                        };
+                    }
                 }
                 message.State = result.State;
                 FlowTracer.MonitorDetails(() => $"State : {result.State} Result : {result.Result}");

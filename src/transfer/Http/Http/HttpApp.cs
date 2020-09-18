@@ -16,6 +16,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// </summary>
         public static void AddMessageMvcHttp(this IServiceCollection services)
         {
+            HttpClientOption.Instance.DefaultUrl ??= "";
             services.AddHttpClient();
             services.AddHttpContextAccessor();
             services.AddTransient<IMessagePoster, HttpPoster>();

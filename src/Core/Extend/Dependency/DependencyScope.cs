@@ -33,7 +33,6 @@ namespace Agebull.Common.Ioc
         {
             return new DependencyScope(name);
         }
-
         /// <summary>
         /// »î¶¯ÊµÀý
         /// </summary>
@@ -140,7 +139,6 @@ namespace Agebull.Common.Ioc
             {
                 Console.WriteLine(e);
             }
-            Console.WriteLine("DependencyScope dispose");
         }
 
         #endregion

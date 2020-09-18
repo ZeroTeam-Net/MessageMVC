@@ -15,7 +15,7 @@ namespace ZeroTeam.MessageMVC.Kafka
 
         private static IProducer<Null, string> Producer => KafkaFlow.Instance.producer;
 
-        internal KafkaPoster()
+        public KafkaPoster()
         {
             Name = nameof(KafkaPoster);
         }

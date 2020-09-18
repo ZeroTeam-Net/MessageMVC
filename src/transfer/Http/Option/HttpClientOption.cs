@@ -84,13 +84,9 @@ namespace ZeroTeam.MessageMVC.Http
                     foreach (var service in ServiceMap.Where(p => p.Value == item.Name).Select(p => p.Key).ToArray())
                         ServiceMap.Remove(service);
 
-                    if (string.IsNullOrEmpty(item.Alias))
-                    {
-                        Options.Remove(item.Name);
-                        continue;
-                    }
                     if (item.TimeOut <= 0)
                         item.TimeOut = DefaultTimeOut;
+
                     if (Options.ContainsKey(item.Name))
                     {
                         Options[item.Name] = item;
@@ -103,11 +99,16 @@ namespace ZeroTeam.MessageMVC.Http
                         {
                             client.BaseAddress = new Uri(item.Url);
                             client.Timeout = TimeSpan.FromSeconds(item.TimeOut);
-                            client.DefaultRequestHeaders.Add("Content-Type", item.ContentType ?? "application/json;charset=utf-8");
+                            //client.DefaultRequestHeaders.Add("Content-Type", item.ContentType ?? "application/json;charset=utf-8");
                             client.DefaultRequestHeaders.Add("User-Agent", item.UserAgent ?? MessageRouteOption.AgentName);
                         });
                     }
 
+                    ServiceMap.Add(item.Name, item.Name);
+                    if (string.IsNullOrEmpty(item.Alias))
+                    {
+                        continue;
+                    }
                     foreach (var service in item.Alias.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                     {
                         if (ServiceMap.ContainsKey(service))

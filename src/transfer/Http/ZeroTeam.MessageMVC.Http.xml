@@ -193,11 +193,6 @@
             <param name="scope">参数范围</param>
             <returns>值</returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpMessage.ArgumentInline(ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Type,ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Func{System.Int32,System.String,System.Object})">
-            <summary>
-            如果未上线且还原参数为字典,否则什么也不做
-            </summary>
-        </member>
         <member name="M:ZeroTeam.MessageMVC.Http.HttpMessage.PrepareInline">
             <summary>
             准备在线(框架内调用)

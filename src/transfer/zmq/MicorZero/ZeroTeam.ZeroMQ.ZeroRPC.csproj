@@ -26,12 +26,12 @@
     <Company>ZeroTeam</Company>
     <PackageReleaseNotes>ZeroMQ实现的RPC网络通讯</PackageReleaseNotes>
     <Product>ZeroTeam.ZeroMQ.ZeroRPC</Product>
-    <Version>1.0.1.0</Version>
+    <Version>1.0.1.17</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>TRACE;DEBUG;UseStateMachine</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;UseStateMachine,monitor</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -40,7 +40,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.1|AnyCPU'">
     <Optimize>true</Optimize>
-    <DefineConstants>UseStateMachine</DefineConstants>
+    <DefineConstants>UseStateMachine,monitor</DefineConstants>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>ZeroTeam.ZeroMQ.ZeroRPC.xml</DocumentationFile>
   </PropertyGroup>
