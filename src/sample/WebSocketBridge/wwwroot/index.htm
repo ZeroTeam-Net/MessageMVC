@@ -29,7 +29,7 @@
         });
 
         var socket_status = new ws({
-            address: `ws://${location.host}/MarkPoint`,
+            address: `ws://${location.host}/EntityEvent`,
             sub: '',
             ontext: function (item) {
                 vue_option.data.real = item;

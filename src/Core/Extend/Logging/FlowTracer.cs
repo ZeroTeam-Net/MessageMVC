@@ -14,7 +14,7 @@ namespace Agebull.Common.Logging
         /// <summary>
         /// 启动监视
         /// </summary>
-        public static bool LogMonitor => LoggerExtend.monitor;
+        public static bool LogMonitor => LoggerExtend.LogMonitor;
 
         /// <summary>
         /// 当前范围数据
@@ -27,7 +27,7 @@ namespace Agebull.Common.Logging
         [Conditional("monitor")]
         public static void BeginMonitor(string title)
         {
-            if (!LoggerExtend.monitor)
+            if (!LoggerExtend.LogMonitor)
             {
                 return;
             }
@@ -42,7 +42,7 @@ namespace Agebull.Common.Logging
         [Conditional("monitor")]
         public static void BeginStepMonitor(string title)
         {
-            if (!LoggerExtend.monitor)
+            if (!LoggerExtend.LogMonitor)
             {
                 return;
             }
@@ -62,7 +62,7 @@ namespace Agebull.Common.Logging
         [Conditional("monitor")]
         public static void EndStepMonitor()
         {
-            if (!LoggerExtend.monitor)
+            if (!LoggerExtend.LogMonitor)
             {
                 return;
             }
@@ -82,7 +82,7 @@ namespace Agebull.Common.Logging
         [Conditional("monitor")]
         public static void MonitorInfomation(string message)
         {
-            if (!LoggerExtend.monitor)
+            if (!LoggerExtend.LogMonitor)
             {
                 return;
             }
@@ -103,7 +103,7 @@ namespace Agebull.Common.Logging
         [Conditional("monitor")]
         public static void MonitorInfomation(string message, params object[] args)
         {
-            if (!LoggerExtend.monitor || message == null)
+            if (!LoggerExtend.LogMonitor || message == null)
             {
                 return;
             }
@@ -124,7 +124,7 @@ namespace Agebull.Common.Logging
         [Conditional("monitor")]
         public static void MonitorInfomation(Func<string> message)
         {
-            if (!LoggerExtend.monitor)
+            if (!LoggerExtend.LogMonitor)
             {
                 return;
             }
@@ -146,7 +146,7 @@ namespace Agebull.Common.Logging
         [Conditional("monitor")]
         public static void MonitorDetails(Func<string> message)
         {
-            if (!LoggerExtend.details || !LoggerExtend.monitor)
+            if (!LoggerExtend.LogDetails || !LoggerExtend.LogMonitor)
             {
                 return;
             }
@@ -169,7 +169,7 @@ namespace Agebull.Common.Logging
         [Conditional("monitor")]
         public static void MonitorDetails(string message)
         {
-            if (!LoggerExtend.details || !LoggerExtend.monitor)
+            if (!LoggerExtend.LogDetails || !LoggerExtend.LogMonitor)
             {
                 return;
             }
@@ -201,10 +201,10 @@ namespace Agebull.Common.Logging
         /// <summary>
         /// 加入监视跟踪
         /// </summary>
-        [Obsolete,Conditional("monitor")]
+        [Obsolete, Conditional("monitor")]
         public static void MonitorTrace(string message)
         {
-            if (!LoggerExtend.monitor)
+            if (!LoggerExtend.LogMonitor)
             {
                 return;
             }
@@ -225,7 +225,7 @@ namespace Agebull.Common.Logging
         [Obsolete, Conditional("monitor")]
         public static void MonitorTrace(string message, params object[] args)
         {
-            if (!LoggerExtend.monitor || message == null)
+            if (!LoggerExtend.LogMonitor || message == null)
             {
                 return;
             }
@@ -246,7 +246,7 @@ namespace Agebull.Common.Logging
         [Obsolete, Conditional("monitor")]
         public static void MonitorTrace(Func<string> message)
         {
-            if (!LoggerExtend.monitor)
+            if (!LoggerExtend.LogMonitor)
             {
                 return;
             }
@@ -269,6 +269,8 @@ namespace Agebull.Common.Logging
         /// </summary>
         public static void TraceMonitor(this ILogger logger, TraceStep root)
         {
+            if (root == null)
+                return;
             var texter = new StringBuilder();
             Message(texter, root.Start, root);
             logger.LogInformation(LoggerExtend.NewEventId("Monitor"), texter.ToString());

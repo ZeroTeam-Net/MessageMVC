@@ -6,7 +6,7 @@
     <StartupObject />
     <Description>ZeroTeam.MessageMVC抽象定义
 以MVC方式进行消息处理,支持常用消息队列以及其它RPC方式的消息处理</Description>
-    <Version>1.0.1.17</Version>
+    <Version>1.0.1.28</Version>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/ZeroTeam-Net/MessageMVC</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ZeroTeam-Net/MessageMVC.git</RepositoryUrl>

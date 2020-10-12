@@ -45,10 +45,6 @@ namespace ZeroTeam.MessageMVC.Messages
                         ReplaceCData(element.ChildNodes, nElement);
                         xElement.AppendChild(nElement);
                     }
-                    else
-                    {
-                        Console.WriteLine(node.GetType());
-                    }
                 }
             }
             var xroot = xdoc.CreateElement("xml");
@@ -91,10 +87,6 @@ namespace ZeroTeam.MessageMVC.Messages
                         var nElement = xdoc.CreateElement(element.LocalName);
                         xElement.AppendChild(nElement);
                         ReplaceCData(element.ChildNodes, nElement);
-                    }
-                    else
-                    {
-                        Console.WriteLine(node.GetType());
                     }
                 }
             }

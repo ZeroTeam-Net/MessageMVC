@@ -54,7 +54,7 @@ namespace Agebull.Common.Text
                 value = value.Trim() ;
                 if(!ContainsKey(name))
                 {
-                    base.Add(name , new List<string>()) ;
+                    Add(name , new List<string>()) ;
                 }
                 base[name].Add(value) ;
             }

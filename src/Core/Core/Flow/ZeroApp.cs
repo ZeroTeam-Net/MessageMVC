@@ -45,7 +45,7 @@ namespace ZeroTeam.MessageMVC
             //插件载入
             //if (ZeroAppOption.Instance.EnableAddIn)
             {
-                services.AddSingleton<IFlowMiddleware>(AddInImporter.Instance);
+                services.AddSingleton<IFlowMiddleware>(pri => AddInImporter.Instance);
             }
             services.TryAddSingleton<IInlineMessage, InlineMessage>();
 
@@ -75,9 +75,14 @@ namespace ZeroTeam.MessageMVC
                 ZeroFlowControl.Check();
                 if (autoDiscover)
                     ZeroFlowControl.Discove();
+                Console.CancelKeyPress += Console_CancelKeyPress;
             }
         }
 
+        private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
+        {
+            ZeroFlowControl.Shutdown();
+        }
         /// <summary>
         /// 启动主流程控制器，发现指定类型所在的程序集的Api，由参数决定是否等待系统退出
         /// </summary>

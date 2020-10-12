@@ -448,8 +448,6 @@ namespace ZeroTeam.MessageMVC.Services
         /// <param name="info">反射信息</param>
         void IService.RegistWildcardAction(ApiActionInfo info)
         {
-            logger ??= DependencyHelper.LoggerFactory.CreateLogger($"ZeroService({ServiceName})");
-
             WildcardAction = new ApiAction
             {
                 Function = info.Action,
@@ -461,9 +459,6 @@ namespace ZeroTeam.MessageMVC.Services
             };
 
             WildcardAction.Initialize();
-
-            logger.Information(() => $"[注册接口] {ServiceName}/* => {info.Caption} {info.ControllerName}.{info.Name}");
-
         }
 
         /// <summary>
@@ -471,10 +466,8 @@ namespace ZeroTeam.MessageMVC.Services
         /// </summary>
         /// <param name="route">方法外部方法名称，如 v1/auto/getdid </param>
         /// <param name="info">反射信息</param>
-        void IService.RegistAction(string route, ApiActionInfo info)
+        bool IService.RegistAction(string route, ApiActionInfo info)
         {
-            logger ??= DependencyHelper.LoggerFactory.CreateLogger($"ZeroService({ServiceName})");
-            
             var action = new ApiAction
             {
                 RouteName = route,
@@ -485,6 +478,8 @@ namespace ZeroTeam.MessageMVC.Services
                 ResultSerializeType = info.ResultSerializeType,
                 ArgumentSerializeType = info.ArgumentSerializeType
             };
+            if (!ApiActions.TryAdd(route, action))
+                return false;
             if (info.HaseArgument)
             {
                 var arg = info.Arguments.Values.First();
@@ -495,11 +490,7 @@ namespace ZeroTeam.MessageMVC.Services
                 }
             }
             action.Initialize();
-            if (!ApiActions.TryAdd(route, action))
-            {
-                logger.Error($"[注册接口]失败，因为路由名称已存在 {ServiceName}/{route} => {info.Caption} {info.ControllerName}.{info.Name}");
-            }
-            logger.Information(() => $"[注册接口] {ServiceName}/{route} => {info.Caption} {info.ControllerName}.{info.Name}");
+            return true;
         }
 
         #endregion

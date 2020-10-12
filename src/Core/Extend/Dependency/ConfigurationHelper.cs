@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Agebull.Common.Ioc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 
 namespace Agebull.Common.Configuration
@@ -22,7 +23,7 @@ namespace Agebull.Common.Configuration
         /// <summary>
         /// 全局配置
         /// </summary>
-        public static IConfigurationRoot Root { get; internal set; }
+        public static IConfiguration Root { get; internal set; }
 
         /// <summary>
         /// 基本目录
@@ -92,24 +93,28 @@ namespace Agebull.Common.Configuration
         /// <summary>
         /// 刷新
         /// </summary>
-        internal static void UpdateDependency()
+        internal static bool UpdateDependency()
         {
+            bool changed = false;
             var cb = DependencyHelper.GetService<IConfigurationBuilder>();
             if (cb == null)
             {
-                DependencyHelper.AddSingleton(p => Builder);
+                DependencyHelper.ServiceCollection.AddSingleton(p => Builder);
+                changed = true;
             }
             else if (cb != Builder)
             {
                 Builder = cb;
             }
 
-            Root = DependencyHelper.GetService<IConfigurationRoot>();
+            Root = DependencyHelper.GetService<IConfiguration>();
             if (Root == null)
             {
                 Root = Builder.Build();
-                DependencyHelper.AddSingleton(p => Root);
+                DependencyHelper.ServiceCollection.AddSingleton(p => Root);
+                changed = true;
             }
+            return changed;
         }
 
         /// <summary>
@@ -167,9 +172,9 @@ namespace Agebull.Common.Configuration
                     {
                         action();
                     }
-                    catch (Exception ex)//防止异常出错,中断应用
+                    catch (Exception e)//防止异常出错,中断应用
                     {
-                        Console.WriteLine(ex);
+                        Console.WriteLine(e);
                     }
                     finally
                     {
@@ -187,7 +192,7 @@ namespace Agebull.Common.Configuration
                     IsLoading = true;
                     try
                     {
-                        var opt = ConfigurationHelper.Option<TConfig>(Section);
+                        var opt = Option<TConfig>(Section);
                         if (opt != null)
                             action(opt);
                     }
@@ -356,11 +361,11 @@ namespace Agebull.Common.Configuration
         }
 
         /// <summary>
-        ///   得到双精数值
+        ///   得到布尔值
         /// </summary>
         /// <param name="key"> 键 </param>
         /// <param name="def"> 缺省值（不存在或不合理时使用） </param>
-        /// <returns> 双精数值 </returns>
+        /// <returns> 布尔值 </returns>
         public bool GetBool(string key, bool def = false)
         {
             if (key == null)
@@ -398,11 +403,11 @@ namespace Agebull.Common.Configuration
         }
 
         /// <summary>
-        ///   得到双精数值
+        ///   得到实数值
         /// </summary>
         /// <param name="key"> 键 </param>
         /// <param name="def"> 缺省值（不存在或不合理时使用） </param>
-        /// <returns> 双精数值 </returns>
+        /// <returns> 实数值 </returns>
         public decimal GetDecimal(string key, decimal def = 0M)
         {
             if (key == null)
@@ -419,10 +424,10 @@ namespace Agebull.Common.Configuration
         }
 
         /// <summary>
-        ///   得到双精数值
+        ///   得到日期
         /// </summary>
         /// <param name="key"> 键 </param>
-        /// <returns> 双精数值 </returns>
+        /// <returns> 日期 </returns>
         public DateTime? GetDateTime(string key)
         {
             if (key == null)
@@ -441,10 +446,10 @@ namespace Agebull.Common.Configuration
         }
 
         /// <summary>
-        ///   得到双精数值
+        ///   得到GUID
         /// </summary>
         /// <param name="key"> 键 </param>
-        /// <returns> 双精数值 </returns>
+        /// <returns> GUID </returns>
         public Guid? GetGuid(string key)
         {
             if (key == null)

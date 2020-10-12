@@ -730,7 +730,7 @@ namespace Agebull.Common
 
             var str_HardDiskName = path[0] + ":\\";
 
-            var drive = System.IO.DriveInfo.GetDrives().FirstOrDefault(p=> path.IndexOf(p.Name,StringComparison.OrdinalIgnoreCase)==0);
+            var drive = DriveInfo.GetDrives().FirstOrDefault(p=> path.IndexOf(p.Name,StringComparison.OrdinalIgnoreCase)==0);
             if(drive != null)
             {
                 info.TotalSize = drive.TotalSize / (1024 * 1024);

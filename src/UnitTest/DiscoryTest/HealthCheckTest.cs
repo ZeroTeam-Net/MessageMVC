@@ -15,7 +15,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         {
             DependencyHelper.ServiceCollection.AddMessageMvcRedis();
             DependencyHelper.ServiceCollection.AddMessageMvcKafka();
-            DependencyHelper.Reload();
+            DependencyHelper.Flush();
             DependencyHelper.ServiceCollection.UseTest(typeof(ApiContraceJsonTest).Assembly);
         }
 

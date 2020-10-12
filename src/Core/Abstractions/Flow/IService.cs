@@ -51,7 +51,7 @@ namespace ZeroTeam.MessageMVC.Services
         /// </summary>
         /// <param name="name">方法外部方法名称，如 v1/auto/getdid </param>
         /// <param name="info">反射信息</param>
-        void RegistAction(string name, ApiActionInfo info);
+        bool RegistAction(string name, ApiActionInfo info);
 
         /// <summary>
         ///     注册通配方法

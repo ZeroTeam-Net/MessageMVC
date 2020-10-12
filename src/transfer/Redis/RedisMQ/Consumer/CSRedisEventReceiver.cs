@@ -61,7 +61,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                 }
                 catch (Exception ex)
                 {
-                    logger.Error(() => $"启动订阅失败.{ex.Message}");
+                    logger.Error(() => $"CSRedisEventReceiver Loop.\r\n{ex}");
                     await Task.Delay(3000);
                 }
             }
@@ -83,7 +83,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             }
             catch (Exception ex)
             {
-                logger.Error(() => $"LoopBegin error.{ex.Message}");
+                Console.WriteLine($"CSRedisEventReceiver Close error.\r\n{ex}");
             }
             return Task.CompletedTask;
         }
@@ -94,8 +94,15 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <returns></returns>
         Task IMessageReceiver.LoopComplete()
         {
-            subscribeObject?.Dispose();
-            client?.Dispose();
+            try
+            {
+                subscribeObject?.Dispose();
+                client?.Dispose();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"CSRedisEventReceiver LoopComplete error.\r\n{ex}");
+            }
             return Task.CompletedTask;
         }
         #region 消息处理

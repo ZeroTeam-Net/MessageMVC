@@ -31,9 +31,8 @@ namespace ZeroTeam.MessageMVC.Http
             if (handerHttp)
                 app.Run(HttpReceiver.Call);
 
-            DependencyHelper.LoggerFactory = app.ApplicationServices.GetService<ILoggerFactory>();
-            await ZeroFlowControl.Initialize();
             DependencyHelper.BindingMessageMvc(app.ApplicationServices);
+            await ZeroFlowControl.Initialize();
             await ZeroFlowControl.RunAsync();
         }
     }

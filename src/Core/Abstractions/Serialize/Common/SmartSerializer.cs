@@ -1,4 +1,6 @@
 ﻿using Agebull.Common.Ioc;
+using Agebull.Common.Logging;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Text.Json;
 
@@ -366,7 +368,7 @@ namespace ZeroTeam.MessageMVC.Messages
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine(ex);
+                DependencyScope.Logger.Exception(ex); 
                 dest = default;
                 return false;
             }

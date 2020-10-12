@@ -90,32 +90,14 @@ namespace ZeroTeam.MessageMVC.Web
             {
                 return;
             }
-            DependencyHelper.Reload();
             foreach (var folder in Config.Folders)
             {
                 ZeroFlowControl.RegistService(new ZeroService
                 {
                     ServiceName = folder,
-                    Receiver = DependencyHelper.GetService<IMessageConsumer>()
+                    Receiver = DependencyHelper.GetService<INetEvent>()
                 });
                 Handlers.Add(folder, new List<WebSocketClient>());
-            }
-        }
-
-        /// <summary>  
-        /// 路由绑定处理  
-        /// </summary>  
-        /// <param name="app"></param>  
-        public static void Binding(IApplicationBuilder app)
-        {
-            if (Config.Folders == null)
-            {
-                return;
-            }
-
-            foreach (var folder in Config.Folders)
-            {
-                app.Map($"/{folder}", Map);
             }
         }
 
@@ -137,7 +119,7 @@ namespace ZeroTeam.MessageMVC.Web
         /// 路由绑定处理  
         /// </summary>  
         /// <param name="app"></param>  
-        private static void Map(IApplicationBuilder app)
+        internal static void Map(IApplicationBuilder app)
         {
             app.UseWebSockets();
             app.Use(Acceptor);
@@ -161,16 +143,22 @@ namespace ZeroTeam.MessageMVC.Web
             {
                 return;
             }
-
+            
             var socket = await hc.WebSockets.AcceptWebSocketAsync();
             var notify = new WebSocketClient(socket, classify, list);
             list.Add(notify);
+            await SendLast(notify);
             await notify.EchoLoop();
         }
 
         #endregion
 
         #region 广播管理
+
+        /// <summary>
+        /// 最后一条消息
+        /// </summary>
+        static readonly Dictionary<string, IMessageItem> Last = new Dictionary<string, IMessageItem>();
 
         /// <summary>
         /// 发出广播
@@ -183,7 +171,7 @@ namespace ZeroTeam.MessageMVC.Web
             {
                 return;
             }
-
+            Last[message.Topic] = message;
             if (!Handlers.TryGetValue(message.Topic, out var list))
             {
                 return;
@@ -196,20 +184,40 @@ namespace ZeroTeam.MessageMVC.Web
             var buffer = message.Content.ToUtf8Bytes();
             var value_a = new ArraySegment<byte>(buffer, 0, buffer.Length);
             foreach (var handler in list.ToArray())
+                await SendTo(message, handler, empty, title_a, value_a);
+        }
+
+        private static async Task SendLast(WebSocketClient handler)
+        {
+            foreach (var message in Last.Values)
             {
-                if (empty || handler.Subscriber.Count == 0)
-                {
-                    await handler.Send(title_a, value_a);
-                    continue;
-                }
+                await SendTo(message, handler);
+            }
+        }
 
-                foreach (var sub in handler.Subscriber)
-                {
-                    if (message.Title.IndexOf(sub, StringComparison.Ordinal) != 0)
-                    {
-                        continue;
-                    }
+        private static async Task SendTo(IMessageItem message, WebSocketClient handler)
+        {
+            var empty = string.IsNullOrWhiteSpace(message.Title);
+            var tbuffer = message.Title.ToUtf8Bytes();
+            var title_a = new ArraySegment<byte>(tbuffer, 0, tbuffer.Length);
 
+            var buffer = message.Content.ToUtf8Bytes();
+            var value_a = new ArraySegment<byte>(buffer, 0, buffer.Length);
+            await SendTo(message, handler, empty, title_a, value_a);
+        }
+
+        private static async Task SendTo(IMessageItem message, WebSocketClient handler, bool empty, ArraySegment<byte> title_a, ArraySegment<byte> value_a)
+        {
+            if (empty || handler.Subscriber.Count == 0)
+            {
+                await handler.Send(title_a, value_a);
+                return;
+            }
+
+            foreach (var sub in handler.Subscriber)
+            {
+                if (message.Title.IndexOf(sub, StringComparison.Ordinal) == 0)
+                {
                     await handler.Send(title_a, value_a);
                     break;
                 }

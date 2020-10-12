@@ -83,13 +83,18 @@ namespace Agebull.Common.Ioc
         ///     更新(构架内使用)
         /// </summary>
         /// <returns></returns>
-        public static void Reload()
+        public static void Flush()
         {
+            CheckLog();
             _rootProvider = ServiceCollection.BuildServiceProvider(true);
             _serviceScopeFactory = _rootProvider.GetService<IServiceScopeFactory>();
-            ConfigurationHelper.UpdateDependency();
+            if (ConfigurationHelper.UpdateDependency())
+            {
+                _rootProvider = ServiceCollection.BuildServiceProvider(true);
+                _serviceScopeFactory = _rootProvider.GetService<IServiceScopeFactory>();
+            }
+            ConfigurationHelper.Flush();
         }
-
 
         private static IServiceProvider _rootProvider;
 
@@ -105,7 +110,7 @@ namespace Agebull.Common.Ioc
         ///     范围工厂
         /// </summary>
         public static IServiceScopeFactory ServiceScopeFactory => _serviceScopeFactory ??= RootProvider.GetService<IServiceScopeFactory>();
-        
+
         /// <summary>
         ///     依赖注入构造器
         /// </summary>
@@ -124,15 +129,28 @@ namespace Agebull.Common.Ioc
         {
             get
             {
-                return _loggerFactory ??= Microsoft.Extensions.Logging.LoggerFactory.Create(builder =>
-                {
-                    builder.Services.AddScoped(provider => ConfigurationHelper.Root);
-                    builder.AddConsole();
-                });
+                return CheckLog();
             }
             set => _loggerFactory = value;
         }
 
+        static ILoggerFactory CheckLog()
+        {
+            _loggerFactory = RootProvider.GetService<ILoggerFactory>();
+            if(_loggerFactory == null)
+            {
+                _loggerFactory = Microsoft.Extensions.Logging.LoggerFactory.Create(builder =>
+                {
+                    builder.Services.AddScoped(provider => ConfigurationHelper.Root);
+                    var level = ConfigurationHelper.Root.GetValue<LogLevel>("Logging:LogLevel:Default");
+                    builder.SetMinimumLevel(level);
+                    if (ConfigurationHelper.Root.GetValue<bool>("Logging:LogRecorder:console"))
+                        builder.AddConsole();
+                });
+                ServiceCollection.AddSingleton(pri=> LoggerFactory);
+            }
+            return _loggerFactory;
+        }
         #endregion
 
         #region 生成接口实例
@@ -359,7 +377,7 @@ namespace Agebull.Common.Ioc
             where TImplementation : class, TService
         {
             ServiceCollection.AddTransient<TService, TImplementation>();
-            
+
             return ServiceCollection;
         }
 
@@ -422,7 +440,7 @@ namespace Agebull.Common.Ioc
             where TImplementation : class, TService
         {
             ServiceCollection.AddTransient(implementationFactory);
-            
+
             return ServiceCollection;
         }
 
@@ -470,7 +488,7 @@ namespace Agebull.Common.Ioc
             where TImplementation : class, TService
         {
             ServiceCollection.AddScoped<TService, TImplementation>();
-            
+
             return ServiceCollection;
         }
 
@@ -533,7 +551,7 @@ namespace Agebull.Common.Ioc
             where TImplementation : class, TService
         {
             ServiceCollection.AddScoped(implementationFactory);
-            
+
             return ServiceCollection;
         }
 
@@ -581,7 +599,7 @@ namespace Agebull.Common.Ioc
             where TImplementation : class, TService
         {
             ServiceCollection.AddSingleton<TService, TImplementation>();
-            
+
             return ServiceCollection;
         }
 
@@ -645,7 +663,7 @@ namespace Agebull.Common.Ioc
             where TImplementation : class, TService
         {
             ServiceCollection.AddSingleton(implementationFactory);
-            
+
             return ServiceCollection;
         }
 

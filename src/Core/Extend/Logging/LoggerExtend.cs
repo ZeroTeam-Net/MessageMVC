@@ -37,8 +37,8 @@ namespace Agebull.Common.Logging
             var sec = ConfigurationHelper.Get("Logging:LogRecorder");
             if (sec != null)
             {
-                monitor = sec.GetBool("monitor");
-                details = sec.GetBool("details");
+                LogMonitor = sec.GetBool("monitor");
+                LogDetails = sec.GetBool("details");
                 LogDataSql = sec.GetBool("sql");
             }
         }
@@ -51,12 +51,12 @@ namespace Agebull.Common.Logging
         /// <summary>
         /// 是否启动跟踪日志
         /// </summary>
-        internal static bool monitor { get; set; }
+        internal static bool LogMonitor { get; set; }
 
         /// <summary>
         /// 跟踪日志是否包含详细信息
         /// </summary>
-        internal static bool details { get; set; }
+        internal static bool LogDetails { get; set; }
 
         #endregion
 

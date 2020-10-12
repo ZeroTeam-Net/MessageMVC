@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
+using System.Collections.Generic;
 
 namespace ZeroTeam.MessageMVC.Messages
 {
@@ -8,9 +10,15 @@ namespace ZeroTeam.MessageMVC.Messages
     /// </summary>
     public class NewtonJsonSerializeProxy : IJsonSerializeProxy
     {
-        static readonly JsonNumberConverter numberConverter = new JsonNumberConverter();
-
-        static readonly JsonEnumConverter enumConverter = new JsonEnumConverter();
+        static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
+        {
+            Converters = new List<JsonConverter>
+            {
+                new JsonNumberConverter(),
+                new JsonEnumConverter()
+            },
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
 
         /// <summary>
         /// 反序列化
@@ -25,7 +33,7 @@ namespace ZeroTeam.MessageMVC.Messages
             {
                 case '{':
                 case '[':
-                    return JsonConvert.DeserializeObject<T>(json, numberConverter, enumConverter);
+                    return JsonConvert.DeserializeObject<T>(json, Settings);
             }
             return default;
         }
@@ -40,7 +48,7 @@ namespace ZeroTeam.MessageMVC.Messages
             {
                 case '{':
                 case '[':
-                    return JsonConvert.DeserializeObject(json, type, numberConverter, enumConverter);
+                    return JsonConvert.DeserializeObject(json, type, Settings);
             }
             return default;
         }
@@ -50,8 +58,8 @@ namespace ZeroTeam.MessageMVC.Messages
             return obj == null
                 ? null
                 : indented
-                    ? JsonConvert.SerializeObject(obj, Formatting.Indented, numberConverter, enumConverter)
-                    : JsonConvert.SerializeObject(obj, numberConverter, enumConverter);
+                    ? JsonConvert.SerializeObject(obj, Formatting.Indented, Settings)
+                    : JsonConvert.SerializeObject(obj, Settings);
         }
     }
 }
