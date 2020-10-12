@@ -37,7 +37,7 @@ namespace ZeroTeam.MessageMVC
             //LoggerExtend.DoInitialize();
             logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(ZeroFlowControl));
 
-            DependencyHelper.Reload();
+            DependencyHelper.Flush();
             Middlewares = DependencyHelper.RootProvider.GetServices<IFlowMiddleware>().OrderBy(p => p.Level).ToArray();
             foreach (var mid in Middlewares)
             {
@@ -51,7 +51,7 @@ namespace ZeroTeam.MessageMVC
                     throw;
                 }
             }
-            DependencyHelper.Reload();
+            DependencyHelper.Flush();
 
             //显示
             Console.WriteLine($@"Wecome ZeroTeam MessageMVC
@@ -102,9 +102,9 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
             if (ZeroAppOption.Instance.ApplicationState >= StationState.Initialized)
                 return;
             ZeroAppOption.Instance.SetApplicationState(StationState.Initialized);
-            DependencyHelper.Reload();
+            DependencyHelper.Flush();
             await DiscoverAll();
-            DependencyHelper.Reload();
+            DependencyHelper.Flush();
             Middlewares = DependencyHelper.RootProvider.GetServices<IFlowMiddleware>().OrderBy(p => p.Level).ToArray();
             var servcies = DependencyHelper.RootProvider.GetServices<IService>();
             if (servcies != null)
@@ -115,7 +115,7 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
                 }
             }
             await InitializeAll();
-            DependencyHelper.Reload();
+            DependencyHelper.Flush();
         }
 
         #endregion
@@ -348,6 +348,8 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
         /// </summary>
         public static bool RegistService(ref IService service)
         {
+            logger.Information("[注册服务] {0}", service.ServiceName);
+
             if (ZeroAppOption.Instance.ServiceMap.TryGetValue(service.ServiceName, out var map))
                 service.ServiceName = map;
             if (Services.TryGetValue(service.ServiceName, out var old))
@@ -356,10 +358,9 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
             }
             else if (!Services.TryAdd(service.ServiceName, service))
             {
-                logger?.Error("服务注册失败({0}),因为同名服务已存在", service.ServiceName);
+                logger.Error("服务注册失败({0}),因为同名服务已存在", service.ServiceName);
                 return false;
             }
-            logger?.Information("[注册服务] {0}", service.ServiceName);
 
             if (ZeroAppOption.Instance.ApplicationState >= StationState.Initialized)
             {

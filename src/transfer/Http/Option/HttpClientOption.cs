@@ -119,7 +119,7 @@ namespace ZeroTeam.MessageMVC.Http
                 }
             }
             if (!isLoaded)
-                DependencyHelper.Reload();
+                DependencyHelper.Flush();
             isLoaded = true;
             HttpClientFactory = DependencyHelper.GetService<IHttpClientFactory>();
         }

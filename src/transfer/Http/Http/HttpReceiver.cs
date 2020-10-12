@@ -27,20 +27,19 @@ namespace ZeroTeam.MessageMVC.Http
         /// <returns></returns>
         public static async Task Call(HttpContext context)
         {
-            HttpProtocol.CrosCall(context.Response);
             if (string.Equals(context.Request.Method, "OPTIONS", StringComparison.OrdinalIgnoreCase))
             {
+                HttpProtocol.CrosOption(context.Response);
                 return;
             }
             var uri = context.Request.GetUri();
             if (uri.AbsolutePath == "/")
             {
-                //response.Redirect("/index.html");
                 await context.Response.WriteAsync("Wecome MessageMVC,Lucky every day!", Encoding.UTF8);
                 return;
             }
+            HttpProtocol.CrosCall(context.Response);
             HttpProtocol.FormatResponse(context.Request, context.Response);
-            //DependencyHelper.Update(context.RequestServices);
             try
             {
 

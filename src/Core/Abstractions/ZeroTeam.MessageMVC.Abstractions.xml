@@ -1408,6 +1408,11 @@
                 最后一个的操作消息
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.ContextStatus.IsFailed">
+            <summary>
+                最后一个的操作消息
+            </summary>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Context.GlobalContext">
             <summary>
                 全局上下文

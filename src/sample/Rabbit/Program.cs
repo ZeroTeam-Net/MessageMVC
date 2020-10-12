@@ -16,11 +16,11 @@ namespace Rabbit
             {
                 builder.AddConfiguration(ConfigurationHelper.Root.GetSection("Logging"));
                 builder.AddConsole();
-                DependencyHelper.Reload();
+                DependencyHelper.Flush();
             });
             var services = DependencyHelper.ServiceCollection;
             services.AddMessageMvcRabbitMQ();
-            DependencyHelper.Reload();
+            DependencyHelper.Flush();
             _ = Test();
             await services.UseMessageMvc(typeof(Program));
         }

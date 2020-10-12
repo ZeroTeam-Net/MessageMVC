@@ -41,7 +41,7 @@ namespace ZeroTeam.MessageMVC
             logger = DependencyHelper.LoggerFactory.CreateLogger<ConfigMiddleware>();
             CheckConfig(config);
             DependencyHelper.AddSingleton(config);
-            DependencyHelper.Reload();
+            DependencyHelper.Flush();
 
             //线程数
             if (config.MaxIOThreads > 0 && config.MaxWorkThreads > 0)

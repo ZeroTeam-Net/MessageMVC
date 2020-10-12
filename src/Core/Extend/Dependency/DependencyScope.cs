@@ -29,10 +29,11 @@ namespace Agebull.Common.Ioc
         /// 生成一个范围
         /// </summary>
         /// <returns></returns>
-        public static IDisposable CreateScope(string name = null)
+        public static DependencyScope CreateScope(string name = null)
         {
             return new DependencyScope(name);
         }
+
         /// <summary>
         /// 活动实例
         /// </summary>
@@ -65,7 +66,7 @@ namespace Agebull.Common.Ioc
         /// <summary>
         /// 依赖服务范围
         /// </summary>
-        internal static IServiceScope ServiceScope => Local.Value?.ServiceScope;
+        public static IServiceScope ServiceScope => Local.Value?.ServiceScope;
 
         /// <summary>
         /// 内部模式,框架使用

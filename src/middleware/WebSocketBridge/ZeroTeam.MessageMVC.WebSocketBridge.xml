@@ -4,6 +4,16 @@
         <name>ZeroTeam.MessageMVC.WebSocketBridge</name>
     </assembly>
     <members>
+        <member name="T:ZeroTeam.MessageMVC.Web.AutoRegister">
+            <summary>
+              组件注册
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Web.AutoRegister.ZeroTeam#MessageMVC#AddIn#IAutoRegister#AutoRegist(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            注册
+            </summary>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Web.WebSocketClient">
             <summary>
             表示一个WebSocket连接
@@ -56,12 +66,6 @@
             路由绑定处理  
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Web.WebSocketNotify.Binding(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
-            <summary>  
-            路由绑定处理  
-            </summary>  
-            <param name="app"></param>  
-        </member>
         <member name="M:ZeroTeam.MessageMVC.Web.WebSocketNotify.Close">
             <summary>
             关闭
@@ -81,12 +85,28 @@
             <param name="n"></param>
             <returns></returns>
         </member>
+        <member name="F:ZeroTeam.MessageMVC.Web.WebSocketNotify.Last">
+            <summary>
+            最后一条消息
+            </summary>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.Web.WebSocketNotify.Publish(ZeroTeam.MessageMVC.Messages.IMessageItem)">
             <summary>
             发出广播
             </summary>
             <param name="message"></param>
             <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Web.WebSocketNotifyApplication">
+            <summary>
+            WebSocket消息转发应用
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Web.WebSocketNotifyApplication.UseWebSocketNotify(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>  
+            路由绑定处理  
+            </summary>  
+            <param name="app"></param>  
         </member>
     </members>
 </doc>

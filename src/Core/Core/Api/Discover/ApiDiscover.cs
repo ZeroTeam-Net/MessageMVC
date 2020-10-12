@@ -143,6 +143,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             var types = Assembly.GetTypes().Where(p => p.IsSupperInterface(typeof(IApiController))).ToArray();
             if (types.Length == 0)
                 return;
+            logger.LogDebug("【解析程序集】{asm}", Assembly.FullName);
             foreach (var type in types)
             {
                 FindApi(type);
@@ -189,6 +190,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 {
                     continue;
                 }
+                logger.Debug(() => $"【注册API】 {serviceInfo.Name}");
 
                 var service = ZeroFlowControl.TryGetZeroObject(serviceInfo.Name);
                 if (service == null)
@@ -207,7 +209,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                             _ => DependencyHelper.GetService<IJsonSerializeProxy>(),
                         }
                     };
-
                     ZeroFlowControl.RegistService(ref service);
                 }
                 foreach (var api in serviceInfo.Aips)
@@ -216,9 +217,18 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     {
                         var info = (ApiActionInfo)api.Value;
                         if (api.Key == "*")
+                        {
+                            logger.Debug(() => $"[注册接口] {serviceInfo.Name}/* => {info.Caption} {info.ControllerName}.{info.Name}");
                             service.RegistWildcardAction(info);
+                        }
+                        else if(!service.RegistAction(api.Key, info))
+                        {
+                            logger.Error($"[注册接口]失败，因为路由名称已存在 {serviceInfo.Name}/{api.Key} => {info.Caption} {info.ControllerName}.{info.Name}");
+                        }
                         else
-                            service.RegistAction(api.Key, info);
+                        {
+                            logger.Debug(() => $"[注册接口] {serviceInfo.Name}/{api.Key} => {info.Caption} {info.ControllerName}.{info.Name}");
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -243,8 +253,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 return;
             }
+            logger.LogDebug("【解析类型】 {asm}", type.FullName);
 
-            logger.Debug(type.GetFullTypeName);
             #region 服务类型检测
 
             var serializeType = GetCustomAttribute<SerializeTypeAttribute>(type)?.Type ?? SerializeType.Json;
@@ -402,7 +412,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 }
             }
             serviceInfo.Aips.Add(api.Route, api);
-            logger.Debug(() => $"=>{api.Caption}({api.Name}) : {api.Route}");
+            logger.Debug(() => $"【找到接口方法】{api.Route}=>{api.Name} {api.Caption}");
         }
 
 

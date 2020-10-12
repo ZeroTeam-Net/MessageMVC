@@ -1937,11 +1937,11 @@
         </member>
         <member name="M:Agebull.Common.Configuration.ConfigurationHelper.GetBool(System.String,System.Boolean)">
             <summary>
-              得到双精数值
+              得到布尔值
             </summary>
             <param name="key"> 键 </param>
             <param name="def"> 缺省值（不存在或不合理时使用） </param>
-            <returns> 双精数值 </returns>
+            <returns> 布尔值 </returns>
         </member>
         <member name="M:Agebull.Common.Configuration.ConfigurationHelper.GetDouble(System.String,System.Double)">
             <summary>
@@ -1953,25 +1953,25 @@
         </member>
         <member name="M:Agebull.Common.Configuration.ConfigurationHelper.GetDecimal(System.String,System.Decimal)">
             <summary>
-              得到双精数值
+              得到实数值
             </summary>
             <param name="key"> 键 </param>
             <param name="def"> 缺省值（不存在或不合理时使用） </param>
-            <returns> 双精数值 </returns>
+            <returns> 实数值 </returns>
         </member>
         <member name="M:Agebull.Common.Configuration.ConfigurationHelper.GetDateTime(System.String)">
             <summary>
-              得到双精数值
+              得到日期
             </summary>
             <param name="key"> 键 </param>
-            <returns> 双精数值 </returns>
+            <returns> 日期 </returns>
         </member>
         <member name="M:Agebull.Common.Configuration.ConfigurationHelper.GetGuid(System.String)">
             <summary>
-              得到双精数值
+              得到GUID
             </summary>
             <param name="key"> 键 </param>
-            <returns> 双精数值 </returns>
+            <returns> GUID </returns>
         </member>
         <member name="M:Agebull.Common.Configuration.ConfigurationHelper.SetValue``1(System.String,``0)">
             <summary>
@@ -2124,7 +2124,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Agebull.Common.Ioc.DependencyHelper.Reload">
+        <member name="M:Agebull.Common.Ioc.DependencyHelper.Flush">
             <summary>
                 更新(构架内使用)
             </summary>
@@ -3893,12 +3893,12 @@
             是否启动SQL日志
             </summary>
         </member>
-        <member name="P:Agebull.Common.Logging.LoggerExtend.monitor">
+        <member name="P:Agebull.Common.Logging.LoggerExtend.LogMonitor">
             <summary>
             是否启动跟踪日志
             </summary>
         </member>
-        <member name="P:Agebull.Common.Logging.LoggerExtend.details">
+        <member name="P:Agebull.Common.Logging.LoggerExtend.LogDetails">
             <summary>
             跟踪日志是否包含详细信息
             </summary>
