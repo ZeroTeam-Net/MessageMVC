@@ -121,13 +121,17 @@ namespace ZeroTeam.MessageMVC.Http
             }
             // 写入返回
             message.OfflineResult();
-            if (!message.IsOutAccess)
+            if (message.IsOutAccess)
             {
+                await context.Response.WriteAsync(message.Result ?? "", Encoding.UTF8);
+            }
+            else
+            {
+                await context.Response.WriteAsync(message.ToJson(), Encoding.UTF8);
                 context.Response.Headers.Add("zeroID", message.ID);
                 //context.Response.Headers.Add("zeroTrace", SmartSerializer.ToInnerString(message.Trace));
                 context.Response.Headers.Add("zeroState", message.State.ToString());
             }
-            await context.Response.WriteAsync(message.Result ?? "", Encoding.UTF8);
             return true;
         }
         #endregion

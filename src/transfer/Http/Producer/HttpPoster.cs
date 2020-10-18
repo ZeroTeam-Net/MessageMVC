@@ -44,17 +44,18 @@ namespace ZeroTeam.MessageMVC.Http
                     return null;//直接使用状态
                 }
                 FlowTracer.MonitorDetails(() => $"URL : {client.BaseAddress }{message.Topic}/{message.Title}");
-
-                using var content = new StringContent(message.Content);
                 using var requestMessage = new HttpRequestMessage
                 {
                     RequestUri = new Uri($"{client.BaseAddress }/{message.Topic}/{message.Title}"),
-                    Content = content,
                     Method = HttpMethod.Post
                 };
                 requestMessage.Headers.Add("zeroID", message.ID);
                 message.Trace.CallMachine = null;
                 requestMessage.Headers.Add("zeroTrace", SmartSerializer.ToInnerString(message.Trace));
+
+                if (!string.IsNullOrEmpty(message.Content))
+                    requestMessage.Content = new StringContent(message.Content);
+                
 
                 using var response = await client.SendAsync(requestMessage);
                 if (response.StatusCode != HttpStatusCode.OK)
@@ -89,6 +90,8 @@ namespace ZeroTeam.MessageMVC.Http
                         };
                     }
                 }
+                if (requestMessage.Content != null)
+                    requestMessage.Content.Dispose();
                 message.State = result.State;
                 FlowTracer.MonitorDetails(() => $"State : {result.State} Result : {result.Result}");
                 return result;

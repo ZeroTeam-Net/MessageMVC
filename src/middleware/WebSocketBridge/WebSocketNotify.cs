@@ -23,25 +23,30 @@ namespace ZeroTeam.MessageMVC.Web
         /// <summary>
         /// 层级
         /// </summary>
-        int IMessageMiddleware.Level => MiddlewareLevel.General;
+        int IMessageMiddleware.Level => MiddlewareLevel.Basic;
 
         /// <summary>
         /// 消息中间件的处理范围
         /// </summary>
-        MessageHandleScope IMessageMiddleware.Scope => MessageHandleScope.End;
+        MessageHandleScope IMessageMiddleware.Scope => MessageHandleScope.Prepare;
 
         /// <summary>
         /// 准备
         /// </summary>
+        /// <param name="service">当前服务</param>
         /// <param name="message">当前消息</param>
+        /// <param name="tag">扩展信息</param>
         /// <returns></returns>
-        async Task IMessageMiddleware.OnEnd(IInlineMessage message)
+        async Task<bool> IMessageMiddleware.Prepare(IService service, IInlineMessage message, object tag)
         {
-            if (Config.Folders.Contains(message.Topic))
+            if (!Config.Folders.Contains(message.Topic))
             {
-                message.Offline();
-                await Publish(message);
+                return true;
             }
+            message.Offline();
+            await Publish(message);
+            message.State = MessageState.NoUs;
+            return false;
         }
 
         #endregion

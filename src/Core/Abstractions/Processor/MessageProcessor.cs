@@ -97,13 +97,15 @@ namespace ZeroTeam.MessageMVC.Messages
                     index = 0;
                     await DoHandle();
                 }
-                await Write();
+                if (Message.State != MessageState.NoUs)
+                    await Write();
             }
             finally
             {
                 WaitTask.SetResult(Message);
             }
-            await OnEnd();
+            if (Message.State != MessageState.NoUs)
+                await OnEnd();
             if (GlobalContext.Current.IsDelay)//标记为需要延迟处理依赖范围
             {
                 GlobalContext.Current.IsDelay = false;//让另一个处理不再等等

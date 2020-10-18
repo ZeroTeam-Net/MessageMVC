@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Threading;
+using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.ZeroApis;
 
@@ -12,10 +13,10 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         /// 测试接口
         /// </summary>
         [Route("hello"), ApiOption(ApiOption.CustomContent)]
-        public IApiResult<string> Hello(string abc)
+        public async Task<IApiResult<string>> Hello(string abc)
         {
-            MessagePoster.Call("abc","test","");
-            return ApiResultHelper.Helper.Succees($"hello1:{abc}");
+            var (jsons, state) = await MessagePoster.CallAsync("appManage", "org/v1/org/tree", null);
+            return ApiResultHelper.Helper.Succees($"hello1:{jsons}");
         }
         /// <summary>
         /// 测试接口
