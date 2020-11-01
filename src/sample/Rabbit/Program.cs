@@ -22,7 +22,7 @@ namespace Rabbit
             services.AddMessageMvcRabbitMQ();
             DependencyHelper.Flush();
             _ = Test();
-            await services.UseMessageMvc(typeof(Program));
+            await services.UseMessageMvc();
         }
         static async Task Test()
         {

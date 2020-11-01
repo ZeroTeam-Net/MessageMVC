@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -130,43 +131,14 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
             return OpenAll();
         }
 
-        private static TaskCompletionSource<bool> waitTask;
-
-        /// <summary>
-        ///     等待退出
-        /// </summary>
-        public static async Task WaitEnd()
-        {
-            Console.WriteLine("应用已启动.请键入 Ctrl+C 退出.");
-            if (ZeroAppOption.Instance.IsDevelopment)
-            {
-                Console.TreatControlCAsInput = true;
-                while (true)
-                {
-                    var key = Console.ReadKey();
-                    if (key.Key == ConsoleKey.C && key.Modifiers == ConsoleModifiers.Control)
-                        break;
-                }
-                Shutdown();
-            }
-            else
-            {
-                waitTask = new TaskCompletionSource<bool>();
-
-                Console.CancelKeyPress += OnConsoleOnCancelKeyPress;
-
-                await waitTask.Task;
-            }
-        }
-
         #endregion
 
         #region Shutdown
 
-        private static void OnConsoleOnCancelKeyPress(object s, ConsoleCancelEventArgs e)
-        {
-            Shutdown();
-        }
+        /// <summary>
+        ///     关闭
+        /// </summary>
+        public static void OnShutdown(object sender, EventArgs e) => Shutdown();
 
         /// <summary>
         ///     关闭
@@ -178,6 +150,7 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
                 return;
             }
             logger.Information("【正在退出...】");
+            OnStop?.Invoke(null, null);
             ZeroAppOption.Instance.SetApplicationState(StationState.Closing);
             CloseAll();
             WaitAllObjectSafeClose();
@@ -188,9 +161,8 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
             DependencyHelper.LoggerFactory.Dispose();
             DependencyScope.Local.Value?.Scope?.Dispose();
             logger.Information("【已退出，下次见！】");
-            //if (waitTask == null)
-            //    return;
-            //waitTask.TrySetResult(true);
+            if (ZeroAppOption.Instance.IsDevelopment)
+                Process.GetCurrentProcess().Kill();
         }
 
         #endregion
@@ -443,6 +415,8 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
                 }
             }
             logger.Information("【初始化】完成");
+
+            OnStart?.Invoke(null, null);
         }
 
         /// <summary>
@@ -482,11 +456,20 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
             //等待所有对象信号(Active or Failed)
             if (Services.Count > 0)
                 await ActiveSemaphore.WaitAsync();
-
             ZeroAppOption.Instance.SetApplicationState(StationState.Run);
             logger.Information("【启动】完成");
             return true;
         }
+
+        /// <summary>
+        /// 开始事件
+        /// </summary>
+        public static event EventHandler OnStart;
+
+        /// <summary>
+        /// 开始事件
+        /// </summary>
+        public static event EventHandler OnStop;
 
         private static int inFailed = 0;
 

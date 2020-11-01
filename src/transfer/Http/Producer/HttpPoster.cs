@@ -1,5 +1,6 @@
 using Agebull.Common.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -43,22 +44,29 @@ namespace ZeroTeam.MessageMVC.Http
                     message.State = MessageState.Unhandled;
                     return null;//直接使用状态
                 }
-                FlowTracer.MonitorDetails(() => $"URL : {client.BaseAddress }{message.Topic}/{message.Title}");
+                var uri = new Uri($"{client.BaseAddress }/{message.Topic}/{message.Title}");
+                FlowTracer.MonitorDetails(() => $"URL : {uri.OriginalString}");
                 using var requestMessage = new HttpRequestMessage
                 {
                     RequestUri = new Uri($"{client.BaseAddress }/{message.Topic}/{message.Title}"),
                     Method = HttpMethod.Post
                 };
                 requestMessage.Headers.Add("zeroID", message.ID);
-                message.Trace.CallMachine = null;
-                requestMessage.Headers.Add("zeroTrace", SmartSerializer.ToInnerString(message.Trace));
-
+                if (message.Trace != null)
+                {
+                    requestMessage.Headers.Add("zeroTrace", SmartSerializer.ToInnerString(message.Trace));
+                    message.Trace.CallMachine = null;
+                }
                 if (!string.IsNullOrEmpty(message.Content))
                     requestMessage.Content = new StringContent(message.Content);
-                
-
+                var msg = (MessageItem)message;
                 using var response = await client.SendAsync(requestMessage);
-                if (response.StatusCode != HttpStatusCode.OK)
+                if (requestMessage.Content != null)
+                    requestMessage.Content.Dispose();
+                var json = await response.Content.ReadAsStringAsync();
+                FlowTracer.MonitorDetails(() => $"StatusCode : {response.StatusCode}");
+
+                if (string.IsNullOrWhiteSpace(json))
                 {
                     result = new MessageResult
                     {
@@ -66,32 +74,23 @@ namespace ZeroTeam.MessageMVC.Http
                         State = HttpCodeToMessageState(response.StatusCode)
                     };
                 }
-                else
+                else if (SmartSerializer.TryDeserialize<MessageResult>(json, out var re2))
                 {
-                    var json = await response.Content.ReadAsStringAsync();
-
-                    FlowTracer.MonitorDetails(() => $"StatusCode : {response.StatusCode}");
-
-                    if (SmartSerializer.TryDeserialize<MessageResult>(json, out var re2))
+                    result = re2;
+                    re2.DataState = MessageDataState.ResultOffline;
+                    if (response.Headers.TryGetValues("zeroState", out var state))
                     {
-                        result = re2;
-                        re2.DataState = MessageDataState.ResultOffline;
-                        if (response.Headers.TryGetValues("zeroState", out var state))
-                        {
-                            result.State = Enum.Parse<MessageState>(state.FirstOrDefault());
-                        }
-                    }
-                    else
-                    {
-                        result = new MessageResult
-                        {
-                            ID = message.ID,
-                            State = HttpCodeToMessageState(response.StatusCode)
-                        };
+                        result.State = Enum.Parse<MessageState>(state.FirstOrDefault());
                     }
                 }
-                if (requestMessage.Content != null)
-                    requestMessage.Content.Dispose();
+                else
+                {
+                    result = new MessageResult
+                    {
+                        ID = message.ID,
+                        State = HttpCodeToMessageState(response.StatusCode)
+                    };
+                }
                 message.State = result.State;
                 FlowTracer.MonitorDetails(() => $"State : {result.State} Result : {result.Result}");
                 return result;
@@ -119,7 +118,7 @@ namespace ZeroTeam.MessageMVC.Http
             switch (httpStatusCode)
             {
                 case HttpStatusCode.OK:
-                    return MessageState.NoUs;
+                    return MessageState.Success;
 
                 case HttpStatusCode.NotFound:
                 case HttpStatusCode.MethodNotAllowed:
@@ -154,6 +153,7 @@ namespace ZeroTeam.MessageMVC.Http
             }
         }
         #endregion
+
         #region 访问外部
 
         /// <summary>
@@ -223,6 +223,50 @@ namespace ZeroTeam.MessageMVC.Http
                 using var httpContent = new StringContent(content);
                 using var response = await client.PostAsync(api, httpContent);
 
+                var json = await response.Content.ReadAsStringAsync();
+
+                MessageState state = HttpCodeToMessageState(response.StatusCode);
+
+                FlowTracer.MonitorDetails(() => $"HttpStatus : {response.StatusCode} MessageState : {state} Result : {json}");
+
+                return (state, json);
+            }
+            catch (HttpRequestException ex)
+            {
+                FlowTracer.MonitorInfomation(() => $"发生异常.{ex.Message}");
+                return (MessageState.Unsend, null);
+            }
+            catch (Exception ex)
+            {
+                FlowTracer.MonitorInfomation(() => $"发生异常.{ex.Message}");
+                return (MessageState.NetworkError, null);
+            }
+            finally
+            {
+                FlowTracer.EndStepMonitor();
+            }
+        }
+
+        /// <summary>
+        /// 访问外部
+        /// </summary>
+        /// <param name="service">服务名称，用于查找HttpClient，不会与api拼接</param>
+        /// <param name="api">完整的接口名称</param>
+        /// <param name="forms">Form内容</param>
+        /// <returns></returns>
+        public static async Task<(MessageState state, string res)> OutFormPost(string service, string api, Dictionary<string, string> forms)
+        {
+            if (!HttpClientOption.ServiceMap.TryGetValue(service, out var name))
+            {
+                name = HttpClientOption.DefaultName;
+            }
+            FlowTracer.BeginStepMonitor("[HttpPoster.OutFormPost]");
+            try
+            {
+                var client = HttpClientOption.HttpClientFactory.CreateClient(name);
+                FlowTracer.MonitorDetails(() => $"URL : {client.BaseAddress}{api}");
+                using var form = new FormUrlEncodedContent(forms);
+                using var response = await client.PostAsync(api, form);
                 var json = await response.Content.ReadAsStringAsync();
 
                 MessageState state = HttpCodeToMessageState(response.StatusCode);

@@ -27,13 +27,14 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         ///     设置当前上下文（框架内调用，外部误用后果未知）
         /// </summary>
-        public static void SetContext(IInlineMessage message)
+        public static IZeroContext Reset(IInlineMessage message)
         {
             var ctx = DependencyHelper.GetService<IZeroContext>();
             ctx.Message = message;
-            ctx.Trace = message.Trace;
             ctx.User.FormJson(message.Trace?.Context?.UserJson);
+            ctx.Option = message.Trace?.Context?.Option;
             DependencyScope.Dependency.Annex(ctx);
+            return ctx;
         }
 
         /// <summary>

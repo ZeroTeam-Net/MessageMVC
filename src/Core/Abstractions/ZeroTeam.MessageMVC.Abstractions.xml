@@ -1428,7 +1428,7 @@
                 当前线程的调用上下文(无懒构造)
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Context.GlobalContext.SetContext(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
+        <member name="M:ZeroTeam.MessageMVC.Context.GlobalContext.Reset(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
             <summary>
                 设置当前上下文（框架内调用，外部误用后果未知）
             </summary>
@@ -2966,36 +2966,6 @@
             消息投递对象
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.IMessagePoster.CanDo">
-            <summary>
-            是否可用
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.IMessagePoster.IsLocalReceiver">
-            <summary>
-            是否本地接收者
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.IMessagePoster.State">
-            <summary>
-            运行状态
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IMessagePoster.Initialize">
-            <summary>
-                初始化
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IMessagePoster.Open">
-            <summary>
-            开启
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IMessagePoster.Close">
-            <summary>
-            关闭
-            </summary>
-        </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.IMessagePoster.Post(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
             <summary>
             投递消息
@@ -3033,12 +3003,6 @@
             准备
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageReceiver.Close">
-            <summary>
-            关闭
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.IMessageReceiver.LoopBegin">
             <summary>
             开始轮询前的工作
@@ -3065,6 +3029,41 @@
             <remarks>
             默认实现为保证OnCallEnd可控制且不再抛出异常,无特殊需要不应再次实现
             </remarks>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Messages.IMessageWorker">
+            <summary>
+            消息处理对象
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.IMessageWorker.CanDo">
+            <summary>
+            是否可用
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.IMessageWorker.IsLocalReceiver">
+            <summary>
+            是否本地接收者
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.IMessageWorker.State">
+            <summary>
+            运行状态
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageWorker.Initialize">
+            <summary>
+                初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageWorker.Open">
+            <summary>
+            开启
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.IMessageWorker.Close">
+            <summary>
+            关闭
+            </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Messages.INetEvent">
             <summary>
@@ -3144,12 +3143,12 @@
             </summary>
             <param name="name"></param>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.ZeroTeam#MessageMVC#Messages#IMessagePoster#IsLocalReceiver">
+        <member name="P:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.ZeroTeam#MessageMVC#Messages#IMessageWorker#IsLocalReceiver">
             <summary>
             是否本地接收者
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.ZeroTeam#MessageMVC#Messages#IMessagePoster#CanDo">
+        <member name="P:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.ZeroTeam#MessageMVC#Messages#IMessageWorker#CanDo">
             <summary>
             是否可用
             </summary>
@@ -3174,12 +3173,12 @@
             运行状态
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.ZeroTeam#MessageMVC#Messages#IMessagePoster#State">
+        <member name="P:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.ZeroTeam#MessageMVC#Messages#IMessageWorker#State">
             <summary>
             运行状态
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.ZeroTeam#MessageMVC#Messages#IMessagePoster#Initialize">
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessageReceiverBase.ZeroTeam#MessageMVC#Messages#IMessageWorker#Initialize">
             <summary>
             初始化
             </summary>
@@ -3857,12 +3856,12 @@
             取消凭据
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.MessageQueue.BackgroundPoster`1.ZeroTeam#MessageMVC#Messages#IMessagePoster#Open">
+        <member name="M:ZeroTeam.MessageMVC.MessageQueue.BackgroundPoster`1.ZeroTeam#MessageMVC#Messages#IMessageWorker#Open">
             <summary>
             开启
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.MessageQueue.BackgroundPoster`1.ZeroTeam#MessageMVC#Messages#IMessagePoster#Close">
+        <member name="M:ZeroTeam.MessageMVC.MessageQueue.BackgroundPoster`1.ZeroTeam#MessageMVC#Messages#IMessageWorker#Close">
             <summary>
             关闭
             </summary>

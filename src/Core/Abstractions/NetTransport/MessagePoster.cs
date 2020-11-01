@@ -287,24 +287,31 @@ namespace ZeroTeam.MessageMVC
                     DataState = dataState
                 };
             }
-            if (inline.Trace != null && !GlobalContext.EnableLinkTrace)
+            if (!GlobalContext.EnableLinkTrace)
             {
                 return inline;
             }
-            inline.Trace = new TraceInfo
-            {
-                TraceId = inline.ID,
-                Start = DateTime.Now,
-            };
             var ctx = GlobalContext.CurrentNoLazy;
             if (ctx == null)
             {
+                inline.Trace ??= TraceInfo.New(inline.ID);
                 return inline;
             }
-            inline.Trace.Context = new StaticContext
+            if (ctx.Trace == null)
             {
-                Option = ctx.Option,
-                UserJson = SmartSerializer.ToString(ctx.User)
+                inline.Trace ??= TraceInfo.New(inline.ID);
+                inline.Trace.Context = new StaticContext
+                {
+                    Option = ctx.Option,
+                    UserJson = SmartSerializer.ToString(ctx.User)
+                };
+                return inline;
+            }
+
+            inline.Trace ??= new TraceInfo
+            {
+                TraceId = inline.ID,
+                Start = DateTime.Now,
             };
             inline.Trace.TraceId = ctx.Trace.TraceId;
             //远程机器使用,所以Call是本机信息

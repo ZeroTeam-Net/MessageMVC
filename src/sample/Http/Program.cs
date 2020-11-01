@@ -1,7 +1,6 @@
 using Agebull.Common.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using System.ComponentModel.DataAnnotations;
 
 namespace ZeroTeam.MessageMVC.Http
 {
@@ -11,7 +10,6 @@ namespace ZeroTeam.MessageMVC.Http
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();
-            ZeroFlowControl.Shutdown();
         }
 
         static IHostBuilder CreateHostBuilder(string[] args) =>

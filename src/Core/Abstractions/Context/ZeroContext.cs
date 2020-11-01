@@ -51,22 +51,11 @@ namespace ZeroTeam.MessageMVC.Context
         [System.Text.Json.Serialization.JsonIgnore]
         public IInlineMessage Message { get; set; }
 
-        private TraceInfo trace;
-
         /// <summary>
         ///     跟踪信息
         /// </summary>
         [System.Text.Json.Serialization.JsonIgnore]
-        public TraceInfo Trace
-        {
-            get
-            {
-                return ZeroAppOption.Instance.TraceInfo == TraceInfoType.None || trace != null
-                    ? trace
-                    : trace = TraceInfo.New(Message?.ID);
-            }
-            set => trace = value;
-        }
+        public TraceInfo Trace => Message?.Trace;
 
         /// <summary>
         /// 全局状态

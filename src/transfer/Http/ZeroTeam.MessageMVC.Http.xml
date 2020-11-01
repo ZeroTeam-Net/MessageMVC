@@ -253,7 +253,7 @@
             对应发送器名称
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpReceiver.ZeroTeam#MessageMVC#Messages#IMessageReceiver#Close">
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpReceiver.ZeroTeam#MessageMVC#Messages#IMessageWorker#Close">
             <summary>
             关闭
             </summary>
@@ -410,6 +410,15 @@
             <param name="service">服务名称，用于查找HttpClient，不会与api拼接</param>
             <param name="api">完整的接口名称</param>
             <param name="content">内容</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpPoster.OutFormPost(System.String,System.String,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            访问外部
+            </summary>
+            <param name="service">服务名称，用于查找HttpClient，不会与api拼接</param>
+            <param name="api">完整的接口名称</param>
+            <param name="forms">Form内容</param>
             <returns></returns>
         </member>
     </members>

@@ -1,4 +1,6 @@
 ﻿using Agebull.Common.Ioc;
+using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Kafka;
@@ -9,9 +11,12 @@ namespace MicroZero.Kafka.QueueStation
     {
         static async Task Main()
         {
+            //DependencyHelper.Flush();
             var services = DependencyHelper.ServiceCollection;
             services.AddMessageMvcKafka();
-            await services.UseMessageMvc(typeof(Program));
+            services.AddMessageMvc(typeof(Program).Assembly);
+            //自动退出
+            await services.UseMessageMvc();
         }
         static async void Test()
         {

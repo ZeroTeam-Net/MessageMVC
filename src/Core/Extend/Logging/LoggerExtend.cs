@@ -26,6 +26,7 @@ namespace Agebull.Common.Logging
         /// </summary>
         static LoggerExtend()
         {
+            
             ConfigurationHelper.RegistOnChange("Logging:LogRecorder", ReadConfig, true);
         }
 

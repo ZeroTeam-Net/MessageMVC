@@ -38,16 +38,6 @@ namespace ZeroTeam.MessageMVC.Messages
         bool Prepare() => true;
 
         /// <summary>
-        /// 关闭
-        /// </summary>
-        /// <returns></returns>
-        Task Close()
-        {
-            State = StationStateType.Closed;
-            return Task.CompletedTask;
-        }
-
-        /// <summary>
         /// 开始轮询前的工作
         /// </summary>
         /// <returns></returns>

@@ -162,7 +162,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// 关闭
         /// </summary>
         /// <returns></returns>
-        Task IMessageReceiver.Close()
+        Task IMessageWorker.Close()
         {
             task.SetResult(true);
             return Task.CompletedTask;

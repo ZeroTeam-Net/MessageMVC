@@ -358,66 +358,39 @@
             应用扩展方法
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApp.AddDependency(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.AddDependency(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Boolean)">
             <summary>
             检查并注入配置
             </summary>
-            <param name="services"></param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApp.AddZeroJson(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
-            <summary>
-            使用System.Text.Json序列化工具
-            </summary>
-            <param name="services"></param>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApp.AddMessageMvc(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Boolean)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.AddMessageMvc(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Boolean,System.Boolean)">
             <summary>
             启动主流程控制器
             </summary>
             <param name="services">依赖服务</param>
+            <param name="msJson">true 使用System.Text.Json,false 使用NewtonsoftJson</param>
             <param name="autoDiscover">对接口自动发现</param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApp.AddMessageMvc(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Type)">
-            <summary>
-            启动主流程控制器，发现指定类型所在的程序集的Api，由参数决定是否等待系统退出
-            </summary>
-            <param name="services"></param>
-            <param name="type">需要发现服务的程序集的类型之一</param>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApp.AddMessageMvc(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.AddMessageMvc(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly,System.Boolean)">
             <summary>
             启动主流程控制器，发现指定程序集的Api，由参数决定是否等待系统退出
             </summary>
-            <param name="services"></param>
+            <param name="services">依赖服务</param>
+            <param name="msJson">true 使用System.Text.Json,false 使用NewtonsoftJson</param>
             <param name="assembly">需要发现服务的程序集</param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseTest(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseTest(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly,System.Boolean)">
             <summary>
             启动主流程控制器，发现指定程序集的Api，适用于测试的场景
             </summary>
-            <param name="services"></param>
+            <param name="services">依赖服务</param>
+            <param name="msJson">true 使用System.Text.Json,false 使用NewtonsoftJson</param>
             <param name="assembly">需要发现服务的程序集</param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseMessageMvc(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Boolean)">
-            <summary>
-            启动主流程控制器并等待退出
-            </summary>
-            <param name="services">依赖服务</param>
-            <param name="autoDiscover">对接口自动发现</param>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseMessageMvc(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Type)">
-            <summary>
-            启动主流程控制器，发现指定类型所在的程序集的Api，由参数决定是否等待系统退出
-            </summary>
-            <param name="services"></param>
-            <param name="type">需要发现服务的程序集的类型之一</param>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseMessageMvc(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseMessageMvc(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             启动主流程控制器，发现指定程序集的Api，由参数决定是否等待系统退出
             </summary>
-            <param name="services"></param>
-            <param name="assembly">需要发现服务的程序集</param>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroFlowControl">
             <summary>
@@ -454,9 +427,9 @@
                 运行
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.WaitEnd">
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.OnShutdown(System.Object,System.EventArgs)">
             <summary>
-                等待退出
+                关闭
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.Shutdown">
@@ -539,6 +512,16 @@
                 系统启动时调用
             </summary>
         </member>
+        <member name="E:ZeroTeam.MessageMVC.ZeroFlowControl.OnStart">
+            <summary>
+            开始事件
+            </summary>
+        </member>
+        <member name="E:ZeroTeam.MessageMVC.ZeroFlowControl.OnStop">
+            <summary>
+            开始事件
+            </summary>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.StartFailed">
             <summary>
                 重新启动未正常启动的项目
@@ -564,7 +547,7 @@
             构造
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.EmptyReceiver.ZeroTeam#MessageMVC#Messages#IMessageReceiver#Close">
+        <member name="M:ZeroTeam.MessageMVC.EmptyReceiver.ZeroTeam#MessageMVC#Messages#IMessageWorker#Close">
             <summary>
             关闭
             </summary>

@@ -28,7 +28,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         ///     跟踪信息
         /// </summary>
-        TraceInfo Trace { get; set; }
+        TraceInfo Trace { get; }
 
         /// <summary>
         /// 全局状态

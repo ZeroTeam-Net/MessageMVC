@@ -13,10 +13,11 @@ namespace MicroZero.Kafka.QueueStation
         static async Task Main()
         {
             var service = DependencyHelper.ServiceCollection;
+            service.BindingMessageMvc();
             service.AddMessageMvcRedis();
-            await service.UseMessageMvc(typeof(Program));
+            service.AddMessageMvc();
             _ = Task.Run(Test);
-            await ZeroFlowControl.WaitEnd();
+            await service.UseMessageMvc();
             Console.WriteLine("Bye bye.");
         }
 

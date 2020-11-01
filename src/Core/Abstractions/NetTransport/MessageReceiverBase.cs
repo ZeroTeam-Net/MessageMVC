@@ -26,12 +26,12 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 是否本地接收者
         /// </summary>
-        bool IMessagePoster.IsLocalReceiver => true;
+        bool IMessageWorker.IsLocalReceiver => true;
 
         /// <summary>
         /// 是否可用
         /// </summary>
-        bool IMessagePoster.CanDo => state == StationStateType.Run;
+        bool IMessageWorker.CanDo => state == StationStateType.Run;
 
         /// <summary>
         /// 名称
@@ -56,12 +56,12 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 运行状态
         /// </summary>
-        StationStateType IMessagePoster.State { get => state; set => state = value; }
+        StationStateType IMessageWorker.State { get => state; set => state = value; }
 
         /// <summary>
         /// 初始化
         /// </summary>
-        void IMessagePoster.Initialize()
+        void IMessageWorker.Initialize()
         {
             if (state >= StationStateType.Initialized)
                 return;

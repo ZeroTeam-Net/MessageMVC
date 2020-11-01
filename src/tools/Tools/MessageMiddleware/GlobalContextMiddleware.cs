@@ -30,48 +30,30 @@ namespace ZeroTeam.MessageMVC.Context
         /// <returns></returns>
         Task<bool> IMessageMiddleware.Prepare(IService service, IInlineMessage message, object tag)
         {
-            if (message.Trace?.Context != null)
+            IZeroContext context;
+            message.Trace ??= TraceInfo.New(message.ID); 
+            message.Trace.LocalId = message.ID;
+            if (!message.IsOutAccess && message.Trace.ContentInfo.HasFlag(TraceInfoType.LinkTrace))
             {
-                GlobalContext.SetContext(message);
+                message.Trace.LocalApp = $"{ZeroAppOption.Instance.AppName}({ZeroAppOption.Instance.AppVersion})";
+                message.Trace.LocalMachine = $"{ZeroAppOption.Instance.ServiceName}({ZeroAppOption.Instance.LocalIpAddress})";
+            }
+            if (message.Trace.Context != null)
+            {
+                context = GlobalContext.Reset(message);
                 message.Trace.Context = null;
             }
             else
             {
-                GlobalContext.Reset();
-                GlobalContext.Current.Message = message;
+                context = GlobalContext.Reset();
+                context.Message = message;
             }
-
-            if (GlobalContext.Current.User == null)
+            context.User ??= GlobalContext.Anymouse;
+            context.Status ??= new ContextStatus();
+            context.Option ??= new System.Collections.Generic.Dictionary<string, string>();
+            if (ToolsOption.Instance.EnableLinkTrace)
             {
-                GlobalContext.Current.User = GlobalContext.Anymouse;
-            }
-
-            if (GlobalContext.Current.Status == null)
-            {
-                GlobalContext.Current.Status = new ContextStatus();
-            }
-
-            if (GlobalContext.Current.Option == null)
-            {
-                GlobalContext.Current.Option = new System.Collections.Generic.Dictionary<string, string>();
-                if (ToolsOption.Instance.EnableLinkTrace)
-                {
-                    GlobalContext.Current.Option.Add("EnableLinkTrace", "true");
-                }
-            }
-
-            if (GlobalContext.Current.Trace == null)
-            {
-                GlobalContext.Current.Trace = TraceInfo.New(message.ID);
-            }
-            else
-            {
-                message.Trace.LocalId = message.ID;
-                if (!message.IsOutAccess && message.Trace.ContentInfo.HasFlag(TraceInfoType.LinkTrace))
-                {
-                    message.Trace.LocalApp = $"{ZeroAppOption.Instance.AppName}({ZeroAppOption.Instance.AppVersion})";
-                    message.Trace.LocalMachine = $"{ZeroAppOption.Instance.ServiceName}({ZeroAppOption.Instance.LocalIpAddress})";
-                }
+                context.Option.Add("EnableLinkTrace", "true");
             }
             return Task.FromResult(true);
         }

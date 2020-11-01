@@ -39,8 +39,6 @@ namespace Agebull.Common.Ioc
 
             if (!service.Any(p => p.ServiceType == typeof(IConfigurationBuilder)))
                 service.TryAddTransient(p => ConfigurationHelper.Builder);
-            if (!service.Any(p => p.ServiceType == typeof(ILoggerFactory)))
-                service.TryAddTransient(p => _loggerFactory ??= new LoggerFactory());
             if (!service.Any(p => p.ServiceType == typeof(IConfigurationRoot)))
                 service.TryAddTransient(p => ConfigurationHelper.Root);
             if (ServiceCollection != null)
@@ -59,6 +57,10 @@ namespace Agebull.Common.Ioc
                     {
                         continue;
                     }
+                    else if (dod.ServiceType == typeof(ILoggerFactory))
+                    {
+                        continue;
+                    }
                     else
                     {
                         service.Add(dod);
@@ -66,6 +68,7 @@ namespace Agebull.Common.Ioc
                 }
             }
             ServiceCollection = service;
+            CheckLog();
         }
 
         /// <summary>
@@ -74,6 +77,7 @@ namespace Agebull.Common.Ioc
         /// <returns></returns>
         public static void BindingMessageMvc(this IServiceProvider provider)
         {
+            CheckLog();
             _rootProvider = provider;
             _serviceScopeFactory = provider.GetService<IServiceScopeFactory>();
             ConfigurationHelper.UpdateDependency();
@@ -127,29 +131,24 @@ namespace Agebull.Common.Ioc
         /// </summary>
         public static ILoggerFactory LoggerFactory
         {
-            get
+            get => _loggerFactory ??= Microsoft.Extensions.Logging.LoggerFactory.Create(builder =>
             {
-                return CheckLog();
-            }
+                builder.Services.AddScoped(provider => ConfigurationHelper.Root);
+                var level = ConfigurationHelper.Root.GetValue<LogLevel>("Logging:LogLevel:Default");
+                builder.SetMinimumLevel(level);
+                if (!ConfigurationHelper.Root.GetValue("Logging:LogRecorder:noConsole", false))
+                    builder.AddConsole();
+            });
             set => _loggerFactory = value;
         }
 
-        static ILoggerFactory CheckLog()
+        static void CheckLog()
         {
-            _loggerFactory = RootProvider.GetService<ILoggerFactory>();
-            if(_loggerFactory == null)
+            if (ServiceCollection.Any(p => p.ServiceType == typeof(ILoggerFactory)))
             {
-                _loggerFactory = Microsoft.Extensions.Logging.LoggerFactory.Create(builder =>
-                {
-                    builder.Services.AddScoped(provider => ConfigurationHelper.Root);
-                    var level = ConfigurationHelper.Root.GetValue<LogLevel>("Logging:LogLevel:Default");
-                    builder.SetMinimumLevel(level);
-                    if (ConfigurationHelper.Root.GetValue<bool>("Logging:LogRecorder:console"))
-                        builder.AddConsole();
-                });
-                ServiceCollection.AddSingleton(pri=> LoggerFactory);
+                ServiceCollection.Remove(ServiceCollection.First(p=>p.ServiceType == typeof(ILoggerFactory)));
             }
-            return _loggerFactory;
+            ServiceCollection.AddSingleton(pri => LoggerFactory);
         }
         #endregion
 

@@ -29,12 +29,12 @@
             订阅对象
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisEventReceiver.ZeroTeam#MessageMVC#Messages#IMessagePoster#Initialize">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisEventReceiver.ZeroTeam#MessageMVC#Messages#IMessageWorker#Initialize">
             <summary>
             初始化
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisEventReceiver.ZeroTeam#MessageMVC#Messages#IMessageReceiver#Close">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisEventReceiver.ZeroTeam#MessageMVC#Messages#IMessageWorker#Close">
             <summary>
             关闭
             </summary>
@@ -76,12 +76,12 @@
             订阅对象
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueueReceiver.ZeroTeam#MessageMVC#Messages#IMessagePoster#Initialize">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueueReceiver.ZeroTeam#MessageMVC#Messages#IMessageWorker#Initialize">
             <summary>
             初始化
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueueReceiver.ZeroTeam#MessageMVC#Messages#IMessageReceiver#Close">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisQueueReceiver.ZeroTeam#MessageMVC#Messages#IMessageWorker#Close">
             <summary>
             关闭
             </summary>

@@ -43,7 +43,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <summary>
         /// 初始化
         /// </summary>
-        void IMessagePoster.Initialize()
+        void IMessageWorker.Initialize()
         {
             logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(CSRedisQueueReceiver));
 
@@ -87,7 +87,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// 关闭
         /// </summary>
         /// <returns></returns>
-        async Task IMessageReceiver.Close()
+        async Task IMessageWorker.Close()
         {
             //try
             //{

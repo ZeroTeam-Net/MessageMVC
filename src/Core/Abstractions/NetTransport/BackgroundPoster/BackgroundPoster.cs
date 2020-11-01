@@ -12,7 +12,7 @@ namespace ZeroTeam.MessageMVC.MessageQueue
     /// <summary>
     ///    后台消息发布
     /// </summary>
-    public abstract class BackgroundPoster<TQueueItem> : MessagePostBase, IMessagePoster
+    public abstract class BackgroundPoster<TQueueItem> : MessagePostBase, IMessagePoster, IMessageWorker
         where TQueueItem : QueueItem, new()
     {
         #region IMessagePoster 
@@ -30,7 +30,7 @@ namespace ZeroTeam.MessageMVC.MessageQueue
         /// <summary>
         /// 开启
         /// </summary>
-        Task IMessagePoster.Open()
+        Task IMessageWorker.Open()
         {
             return AsyncPostQueue();
         }
@@ -38,7 +38,7 @@ namespace ZeroTeam.MessageMVC.MessageQueue
         /// <summary>
         /// 关闭
         /// </summary>
-        Task IMessagePoster.Close()
+        Task IMessageWorker.Close()
         {
             cancellation.Cancel();
             return Task.CompletedTask;

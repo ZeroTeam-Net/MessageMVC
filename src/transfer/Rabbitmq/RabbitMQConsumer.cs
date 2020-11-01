@@ -97,7 +97,7 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
         /// 同步关闭状态
         /// </summary>
         /// <returns></returns>
-        Task IMessageReceiver.Close()
+        Task IMessageWorker.Close()
         {
             completionSource.SetResult(true);
             return Task.CompletedTask;

@@ -78,7 +78,7 @@
             </summary>
             <returns>是否发送成功</returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQConsumer.ZeroTeam#MessageMVC#Messages#IMessageReceiver#Close">
+        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQConsumer.ZeroTeam#MessageMVC#Messages#IMessageWorker#Close">
             <summary>
             同步关闭状态
             </summary>

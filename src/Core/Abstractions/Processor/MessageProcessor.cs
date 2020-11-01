@@ -158,7 +158,6 @@ namespace ZeroTeam.MessageMVC.Messages
                 if (GlobalContext.CurrentNoLazy == null)
                 {
                     GlobalContext.Current.Message = Message;
-                    GlobalContext.Current.Trace = Message.Trace;
                 }
                 return true;
             }
