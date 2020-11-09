@@ -29,7 +29,6 @@ namespace ZeroTeam.MessageMVC.Messages
         [JsonIgnore]
         public string Argument { get => Content; set => Content = value; }
 
-
         /// <summary>
         /// 是否外部访问
         /// </summary>

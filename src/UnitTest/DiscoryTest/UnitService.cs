@@ -238,7 +238,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             {
                 UserId = "20200312",
                 NickName = "agebull",
-                UserCode = "20200312",
+                OpenId = "20200312",
                 OrganizationId = "20200312",
                 OrganizationName = "ZeroTeam"
             }.ToJson();
@@ -255,7 +255,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             Assert.IsTrue(ctx != null, msg.Result);
             Assert.IsTrue(msg.Trace.CallApp == traceInfo.CallApp, msg.Trace.CallApp);
             Assert.IsTrue(msg.Trace.Start == traceInfo.Start, msg.Trace.Start?.ToString());
-            Assert.IsTrue(ctx.User.OrganizationId == UserInfo.UnknownOrganizationId, ctx.User.OrganizationId.ToString());
+            Assert.IsTrue(ctx.User.OrganizationId == ZeroTeamJwtClaim.UnknownOrganizationId, ctx.User.OrganizationId.ToString());
         }
 
         /// <summary>
@@ -320,8 +320,6 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             Assert.IsTrue(msg.Result[0] == '<', msg.Result);
         }
 
-
-
         /// <summary>
         /// 
         /// </summary>
@@ -332,15 +330,10 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             {
                 ServiceName = "UnitService",
                 ApiName = "v1/task",
-                Content =
-@"{
-    
-}"
+                Content = "{}"
             });
             Assert.IsTrue(msg.State == MessageState.Success, msg.Result);
         }
-
-
 
         /// <summary>
         /// 
@@ -352,9 +345,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             {
                 ServiceName = "UnitService",
                 ApiName = "v1/FromServices",
-                Content =
-@"{
-}"
+                Content = "{}"
             });
             Assert.IsTrue(msg.State == MessageState.Success, msg.Result);
         }

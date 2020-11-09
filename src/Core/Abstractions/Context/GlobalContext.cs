@@ -31,6 +31,7 @@ namespace ZeroTeam.MessageMVC.Context
         {
             var ctx = DependencyHelper.GetService<IZeroContext>();
             ctx.Message = message;
+            
             ctx.User.FormJson(message.Trace?.Context?.UserJson);
             ctx.Option = message.Trace?.Context?.Option;
             DependencyScope.Dependency.Annex(ctx);

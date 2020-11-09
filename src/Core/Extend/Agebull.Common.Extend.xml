@@ -3710,9 +3710,39 @@
               流程跟踪器
             </summary>
         </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.#cctor">
+            <summary>
+              静态构造
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.ReadConfig">
+            <summary>
+            读取配置
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Logging.FlowTracer.Level">
+            <summary>
+            当前日志级别
+            </summary>
+        </member>
         <member name="P:Agebull.Common.Logging.FlowTracer.LogMonitor">
             <summary>
-            启动监视
+            是否启动跟踪日志
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Logging.FlowTracer.LogMonitorInformation">
+            <summary>
+            是否启动跟踪日志
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Logging.FlowTracer.LogMonitorDebug">
+            <summary>
+            跟踪日志是否包含详细信息
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Logging.FlowTracer.LogMonitorTrace">
+            <summary>
+            跟踪日志是否包含详细信息
             </summary>
         </member>
         <member name="P:Agebull.Common.Logging.FlowTracer.MonitorItem">
@@ -3728,6 +3758,26 @@
         <member name="M:Agebull.Common.Logging.FlowTracer.BeginStepMonitor(System.String)">
             <summary>
             开始监视日志步骤
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.BeginStepMonitor(System.Func{System.String})">
+            <summary>
+            开始监视日志步骤
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.BeginDebugStepMonitor(System.Func{System.String})">
+            <summary>
+            开始监视日志步骤
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.BeginDebugStepMonitor(System.String)">
+            <summary>
+            开始监视日志步骤
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.EndDebugStepMonitor">
+            <summary>
+            结束监视日志步骤
             </summary>
         </member>
         <member name="M:Agebull.Common.Logging.FlowTracer.EndStepMonitor">
@@ -3750,6 +3800,16 @@
             加入监视跟踪
             </summary>
         </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.MonitorTrace(System.String)">
+            <summary>
+            加入监视跟踪
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.MonitorTrace(System.Func{System.String})">
+            <summary>
+            加入监视跟踪
+            </summary>
+        </member>
         <member name="M:Agebull.Common.Logging.FlowTracer.MonitorDetails(System.Func{System.String})">
             <summary>
             加入监视跟踪
@@ -3760,24 +3820,24 @@
             加入监视跟踪
             </summary>
         </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.MonitorError(System.Func{System.String})">
+            <summary>
+            加入监视跟踪
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.MonitorError(System.Exception,System.String)">
+            <summary>
+            加入监视跟踪
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.MonitorError(System.String)">
+            <summary>
+            加入监视跟踪
+            </summary>
+        </member>
         <member name="M:Agebull.Common.Logging.FlowTracer.EndMonitor">
             <summary>
             结束监视日志
-            </summary>
-        </member>
-        <member name="M:Agebull.Common.Logging.FlowTracer.MonitorTrace(System.String)">
-            <summary>
-            加入监视跟踪
-            </summary>
-        </member>
-        <member name="M:Agebull.Common.Logging.FlowTracer.MonitorTrace(System.String,System.Object[])">
-            <summary>
-            加入监视跟踪
-            </summary>
-        </member>
-        <member name="M:Agebull.Common.Logging.FlowTracer.MonitorTrace(System.Func{System.String})">
-            <summary>
-            加入监视跟踪
             </summary>
         </member>
         <member name="M:Agebull.Common.Logging.FlowTracer.TraceMonitor(Microsoft.Extensions.Logging.ILogger,Agebull.Common.Logging.TraceStep)">
@@ -3873,56 +3933,24 @@
               出栈
             </summary>
         </member>
-        <member name="T:Agebull.Common.Logging.LoggerExtend">
+        <member name="T:Agebull.Common.Logging.LoggerExtension">
             <summary>
               日志记录器
             </summary>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.#cctor">
-            <summary>
-              静态构造
-            </summary>
-        </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.ReadConfig">
-            <summary>
-            读取配置
-            </summary>
-        </member>
-        <member name="P:Agebull.Common.Logging.LoggerExtend.LogDataSql">
-            <summary>
-            是否启动SQL日志
-            </summary>
-        </member>
-        <member name="P:Agebull.Common.Logging.LoggerExtend.LogMonitor">
-            <summary>
-            是否启动跟踪日志
-            </summary>
-        </member>
-        <member name="P:Agebull.Common.Logging.LoggerExtend.LogDetails">
-            <summary>
-            跟踪日志是否包含详细信息
-            </summary>
-        </member>
-        <member name="F:Agebull.Common.Logging.LoggerExtend.lastId">
+        <member name="F:Agebull.Common.Logging.LoggerExtension.lastId">
             <summary>
             日志序号
             </summary>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.NewEventId(System.String)">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.NewEventId(System.String)">
             <summary>
             新的事件ID
             </summary>
             <param name="name"></param>
             <returns></returns>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.RecordDataLog(Microsoft.Extensions.Logging.ILogger,System.String)">
-            <summary>
-              记录数据日志
-            </summary>
-             <param name="logger">日志记录器</param>
-            <param name="message"> 日志详细信息 </param>
-        </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Warning(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Warning(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
             <summary>
               记录警告消息
             </summary>
@@ -3930,14 +3958,14 @@
             <param name="message"> 日志详细信息 </param>
             <param name="formatArgs"> 格式化的参数 </param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Warning(Microsoft.Extensions.Logging.ILogger,System.String)">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Warning(Microsoft.Extensions.Logging.ILogger,System.String)">
             <summary>
               记录警告消息
             </summary>
              <param name="logger">日志记录器</param>
             <param name="message"> 日志详细信息 </param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Error(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Error(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
             <summary>
               记录错误消息
             </summary>
@@ -3945,7 +3973,7 @@
             <param name="message"> 日志详细信息 </param>
             <param name="formatArgs"> 格式化的参数 </param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Exception(Microsoft.Extensions.Logging.ILogger,System.Exception,System.String)">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Exception(Microsoft.Extensions.Logging.ILogger,System.Exception,System.String)">
             <summary>
               记录异常日志
             </summary>
@@ -3953,7 +3981,7 @@
             <param name="exception"> 异常 </param>
             <param name="message"> 日志详细信息 </param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Exception(Microsoft.Extensions.Logging.ILogger,System.Exception,System.String,System.Object[])">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Exception(Microsoft.Extensions.Logging.ILogger,System.Exception,System.String,System.Object[])">
             <summary>
               记录异常日志
             </summary>
@@ -3962,7 +3990,7 @@
             <param name="message"> 日志详细信息 </param>
             <param name="formatArgs">格式化参数</param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Trace(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Trace(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
             <summary>
               写入调试日志
             </summary>
@@ -3970,14 +3998,14 @@
             <param name="message"> 日志详细信息 </param>
             <param name="formatArgs">格式化参数</param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.StackTraceInfomation(System.String,System.Object[])">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.StackTraceInfomation(System.String,System.Object[])">
              <summary>
                堆栈信息
              </summary>
             <param name="message"> 日志详细信息 </param>
             <param name="formatArgs"> 格式化的参数 </param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.DebugByStackTrace(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.DebugByStackTrace(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
             <summary>
               写入调试日志同时记录堆栈信息
             </summary>
@@ -3985,7 +4013,7 @@
             <param name="message"> 日志详细信息 </param>
             <param name="formatArgs"> 格式化的参数 </param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Debug(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Debug(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
             <summary>
               写入调试日志.
             </summary>
@@ -3993,14 +4021,14 @@
             <param name="message"> 日志详细信息 </param>
             <param name="formatArgs">格式化参数</param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Debug(Microsoft.Extensions.Logging.ILogger,System.Object)">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Debug(Microsoft.Extensions.Logging.ILogger,System.Object)">
             <summary>
               写入调试日志
             </summary>
             <param name="logger">日志记录器</param>
             <param name="obj"> 记录对象 </param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Debug(Microsoft.Extensions.Logging.ILogger,System.String,System.String,System.Object[])">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Debug(Microsoft.Extensions.Logging.ILogger,System.String,System.String,System.Object[])">
             <summary>
               记录一般日志
             </summary>
@@ -4009,28 +4037,28 @@
             <param name="message"> 消息 </param>
             <param name="formatArgs"> 格式化的参数 </param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Trace(Microsoft.Extensions.Logging.ILogger,System.Func{System.String})">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Trace(Microsoft.Extensions.Logging.ILogger,System.Func{System.String})">
             <summary>
               写入调试日志
             </summary>
             <param name="logger">日志记录器</param>
             <param name="func"> 消息方法</param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Debug(Microsoft.Extensions.Logging.ILogger,System.Func{System.String})">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Debug(Microsoft.Extensions.Logging.ILogger,System.Func{System.String})">
             <summary>
               写入调试日志
             </summary>
             <param name="logger">日志记录器</param>
             <param name="func"> 消息方法</param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Information(Microsoft.Extensions.Logging.ILogger,System.Func{System.String})">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Information(Microsoft.Extensions.Logging.ILogger,System.Func{System.String})">
             <summary>
               写入调试日志
             </summary>
             <param name="logger">日志记录器</param>
             <param name="func"> 消息方法</param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Information(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Information(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
             <summary>
               记录一般日志
             </summary>
@@ -4038,21 +4066,21 @@
             <param name="message"> 消息 </param>
             <param name="formatArgs"> 格式化的参数 </param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Information(Microsoft.Extensions.Logging.ILogger,System.String)">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Information(Microsoft.Extensions.Logging.ILogger,System.String)">
             <summary>
               写入调试日志
             </summary>
             <param name="logger">日志记录器</param>
             <param name="msg"> 消息</param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Warning(Microsoft.Extensions.Logging.ILogger,System.Func{System.String})">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Warning(Microsoft.Extensions.Logging.ILogger,System.Func{System.String})">
             <summary>
               写入调试日志
             </summary>
             <param name="logger">日志记录器</param>
             <param name="func"> 消息方法</param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Error(Microsoft.Extensions.Logging.ILogger,System.Func{System.String})">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Error(Microsoft.Extensions.Logging.ILogger,System.Func{System.String})">
             <summary>
               写入调试日志
             </summary>

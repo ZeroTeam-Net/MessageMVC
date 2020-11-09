@@ -8,13 +8,15 @@ namespace ZeroTeam.MessageMVC.Http
     /// </summary>
     internal class HttpProtocol
     {
+        static string[] methods = new[] { "GET", "POST" };
+        static string[] headers = new[] { "x-requested-with", "content-type", "authorization", "*" };
         /// <summary>
         ///     跨域支持
         /// </summary>
         internal static void CrosOption(HttpResponse response)
         {
-            response.Headers.Add("Access-Control-Allow-Methods", new[] { "GET", "POST" });
-            response.Headers.Add("Access-Control-Allow-Headers", new[] { "x-requested-with", "content-type", "authorization", "*" });
+            response.Headers.Add("Access-Control-Allow-Methods", methods);
+            response.Headers.Add("Access-Control-Allow-Headers", headers);
             response.Headers.Add("Access-Control-Allow-Origin", "*");
         }
 
@@ -26,12 +28,5 @@ namespace ZeroTeam.MessageMVC.Http
             response.Headers.Add("Access-Control-Allow-Origin", "*");
         }
 
-        /// <summary>
-        ///     返回类型
-        /// </summary>
-        internal static void FormatResponse(HttpRequest request, HttpResponse response)
-        {
-            response.Headers["Content-Type"] = response.ContentType = "application/json; charset=UTF-8";
-        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Agebull.Common.Configuration;
+using System;
 
 namespace ZeroTeam.MessageMVC.Tools
 {
@@ -52,6 +53,27 @@ namespace ZeroTeam.MessageMVC.Tools
         public string ReceiptApi { get; set; }
 
 
+        #region JWT
+
+
+        /// <summary>
+        /// Secret
+        /// </summary>
+        public string JwtAppSecret { get; set; }
+
+        /// <summary>
+        /// Secret
+        /// </summary>
+        public byte[] JwtAppSecretByte { get; set; }
+
+
+        /// <summary>
+        /// JWT颁发
+        /// </summary>
+        public string JwtIssue { get; set; }
+
+        #endregion
+
         /// <summary>
         /// 实例
         /// </summary>
@@ -82,6 +104,9 @@ namespace ZeroTeam.MessageMVC.Tools
                 ReceiptApi = option.ReceiptApi;
             if (!string.IsNullOrWhiteSpace(option.ReceiptApi))
                 ReceiptApi = option.ReceiptApi;
+
+            JwtAppSecretByte = option.JwtAppSecret.ToUtf8Bytes();
+            JwtIssue = option.JwtIssue;
         }
     }
 }

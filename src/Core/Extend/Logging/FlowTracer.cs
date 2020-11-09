@@ -11,15 +11,65 @@ namespace Agebull.Common.Logging
     /// </summary>
     public static class FlowTracer
     {
+        #region Option
+
         /// <summary>
-        /// 启动监视
+        ///   静态构造
         /// </summary>
-        public static bool LogMonitor => LoggerExtend.LogMonitor;
+        static FlowTracer()
+        {
+            ConfigurationHelper.RegistOnChange("Logging:LogRecorder", ReadConfig, true);
+        }
+
+        /// <summary>
+        /// 读取配置
+        /// </summary>
+        private static void ReadConfig()
+        {
+            var sec = ConfigurationHelper.Get("Logging:LogLevel");
+            if (sec != null && Enum.TryParse<LogLevel>(sec.GetStr("MessageMVC"), out var l))
+            {
+                Level = l;
+            }
+            else
+            {
+                Level = LogLevel.Information;
+            }
+        }
+
+        /// <summary>
+        /// 当前日志级别
+        /// </summary>
+        public static LogLevel Level { get; set; }
+
+        #endregion
+
+        /// <summary>
+        /// 是否启动跟踪日志
+        /// </summary>
+        public static bool LogMonitor => Level <= LogLevel.Information;
+
+        /// <summary>
+        /// 是否启动跟踪日志
+        /// </summary>
+        public static bool LogMonitorInformation => Level <= LogLevel.Information;
+
+        /// <summary>
+        /// 跟踪日志是否包含详细信息
+        /// </summary>
+        public static bool LogMonitorDebug => Level <= LogLevel.Debug;
+
+        /// <summary>
+        /// 跟踪日志是否包含详细信息
+        /// </summary>
+        public static bool LogMonitorTrace => Level <= LogLevel.Trace;
 
         /// <summary>
         /// 当前范围数据
         /// </summary>
         static Local MonitorItem => DependencyScope.Dependency.Dependency<Local>();
+
+        #region 跟踪输出
 
         /// <summary>
         /// 开始检测资源
@@ -27,7 +77,7 @@ namespace Agebull.Common.Logging
         [Conditional("monitor")]
         public static void BeginMonitor(string title)
         {
-            if (!LoggerExtend.LogMonitor)
+            if (!LogMonitor)
             {
                 return;
             }
@@ -35,14 +85,72 @@ namespace Agebull.Common.Logging
             item.BeginMonitor(title);
             DependencyScope.Dependency.Annex(item);
         }
-
         /// <summary>
         /// 开始监视日志步骤
         /// </summary>
         [Conditional("monitor")]
         public static void BeginStepMonitor(string title)
         {
-            if (!LoggerExtend.LogMonitor)
+            if (!LogMonitorInformation)
+            {
+                return;
+            }
+
+            var item = MonitorItem;
+            if (item == null || !item.InMonitor)
+            {
+                return;
+            }
+
+            MonitorItem.BeginStep(title);
+        }
+
+        /// <summary>
+        /// 开始监视日志步骤
+        /// </summary>
+        [Conditional("monitor")]
+        public static void BeginStepMonitor(Func<string> title)
+        {
+            if (!LogMonitorInformation)
+            {
+                return;
+            }
+
+            var item = MonitorItem;
+            if (item == null || !item.InMonitor)
+            {
+                return;
+            }
+
+            MonitorItem.BeginStep(title());
+        }
+        /// <summary>
+        /// 开始监视日志步骤
+        /// </summary>
+        [Conditional("monitor")]
+        public static void BeginDebugStepMonitor(Func<string> func)
+        {
+            if (!LogMonitorDebug)
+            {
+                return;
+            }
+
+            var item = MonitorItem;
+            if (item == null || !item.InMonitor)
+            {
+                return;
+            }
+
+            MonitorItem.BeginStep(func());
+        }
+
+        /// <summary>
+        /// 开始监视日志步骤
+        /// </summary>
+        [Conditional("monitor")]
+        public static void BeginDebugStepMonitor(string title)
+        {
+            if (!LogMonitorDebug)
             {
                 return;
             }
@@ -60,9 +168,29 @@ namespace Agebull.Common.Logging
         /// 结束监视日志步骤
         /// </summary>
         [Conditional("monitor")]
+        public static void EndDebugStepMonitor()
+        {
+            if (!LogMonitorDebug)
+            {
+                return;
+            }
+
+            var item = MonitorItem;
+            if (item == null || !item.InMonitor)
+            {
+                return;
+            }
+
+            item.EndStep();
+        }
+
+        /// <summary>
+        /// 结束监视日志步骤
+        /// </summary>
+        [Conditional("monitor")]
         public static void EndStepMonitor()
         {
-            if (!LoggerExtend.LogMonitor)
+            if (!LogMonitorInformation)
             {
                 return;
             }
@@ -82,7 +210,7 @@ namespace Agebull.Common.Logging
         [Conditional("monitor")]
         public static void MonitorInfomation(string message)
         {
-            if (!LoggerExtend.LogMonitor)
+            if (!LogMonitorInformation || message == null)
             {
                 return;
             }
@@ -103,7 +231,7 @@ namespace Agebull.Common.Logging
         [Conditional("monitor")]
         public static void MonitorInfomation(string message, params object[] args)
         {
-            if (!LoggerExtend.LogMonitor || message == null)
+            if (!LogMonitorInformation || message == null)
             {
                 return;
             }
@@ -124,7 +252,7 @@ namespace Agebull.Common.Logging
         [Conditional("monitor")]
         public static void MonitorInfomation(Func<string> message)
         {
-            if (!LoggerExtend.LogMonitor)
+            if (!LogMonitorInformation)
             {
                 return;
             }
@@ -139,6 +267,48 @@ namespace Agebull.Common.Logging
             return;
         }
 
+        /// <summary>
+        /// 加入监视跟踪
+        /// </summary>
+        [Conditional("monitor")]
+        public static void MonitorTrace(string message)
+        {
+            if (!LogMonitorTrace)
+            {
+                return;
+            }
+
+            var item = MonitorItem;
+            if (item == null || !item.InMonitor)
+            {
+                return;
+            }
+
+            item.Trace(message);
+            return;
+        }
+
+
+        /// <summary>
+        /// 加入监视跟踪
+        /// </summary>
+        [Conditional("monitor")]
+        public static void MonitorTrace(Func<string> message)
+        {
+            if (!LogMonitorTrace)
+            {
+                return;
+            }
+
+            var item = MonitorItem;
+            if (item == null || !item.InMonitor)
+            {
+                return;
+            }
+
+            item.Trace(message());
+            return;
+        }
 
         /// <summary>
         /// 加入监视跟踪
@@ -146,7 +316,7 @@ namespace Agebull.Common.Logging
         [Conditional("monitor")]
         public static void MonitorDetails(Func<string> message)
         {
-            if (!LoggerExtend.LogDetails || !LoggerExtend.LogMonitor)
+            if (!LogMonitorTrace)
             {
                 return;
             }
@@ -161,15 +331,72 @@ namespace Agebull.Common.Logging
             return;
         }
 
-
-
         /// <summary>
         /// 加入监视跟踪
         /// </summary>
         [Conditional("monitor")]
         public static void MonitorDetails(string message)
         {
-            if (!LoggerExtend.LogDetails || !LoggerExtend.LogMonitor)
+            if (!LogMonitorDebug)
+            {
+                return;
+            }
+
+            var item = MonitorItem;
+            if (item == null || !item.InMonitor)
+            {
+                return;
+            }
+
+            item.Trace(message);
+            return;
+        }
+
+        /// <summary>
+        /// 加入监视跟踪
+        /// </summary>
+        [Conditional("monitor")]
+        public static void MonitorError(Func<string> message)
+        {
+            if (!LogMonitor)
+            {
+                return;
+            }
+            var item = MonitorItem;
+            if (item == null || !item.InMonitor)
+            {
+                return;
+            }
+            item.Trace(message());
+            return;
+        }
+
+        /// <summary>
+        /// 加入监视跟踪
+        /// </summary>
+        [Conditional("monitor")]
+        public static void MonitorError(Exception ex, string message)
+        {
+            if (!LogMonitor)
+            {
+                return;
+            }
+            var item = MonitorItem;
+            if (item == null || !item.InMonitor)
+            {
+                return;
+            }
+            item.Trace($"{message ?? "Exception"}\r\n{ex.Message}");
+            return;
+        }
+
+        /// <summary>
+        /// 加入监视跟踪
+        /// </summary>
+        [Conditional("monitor")]
+        public static void MonitorError(string message)
+        {
+            if (!LogMonitor || message == null)
             {
                 return;
             }
@@ -196,71 +423,6 @@ namespace Agebull.Common.Logging
             item.End();
             return item.Stack.FixValue;
         }
-        #region 兼容
-
-        /// <summary>
-        /// 加入监视跟踪
-        /// </summary>
-        [Obsolete, Conditional("monitor")]
-        public static void MonitorTrace(string message)
-        {
-            if (!LoggerExtend.LogMonitor)
-            {
-                return;
-            }
-
-            var item = MonitorItem;
-            if (item == null || !item.InMonitor)
-            {
-                return;
-            }
-
-            item.Trace(message);
-            return;
-        }
-
-        /// <summary>
-        /// 加入监视跟踪
-        /// </summary>
-        [Obsolete, Conditional("monitor")]
-        public static void MonitorTrace(string message, params object[] args)
-        {
-            if (!LoggerExtend.LogMonitor || message == null)
-            {
-                return;
-            }
-
-            var item = MonitorItem;
-            if (item == null || !item.InMonitor)
-            {
-                return;
-            }
-
-            item.Trace(string.Format(message, args));
-            return;
-        }
-
-        /// <summary>
-        /// 加入监视跟踪
-        /// </summary>
-        [Obsolete, Conditional("monitor")]
-        public static void MonitorTrace(Func<string> message)
-        {
-            if (!LoggerExtend.LogMonitor)
-            {
-                return;
-            }
-
-            var item = MonitorItem;
-            if (item == null || !item.InMonitor)
-            {
-                return;
-            }
-
-            item.Trace(message());
-            return;
-        }
-
         #endregion
         #region 表格输出
 
@@ -273,7 +435,7 @@ namespace Agebull.Common.Logging
                 return;
             var texter = new StringBuilder();
             Message(texter, root.Start, root);
-            logger.LogInformation(LoggerExtend.NewEventId("Monitor"), texter.ToString());
+            logger.LogInformation(LoggerExtension.NewEventId("Monitor"), texter.ToString());
         }
 
         /// <summary>

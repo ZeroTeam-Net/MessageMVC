@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using Agebull.Common.Ioc;
+using Agebull.Common.Logging;
+using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.Services;
 using ZeroTeam.MessageMVC.Tools;
@@ -48,6 +50,14 @@ namespace ZeroTeam.MessageMVC.Context
                 context = GlobalContext.Reset();
                 context.Message = message;
             }
+            if (message.IsOutAccess)
+            {
+                var resolver = DependencyHelper.GetService<ITokenResolver>();
+                if (resolver != null)
+                {
+                    context.User = resolver.TokenToUser(message.Trace.Token);
+                }
+            }
             context.User ??= GlobalContext.Anymouse;
             context.Status ??= new ContextStatus();
             context.Option ??= new System.Collections.Generic.Dictionary<string, string>();
@@ -55,6 +65,7 @@ namespace ZeroTeam.MessageMVC.Context
             {
                 context.Option.Add("EnableLinkTrace", "true");
             }
+            FlowTracer.MonitorInfomation(()=> $"User => {context.User?.ToJson()}");
             return Task.FromResult(true);
         }
     }

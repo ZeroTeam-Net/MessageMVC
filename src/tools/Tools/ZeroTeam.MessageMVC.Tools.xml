@@ -94,6 +94,22 @@
             </summary>
             <param name="path"></param>
         </member>
+        <member name="T:ZeroTeam.MessageMVC.Tools.JwtTokenResolver">
+            <summary>
+            API扩展功能
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Tools.JwtTokenResolver.tokenValidationParameters">
+            <summary>
+            校验参数
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Tools.JwtTokenResolver.CheckJwt(System.String)">
+            <summary>
+            JWT校验
+            </summary>
+            <param name="jwt"></param>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Tools.AutoRegister">
             <summary>
               组件注册
@@ -331,6 +347,21 @@
         <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.ReceiptApi">
             <summary>
                 回执接口方法
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.JwtAppSecret">
+            <summary>
+            Secret
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.JwtAppSecretByte">
+            <summary>
+            Secret
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.JwtIssue">
+            <summary>
+            JWT颁发
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.Tools.ToolsOption.Instance">

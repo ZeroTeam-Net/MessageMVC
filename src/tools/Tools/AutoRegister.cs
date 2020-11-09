@@ -1,5 +1,4 @@
 ﻿using Agebull.Common.Logging;
-using Agebull.EntityModel.Common;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.ComponentModel.Composition;
@@ -50,7 +49,9 @@ namespace ZeroTeam.MessageMVC.Tools
             services.AddTransient<IMessageMiddleware, ReceiptMiddleware>();
             //通过反向代理组件处理计划任务消息发送
             services.AddSingleton<IMessageMiddleware, ReverseProxyMiddleware>();
-
+            //JWT解析
+            services.AddSingleton<ITokenResolver, JwtTokenResolver>();
+             
             //健康检查
             services.AddTransient<IMessageMiddleware, HealthCheckMiddleware>();
             //异常处理

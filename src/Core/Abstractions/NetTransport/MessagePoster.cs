@@ -205,7 +205,7 @@ namespace ZeroTeam.MessageMVC
                     continue;
                 return item;
             }
-            return null;
+            return def ? Default : null;
         }
 
         /// <summary>
@@ -217,48 +217,54 @@ namespace ZeroTeam.MessageMVC
         /// <returns>返回值,如果未进行离线交换message返回为空,此时请检查state</returns>
         public static async Task<IInlineMessage> Post(IMessageItem message, bool autoOffline = true, bool defPoster = true)
         {
-            if (message == null || string.IsNullOrEmpty(message.Topic) || string.IsNullOrEmpty(message.Title))
-            {
-                throw new NotSupportedException("参数[message]不能为空且[message.Topic]与[message.Title]必须为有效值");
-            }
-
-            var inline = CheckMessage(message);
-            var producer = GetService(message.Topic, defPoster);
-            if (producer == null)
-            {
-                FlowTracer.MonitorInfomation(() => $"服务{message.Topic}不存在");
-                inline.State = MessageState.Unhandled;
-                return inline;
-            }
+            FlowTracer.BeginStepMonitor(()=>$"{message.Topic}/{message.Title}");
             try
             {
-                var msg = await producer.Post(inline);
-                if (msg != null)
+                if (message == null || string.IsNullOrEmpty(message.Topic) || string.IsNullOrEmpty(message.Title))
                 {
-                    inline.CopyResult(msg);
-                    FlowTracer.MonitorDetails(() => $"返回 => {SmartSerializer.ToInnerString(msg)}");
+                    FlowTracer.MonitorError("服务不存在");
+                    throw new NotSupportedException("参数[message]不能为空且[message.Topic]与[message.Title]必须为有效值");
                 }
-                else
+
+                var inline = CheckMessage(message);
+                var producer = GetService(message.Topic, defPoster);
+                if (producer == null)
                 {
-                    FlowTracer.MonitorDetails(() => $"返回 => {SmartSerializer.ToInnerString(inline)}");
+                    FlowTracer.MonitorError("服务不存在");
+                    inline.State = MessageState.Unhandled;
+                    return inline;
                 }
-                if (autoOffline)
+                FlowTracer.MonitorDetails(() => $"Poster => {producer.GetTypeName()}");
+                try
                 {
-                    inline.OfflineResult();
+                    var msg = await producer.Post(inline);
+                    if (msg != null)
+                    {
+                        inline.CopyResult(msg);
+                    }
+                    FlowTracer.MonitorInfomation(() => $"[{inline.State}] => {inline.Result}");
+                    if (autoOffline)
+                    {
+                        inline.OfflineResult();
+                    }
+                    return inline;
                 }
-                return inline;
+                catch (MessagePostException ex)
+                {
+                    logger.Exception(ex);
+                    inline.State = MessageState.NetworkError;
+                    return inline;
+                }
+                catch (Exception ex)
+                {
+                    logger.Exception(ex);
+                    inline.State = MessageState.FrameworkError;
+                    return inline;
+                }
             }
-            catch (MessagePostException ex)
+            finally
             {
-                logger.Exception(ex);
-                inline.State = MessageState.NetworkError;
-                return inline;
-            }
-            catch (Exception ex)
-            {
-                logger.Exception(ex);
-                inline.State = MessageState.FrameworkError;
-                return inline;
+                FlowTracer.EndStepMonitor();
             }
 
         }
@@ -303,7 +309,7 @@ namespace ZeroTeam.MessageMVC
                 inline.Trace.Context = new StaticContext
                 {
                     Option = ctx.Option,
-                    UserJson = SmartSerializer.ToString(ctx.User)
+                    UserJson = ctx.User.ToJson()
                 };
                 return inline;
             }
@@ -523,6 +529,27 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         /// <param name="service">服务名称</param>
         /// <param name="api">接口名称</param>
+        /// <returns></returns>
+        public static async Task<(IApiResult<TRes> res, MessageState state)> CallApiAsync<TRes>(string service, string api)
+        {
+            var msg = await Post(MessageHelper.NewRemote(service, api), false, true);
+            if (msg.ResultData != null)
+            {
+                return (msg.ResultData as IApiResult<TRes>, msg.State);
+            }
+            if (msg.Result == null && msg.ResultData == null)
+            {
+                return (ApiResultHelper.Helper.State<TRes>(msg.State.ToErrorCode()), msg.State);
+            }
+            return (ApiResultHelper.Helper.Deserialize<TRes>(msg.Result), msg.State);
+        }
+
+
+        /// <summary>
+        /// 远程调用
+        /// </summary>
+        /// <param name="service">服务名称</param>
+        /// <param name="api">接口名称</param>
         /// <param name="args">接口参数</param>
         /// <returns></returns>
         public static async Task<(IApiResult res, MessageState state)> CallApiAsync<TArg>(string service, string api, TArg args)
@@ -601,6 +628,26 @@ namespace ZeroTeam.MessageMVC
             return (ApiResultHelper.Helper.Deserialize<TRes>(msg.Result), msg.State);
         }
 
+        /// <summary>
+        /// 远程调用
+        /// </summary>
+        /// <param name="service">服务名称</param>
+        /// <param name="api">接口名称</param>
+        /// <returns></returns>
+        public static (IApiResult<TRes> res, MessageState state) CallApi<TRes>(string service, string api)
+             where TRes : class
+        {
+            var msg = Post(MessageHelper.NewRemote(service, api), false, true).Result;
+            if (msg.ResultData != null)
+            {
+                return (msg.ResultData as IApiResult<TRes>, msg.State);
+            }
+            if (msg.Result == null && msg.ResultData == null)
+            {
+                return (ApiResultHelper.Helper.State<TRes>(msg.State.ToErrorCode()), msg.State);
+            }
+            return (ApiResultHelper.Helper.Deserialize<TRes>(msg.Result), msg.State);
+        }
 
         /// <summary>
         /// 远程调用

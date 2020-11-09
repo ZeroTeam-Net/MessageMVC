@@ -5,6 +5,7 @@
 #region
 
 using Agebull.Common.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
@@ -17,50 +18,8 @@ namespace Agebull.Common.Logging
     /// <summary>
     ///   日志记录器
     /// </summary>
-    public static class LoggerExtend
+    public static class LoggerExtension
     {
-        #region Option
-
-        /// <summary>
-        ///   静态构造
-        /// </summary>
-        static LoggerExtend()
-        {
-            
-            ConfigurationHelper.RegistOnChange("Logging:LogRecorder", ReadConfig, true);
-        }
-
-        /// <summary>
-        /// 读取配置
-        /// </summary>
-        private static void ReadConfig()
-        {
-            var sec = ConfigurationHelper.Get("Logging:LogRecorder");
-            if (sec != null)
-            {
-                LogMonitor = sec.GetBool("monitor");
-                LogDetails = sec.GetBool("details");
-                LogDataSql = sec.GetBool("sql");
-            }
-        }
-
-        /// <summary>
-        /// 是否启动SQL日志
-        /// </summary>
-        public static bool LogDataSql { get; set; }
-
-        /// <summary>
-        /// 是否启动跟踪日志
-        /// </summary>
-        internal static bool LogMonitor { get; set; }
-
-        /// <summary>
-        /// 跟踪日志是否包含详细信息
-        /// </summary>
-        internal static bool LogDetails { get; set; }
-
-        #endregion
-
         #region 记录
 
         /// <summary>
@@ -74,19 +33,6 @@ namespace Agebull.Common.Logging
         /// <param name="name"></param>
         /// <returns></returns>
         public static EventId NewEventId(string name) => new EventId((int)Interlocked.Increment(ref lastId), name);
-
-        ///<summary>
-        ///  记录数据日志
-        ///</summary>
-        /// <param name="logger">日志记录器</param>
-        ///<param name="message"> 日志详细信息 </param>
-        public static void RecordDataLog(this ILogger logger, string message)
-        {
-            if (LogDataSql && message != null)
-            {
-                logger.LogTrace(NewEventId("DataLog"), message);
-            }
-        }
 
         ///<summary>
         ///  记录警告消息

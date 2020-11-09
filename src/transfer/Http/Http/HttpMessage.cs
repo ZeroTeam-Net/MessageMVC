@@ -122,13 +122,13 @@ namespace ZeroTeam.MessageMVC.Http
         ///     请求地址
         /// </summary>
         [JsonIgnore]
-        public string Uri { get; private set; }
+        public string Uri { get; internal set; }
 
         /// <summary>
         ///     HTTP method
         /// </summary>
         [JsonIgnore]
-        public string HttpMethod { get; private set; }
+        public string HttpMethod { get; internal set; }
 
         /// <summary>
         /// 接口参数,即Content
@@ -140,7 +140,7 @@ namespace ZeroTeam.MessageMVC.Http
         ///     请求的内容
         /// </summary>
         [JsonIgnore]
-        public string HttpContent { get; set; }
+        public string   HttpContent { get; set; }
 
         /// <summary>
         ///     请求的表单
@@ -177,120 +177,6 @@ namespace ZeroTeam.MessageMVC.Http
 
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public DateTime? End { get; set; }
-
-        #endregion
-
-        #region 请求解析
-
-        /// <summary>
-        ///     调用检查
-        /// </summary>
-        /// <param name="context"></param>
-        public bool CheckRequest(HttpContext context)
-        {
-            HttpContext = context;
-            var request = context.Request;
-            Uri = request.Path.Value;
-            if (!CheckApiRoute())
-            {
-                return false;
-            }
-            if(request.Headers.TryGetValue("zeroID",out var vl))
-            {
-                IsOutAccess = false;
-                ID = vl[0];
-                if(request.Headers.TryGetValue("zeroTrace", out vl))
-                {
-                    Trace = SmartSerializer.ToObject<TraceInfo>(vl[0]);
-                }
-                else
-                {
-                    Trace = TraceInfo.New(ID);
-                    Trace.CallId = HttpContext.Connection.Id;
-                }
-            }
-            else
-            {
-                IsOutAccess = true;
-                HttpMethod = request.Method.ToUpper();
-                ID = Guid.NewGuid().ToString("N").ToUpper();
-                Trace = TraceInfo.New(ID);
-                Trace.CallId = HttpContext.Connection.Id;
-                CheckHeaders(request);
-            }
-            Trace.CallMachine = $"{HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.RemotePort}";
-            DataState = MessageDataState.None;
-
-            return true;
-        }
-
-        private void CheckHeaders(HttpRequest request)
-        {
-            var referer = request.Headers["Referer"].LastOrDefault();
-            if (referer != null)
-            {
-                var uri = new UriBuilder(referer);
-                Trace.CallPage = uri.Path;
-            }
-            if (MessageRouteOption.Instance.EnableAuthToken)
-            {
-                var header = request.Headers["Authorization"];
-                if (header.Count > 0)
-                {
-                    var token = header[0]?.Trim().Split(new[] { ' ', '\t' }, 2, StringSplitOptions.RemoveEmptyEntries).Last();
-                    if (string.IsNullOrWhiteSpace(token) ||
-                        token.Equals("null") ||
-                        token.Equals("undefined") ||
-                        token.Equals("Bearer"))
-                    {
-                        Trace.Token = null;
-                    }
-                    else
-                    {
-                        var ks = token.Split('|');
-                        Trace.Token = ks[0];
-                        if (ks.Length > 1)
-                            Trace.CallApp = ks[1];
-                        if (ks.Length > 2)
-                            Trace.CallId = ks[2];
-                    }
-                }
-            }
-            if (MessageRouteOption.Instance.EnableHeader)
-            {
-                Trace.Headers = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
-                foreach (var head in request.Headers)
-                {
-                    Trace.Headers.Add(head.Key.ToUpper(), head.Value.ToList());
-                }
-            }
-            Trace.CallApp ??= request.Query["__app"];
-            Trace.CallPage ??= request.Query["__page"];
-            Trace.Token ??= request.Query["__token"];
-        }
-
-        /// <summary>
-        ///     检查调用内容
-        /// </summary>
-        /// <returns></returns>
-        private bool CheckApiRoute()
-        {
-            var words = Uri.Split('/', StringSplitOptions.RemoveEmptyEntries);
-            if (words.Length <= 1)
-            {
-                State = MessageState.Unhandled;
-                return false;
-            }
-            MessageRouteOption.Instance.HostPaths.TryGetValue(words[0], out var idx);
-            if (words.Length <= idx + 1)
-            {
-                State = MessageState.Unhandled;
-                return false;
-            }
-            ApiHost = words[idx];
-            ApiName = string.Join('/', words.Skip(idx + 1));
-            return true;
-        }
 
         #endregion
 
@@ -462,117 +348,8 @@ namespace ZeroTeam.MessageMVC.Http
         */
         #endregion
 
-        #region 原始参数读取
-
-        /// <summary>
-        /// 准备在线(框架内调用)
-        /// </summary>
-        /// <returns></returns>
-        public async Task PrepareInline()
-        {
-            try
-            {
-                HttpArguments ??= PrepareHttpArgument();
-                Dictionary ??= PrepareHttpForm();
-                foreach (var kv in HttpArguments)
-                {
-                    Dictionary.TryAdd(kv.Key, kv.Value);
-                }
-                ReadFiles();
-                HttpContent ??= await PrepareContent();
-                Content = HttpContent;
-            }
-            catch (Exception e)
-            {
-                DependencyScope.Logger.Exception(e);
-                State = MessageState.FormalError;
-            }
-            DataState &= ~(MessageDataState.ArgumentInline | MessageDataState.ArgumentOffline);
-        }
-
-        private void ReadFiles()
-        {
-            //if (!MessageRouteOption.Instance.EnableFormFile)
-            //{
-            //    return;
-            //}
-            //Binary = new Dictionary<string, byte[]>();
-            //var request = HttpContext.Request;
-            //var files = request.Form?.Files;
-            //if (files == null || files.Count <= 0)
-            //{
-            //    return;
-            //}
-            //foreach (var file in files)
-            //{
-            //    var bytes = new byte[file.Length];
-            //    using (var stream = file.OpenReadStream())
-            //    {
-            //        stream.Read(bytes, 0, (int)file.Length);
-            //    }
-            //    Binary.TryAdd(file.Name, bytes);
-            //}
-        }
-
-
-
-        async Task<string> PrepareContent()
-        {
-            var request = HttpContext.Request;
-            if (request.ContentLength != null && request.ContentLength > 0)
-            {
-                using var texter = new StreamReader(request.Body);
-                return await texter.ReadToEndAsync() ?? string.Empty;
-            }
-            return string.Empty;
-        }
-
-        private Dictionary<string, string> PrepareHttpForm()
-        {
-            var arguments = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            var request = HttpContext.Request;
-            try
-            {
-                if (request.HasFormContentType)
-                {
-                    foreach (var key in request.Form.Keys)
-                    {
-                        arguments.TryAdd(key, request.Form[key]);
-                    }
-                }
-            }
-            catch
-            {
-            }
-            return arguments;
-        }
-        private Dictionary<string, string> PrepareHttpArgument()
-        {
-            var arguments = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            var request = HttpContext.Request;
-            try
-            {
-                if (request.QueryString.HasValue)
-                {
-                    foreach (var key in request.Query.Keys)
-                    {
-                        //if (key.Length == 1 && key[0] == '_')
-                        //    continue;
-                        //if (key.Length >= 2 && key[0] == '_' && key[1] == '_')
-                        //    continue;
-                        arguments.TryAdd(key, request.Query[key]);
-                    }
-                }
-            }
-            catch
-            {
-            }
-            return arguments;
-        }
-        #endregion
-
-
         #region 快捷方法
+
         /// <summary>
         /// 跟踪消息
         /// </summary>

@@ -13,6 +13,7 @@ namespace ZeroTeam.MessageMVC.Tools
     /// </summary>
     public class MarkPointMiddleware : IMessageMiddleware
     {
+
         /// <summary>
         /// 层级
         /// </summary>
@@ -26,7 +27,6 @@ namespace ZeroTeam.MessageMVC.Tools
                 ? MessageHandleScope.Prepare | MessageHandleScope.End
                 : MessageHandleScope.None;
 
-
         /// <summary>
         /// 准备
         /// </summary>
@@ -36,11 +36,11 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <returns></returns>
         Task<bool> IMessageMiddleware.Prepare(IService service, IInlineMessage message, object tag)
         {
-            if (FlowTracer.LogMonitor)
-            {
-                FlowTracer.BeginMonitor(DependencyScope.Name);
+            if (FlowTracer.LogMonitorDebug )
                 FlowTracer.MonitorDetails(message.TraceInfo);
-            }
+            else
+                FlowTracer.MonitorInfomation($"Argument => {message.Argument}");
+
             return Task.FromResult(true);
         }
 
@@ -54,19 +54,14 @@ namespace ZeroTeam.MessageMVC.Tools
             TraceStep root = null;
             if (FlowTracer.LogMonitor)
             {
-                FlowTracer.MonitorInfomation("State => {0}", message.State);
-                FlowTracer.MonitorDetails(() => $"Result => {message.Result}");
-                if (message.Trace != null)
-                {
-                    var trace = message.Trace;
-                    FlowTracer.MonitorDetails(() => $"Trace => {SmartSerializer.ToInnerString(trace)}");
-                    message.Trace = null;
-                }
+                FlowTracer.MonitorInfomation(() => $"[{message.State}] => {message.Result}");
+                FlowTracer.MonitorDetails(() => $"Trace => {SmartSerializer.ToInnerString(message.Trace)}");
                 root = FlowTracer.EndMonitor();
                 if (root != null)
                     DependencyScope.Logger.TraceMonitor(root);
             }
-            if (!ToolsOption.Instance.EnableMarkPoint || (message.Topic == ToolsOption.Instance.MarkPointName && message.ApiName == "post"))
+            if (!ToolsOption.Instance.EnableMarkPoint || 
+                (message.Topic == ToolsOption.Instance.MarkPointName && message.ApiName == "post"))
                 return;
             var link = new TraceLinkMessage
             {
@@ -86,8 +81,8 @@ namespace ZeroTeam.MessageMVC.Tools
             {
                 link.Trace.Context = new StaticContext
                 {
-                    UserJson = SmartSerializer.ToInnerString(GlobalContext.CurrentNoLazy?.User),
-                    Option = GlobalContext.CurrentNoLazy?.Option
+                    Option = GlobalContext.CurrentNoLazy?.Option,
+                    UserJson = GlobalContext.CurrentNoLazy?.User.ToJson(),
                 };
             }
             var json = SmartSerializer.ToString(link);

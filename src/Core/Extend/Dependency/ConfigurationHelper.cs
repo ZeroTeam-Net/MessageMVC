@@ -153,6 +153,7 @@ namespace Agebull.Common.Configuration
                 Builder.AddJsonFile(jsonFile, true, true);
             Flush();
         }
+
         internal class ChangeAction
         {
             internal bool IsLoading { get; set; }

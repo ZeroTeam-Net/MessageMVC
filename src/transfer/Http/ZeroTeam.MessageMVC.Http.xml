@@ -133,18 +133,6 @@
                 结束时间
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpMessage.CheckRequest(Microsoft.AspNetCore.Http.HttpContext)">
-            <summary>
-                调用检查
-            </summary>
-            <param name="context"></param>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpMessage.CheckApiRoute">
-            <summary>
-                检查调用内容
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:ZeroTeam.MessageMVC.Http.HttpMessage.GetArgument(System.Int32,System.Int32,ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Type)">
             <summary>
             取参数值
@@ -193,15 +181,42 @@
             <param name="scope">参数范围</param>
             <returns>值</returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpMessage.PrepareInline">
-            <summary>
-            准备在线(框架内调用)
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:ZeroTeam.MessageMVC.Http.HttpMessage.ZeroTeam#MessageMVC#Messages#IInlineMessage#TraceInfo">
             <summary>
             跟踪消息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Http.HttpMessageReader">
+            <summary>
+            Http消息体读取器
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Http.HttpMessageReader.HttpContext">
+            <summary>
+                请求的内容
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Http.HttpMessageReader.Message">
+            <summary>
+            消息体
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpMessageReader.CheckRequest(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+                调用检查
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpMessageReader.CheckApiRoute">
+            <summary>
+                检查调用内容
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpMessageReader.Prepare">
+            <summary>
+            准备在线(框架内调用)
             </summary>
             <returns></returns>
         </member>
@@ -218,11 +233,6 @@
         <member name="M:ZeroTeam.MessageMVC.Http.HttpProtocol.CrosCall(Microsoft.AspNetCore.Http.HttpResponse)">
             <summary>
                 跨域支持
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpProtocol.FormatResponse(Microsoft.AspNetCore.Http.HttpRequest,Microsoft.AspNetCore.Http.HttpResponse)">
-            <summary>
-                返回类型
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Http.HttpReceiver">

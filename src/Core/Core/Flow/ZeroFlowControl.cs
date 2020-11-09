@@ -198,6 +198,7 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
         {
             return name != null && Services.TryGetValue(name, out var service) ? service : null;
         }
+
         /// <summary>
         ///     对象活动时登记
         /// </summary>

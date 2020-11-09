@@ -13,10 +13,10 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         /// 测试接口
         /// </summary>
         [Route("hello"), ApiOption(ApiOption.CustomContent)]
-        public async Task<IApiResult<string>> Hello(string abc)
+        public async Task<IApiResult<string>> Hello()
         {
-            var (jsons, state) = await MessagePoster.CallAsync("appManage", "org/v1/org/tree", null);
-            return ApiResultHelper.Helper.Succees($"hello1:{jsons}");
+            var (res, state) = await MessagePoster.CallApiAsync<string>("test2", "test");
+            return ApiResultHelper.Helper.Succees($"hello1:{res.ResultData}");
         }
         /// <summary>
         /// 测试接口
@@ -47,6 +47,14 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
             GlobalContext.Current.Task.SetCanceled();
         }
 
+        /// <summary>
+        /// 测试接口
+        /// </summary>
+        [Route("test"), ApiOption(ApiOption.CustomContent)]
+        public IApiResult<string> Exception()
+        {
+            return ApiResultHelper.Succees("测试接口");
+        }
         /// <summary>
         /// 测试接口
         /// </summary>

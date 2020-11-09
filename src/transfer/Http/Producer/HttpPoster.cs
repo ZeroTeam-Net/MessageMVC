@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
 
@@ -32,15 +33,14 @@ namespace ZeroTeam.MessageMVC.Http
             {
                 name = HttpClientOption.DefaultName;
             }
-            IMessageResult result;
-            FlowTracer.BeginStepMonitor("[HttpPoster.Post]");
+            FlowTracer.BeginDebugStepMonitor("[HttpPoster.Post]");
             try
             {
                 message.ArgumentOffline();
                 var client = HttpClientOption.HttpClientFactory.CreateClient(name);
                 if (client.BaseAddress == null)
                 {
-                    FlowTracer.MonitorInfomation(() => $"[{message.Topic}/{message.Title}]服务未注册");
+                    FlowTracer.MonitorError(() => $"[{message.Topic}/{message.Title}]服务未注册");
                     message.State = MessageState.Unhandled;
                     return null;//直接使用状态
                 }
@@ -51,66 +51,48 @@ namespace ZeroTeam.MessageMVC.Http
                     RequestUri = new Uri($"{client.BaseAddress }/{message.Topic}/{message.Title}"),
                     Method = HttpMethod.Post
                 };
-                requestMessage.Headers.Add("zeroID", message.ID);
-                if (message.Trace != null)
-                {
-                    requestMessage.Headers.Add("zeroTrace", SmartSerializer.ToInnerString(message.Trace));
-                    message.Trace.CallMachine = null;
-                }
-                if (!string.IsNullOrEmpty(message.Content))
-                    requestMessage.Content = new StringContent(message.Content);
-                var msg = (MessageItem)message;
-                using var response = await client.SendAsync(requestMessage);
-                if (requestMessage.Content != null)
-                    requestMessage.Content.Dispose();
-                var json = await response.Content.ReadAsStringAsync();
-                FlowTracer.MonitorDetails(() => $"StatusCode : {response.StatusCode}");
 
-                if (string.IsNullOrWhiteSpace(json))
+                requestMessage.Headers.Add("x-zmvc-ver", message.ID);
+
+                using var content = new StringContent(SmartSerializer.SerializeRequest(message));
+                requestMessage.Content = content;
+                using var response = await client.SendAsync(requestMessage);
+                if (response.Headers.TryGetValues("x-zmvc-state", out var state))
                 {
-                    result = new MessageResult
-                    {
-                        ID = message.ID,
-                        State = HttpCodeToMessageState(response.StatusCode)
-                    };
-                }
-                else if (SmartSerializer.TryDeserialize<MessageResult>(json, out var re2))
-                {
-                    result = re2;
-                    re2.DataState = MessageDataState.ResultOffline;
-                    if (response.Headers.TryGetValues("zeroState", out var state))
-                    {
-                        result.State = Enum.Parse<MessageState>(state.FirstOrDefault());
-                    }
+                    message.State = Enum.Parse<MessageState>(state.First());
                 }
                 else
                 {
-                    result = new MessageResult
-                    {
-                        ID = message.ID,
-                        State = HttpCodeToMessageState(response.StatusCode)
-                    };
+                    message.State = MessageState.NetworkError;
                 }
-                message.State = result.State;
-                FlowTracer.MonitorDetails(() => $"State : {result.State} Result : {result.Result}");
-                return result;
+                message.Result = await response.Content.ReadAsStringAsync();
+                if (response.StatusCode == HttpStatusCode.NotFound ||
+                    response.StatusCode == HttpStatusCode.ServiceUnavailable ||
+                    response.StatusCode == HttpStatusCode.BadGateway)
+                {
+                    message.State = HttpCodeToMessageState(response.StatusCode);
+                    message.Result = null;
+                }
+                if (string.IsNullOrEmpty(message.Result))
+                    message.OfflineResult();
+                message.DataState |= MessageDataState.ResultOffline;
+                FlowTracer.MonitorDetails(() => $"StatusCode : {response.StatusCode} | State : {message.State} | Result : {message.Result}");
             }
             catch (HttpRequestException ex)
             {
-                FlowTracer.MonitorInfomation(() => $"发生异常.{ex.Message}");
+                FlowTracer.MonitorError(() => $"发生异常.{ex.Message}");
                 message.State = MessageState.Unsend;
-                return null;//直接使用状态
             }
             catch (Exception ex)
             {
-                FlowTracer.MonitorInfomation(() => $"发生异常.{ex.Message}");
+                FlowTracer.MonitorError(() => $"发生异常.{ex.Message}");
                 message.State = MessageState.NetworkError;
-                return null;//直接使用状态
             }
             finally
             {
-                FlowTracer.EndStepMonitor();
+                FlowTracer.EndDebugStepMonitor();
             }
+            return null;//直接使用状态
         }
 
         static MessageState HttpCodeToMessageState(HttpStatusCode httpStatusCode)
@@ -186,12 +168,12 @@ namespace ZeroTeam.MessageMVC.Http
             }
             catch (HttpRequestException ex)
             {
-                FlowTracer.MonitorInfomation(() => $"发生异常.{ex.Message}");
+                FlowTracer.MonitorError(() => $"发生异常.{ex.Message}");
                 return (MessageState.Unsend, null);
             }
             catch (Exception ex)
             {
-                FlowTracer.MonitorInfomation(() => $"发生异常.{ex.Message}");
+                FlowTracer.MonitorError(() => $"发生异常.{ex.Message}");
                 return (MessageState.NetworkError, null);
             }
             finally
@@ -233,12 +215,12 @@ namespace ZeroTeam.MessageMVC.Http
             }
             catch (HttpRequestException ex)
             {
-                FlowTracer.MonitorInfomation(() => $"发生异常.{ex.Message}");
+                FlowTracer.MonitorError(() => $"发生异常.{ex.Message}");
                 return (MessageState.Unsend, null);
             }
             catch (Exception ex)
             {
-                FlowTracer.MonitorInfomation(() => $"发生异常.{ex.Message}");
+                FlowTracer.MonitorError(() => $"发生异常.{ex.Message}");
                 return (MessageState.NetworkError, null);
             }
             finally
@@ -277,12 +259,12 @@ namespace ZeroTeam.MessageMVC.Http
             }
             catch (HttpRequestException ex)
             {
-                FlowTracer.MonitorInfomation(() => $"发生异常.{ex.Message}");
+                FlowTracer.MonitorError(() => $"发生异常.{ex.Message}");
                 return (MessageState.Unsend, null);
             }
             catch (Exception ex)
             {
-                FlowTracer.MonitorInfomation(() => $"发生异常.{ex.Message}");
+                FlowTracer.MonitorError(() => $"发生异常.{ex.Message}");
                 return (MessageState.NetworkError, null);
             }
             finally

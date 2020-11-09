@@ -1,12 +1,12 @@
-using Agebull.Common.Ioc;
-using Agebull.Common.Logging;
-using Microsoft.ApplicationInsights.AspNetCore.Extensions;
-using Microsoft.AspNetCore.Http;
 using System;
 using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Agebull.Common.Ioc;
+using Agebull.Common.Logging;
+using Microsoft.AspNetCore.Http;
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.Services;
 using ZeroTeam.MessageMVC.ZeroApis;
@@ -39,23 +39,21 @@ namespace ZeroTeam.MessageMVC.Http
                 return;
             }
             HttpProtocol.CrosCall(context.Response);
-            HttpProtocol.FormatResponse(context.Request, context.Response);
             try
             {
-
                 //命令
-                var data = new HttpMessage();
+                var reader = new HttpMessageReader();
+                var (success, message) = await reader.CheckRequest(context);
                 //开始调用
-                if (data.CheckRequest(context))
+                if (success)
                 {
-                    var service = ZeroFlowControl.GetService(data.ServiceName) ??
-                         new ZeroService
-                         {
-                             ServiceName = "***",
-                             Receiver = new HttpReceiver(),
-                             Serialize = DependencyHelper.GetService<ISerializeProxy>()
-                         };
-                    await MessageProcessor.OnMessagePush(service, data, false, context);
+                    var service = ZeroFlowControl.GetService(message.ServiceName) ?? new ZeroService
+                    {
+                        ServiceName = "***",
+                        Receiver = new HttpReceiver(),
+                        Serialize = DependencyHelper.GetService<ISerializeProxy>()
+                    };
+                    await MessageProcessor.OnMessagePush(service, message, false, context);
                 }
                 else
                 {
@@ -121,17 +119,13 @@ namespace ZeroTeam.MessageMVC.Http
             }
             // 写入返回
             message.OfflineResult();
-            if (message.IsOutAccess)
+            context.Response.ContentType = "application/json; charset=UTF-8";
+            if (!message.IsOutAccess)
             {
-                await context.Response.WriteAsync(message.Result ?? "", Encoding.UTF8);
+                context.Response.Headers.Add("x-zmvc-id", message.ID);
+                context.Response.Headers.Add("x-zmvc-state", message.State.ToString());
             }
-            else
-            {
-                await context.Response.WriteAsync(message.ToJson(), Encoding.UTF8);
-                context.Response.Headers.Add("zeroID", message.ID);
-                //context.Response.Headers.Add("zeroTrace", SmartSerializer.ToInnerString(message.Trace));
-                context.Response.Headers.Add("zeroState", message.State.ToString());
-            }
+            await context.Response.WriteAsync(message.Result ?? "", Encoding.UTF8);
             return true;
         }
         #endregion

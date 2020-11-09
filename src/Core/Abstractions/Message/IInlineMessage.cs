@@ -384,7 +384,6 @@ namespace ZeroTeam.MessageMVC.Messages
             {
                 Title = Title,
                 Topic = Topic,
-                Argument = Argument,
                 ArgumentData = ArgumentData,
                 Content = Content,
                 Dictionary = Dictionary,
@@ -444,7 +443,6 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 接口名称,即Title
         /// </summary>
         string ApiName => Title;
-
 
         /// <summary>
         /// 接口参数,即Content

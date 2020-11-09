@@ -29,6 +29,28 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <remarks>
         /// 基于内部全部使用JSON传输的规则,如序列化器不存在,则为JSON
         /// </remarks>
+        public static string SerializeRequest(IMessageItem message)
+        {
+            if (message == null)
+                return null;
+            return JsonSerializer.Serialize(new MessageItem
+            {
+                ID = message.ID,
+                Topic = message.Topic,
+                Title = message.Title,
+                Content = message.Content,
+                Trace = message.Trace
+            });
+        }
+
+        /// <summary>
+        /// 自动序列化()
+        /// </summary>
+        /// <param name="message">消息</param>
+        /// <returns>字符</returns>
+        /// <remarks>
+        /// 基于内部全部使用JSON传输的规则,如序列化器不存在,则为JSON
+        /// </remarks>
         public static string SerializeMessage(IMessageItem message)
         {
             if (message == null)
