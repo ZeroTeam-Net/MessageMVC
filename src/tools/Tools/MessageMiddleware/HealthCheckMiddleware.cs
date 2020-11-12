@@ -53,7 +53,7 @@ namespace ZeroTeam.MessageMVC.Tools
             var res = new NameValue<Dictionary<string, HealthInfo>>
             {
                 Name = ZeroAppOption.Instance.ServiceName,
-                Value = new Dictionary<string, HealthInfo>()
+                Value = new Dictionary<string, HealthInfo>(StringComparer.OrdinalIgnoreCase)
             };
             res.Value.Add("ApiCollection", new HealthInfo
             {

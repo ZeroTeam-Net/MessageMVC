@@ -174,7 +174,7 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
         /// <summary>
         /// 已注册的对象
         /// </summary>
-        public static readonly ConcurrentDictionary<string, IService> Services = new ConcurrentDictionary<string, IService>();
+        public static readonly ConcurrentDictionary<string, IService> Services = new ConcurrentDictionary<string, IService>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// 活动对象(执行中)

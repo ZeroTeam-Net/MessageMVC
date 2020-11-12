@@ -18,7 +18,7 @@ namespace Agebull.Common.Logging
         /// </summary>
         static FlowTracer()
         {
-            ConfigurationHelper.RegistOnChange("Logging:LogRecorder", ReadConfig, true);
+            ConfigurationHelper.RegistOnChange("Logging", ReadConfig, true);
         }
 
         /// <summary>
@@ -85,6 +85,7 @@ namespace Agebull.Common.Logging
             item.BeginMonitor(title);
             DependencyScope.Dependency.Annex(item);
         }
+
         /// <summary>
         /// 开始监视日志步骤
         /// </summary>

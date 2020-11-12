@@ -1,5 +1,7 @@
 ﻿using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
+using Agebull.EntityModel.Common;
+using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.Services;
@@ -32,40 +34,36 @@ namespace ZeroTeam.MessageMVC.Context
         /// <returns></returns>
         Task<bool> IMessageMiddleware.Prepare(IService service, IInlineMessage message, object tag)
         {
-            IZeroContext context;
-            message.Trace ??= TraceInfo.New(message.ID); 
-            message.Trace.LocalId = message.ID;
+            message.Trace ??= TraceInfo.New(message.ID);
             if (!message.IsOutAccess && message.Trace.ContentInfo.HasFlag(TraceInfoType.LinkTrace))
             {
                 message.Trace.LocalApp = $"{ZeroAppOption.Instance.AppName}({ZeroAppOption.Instance.AppVersion})";
                 message.Trace.LocalMachine = $"{ZeroAppOption.Instance.ServiceName}({ZeroAppOption.Instance.LocalIpAddress})";
             }
-            if (message.Trace.Context != null)
-            {
-                context = GlobalContext.Reset(message);
-                message.Trace.Context = null;
-            }
-            else
-            {
-                context = GlobalContext.Reset();
-                context.Message = message;
-            }
+            var context = GlobalContext.Reset(message);
+            IUser user = null;
             if (message.IsOutAccess)
             {
-                var resolver = DependencyHelper.GetService<ITokenResolver>();
-                if (resolver != null)
+                try
                 {
-                    context.User = resolver.TokenToUser(message.Trace.Token);
+                    var resolver = DependencyHelper.GetService<ITokenResolver>();
+                    if (resolver != null)
+                    {
+                        user = resolver.TokenToUser(message.Trace.Token);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    FlowTracer.MonitorInfomation(() => $"令牌还原失败 => {message.Trace.Token}\n{ex}");
                 }
             }
-            context.User ??= GlobalContext.Anymouse;
-            context.Status ??= new ContextStatus();
-            context.Option ??= new System.Collections.Generic.Dictionary<string, string>();
-            if (ToolsOption.Instance.EnableLinkTrace)
+            else if (message.Context != null && message.Context.TryGetValue("User", out var json))
             {
-                context.Option.Add("EnableLinkTrace", "true");
+                user = new UserInfo();
+                user.FormJson(json);
             }
-            FlowTracer.MonitorInfomation(()=> $"User => {context.User?.ToJson()}");
+            DependencyScope.Dependency.Annex(user);
+            FlowTracer.MonitorDetails(() => $"User => {user?.ToJson()}");
             return Task.FromResult(true);
         }
     }

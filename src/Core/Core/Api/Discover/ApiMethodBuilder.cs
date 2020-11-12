@@ -274,10 +274,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 Context(ilGenerator);
             }
-            else if (type == typeof(IUser))
-            {
-                User(ilGenerator);
-            }
+            //else if (type == typeof(IUser))
+            //{
+            //    User(ilGenerator);
+            //}
             else if(toIoc)
             {
                 IocCreate(ilGenerator, type);
@@ -360,11 +360,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             }
         }
 
-        private static void User(ILGenerator ilGenerator)
-        {
-            var method = typeof(GlobalContext).GetProperty(nameof(GlobalContext.User)).GetGetMethod();
-            ilGenerator.Emit(OpCodes.Call, method);
-        }
+        //private static void User(ILGenerator ilGenerator)
+        //{
+        //    var method = typeof(GlobalContext).GetProperty(nameof(GlobalContext.User)).GetGetMethod();
+        //    ilGenerator.Emit(OpCodes.Call, method);
+        //}
 
         private static void ServiceProvider(ILGenerator ilGenerator)
         {

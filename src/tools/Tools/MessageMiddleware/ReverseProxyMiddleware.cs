@@ -32,12 +32,12 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <returns></returns>
         async Task IMessageMiddleware.Handle(IService service, IInlineMessage message, object tag, Func<Task> next)
         {
-            if (service.ServiceName == message.Topic)
+            if (string.Equals(service.ServiceName, message.Topic, StringComparison.OrdinalIgnoreCase))
             {
                 await next();
                 return;
             }
-            FlowTracer.BeginStepMonitor($"通过反向代理调用[{message.ServiceName}/{message.ApiName}]");
+            FlowTracer.BeginStepMonitor("[反向代理]");
             try
             {
                 message.ResultCreater ??= ApiResultHelper.State;

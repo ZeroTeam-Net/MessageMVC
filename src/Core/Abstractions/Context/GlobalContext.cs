@@ -20,6 +20,22 @@ namespace ZeroTeam.MessageMVC.Context
         public static IZeroContext Current => DependencyScope.Dependency.TryGetDependency(DependencyHelper.GetService<IZeroContext>);
 
         /// <summary>
+        ///     当前线程的上下文中的对象
+        /// </summary>
+        public static T Get<T>() where T : class
+        {
+            return DependencyScope.Dependency.Dependency<T>();
+        }
+
+        /// <summary>
+        ///     当前线程的上下文中的对象
+        /// </summary>
+        public static T Set<T>(T value) where T : class
+        {
+            return DependencyScope.Dependency.TryAnnex<T>(value);
+        }
+
+        /// <summary>
         ///     当前线程的调用上下文(无懒构造)
         /// </summary>
         public static IZeroContext CurrentNoLazy => DependencyScope.Dependency.Dependency<IZeroContext>();
@@ -31,41 +47,20 @@ namespace ZeroTeam.MessageMVC.Context
         {
             var ctx = DependencyHelper.GetService<IZeroContext>();
             ctx.Message = message;
-            
-            ctx.User.FormJson(message.Trace?.Context?.UserJson);
-            ctx.Option = message.Trace?.Context?.Option;
+            if (message.Context != null)
+            {
+                foreach (var kv in message.Context)
+                {
+                    ctx.Option[kv.Key] = kv.Value;
+                }
+            }
             DependencyScope.Dependency.Annex(ctx);
             return ctx;
         }
 
-        /// <summary>
-        ///     内部构造
-        /// </summary>
-        public static IZeroContext Reset() => DependencyScope.Dependency.Annex(DependencyHelper.GetService<IZeroContext>());
-
-        /// <summary>
-        ///     置空并注销当前上下文
-        /// </summary>
-        public static void SetEmpty() => DependencyScope.Dependency.Remove<IZeroContext>();
-
-        #endregion
-
-        #region 用户
-        /// <summary>
-        ///     当前线程的调用上下文
-        /// </summary>
-        public static IUser User => Current.User;
-
-        /// <summary>
-        /// 表示一个匿名用户
-        /// </summary>
-        public static IUser Anymouse { get; } = DependencyHelper.GetService<IUser>();
-
         #endregion
 
         #region 上下文配置
-
-        static bool enableLinkTrace;
 
         /// <summary>
         ///     启用调用链跟踪,默认为AppOption中的设置, 可通过远程传递而扩散
@@ -73,8 +68,12 @@ namespace ZeroTeam.MessageMVC.Context
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public static bool EnableLinkTrace
         {
-            set => enableLinkTrace = value;
-            get => enableLinkTrace || IsOptionTrue("EnableLinkTrace");
+            get
+            {
+                var lazy = CurrentNoLazy;
+                return ZeroAppOption.Instance.TraceInfo.HasFlag(TraceInfoType.LinkTrace) ||
+                (lazy != null && lazy.Trace.ContentInfo.HasFlag(TraceInfoType.LinkTrace));
+            }
         }
 
         /// <summary>

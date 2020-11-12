@@ -26,7 +26,6 @@ namespace ZeroTeam.MessageMVC
         {
             //IZeroContext构造
             services.TryAddScoped<IZeroContext, ZeroContext>();
-            services.TryAddTransient<IUser, UserInfo>();
             //序列化工具
             services.TryAddTransient<ISerializeProxy, NewtonJsonSerializeProxy>();
             services.TryAddTransient<IJsonSerializeProxy, NewtonJsonSerializeProxy>();

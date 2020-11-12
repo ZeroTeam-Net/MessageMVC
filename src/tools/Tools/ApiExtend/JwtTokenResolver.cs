@@ -21,10 +21,10 @@ namespace ZeroTeam.MessageMVC.Tools
             if (!success)
                 return null;
 
-            var user = new UserInfo();
+            var user = DependencyHelper.GetService<IUser>();
             foreach (var item in claims)
             {
-                user.SetClaim(item.Type, item.Value);
+                user[item.Type]= item.Value;
             }
             return user;
         }

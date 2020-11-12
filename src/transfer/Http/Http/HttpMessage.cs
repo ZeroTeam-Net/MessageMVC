@@ -40,7 +40,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// 字典参数
         /// </summary>
         [JsonIgnore]
-        public Dictionary<string, string> Dictionary { get; set; }
+        public Dictionary<string, string> ExtensionDictionary { get; set; }
 
         /// <summary>
         /// 数据状态
@@ -82,13 +82,11 @@ namespace ZeroTeam.MessageMVC.Http
         [JsonIgnore]
         public ISerializeProxy ResultSerializer { get; set; }
 
-
         /// <summary>
         ///     返回值构造对象
         /// </summary>
         [JsonIgnore]
         public Func<int, string, object> ResultCreater { get; set; }
-
 
         #endregion
 
@@ -140,7 +138,7 @@ namespace ZeroTeam.MessageMVC.Http
         ///     请求的内容
         /// </summary>
         [JsonIgnore]
-        public string   HttpContent { get; set; }
+        public string HttpContent { get; set; }
 
         /// <summary>
         ///     请求的表单
@@ -152,7 +150,7 @@ namespace ZeroTeam.MessageMVC.Http
         ///     请求的表单
         /// </summary>
         [JsonIgnore]
-        public Dictionary<string, string> HttpForms { get => Dictionary; set => Dictionary = value; }
+        public Dictionary<string, string> HttpForms { get => ExtensionDictionary; set => ExtensionDictionary = value; }
 
         /// <summary>
         ///     请求的内容字典
@@ -220,9 +218,9 @@ namespace ZeroTeam.MessageMVC.Http
             }
             if (!string.IsNullOrEmpty(HttpContent))
                 return HttpContent;
-            if (Dictionary.Count > 0)
+            if (ExtensionDictionary.Count > 0)
             {
-                return serialize.ToString(Dictionary);
+                return serialize.ToString(ExtensionDictionary);
             }
             return null;
         }
@@ -282,7 +280,7 @@ namespace ZeroTeam.MessageMVC.Http
                         return af?.ToString();
                     return null;
             }
-            if (Dictionary.TryGetValue(name, out var fm))
+            if (ExtensionDictionary.TryGetValue(name, out var fm))
                 return fm?.ToString();
             if (HttpForms.TryGetValue(name, out fm))
                 return fm?.ToString();
@@ -363,8 +361,8 @@ namespace ZeroTeam.MessageMVC.Http
 
             if (HttpArguments != null && HttpArguments.Count > 0)
                 code.AppendLine($"Arguments:{JsonConvert.SerializeObject(HttpArguments, Formatting.Indented)}");
-            if (Dictionary != null && Dictionary.Count > 0)
-                code.AppendLine($"Dictionary:{JsonConvert.SerializeObject(Dictionary, Formatting.Indented)}");
+            if (ExtensionDictionary != null && ExtensionDictionary.Count > 0)
+                code.AppendLine($"Dictionary:{JsonConvert.SerializeObject(ExtensionDictionary, Formatting.Indented)}");
             if (HttpContent != null)
                 code.AppendLine($"Content:{HttpContent}");
 

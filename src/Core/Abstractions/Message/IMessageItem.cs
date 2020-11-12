@@ -1,4 +1,5 @@
-﻿using ZeroTeam.MessageMVC.Context;
+﻿using System.Collections.Generic;
+using ZeroTeam.MessageMVC.Context;
 
 namespace ZeroTeam.MessageMVC.Messages
 {
@@ -30,6 +31,11 @@ namespace ZeroTeam.MessageMVC.Messages
         string Content { get; set; }
 
         /// <summary>
+        /// 扩展信息（固定为字典）
+        /// </summary>
+        string Extension { get; set; }
+
+        /// <summary>
         /// 处理结果,对应状态的解释信息
         /// </summary>
         /// <remarks>
@@ -52,6 +58,11 @@ namespace ZeroTeam.MessageMVC.Messages
         ///     跟踪信息
         /// </summary>
         TraceInfo Trace { get; set; }
+
+        /// <summary>
+        /// 上下文信息
+        /// </summary>
+        Dictionary<string, string> Context { get; set; }
 
         /*// <summary>
         /// 生产者信息

@@ -30,7 +30,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// 站点文档信息
         /// </summary>
-        public Dictionary<string, ServiceInfo> ServiceInfos = new Dictionary<string, ServiceInfo>();
+        public readonly Dictionary<string, ServiceInfo> ServiceInfos = new Dictionary<string, ServiceInfo>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// 构造

@@ -44,7 +44,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
         /// <summary>
         ///     发现的文档集合
         /// </summary>
-        public Dictionary<string, ServiceDocument> Documents = new Dictionary<string, ServiceDocument>();
+        public Dictionary<string, ServiceDocument> Documents = new Dictionary<string, ServiceDocument>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         ///     检查重名情况

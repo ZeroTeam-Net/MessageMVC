@@ -36,7 +36,7 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <returns></returns>
         Task<bool> IMessageMiddleware.Prepare(IService service, IInlineMessage message, object tag)
         {
-            if (FlowTracer.LogMonitorDebug )
+            if (FlowTracer.LogMonitorDebug)
                 FlowTracer.MonitorDetails(message.TraceInfo);
             else
                 FlowTracer.MonitorInfomation($"Argument => {message.Argument}");
@@ -60,7 +60,7 @@ namespace ZeroTeam.MessageMVC.Tools
                 if (root != null)
                     DependencyScope.Logger.TraceMonitor(root);
             }
-            if (!ToolsOption.Instance.EnableMarkPoint || 
+            if (!ToolsOption.Instance.EnableMarkPoint ||
                 (message.Topic == ToolsOption.Instance.MarkPointName && message.ApiName == "post"))
                 return;
             var link = new TraceLinkMessage
@@ -74,17 +74,10 @@ namespace ZeroTeam.MessageMVC.Tools
                     Topic = message.Topic,
                     Title = message.Title,
                     Content = message.Content,
-                    Result = message.Result
+                    Result = message.Result,
+                    Context = GlobalContext.CurrentNoLazy?.ToTransfer()
                 }
             };
-            if (link.Trace != null)
-            {
-                link.Trace.Context = new StaticContext
-                {
-                    Option = GlobalContext.CurrentNoLazy?.Option,
-                    UserJson = GlobalContext.CurrentNoLazy?.User.ToJson(),
-                };
-            }
             var json = SmartSerializer.ToString(link);
             await MessagePoster.PublishAsync(ToolsOption.Instance.MarkPointName, "post", json);
         }

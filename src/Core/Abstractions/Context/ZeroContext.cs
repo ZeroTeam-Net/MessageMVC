@@ -18,9 +18,8 @@ namespace ZeroTeam.MessageMVC.Context
         /// </summary>
         public ZeroContext()
         {
-            User = DependencyHelper.GetService<IUser>();//防止反序列化失败
             Status = new ContextStatus();
-            Option = new Dictionary<string, string>();
+            Option = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -34,16 +33,10 @@ namespace ZeroTeam.MessageMVC.Context
         public IDisposable DependencyScope { get; set; }
 
         /// <summary>
-        ///     当前调用的客户信息
-        /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public IUser User { get; set; }
-
-        /// <summary>
         /// 上下文配置
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public Dictionary<string, string> Option { get; set; }
+        public Dictionary<string, string> Option { get; }
 
         /// <summary>
         /// 当前消息
@@ -61,13 +54,17 @@ namespace ZeroTeam.MessageMVC.Context
         /// 全局状态
         /// </summary>
         [System.Text.Json.Serialization.JsonIgnore]
-        public ContextStatus Status { get; set; }
-
+        public ContextStatus Status { get; }
 
         /// <summary>
         /// 当前任务，用于提前返回
         /// </summary>
         [System.Text.Json.Serialization.JsonIgnore]
         public ActionTask Task { get; set; }
+
+        /// <summary>
+        /// 转为可传输的对象
+        /// </summary>
+        public virtual Dictionary<string, string> ToTransfer() => Option;
     }
 }

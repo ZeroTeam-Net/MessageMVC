@@ -111,7 +111,7 @@ namespace ZeroTeam.MessageMVC
             };
             Instance.CopyByHase(ConfigurationHelper.Get<ZeroAppConfig>("MessageMVC:Option"));
             if (Instance.TraceInfo == TraceInfoType.None)
-                Instance.TraceInfo = TraceInfoType.All;
+                Instance.TraceInfo = TraceInfoType.LinkTrace | TraceInfoType.App;
         }
     }
 }

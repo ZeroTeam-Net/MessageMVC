@@ -57,7 +57,7 @@ namespace ZeroTeam.MessageMVC.Web
         /// <summary>
         /// 所有客户端连接实例
         /// </summary>
-        internal static Dictionary<string, List<WebSocketClient>> Handlers = new Dictionary<string, List<WebSocketClient>>();
+        internal static Dictionary<string, List<WebSocketClient>> Handlers = new Dictionary<string, List<WebSocketClient>>(StringComparer.OrdinalIgnoreCase);
 
 
         private static WebSocketConfig _config;
@@ -163,7 +163,7 @@ namespace ZeroTeam.MessageMVC.Web
         /// <summary>
         /// 最后一条消息
         /// </summary>
-        static readonly Dictionary<string, IMessageItem> Last = new Dictionary<string, IMessageItem>();
+        static readonly Dictionary<string, IMessageItem> Last = new Dictionary<string, IMessageItem>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// 发出广播

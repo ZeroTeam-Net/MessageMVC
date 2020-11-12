@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Agebull.Common.Logging;
+using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
@@ -16,6 +17,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         public async Task<IApiResult<string>> Hello()
         {
             var (res, state) = await MessagePoster.CallApiAsync<string>("test2", "test");
+            FlowTracer.MonitorInfomation("hello");
             return ApiResultHelper.Helper.Succees($"hello1:{res.ResultData}");
         }
         /// <summary>

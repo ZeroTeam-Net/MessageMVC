@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using Agebull.Common.Ioc;
+using Agebull.Common.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using ZeroTeam.MessageMVC.Messages;
@@ -64,6 +66,16 @@ namespace ZeroTeam.MessageMVC.Context
         }
 
         /// <summary>
+        ///     角色集合
+        /// </summary>
+        [JsonIgnore]
+        public string RoleIds
+        {
+            get => claims.TryGetValue(ZeroTeamJwtClaim.RoleIds, out var val) ? val : null;
+            set => claims[ZeroTeamJwtClaim.RoleIds] = value;
+        }
+
+        /// <summary>
         ///     用户组织名称
         /// </summary>
         [JsonIgnore]
@@ -73,17 +85,38 @@ namespace ZeroTeam.MessageMVC.Context
             set => claims[ZeroTeamJwtClaim.Organization] = value;
         }
 
+        /// <summary>
+        /// JWT信息字典
+        /// </summary>
         [JsonIgnore]
-        readonly Dictionary<string, string> claims = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        protected readonly Dictionary<string, string> claims = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
-        /// 设置信息
+        /// 快捷读写字典
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        public void SetClaim(string key, string value)
+        /// <param name="type"></param>
+        public string this[string type]
         {
-            claims.TryAdd(key, value);
+            get
+            {
+                return claims.TryGetValue(type, out var value) ? value : null;
+            }
+            set
+            {
+                if (!string.IsNullOrEmpty(type))
+                    claims[type] = value;
+            }
+        }
+
+        /// <summary>
+        /// 设置节点名称
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="value"></param>
+        public void SetClaim(string type, string value)
+        {
+            if (!string.IsNullOrEmpty(type))
+                claims[type] = value;
         }
 
         /// <summary>
@@ -95,20 +128,22 @@ namespace ZeroTeam.MessageMVC.Context
             if (string.IsNullOrEmpty(json))
                 return;
             claims.Clear();
-            var dest = SmartSerializer.FromInnerString<Dictionary<string, string>>(json);
-            if (dest != null)
+            try
             {
-                foreach (var claim in dest)
+                var dest = SmartSerializer.FromInnerString<Dictionary<string, string>>(json);
+                if (dest != null)
                 {
-                    claims.TryAdd(claim.Key, claim.Value);
+                    foreach (var claim in dest)
+                    {
+                        claims.TryAdd(claim.Key, claim.Value);
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                DependencyScope.Logger.Exception(ex, "UserInfo.FormJson\n{ex}", ex);
+            }
         }
-
-        /// <summary>
-        ///     取得扩展节点名称
-        /// </summary>
-        string IUser.GetClaim(string name) => claims.TryGetValue(name, out var val) ? val : null;
 
         /// <summary>
         /// 序列化为JSON

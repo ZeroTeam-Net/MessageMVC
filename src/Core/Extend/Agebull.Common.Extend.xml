@@ -2552,7 +2552,12 @@
         </member>
         <member name="P:Agebull.Common.Ioc.DependencyScope.LocalValue">
             <summary>
-            析构方法
+            内容
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Ioc.DependencyScope.Value">
+            <summary>
+            内容
             </summary>
         </member>
         <member name="P:Agebull.Common.Ioc.DependencyScope.Name">

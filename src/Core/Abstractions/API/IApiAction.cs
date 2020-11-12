@@ -91,4 +91,18 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         void Initialize();
     }
+
+    /// <summary>
+    /// 方法执行检查器
+    /// </summary>
+    public interface IApiActionChecker
+    {
+        /// <summary>
+        /// 检查接口是否可执行
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        bool Check(IApiAction action, IInlineMessage message);
+    }
 }

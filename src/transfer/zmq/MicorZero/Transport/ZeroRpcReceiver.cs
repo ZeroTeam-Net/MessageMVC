@@ -221,7 +221,7 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                     return Task.CompletedTask;
 
             }
-            if (e.EventConfig?.StationName != Service.ServiceName)
+            if (!string.Equals(Service.ServiceName, e.EventConfig?.StationName, StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }

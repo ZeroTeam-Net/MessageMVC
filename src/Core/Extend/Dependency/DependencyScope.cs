@@ -11,18 +11,21 @@ namespace Agebull.Common.Ioc
     /// </summary>
     public class DependencyScope : IDisposable
     {
+        bool isNew;
         /// <summary>
         /// 生成一个范围
         /// </summary>
         /// <returns></returns>
         private DependencyScope(string name = null)
         {
-            Local.Value = new ScopeData
-            {
-                Name = name ?? "Scope",
-                Scope = this,
-                ServiceScope = DependencyHelper.ServiceScopeFactory.CreateScope()
-            };
+            isNew = Local.Value == null;
+            if (isNew)
+                Local.Value = new ScopeData
+                {
+                    Name = name ?? "Scope",
+                    Scope = this,
+                    ServiceScope = DependencyHelper.ServiceScopeFactory.CreateScope()
+                };
         }
 
         /// <summary>
@@ -40,10 +43,18 @@ namespace Agebull.Common.Ioc
         public static readonly AsyncLocal<ScopeData> Local = new AsyncLocal<ScopeData>();
 
         /// <summary>
-        /// 析构方法
+        /// 内容
         /// </summary>
-        static ScopeData LocalValue => Local.Value ??= new ScopeData { Name = "Scope" };
+        public static ScopeData LocalValue => Local.Value ??= new ScopeData { Name = "Scope" };
 
+        /// <summary>
+        /// 内容
+        /// </summary>
+        public static ScopeData Value
+        {
+            get => Local.Value;
+            set => Local.Value = value;
+        }
 
         /// <summary>
         /// 范围名称
@@ -91,6 +102,8 @@ namespace Agebull.Common.Ioc
 
         void DoDisposeAction()
         {
+            if (!isNew)
+                return;
             if (!(Local.Value is ScopeData data))
                 return;
             Local.Value = null;

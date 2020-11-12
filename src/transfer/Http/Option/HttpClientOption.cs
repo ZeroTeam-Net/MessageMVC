@@ -39,12 +39,12 @@ namespace ZeroTeam.MessageMVC.Http
         };
 
 
-        internal static Dictionary<string, HttpClientItem> Options = new Dictionary<string, HttpClientItem>();
+        internal static Dictionary<string, HttpClientItem> Options = new Dictionary<string, HttpClientItem>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// 服务到HttpClientName的查找表.
         /// </summary>
-        internal static readonly Dictionary<string, string> ServiceMap = new Dictionary<string, string>();
+        internal static readonly Dictionary<string, string> ServiceMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         internal static IHttpClientFactory HttpClientFactory;
 

@@ -1,6 +1,7 @@
 ﻿using Agebull.Common.Configuration;
 using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
+using Agebull.EntityModel.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -217,7 +218,7 @@ namespace ZeroTeam.MessageMVC
         /// <returns>返回值,如果未进行离线交换message返回为空,此时请检查state</returns>
         public static async Task<IInlineMessage> Post(IMessageItem message, bool autoOffline = true, bool defPoster = true)
         {
-            FlowTracer.BeginStepMonitor(()=>$"{message.Topic}/{message.Title}");
+            FlowTracer.BeginStepMonitor(() => $"{message.Topic}/{message.Title}");
             try
             {
                 if (message == null || string.IsNullOrEmpty(message.Topic) || string.IsNullOrEmpty(message.Title))
@@ -271,9 +272,25 @@ namespace ZeroTeam.MessageMVC
 
         static IInlineMessage CheckMessage(IMessageItem message)
         {
+            var ctx = GlobalContext.CurrentNoLazy;
             if (message is IInlineMessage inline)
             {
-                inline.Reset();
+                inline.ResetToRequest();
+                if (ctx != null && ctx.Message == message)
+                {
+                    if (!ZeroAppOption.Instance.TraceInfo.HasFlag(TraceInfoType.Token))
+                        inline.Trace.Token = null;
+                    inline.Context = ctx.ToTransfer();
+                    //反向代理，此次调用透明
+                    //if (ZeroAppOption.Instance.TraceInfo.HasFlag(TraceInfoType.LinkTrace))
+                    //{
+                    //    //远程机器使用,所以Call是本机信息
+                    //    inline.Trace.CallId = ctx.Trace.LocalId;
+                    //    inline.Trace.CallApp = ctx.Trace.LocalApp;
+                    //    inline.Trace.CallMachine = ctx.Trace.LocalMachine;
+                    //}
+                    return inline;
+                }
                 inline.State = MessageState.Accept;
             }
             else
@@ -293,43 +310,49 @@ namespace ZeroTeam.MessageMVC
                     DataState = dataState
                 };
             }
+            inline.Context = ctx?.ToTransfer();
             if (!GlobalContext.EnableLinkTrace)
             {
                 return inline;
             }
-            var ctx = GlobalContext.CurrentNoLazy;
             if (ctx == null)
             {
-                inline.Trace ??= TraceInfo.New(inline.ID);
+                inline.Trace = TraceInfo.New(inline.ID);
                 return inline;
             }
             if (ctx.Trace == null)
             {
-                inline.Trace ??= TraceInfo.New(inline.ID);
-                inline.Trace.Context = new StaticContext
-                {
-                    Option = ctx.Option,
-                    UserJson = ctx.User.ToJson()
-                };
+                inline.Trace = TraceInfo.New(inline.ID);
                 return inline;
             }
 
-            inline.Trace ??= new TraceInfo
+            inline.Trace = new TraceInfo
             {
-                TraceId = inline.ID,
                 Start = DateTime.Now,
+                Level = ctx.Trace.Level + 1,
+                ContentInfo = ZeroAppOption.Instance.TraceInfo
             };
-            inline.Trace.TraceId = ctx.Trace.TraceId;
-            //远程机器使用,所以Call是本机信息
-            inline.Trace.CallId = ctx.Trace.LocalId;
-            inline.Trace.CallApp = ctx.Trace.LocalApp;
-            inline.Trace.CallMachine = ctx.Trace.LocalMachine;
-            //层级
-            inline.Trace.Level = ctx.Trace.Level + 1;
-            //正常复制
-            inline.Trace.TraceId = ctx.Trace.TraceId;
-            inline.Trace.Token = ctx.Trace.Token;
-            inline.Trace.Headers = ctx.Trace.Headers;
+
+            if (ZeroAppOption.Instance.TraceInfo.HasFlag(TraceInfoType.App))
+            {
+                inline.Trace.RequestApp = ctx.Trace.RequestApp;
+                inline.Trace.RequestPage = ctx.Trace.RequestPage;
+            }
+            if (ZeroAppOption.Instance.TraceInfo.HasFlag(TraceInfoType.Token))
+                inline.Trace.Token = ctx.Trace.Token;
+
+            if (ZeroAppOption.Instance.TraceInfo.HasFlag(TraceInfoType.Headers))
+                inline.Trace.Headers = ctx.Trace.Headers;
+
+            if (ZeroAppOption.Instance.TraceInfo.HasFlag(TraceInfoType.LinkTrace))
+            {
+                inline.Trace.TraceId = ctx.Trace.TraceId;
+                //远程机器使用,所以Call是本机信息
+                inline.Trace.CallId = ctx.Trace.LocalId;
+                inline.Trace.CallApp = ctx.Trace.LocalApp;
+                inline.Trace.CallMachine = ctx.Trace.LocalMachine;
+                inline.Trace.LocalId = RandomCode.Generate(16);
+            }
             return inline;
         }
 
@@ -617,7 +640,7 @@ namespace ZeroTeam.MessageMVC
              where TRes : class
         {
             var msg = Post(MessageHelper.NewRemote(service, api, args), false, true).Result;
-            if(msg.ResultData != null)
+            if (msg.ResultData != null)
             {
                 return (msg.ResultData as IApiResult<TRes>, msg.State);
             }

@@ -50,17 +50,17 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 字典参数
         /// </summary>
         [JsonIgnore]
-        public Dictionary<string, string> Dictionary
+        public Dictionary<string, string> ExtensionDictionary
         {
             get => dictionary;
             set
             {
                 dictionary = value;
-                DataState |= MessageDataState.ArgumentInline;
-                if (Content == null && value == null && argumentData == null)
-                    DataState |= MessageDataState.ArgumentOffline;
+                DataState |= MessageDataState.ExtensionInline;
+                if (Extension == null && value == null)
+                    DataState |= MessageDataState.ExtensionOffline;
                 else
-                    DataState &= ~MessageDataState.ArgumentOffline;
+                    DataState &= ~MessageDataState.ExtensionOffline;
             }
         }
 
@@ -77,7 +77,7 @@ namespace ZeroTeam.MessageMVC.Messages
             {
                 argumentData = value;
                 DataState |= MessageDataState.ArgumentInline;
-                if (Content == null && value == null && dictionary == null)
+                if (Content == null && value == null)
                     DataState |= MessageDataState.ArgumentOffline;
                 else
                     DataState &= ~MessageDataState.ArgumentOffline;

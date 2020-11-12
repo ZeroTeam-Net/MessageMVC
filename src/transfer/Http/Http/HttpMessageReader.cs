@@ -27,7 +27,6 @@ namespace ZeroTeam.MessageMVC.Http
         /// </summary>
         HttpMessage Message;
 
-        #region 请求解析
 
         /// <summary>
         ///     调用检查
@@ -41,9 +40,9 @@ namespace ZeroTeam.MessageMVC.Http
             if (TryGetHeader(request, "x-zmvc-ver", out _))
             {
                 var content = await ReadContent();
+                FlowTracer.MonitorTrace(content);
                 var message = SmartSerializer.FromInnerString<InlineMessage>(content);
                 message.Trace ??= TraceInfo.New(message.ID);
-                message.Trace.CallMachine = $"{HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.RemotePort}";
                 message.DataState = MessageDataState.ArgumentOffline;
                 return (true,message);
             }
@@ -107,8 +106,8 @@ namespace ZeroTeam.MessageMVC.Http
             {
                 return false;
             }
-            Message.ApiHost = words[idx];
-            Message.ApiName = string.Join('/', words.Skip(idx + 1));
+            Message.ApiHost = words[idx].ToLower();
+            Message.ApiName = string.Join('/', words.Skip(idx + 1).Select(p=>p.ToLower()));
             return true;
         }
 
@@ -120,11 +119,11 @@ namespace ZeroTeam.MessageMVC.Http
         {
             try
             {
+                Message.ExtensionDictionary ??= ReadForm();
                 Message.HttpArguments ??= ReadArgument();
-                Message.Dictionary ??= ReadForm();
                 foreach (var kv in Message.HttpArguments)
                 {
-                    Message.Dictionary.TryAdd(kv.Key, kv.Value);
+                    Message.ExtensionDictionary.TryAdd(kv.Key, kv.Value);
                 }
                 ReadFiles();
                 Message.Content = Message.HttpContent ??= await ReadContent();
@@ -134,20 +133,26 @@ namespace ZeroTeam.MessageMVC.Http
                 DependencyScope.Logger.Exception(e);
                 Message.State = MessageState.FormalError;
             }
-            Message.DataState &= ~(MessageDataState.ArgumentInline | MessageDataState.ArgumentOffline);
+            Message.DataState = MessageDataState.ArgumentOffline | MessageDataState.ExtensionInline | MessageDataState.ExtensionOffline;
         }
 
         private void CheckTrace()
         {
             HttpRequest request = HttpContext.Request;
             Message.Trace = TraceInfo.New(Message.ID);
-            Message.Trace.CallMachine = $"{HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.RemotePort}";
-            Message.Trace.CallId = HttpContext.Connection.Id;
-            GetHeaderAndSet(request, "Referer", referer => Message.Trace.CallPage = referer);
-            GetHeaderAndSet(request, "x-zmvc-app", app => Message.Trace.CallApp = app);
+            if (ZeroAppOption.Instance.TraceInfo.HasFlag(TraceInfoType.App))
+            {
+                GetHeaderAndSet(request, "x-zmvc-app", app => Message.Trace.RequestApp = app);
+                GetHeaderAndSet(request, "Referer", referer => Message.Trace.RequestPage = referer?.ToLower());
+            }
+            if (ZeroAppOption.Instance.TraceInfo.HasFlag(TraceInfoType.LinkTrace))
+            {
+                Message.Trace.CallMachine = $"{HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.RemotePort}";
+                Message.Trace.CallId = HttpContext.Connection.Id;
+            }
             GetHeaderAndSet(request, "Authorization", token => Message.Trace.Token = token);
 
-            if (MessageRouteOption.Instance.EnableHeader)
+            if (ZeroAppOption.Instance.TraceInfo.HasFlag(TraceInfoType.Headers))
             {
                 Message.Trace.Headers = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
                 foreach (var head in request.Headers)
@@ -234,6 +239,5 @@ namespace ZeroTeam.MessageMVC.Http
             //    Binary.TryAdd(file.Name, bytes);
             //}
         }
-        #endregion
     }
 }

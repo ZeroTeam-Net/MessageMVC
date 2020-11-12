@@ -35,11 +35,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// 调用的内容
         /// </summary>
-        internal ILogger logger;
-
-        /// <summary>
-        /// 调用的内容
-        /// </summary>
         internal IInlineMessage Message;
 
         /// <summary>
@@ -61,20 +56,18 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <returns></returns>
         Task<bool> IMessageMiddleware.Prepare(IService service, IInlineMessage message, object tag)
         {
-            if(service.ServiceName != message.ServiceName)
+            if (!string.Equals(service.ServiceName, message.ServiceName, StringComparison.OrdinalIgnoreCase))
                 return Task.FromResult(true);
 
             Service = service;
             Message = message;
             Tag = tag;
 
-            logger = DependencyHelper.LoggerFactory.CreateLogger($"{message.Topic}/{message.Title}");
-
             action = Service.GetApiAction(Message.Title);
             //1 查找调用方法
             if (action == null)
             {
-                FlowTracer.MonitorDetails(()=> $"错误: 接口({Message.Title})不存在");
+                FlowTracer.MonitorDetails(() => $"错误: 接口({Message.Title})不存在");
                 Message.State = MessageState.Unhandled;
                 Message.ResultCreater = ApiResultHelper.State;
                 return Task.FromResult(false);
@@ -92,12 +85,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <returns></returns>
         async Task IMessageMiddleware.Handle(IService service, IInlineMessage message, object tag, Func<Task> next)
         {
-            if (service.ServiceName != message.ServiceName)
-                return;
-
-            Message.RealState = MessageState.Processing;
-            if (await Handle() || next == null)
-                return;
+            if (string.Equals(service.ServiceName, message.ServiceName, StringComparison.OrdinalIgnoreCase))
+            {
+                if (await Handle())
+                    return;
+            }
             await next();
         }
 
@@ -107,34 +99,28 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <returns></returns>
         async Task<bool> Handle()
         {
-            //2 确定调用方法及对应权限
-            if (!ZeroAppOption.Instance.IsOpenAccess
-                && !action.Option.HasFlag(ApiOption.Anymouse)
-                && !UserInfo.IsLoginUser(GlobalContext.User))
-            {
-                FlowTracer.MonitorInfomation("错误: 需要用户登录信息");
-                Message.RealState = MessageState.Deny;
-                var status = DependencyHelper.GetService<IOperatorStatus>();
-                status.Code = OperatorStatusCode.BusinessException;
-                status.Message = "拒绝访问";
-                Message.ResultData = status;
-                return false;
-            }
-
-            Message.ResultSerializer = action.ResultSerializer;
-            Message.ResultCreater = action.ResultCreater;
-
+            Message.RealState = MessageState.Processing;
             //参数处理
             if (!ArgumentPrepare(action))
             {
                 return false;
             }
-            GlobalContext.Current.IsDelay = true;
+            Message.ResultSerializer = action.ResultSerializer;
+            Message.ResultCreater = action.ResultCreater;
+            //扩展检查
+            var checkers = DependencyHelper.GetServices<IApiActionChecker>();
+            foreach(var checker in checkers)
+            {
+                if (!checker.Check(action, Message))
+                    return false;
+            }
+
             //方法执行
+            GlobalContext.Current.IsDelay = true;
             GlobalContext.Current.Task = new ActionTask();
             try
             {
-                _ = action.Execute(GlobalContext.Current.Task, Message, Service.Serialize);
+                _ = action.Execute( GlobalContext.Current.Task, Message, Service.Serialize);
                 await GlobalContext.Current.Task.Task;
                 var (state, result) = GlobalContext.Current.Task.Task.Result;
                 Message.State = state;

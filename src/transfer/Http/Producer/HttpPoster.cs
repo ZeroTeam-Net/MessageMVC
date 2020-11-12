@@ -44,8 +44,11 @@ namespace ZeroTeam.MessageMVC.Http
                     message.State = MessageState.Unhandled;
                     return null;//直接使用状态
                 }
-                var uri = new Uri($"{client.BaseAddress }/{message.Topic}/{message.Title}");
-                FlowTracer.MonitorDetails(() => $"URL : {uri.OriginalString}");
+                FlowTracer.MonitorDetails(() =>
+                {
+                    var uri = new Uri($"{client.BaseAddress }{message.Topic}/{message.Title}");
+                    return $"URL : {uri.OriginalString}";
+                });
                 using var requestMessage = new HttpRequestMessage
                 {
                     RequestUri = new Uri($"{client.BaseAddress }/{message.Topic}/{message.Title}"),

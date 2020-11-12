@@ -21,11 +21,6 @@ namespace ZeroTeam.MessageMVC.Context
         IDisposable  DependencyScope { get; set; }
 
         /// <summary>
-        ///     当前调用的客户信息
-        /// </summary>
-        IUser User { get; set; }
-
-        /// <summary>
         ///     跟踪信息
         /// </summary>
         TraceInfo Trace { get; }
@@ -33,12 +28,12 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         /// 全局状态
         /// </summary>
-        ContextStatus Status { get; set; }
+        ContextStatus Status { get;  }
 
         /// <summary>
         /// 上下文配置
         /// </summary>
-        Dictionary<string, string> Option { get; set; }
+        Dictionary<string, string> Option { get;}
 
         /// <summary>
         /// 当前消息
@@ -49,6 +44,13 @@ namespace ZeroTeam.MessageMVC.Context
         /// 当前任务，用于提前返回
         /// </summary>
         ActionTask Task { get; set; }
+
+
+        /// <summary>
+        /// 转为可传输的对象
+        /// </summary>
+        Dictionary<string, string> ToTransfer();
+
     }
 }
 

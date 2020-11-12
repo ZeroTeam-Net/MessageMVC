@@ -167,6 +167,10 @@
         /// </summary>
         public const string PositionIds = "z_pids";
         /// <summary>
+        /// 角色ID
+        /// </summary>
+        public const string RoleIds = "z_rids";
+        /// <summary>
         /// 追踪码
         /// </summary>
         public const string TraceMark = "z_mark";

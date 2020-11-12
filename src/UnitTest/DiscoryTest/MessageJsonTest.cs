@@ -109,7 +109,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
                 Trace = TraceInfo.New(id),
                 Result = @"{""Value"": ""Result""}"
             };
-            message.PrepareInline();
+            message.CheckState();
             Assert.IsTrue(message.DataState == (MessageDataState.ArgumentOffline | MessageDataState.ResultOffline), message.DataState.ToString());
 
             //message.PrepareResult(null, ApiResultHelper.State);
@@ -138,7 +138,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
                 Trace = TraceInfo.New(id),
                 Result = @"{""Value"": ""Result""}"
             };
-            message.Reset();
+            message.ResetToRequest();
             //message.PrepareResult(null, ApiResultHelper.State);
             message.RestoryContent(DependencyHelper.GetService<IJsonSerializeProxy>(), typeof(Argument)); ;
             message.ResultData = new Argument<int>
@@ -168,7 +168,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
                 Trace = TraceInfo.New(id),
                 Result = @"{""Value"": ""Result""}"
             };
-            message.Reset();
+            message.ResetToRequest();
             //message.PrepareResult(null, ApiResultHelper.State);
             message.RestoryContent(DependencyHelper.GetService<IJsonSerializeProxy>(), typeof(Argument)); ;
             message.State = MessageState.Failed;
@@ -199,7 +199,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
                     Value = 1
                 }
             };
-            message.PrepareInline();
+            message.CheckState();
             Assert.IsTrue(message.DataState == (MessageDataState.ArgumentOffline | MessageDataState.ResultInline),
                 message.DataState.ToString());
 
@@ -238,7 +238,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
                 Trace = TraceInfo.New(id),
                 Result = @"{""Value"": ""Result""}"
             };
-            message.PrepareInline();
+            message.CheckState();
             Assert.IsTrue(message.DataState == (MessageDataState.ArgumentOffline | MessageDataState.ResultOffline), message.DataState.ToString());
 
             //message.PrepareResult(null, ApiResultHelper.State);
@@ -257,7 +257,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
                 Trace = TraceInfo.New(id),
                 Result = @"{""Value"": ""Result""}"
             };
-            message.Reset();
+            message.ResetToRequest();
             Assert.IsTrue(message.DataState == MessageDataState.ArgumentOffline, message.DataState.ToString());
             Assert.IsTrue(message.Result == null, message.Result);
             //message.PrepareResult(null, ApiResultHelper.State);

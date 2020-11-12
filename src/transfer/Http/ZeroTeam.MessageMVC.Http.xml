@@ -34,7 +34,7 @@
             实体参数
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.Dictionary">
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.ExtensionDictionary">
             <summary>
             字典参数
             </summary>
@@ -347,16 +347,6 @@
         <member name="P:ZeroTeam.MessageMVC.Http.MessageRouteOption.EnableFormFile">
             <summary>
             启用文件上传
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.MessageRouteOption.EnableAuthToken">
-            <summary>
-            启用身份令牌
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.MessageRouteOption.EnableHeader">
-            <summary>
-            启用Header跟踪(如HTTP请求头)
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Http.MessageRouteOption.HostPaths">

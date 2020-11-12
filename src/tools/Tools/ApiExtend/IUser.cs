@@ -32,10 +32,10 @@ namespace ZeroTeam.MessageMVC.Context
         string OrganizationName { get; set; }
 
         /// <summary>
-        ///     取得扩展节点名称
+        ///     角色集合
         /// </summary>
-        string GetClaim(string name);
-
+        string RoleIds { get; set; }
+        
         /// <summary>
         /// 通过Json来还原用户
         /// </summary>
@@ -46,5 +46,12 @@ namespace ZeroTeam.MessageMVC.Context
         /// 序列化为JSON
         /// </summary>
         string ToJson();
+
+
+        /// <summary>
+        /// 快捷读写字典
+        /// </summary>
+        /// <param name="type"></param>
+        string this[string type] { get;set; }
     }
 }

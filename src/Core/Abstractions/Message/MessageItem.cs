@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 using ZeroTeam.MessageMVC.Context;
 
 namespace ZeroTeam.MessageMVC.Messages
@@ -30,7 +31,6 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 标题
         /// </summary>
-
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public string Title { get; set; }
 
@@ -39,6 +39,12 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public string Content { get; set; }
+
+        /// <summary>
+        /// 扩展信息（固定为字典）
+        /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+        public string Extension { get; set; }
 
         /*// <summary>
         /// 其他二进制内容
@@ -68,6 +74,12 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public TraceInfo Trace { get; set; }
+
+        /// <summary>
+        /// 上下文信息
+        /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public Dictionary<string, string> Context { get; set; }
 
     }
 }

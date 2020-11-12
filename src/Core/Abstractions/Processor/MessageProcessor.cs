@@ -125,12 +125,12 @@ namespace ZeroTeam.MessageMVC.Messages
         private async Task<bool> Prepare()
         {
             FlowTracer.BeginStepMonitor("[Prepare]");
-            Message.Reset();
+            Message.ResetToRequest();
             if (IsOffline)
             {
                 Message.DataState = MessageDataState.ArgumentOffline;
             }
-            await Message.PrepareInline();
+            await Message.CheckState();
 
             try
             {

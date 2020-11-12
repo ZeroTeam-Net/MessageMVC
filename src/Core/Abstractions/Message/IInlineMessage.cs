@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Messages
 {
@@ -20,7 +21,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 字典参数
         /// </summary>
-        Dictionary<string, string> Dictionary { get; set; }
+        Dictionary<string, string> ExtensionDictionary { get; set; }
 
         /// <summary>
         /// 返回值
@@ -49,46 +50,59 @@ namespace ZeroTeam.MessageMVC.Messages
         MessageDataState DataState { get; set; }
 
         /// <summary>
-        /// 重置
+        /// 重置为请求状态
         /// </summary>
-        void Reset()
+        void ResetToRequest()
         {
             Result = null;
             ResultData = null;
-
-            DataState = MessageDataState.None;
-            if (Content != null)
-            {
-                DataState |= MessageDataState.ArgumentOffline;
-            }
-            if (ArgumentData != null || Dictionary != null)
-            {
-                DataState |= MessageDataState.ArgumentInline;
-            }
+            CheckState();
         }
 
         /// <summary>
-        /// 准备在线(框架内调用)
+        /// 在线(框架内调用)
         /// </summary>
         /// <returns></returns>
-        Task PrepareInline()
+        Task CheckState()
         {
             DataState = MessageDataState.None;
-            if (Content != null)
+
+            if (Argument != null)
             {
                 DataState |= MessageDataState.ArgumentOffline;
             }
-            if (ArgumentData != null || Dictionary != null)
+            if (ArgumentData != null)
             {
                 DataState |= MessageDataState.ArgumentInline;
+            }
+
+            if (Extension != null)
+            {
+                DataState |= MessageDataState.ExtensionOffline;
+            }
+            if (ExtensionDictionary != null)
+            {
+                DataState |= MessageDataState.ExtensionInline;
+            }
+            else
+            {
+                ExtensionDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                if (Extension != null)
+                {
+                    var dir = SmartSerializer.FromInnerString<Dictionary<string, string>>(Extension);
+                    foreach (var kv in dir)
+                        ExtensionDictionary.TryAdd(kv.Key, kv.Value);
+                }
+                DataState |= MessageDataState.ExtensionInline;
+            }
+
+            if (Result != null)
+            {
+                DataState |= MessageDataState.ResultOffline;
             }
             if (ResultData != null)
             {
                 DataState |= MessageDataState.ResultInline;
-            }
-            if (Result != null)
-            {
-                DataState |= MessageDataState.ResultOffline;
             }
             return Task.CompletedTask;
         }
@@ -117,10 +131,18 @@ namespace ZeroTeam.MessageMVC.Messages
             if (!DataState.HasFlag(MessageDataState.ArgumentOffline))
             {
                 if (DataState.HasFlag(MessageDataState.ArgumentInline))
-                    Content = SmartSerializer.ToString(ArgumentData ?? Dictionary, serialize);
-                else if (Dictionary != null)
-                    Content = SmartSerializer.ToString(Dictionary, serialize);
+                {
+                    Content = SmartSerializer.ToString(ArgumentData, serialize);
+                }
                 DataState |= MessageDataState.ArgumentOffline;
+            }
+            if (!DataState.HasFlag(MessageDataState.ExtensionOffline))
+            {
+                if (DataState.HasFlag(MessageDataState.ExtensionInline))
+                {
+                    Extension = SmartSerializer.ToString(ArgumentData, serialize);
+                }
+                DataState |= MessageDataState.ExtensionOffline;
             }
         }
 
@@ -129,6 +151,11 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         void RestoryContentToDictionary(ISerializeProxy serializer, bool merge)
         {
+            if (!merge)
+            {
+                ExtensionDictionary.Clear();
+            }
+
             Dictionary<string, string> contentDictionary;
 
             if (serializer != null)
@@ -142,19 +169,10 @@ namespace ZeroTeam.MessageMVC.Messages
 
             if (contentDictionary != null && contentDictionary.Count >= 0)
             {
-                var dict2 = Dictionary;
-                Dictionary = contentDictionary;
-                if (dict2 != null && merge)
+                foreach (var kv in contentDictionary)
                 {
-                    foreach (var kv in dict2)
-                    {
-                        Dictionary.TryAdd(kv.Key, kv.Value);
-                    }
+                    ExtensionDictionary.TryAdd(kv.Key, kv.Value);
                 }
-            }
-            else
-            {
-                Dictionary ??= new Dictionary<string, string>();
             }
             DataState |= MessageDataState.ArgumentInline | MessageDataState.ArgumentOffline;
         }
@@ -192,7 +210,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <returns>值</returns>
         string GetStringArgument(string name)
         {
-            if (Dictionary == null || !Dictionary.TryGetValue(name, out var value) || !(value is string str))
+            if (ExtensionDictionary == null || !ExtensionDictionary.TryGetValue(name, out var value) || !(value is string str))
                 return null;
             return str;
         }
@@ -217,7 +235,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <returns>值</returns>
         string GetScopeArgument(string name, ArgumentScope scope = ArgumentScope.HttpArgument)
         {
-            if (Dictionary == null || !Dictionary.TryGetValue(name, out var value))
+            if (ExtensionDictionary == null || !ExtensionDictionary.TryGetValue(name, out var value))
                 return null;
             return value;
         }
@@ -233,7 +251,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <returns>值</returns>
         object GetValueArgument(string name, int scope, int serializeType, ISerializeProxy serialize, Type type)
         {
-            if (Dictionary == null || !Dictionary.TryGetValue(name, out var value))
+            if (ExtensionDictionary == null || !ExtensionDictionary.TryGetValue(name, out var value))
                 return null;
             return value;
         }
@@ -249,7 +267,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <returns>值</returns>
         object FrameGetValueArgument(string name, int scope, int serializeType, ISerializeProxy serialize, Type type)
         {
-            if (Dictionary == null || !Dictionary.TryGetValue(name, out var value))
+            if (ExtensionDictionary == null || !ExtensionDictionary.TryGetValue(name, out var value))
             {
                 if (type != typeof(string))
                     throw new MessageArgumentNullException(name);
@@ -290,7 +308,7 @@ namespace ZeroTeam.MessageMVC.Messages
             }
             if (ResultCreater == null)
             {
-                DataState |= MessageDataState.ResultOffline;
+                ResultCreater = ApiResultHelper.State;
                 return this;
             }
             ResultData = ResultCreater(State.ToErrorCode(), Result);
@@ -386,7 +404,7 @@ namespace ZeroTeam.MessageMVC.Messages
                 Topic = Topic,
                 ArgumentData = ArgumentData,
                 Content = Content,
-                Dictionary = Dictionary,
+                ExtensionDictionary = ExtensionDictionary,
                 ID = ID,
                 Result = Result,
                 ResultData = ResultData,

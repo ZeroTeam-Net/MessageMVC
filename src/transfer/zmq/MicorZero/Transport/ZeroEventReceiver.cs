@@ -206,9 +206,8 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 case ZeroNetEventType.CenterClientLeft:
                 case ZeroNetEventType.CenterStationDocument:
                     return Task.CompletedTask;
-
             }
-            if (e.EventConfig?.StationName != Service.ServiceName)
+            if (!string.Equals(Service.ServiceName, e.EventConfig?.StationName, StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }
@@ -361,7 +360,8 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 ID = callItem.RequestId,
                 ServiceName = Config.StationName,
                 ApiName = callItem.ApiName,
-                Argument = callItem.Argument
+                Argument = callItem.Argument,
+                Context = SmartSerializer.ToObject<System.Collections.Generic.Dictionary<string, string>>(callItem.Context)
             };
             if (SmartSerializer.TryToMessage(callItem.Extend, out var item))
             {
@@ -373,7 +373,6 @@ namespace ZeroTeam.ZeroMQ.ZeroRPC
                 messageItem.Trace.TraceId = callItem.RequestId;
                 messageItem.Trace.CallId = callItem.GlobalId;
                 messageItem.Trace.CallMachine = callItem.Requester;
-                messageItem.Trace.Context = SmartSerializer.ToObject<StaticContext>(callItem.Context);
             }
 
             try
