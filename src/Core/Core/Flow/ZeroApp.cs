@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Agebull.Common.Ioc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 using System.Diagnostics;
@@ -20,6 +21,17 @@ namespace ZeroTeam.MessageMVC
         static int isInitialized = 0;
 
         /// <summary>
+        ///     显示式设置配置对象(依赖)
+        /// </summary>
+        /// <param name="service"></param>
+        public static void BindingMessageMvc(this IServiceCollection service)
+        {
+            DependencyHelper.Binding(service);
+            //进程退出事件
+            AppDomain.CurrentDomain.ProcessExit += ZeroFlowControl.OnShutdown;
+        }
+
+        /// <summary>
         /// 检查并注入配置
         /// </summary>
         static void AddDependency(IServiceCollection services, bool msJson)
@@ -38,7 +50,7 @@ namespace ZeroTeam.MessageMVC
             //API路由与执行
             services.AddTransient<IMessageMiddleware, ApiExecuter>();
             //并行发送器
-            services.AddTransient<IFlowMiddleware, ParallelPoster>(); 
+            services.AddTransient<IFlowMiddleware, ParallelPoster>();
             //插件载入
             //if (ZeroAppOption.Instance.EnableAddIn)
             {
@@ -129,8 +141,6 @@ namespace ZeroTeam.MessageMVC
             {
                 return;
             }
-            //捕获Ctrl+C事件
-            Console.CancelKeyPress += ZeroFlowControl.OnShutdown;
             await ZeroFlowControl.Initialize();
             await ZeroFlowControl.RunAsync();
             Console.WriteLine("应用已启动.请键入 Ctrl+C 退出.");

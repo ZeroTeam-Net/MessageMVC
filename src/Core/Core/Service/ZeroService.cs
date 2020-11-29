@@ -468,28 +468,32 @@ namespace ZeroTeam.MessageMVC.Services
         /// <param name="info">反射信息</param>
         bool IService.RegistAction(string route, ApiActionInfo info)
         {
-            var action = new ApiAction
+            var apis = route.Split('|',StringSplitOptions.RemoveEmptyEntries);
+            foreach(var api in apis)
             {
-                RouteName = route,
-                Function = info.Action,
-                Option = info.AccessOption,
-                ResultType = info.ResultType,
-                IsAsync = info.IsAsync,
-                ResultSerializeType = info.ResultSerializeType,
-                ArgumentSerializeType = info.ArgumentSerializeType
-            };
-            if (!ApiActions.TryAdd(route, action))
-                return false;
-            if (info.HaseArgument)
-            {
-                var arg = info.Arguments.Values.First();
-                if(!arg.IsBaseType)
+                var action = new ApiAction
                 {
-                    action.ArgumentName = arg.Name;
-                    action.ArgumentType = arg.ParameterInfo.ParameterType;
+                    RouteName = api,
+                    Function = info.Action,
+                    Option = info.AccessOption,
+                    ResultType = info.ResultType,
+                    IsAsync = info.IsAsync,
+                    ResultSerializeType = info.ResultSerializeType,
+                    ArgumentSerializeType = info.ArgumentSerializeType
+                };
+                if (!ApiActions.TryAdd(api, action))
+                    return false;
+                if (info.HaseArgument)
+                {
+                    var arg = info.Arguments.Values.First();
+                    if (!arg.IsBaseType)
+                    {
+                        action.ArgumentName = arg.Name;
+                        action.ArgumentType = arg.ParameterInfo.ParameterType;
+                    }
                 }
+                action.Initialize();
             }
-            action.Initialize();
             return true;
         }
 

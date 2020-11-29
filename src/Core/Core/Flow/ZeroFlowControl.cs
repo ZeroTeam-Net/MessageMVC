@@ -138,7 +138,13 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
         /// <summary>
         ///     关闭
         /// </summary>
-        public static void OnShutdown(object sender, EventArgs e) => Shutdown();
+        public static void OnShutdown(object sender, EventArgs e)
+        {
+            Shutdown();
+            ZeroAppOption.Destory(sender,e);
+            if (ZeroAppOption.Instance.IsDevelopment)
+                Process.GetCurrentProcess().Kill();
+        }
 
         /// <summary>
         ///     关闭
@@ -161,8 +167,6 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
             DependencyHelper.LoggerFactory.Dispose();
             DependencyScope.Local.Value?.Scope?.Dispose();
             logger.Information("【已退出，下次见！】");
-            if (ZeroAppOption.Instance.IsDevelopment)
-                Process.GetCurrentProcess().Kill();
         }
 
         #endregion
@@ -468,7 +472,7 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
         public static event EventHandler OnStart;
 
         /// <summary>
-        /// 开始事件
+        /// 结束事件
         /// </summary>
         public static event EventHandler OnStop;
 
@@ -552,7 +556,6 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
 
             logger.Information("【关闭】结束");
         }
-
         /// <summary>
         ///     注销
         /// </summary>

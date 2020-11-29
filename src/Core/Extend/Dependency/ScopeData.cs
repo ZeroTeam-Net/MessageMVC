@@ -13,36 +13,31 @@ namespace Agebull.Common.Ioc
         /// <summary>
         /// 依赖服务范围
         /// </summary>
-        public IServiceScope ServiceScope { get;  set; }
+        public IServiceScope ServiceScope { get; set; }
 
         /// <summary>
         /// 当前范围
         /// </summary>
         public IDisposable Scope { get; internal set; }
 
-        string name;
         /// <summary>
         /// 范围名称
         /// </summary>
         public string Name
         {
-            set
-            {
-                name = value;
-                Logger = DependencyHelper.LoggerFactory.CreateLogger(Name);
-            }
-            get => name;
+            get;
+            set;
         }
 
+        private ILogger logger;
         /// <summary>
         /// 日志记录器
         /// </summary>
         public ILogger Logger
         {
-            get;
-            set;
+            get => logger ??= DependencyHelper.LoggerFactory.CreateLogger(Name ?? "Scope");
+            set => logger = value;
         }
-
 
         /// <summary>
         /// 内部模式,框架使用

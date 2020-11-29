@@ -2112,13 +2112,13 @@
                 全局依赖
             </summary>
         </member>
-        <member name="M:Agebull.Common.Ioc.DependencyHelper.BindingMessageMvc(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:Agebull.Common.Ioc.DependencyHelper.Binding(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
                 显示式设置配置对象(依赖)
             </summary>
             <param name="service"></param>
         </member>
-        <member name="M:Agebull.Common.Ioc.DependencyHelper.BindingMessageMvc(System.IServiceProvider)">
+        <member name="M:Agebull.Common.Ioc.DependencyHelper.SetRootProvider(System.IServiceProvider)">
             <summary>
                 更新构造提供器
             </summary>
@@ -2550,11 +2550,6 @@
             活动实例
             </summary>
         </member>
-        <member name="P:Agebull.Common.Ioc.DependencyScope.LocalValue">
-            <summary>
-            内容
-            </summary>
-        </member>
         <member name="P:Agebull.Common.Ioc.DependencyScope.Value">
             <summary>
             内容
@@ -2570,6 +2565,11 @@
             日志记录器
             </summary>
         </member>
+        <member name="P:Agebull.Common.Ioc.DependencyScope.Dependency">
+            <summary>
+            附件内容
+            </summary>
+        </member>
         <member name="P:Agebull.Common.Ioc.DependencyScope.ServiceScope">
             <summary>
             依赖服务范围
@@ -2583,11 +2583,6 @@
         <member name="P:Agebull.Common.Ioc.DependencyScope.DisposeFunc">
             <summary>
             析构方法
-            </summary>
-        </member>
-        <member name="P:Agebull.Common.Ioc.DependencyScope.Dependency">
-            <summary>
-            附件内容
             </summary>
         </member>
         <member name="T:Agebull.Common.Ioc.DynamicCreateBuilder">
@@ -3760,6 +3755,11 @@
             开始检测资源
             </summary>
         </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.BeginMonitor(Agebull.Common.Logging.TraceStep)">
+            <summary>
+            开始检测资源
+            </summary>
+        </member>
         <member name="M:Agebull.Common.Logging.FlowTracer.BeginStepMonitor(System.String)">
             <summary>
             开始监视日志步骤
@@ -3850,6 +3850,11 @@
             结束监视日志
             </summary>
         </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.TraceMonitor(Agebull.Common.Logging.TraceStep)">
+            <summary>
+            结束监视日志
+            </summary>
+        </member>
         <member name="M:Agebull.Common.Logging.FlowTracer.Message(System.Text.StringBuilder,System.DateTime,Agebull.Common.Logging.TraceStep,System.Int32)">
             <summary>
                 刷新资源检测
@@ -3871,6 +3876,11 @@
             </summary>
         </member>
         <member name="M:Agebull.Common.Logging.FlowTracer.Local.BeginMonitor(System.String)">
+            <summary>
+                开始检测资源
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.Local.BeginMonitor(Agebull.Common.Logging.TraceStep)">
             <summary>
                 开始检测资源
             </summary>
@@ -5152,6 +5162,80 @@
             <param name="enumObj">目标枚举对象</param>
             <param name="val">枚举值</param>
             <returns>枚举值的描述</returns>
+        </member>
+        <member name="T:Agebull.EntityModel.Common.MemoryCacheData`1">
+            <summary>
+            内存数据
+            </summary>
+            <typeparam name="TData"></typeparam>
+        </member>
+        <member name="P:Agebull.EntityModel.Common.MemoryCacheData`1.Logger">
+            <summary>
+            日志对象
+            </summary>
+        </member>
+        <member name="P:Agebull.EntityModel.Common.MemoryCacheData`1.ExpirationSecond">
+            <summary>
+            过期时长
+            </summary>
+        </member>
+        <member name="P:Agebull.EntityModel.Common.MemoryCacheData`1.TimeoutSecond">
+            <summary>
+            过期时长
+            </summary>
+        </member>
+        <member name="P:Agebull.EntityModel.Common.MemoryCacheData`1.RetryWaitSecond">
+            <summary>
+            重试等待时长
+            </summary>
+        </member>
+        <member name="P:Agebull.EntityModel.Common.MemoryCacheData`1.MaxTryCount">
+            <summary>
+            最大重试次数
+            </summary>
+        </member>
+        <member name="P:Agebull.EntityModel.Common.MemoryCacheData`1.Data">
+            <summary>
+            内存数据
+            </summary>
+        </member>
+        <member name="F:Agebull.EntityModel.Common.MemoryCacheData`1.waitTasks">
+            <summary>
+            载入过程的等待任务
+            </summary>
+        </member>
+        <member name="F:Agebull.EntityModel.Common.MemoryCacheData`1.expiration">
+            <summary>
+            过期时间
+            </summary>
+        </member>
+        <member name="M:Agebull.EntityModel.Common.MemoryCacheData`1.Reset">
+            <summary>
+            重置数据
+            </summary>
+        </member>
+        <member name="M:Agebull.EntityModel.Common.MemoryCacheData`1.LoadData">
+            <summary>
+            载入数据
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="F:Agebull.EntityModel.Common.MemoryCacheData`1.tryCount">
+            <summary>
+            异常重试次数
+            </summary>
+        </member>
+        <member name="M:Agebull.EntityModel.Common.MemoryCacheData`1.LoadInner">
+            <summary>
+            读取策略
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Agebull.EntityModel.Common.MemoryCacheData`1.DoLoad">
+            <summary>
+            读取
+            </summary>
+            <returns></returns>
         </member>
         <member name="T:Agebull.EntityModel.Common.Number46">
             <summary>

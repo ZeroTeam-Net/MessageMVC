@@ -27,11 +27,11 @@ namespace ZeroTeam.MessageMVC.Http
         /// <returns></returns>
         public static async Task Call(HttpContext context)
         {
-            if (string.Equals(context.Request.Method, "OPTIONS", StringComparison.OrdinalIgnoreCase))
-            {
-                HttpProtocol.CrosOption(context.Response);
-                return;
-            }
+            //if (string.Equals(context.Request.Method, "OPTIONS", StringComparison.OrdinalIgnoreCase))
+            //{
+            //    HttpProtocol.CrosOption(context.Response);
+            //    return;
+            //}
             var uri = context.Request.GetUri();
             if (uri.AbsolutePath == "/")
             {

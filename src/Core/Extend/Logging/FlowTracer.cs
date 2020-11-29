@@ -85,6 +85,20 @@ namespace Agebull.Common.Logging
             item.BeginMonitor(title);
             DependencyScope.Dependency.Annex(item);
         }
+        /// <summary>
+        /// 开始检测资源
+        /// </summary>
+        [Conditional("monitor")]
+        public static void BeginMonitor(TraceStep fix)
+        {
+            if (!LogMonitor)
+            {
+                return;
+            }
+            var item = new Local();
+            item.BeginMonitor(fix);
+            DependencyScope.Dependency.Annex(item);
+        }
 
         /// <summary>
         /// 开始监视日志步骤
@@ -440,6 +454,19 @@ namespace Agebull.Common.Logging
         }
 
         /// <summary>
+        /// 结束监视日志
+        /// </summary>
+        public static string TraceMonitor(TraceStep root)
+        {
+            if (root == null)
+                return null;
+            var texter = new StringBuilder();
+            Message(texter, root.Start, root);
+            return texter.ToString();
+        }
+
+
+        /// <summary>
         ///     刷新资源检测
         /// </summary>
         static void Message(StringBuilder text, DateTime start, TraceStep step, int level = 0)
@@ -550,6 +577,15 @@ namespace Agebull.Common.Logging
                 {
                     Message = title
                 });
+            }
+
+            /// <summary>
+            ///     开始检测资源
+            /// </summary>
+            public void BeginMonitor(TraceStep fix)
+            {
+                InMonitor = true;
+                Stack.SetFix(fix);
             }
 
             /// <summary>

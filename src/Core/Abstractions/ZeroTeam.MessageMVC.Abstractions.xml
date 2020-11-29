@@ -1375,6 +1375,17 @@
             实例
             </summary>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroAppOption.RegistDestoryAction(System.Action{System.Object,System.EventArgs})">
+            <summary>
+            注册析构方法
+            </summary>
+            <param name="action"></param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroAppOption.Destory(System.Object,System.EventArgs)">
+            <summary>
+            执行析构方法
+            </summary>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Context.ContextStatus">
             <summary>
             保存于上下文的状态
@@ -3308,16 +3319,6 @@
         <member name="F:ZeroTeam.MessageMVC.Messages.ArgumentScope.Content">
             <summary>
             内容
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Messages.ArgumentScope.HttpArgument">
-            <summary>
-            HTTP的URL的参数
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Messages.ArgumentScope.HttpForm">
-            <summary>
-            HTTP的Form
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.Messages.ArgumentScope.Dictionary">

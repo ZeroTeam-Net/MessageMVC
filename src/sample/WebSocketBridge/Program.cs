@@ -11,7 +11,6 @@ namespace WebNotifyTest
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();
-            ZeroFlowControl.Shutdown();
         }
 
         static IHostBuilder CreateHostBuilder(string[] args) =>

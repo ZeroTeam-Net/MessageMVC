@@ -32,7 +32,7 @@ namespace Agebull.Common.Ioc
         ///     显示式设置配置对象(依赖)
         /// </summary>
         /// <param name="service"></param>
-        public static void BindingMessageMvc(this IServiceCollection service)
+        public static void Binding(IServiceCollection service)
         {
             if (service == ServiceCollection)
                 return;
@@ -75,7 +75,7 @@ namespace Agebull.Common.Ioc
         ///     更新构造提供器
         /// </summary>
         /// <returns></returns>
-        public static void BindingMessageMvc(this IServiceProvider provider)
+        public static void SetRootProvider(IServiceProvider provider)
         {
             CheckLog();
             _rootProvider = provider;

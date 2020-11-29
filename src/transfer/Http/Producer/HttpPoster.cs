@@ -44,21 +44,21 @@ namespace ZeroTeam.MessageMVC.Http
                     message.State = MessageState.Unhandled;
                     return null;//直接使用状态
                 }
+                var uri = new Uri($"{client.BaseAddress }{message.Topic}/{message.Title}");
                 FlowTracer.MonitorDetails(() =>
                 {
-                    var uri = new Uri($"{client.BaseAddress }{message.Topic}/{message.Title}");
                     return $"URL : {uri.OriginalString}";
                 });
+                using var content = new StringContent(SmartSerializer.SerializeRequest(message));
                 using var requestMessage = new HttpRequestMessage
                 {
-                    RequestUri = new Uri($"{client.BaseAddress }/{message.Topic}/{message.Title}"),
+                    RequestUri = uri,
+                    Content = content,
                     Method = HttpMethod.Post
                 };
 
                 requestMessage.Headers.Add("x-zmvc-ver", message.ID);
 
-                using var content = new StringContent(SmartSerializer.SerializeRequest(message));
-                requestMessage.Content = content;
                 using var response = await client.SendAsync(requestMessage);
                 if (response.Headers.TryGetValues("x-zmvc-state", out var state))
                 {

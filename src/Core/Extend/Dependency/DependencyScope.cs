@@ -11,21 +11,30 @@ namespace Agebull.Common.Ioc
     /// </summary>
     public class DependencyScope : IDisposable
     {
-        bool isNew;
+        readonly bool isNew;
         /// <summary>
         /// 生成一个范围
         /// </summary>
         /// <returns></returns>
         private DependencyScope(string name = null)
         {
-            isNew = Local.Value == null;
-            if (isNew)
+            if (Local.Value == null)
+            {
+                isNew = true;
                 Local.Value = new ScopeData
                 {
                     Name = name ?? "Scope",
                     Scope = this,
                     ServiceScope = DependencyHelper.ServiceScopeFactory.CreateScope()
                 };
+            }
+            else if(Local.Value.ServiceScope == null)
+            {
+                isNew = true;
+                Local.Value.Scope = this;
+                Local.Value.Name = name ?? "Scope";
+                Local.Value.ServiceScope = DependencyHelper.ServiceScopeFactory.CreateScope();
+            }
         }
 
         /// <summary>
@@ -45,33 +54,37 @@ namespace Agebull.Common.Ioc
         /// <summary>
         /// 内容
         /// </summary>
-        public static ScopeData LocalValue => Local.Value ??= new ScopeData { Name = "Scope" };
-
-        /// <summary>
-        /// 内容
-        /// </summary>
-        public static ScopeData Value
-        {
-            get => Local.Value;
-            set => Local.Value = value;
-        }
+        public static ScopeData Value => Local.Value;
 
         /// <summary>
         /// 范围名称
         /// </summary>
-        public static string Name
-        {
-            get => LocalValue.Name;
-            set => LocalValue.Name = value;
-        }
+        public static string Name => Local.Value?.Name;
 
         /// <summary>
         /// 日志记录器
         /// </summary>
         public static ILogger Logger
         {
-            get => LocalValue.Logger;
-            set => LocalValue.Logger = value;
+            get
+            {
+                if (Local.Value == null)
+                    Local.Value = new ScopeData();
+                return Local.Value.Logger;
+            }
+        }
+
+        /// <summary>
+        /// 附件内容
+        /// </summary>
+        public static DependencyObjects Dependency
+        {
+            get
+            {
+                if (Local.Value == null)
+                    Local.Value = new ScopeData();
+                return Local.Value.Dependency;
+            }
         }
 
         /// <summary>
@@ -82,31 +95,40 @@ namespace Agebull.Common.Ioc
         /// <summary>
         /// 内部模式,框架使用
         /// </summary>
-        public static bool InnerModel
-        {
-            get => LocalValue.InnerModel;
-            set => LocalValue.InnerModel = value;
-        }
+        public static bool InnerModel => Local.Value?.InnerModel ?? false;
 
         /// <summary>
         /// 析构方法
         /// </summary>
-        public static List<Action> DisposeFunc => LocalValue.DisposeFunc;
-
-        /// <summary>
-        /// 附件内容
-        /// </summary>
-        public static DependencyObjects Dependency => LocalValue.Dependency;
+        public static List<Action> DisposeFunc => Local.Value?.DisposeFunc;
 
         #region 清理资源
 
-        void DoDisposeAction()
+        // 检测冗余调用
+        private bool disposedValue = false;
+
+        // 添加此代码以正确实现可处置模式。
+        void IDisposable.Dispose()
         {
+            if (disposedValue)
+            {
+                return;
+            }
+            disposedValue = true;
+
             if (!isNew)
                 return;
             if (!(Local.Value is ScopeData data))
                 return;
             Local.Value = null;
+            try
+            {
+                data.ServiceScope?.Dispose();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
             foreach (var func in data.DisposeFunc)
             {
                 try
@@ -129,29 +151,6 @@ namespace Agebull.Common.Ioc
                 {
                     Console.WriteLine(e);
                 }
-            }
-        }
-
-        // 检测冗余调用
-        private bool disposedValue = false;
-
-        // 添加此代码以正确实现可处置模式。
-        void IDisposable.Dispose()
-        {
-            if (disposedValue)
-            {
-                return;
-            }
-            disposedValue = true;
-
-            DoDisposeAction();
-            try
-            {
-                ServiceScope?.Dispose();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
             }
         }
 

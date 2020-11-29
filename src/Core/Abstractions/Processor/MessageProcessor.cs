@@ -125,13 +125,21 @@ namespace ZeroTeam.MessageMVC.Messages
         private async Task<bool> Prepare()
         {
             FlowTracer.BeginStepMonitor("[Prepare]");
-            Message.ResetToRequest();
-            if (IsOffline)
+            try
             {
-                Message.DataState = MessageDataState.ArgumentOffline;
-            }
-            await Message.CheckState();
+                Message.ResetToRequest();
+                if (IsOffline)
+                {
+                    Message.DataState = MessageDataState.ArgumentOffline;
+                }
+                await Message.CheckState();
 
+            }
+            catch (Exception ex)
+            {
+                await OnMessageError(ex);
+                return false;
+            }
             try
             {
                 var array = middlewares.Where(p => p.Scope.HasFlag(MessageHandleScope.Prepare)).ToArray();
@@ -220,10 +228,17 @@ namespace ZeroTeam.MessageMVC.Messages
         private async Task Write()
         {
             FlowTracer.BeginDebugStepMonitor("[Write]");
-            Message.Trace ??= GlobalContext.CurrentNoLazy?.Trace;
+            //Message.Trace ??= GlobalContext.CurrentNoLazy?.Trace;
             if (Message.Trace != null)
                 Message.Trace.End = DateTime.Now;
-            Message.OfflineResult();
+            try
+            {
+                Message.OfflineResult();
+            }
+            catch (Exception ex)
+            {
+              await  OnMessageError(ex);
+            }
             try
             {
                 if (Original is TaskCompletionSource<IMessageResult> task)//内部自调用,无需处理

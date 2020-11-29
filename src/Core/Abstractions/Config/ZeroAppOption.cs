@@ -1,5 +1,6 @@
 using Agebull.Common.Configuration;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
@@ -98,6 +99,28 @@ namespace ZeroTeam.MessageMVC
         /// 实例
         /// </summary>
         public static ZeroAppOption Instance { get; }
+
+        static readonly List<Action<object, EventArgs>> DestoryAction = new List<Action<object, EventArgs>>();
+
+        /// <summary>
+        /// 注册析构方法
+        /// </summary>
+        /// <param name="action"></param>
+        public static void RegistDestoryAction(Action<object, EventArgs> action)
+        {
+            DestoryAction.Add(action);
+        }
+
+        /// <summary>
+        /// 执行析构方法
+        /// </summary>
+        public static void Destory(object sender, EventArgs e)
+        {
+            foreach (var action in DestoryAction)
+            {
+                action(sender,e);
+            }
+        }
 
         static ZeroAppOption()
         {

@@ -540,7 +540,7 @@ namespace ZeroTeam.MessageMVC
             {
                 return (msg.ResultData as IApiResult, msg.State);
             }
-            if (msg.Result == null && msg.ResultData == null)
+            if (string.IsNullOrEmpty(msg.Result) && msg.ResultData == null)
             {
                 return (ApiResultHelper.Helper.State(msg.State.ToErrorCode()), msg.State);
             }
@@ -560,7 +560,7 @@ namespace ZeroTeam.MessageMVC
             {
                 return (msg.ResultData as IApiResult<TRes>, msg.State);
             }
-            if (msg.Result == null && msg.ResultData == null)
+            if (string.IsNullOrEmpty(msg.Result) && msg.ResultData == null)
             {
                 return (ApiResultHelper.Helper.State<TRes>(msg.State.ToErrorCode()), msg.State);
             }
@@ -582,7 +582,7 @@ namespace ZeroTeam.MessageMVC
             {
                 return (msg.ResultData as IApiResult, msg.State);
             }
-            if (msg.Result == null && msg.ResultData == null)
+            if (string.IsNullOrEmpty(msg.Result) && msg.ResultData == null)
             {
                 return (ApiResultHelper.Helper.State(msg.State.ToErrorCode()), msg.State);
             }
@@ -603,12 +603,13 @@ namespace ZeroTeam.MessageMVC
             {
                 return (msg.ResultData as IApiResult, msg.State);
             }
-            if (msg.Result == null && msg.ResultData == null)
+            if (string.IsNullOrEmpty(msg.Result) && msg.ResultData == null)
             {
                 return (ApiResultHelper.Helper.State(msg.State.ToErrorCode()), msg.State);
             }
             return (ApiResultHelper.Helper.Deserialize(msg.Result), msg.State);
         }
+
         /// <summary>
         /// 远程调用
         /// </summary>
@@ -622,7 +623,7 @@ namespace ZeroTeam.MessageMVC
             {
                 return (msg.ResultData as IApiResult, msg.State);
             }
-            if (msg.Result == null && msg.ResultData == null)
+            if (string.IsNullOrEmpty(msg.Result) && msg.ResultData == null)
             {
                 return (ApiResultHelper.Helper.State(msg.State.ToErrorCode()), msg.State);
             }
@@ -644,7 +645,7 @@ namespace ZeroTeam.MessageMVC
             {
                 return (msg.ResultData as IApiResult<TRes>, msg.State);
             }
-            if (msg.Result == null && msg.ResultData == null)
+            if (string.IsNullOrEmpty(msg.Result) && msg.ResultData == null)
             {
                 return (ApiResultHelper.Helper.State<TRes>(msg.State.ToErrorCode()), msg.State);
             }
@@ -665,7 +666,7 @@ namespace ZeroTeam.MessageMVC
             {
                 return (msg.ResultData as IApiResult<TRes>, msg.State);
             }
-            if (msg.Result == null && msg.ResultData == null)
+            if (string.IsNullOrEmpty(msg.Result) && msg.ResultData == null)
             {
                 return (ApiResultHelper.Helper.State<TRes>(msg.State.ToErrorCode()), msg.State);
             }
@@ -687,7 +688,7 @@ namespace ZeroTeam.MessageMVC
             {
                 return (msg.ResultData as IApiResult<TRes>, msg.State);
             }
-            if (msg.Result == null && msg.ResultData == null)
+            if (string.IsNullOrEmpty(msg.Result) && msg.ResultData == null)
             {
                 return (ApiResultHelper.Helper.State<TRes>(msg.State.ToErrorCode()), msg.State);
             }
@@ -709,7 +710,7 @@ namespace ZeroTeam.MessageMVC
             {
                 return (msg.ResultData as IApiResult<TRes>, msg.State);
             }
-            if (msg.Result == null && msg.ResultData == null)
+            if (string.IsNullOrEmpty(msg.Result) && msg.ResultData == null)
             {
                 return (ApiResultHelper.Helper.State<TRes>(msg.State.ToErrorCode()), msg.State);
             }

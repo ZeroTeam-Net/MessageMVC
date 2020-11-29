@@ -140,7 +140,7 @@ namespace ZeroTeam.MessageMVC.Messages
             {
                 if (DataState.HasFlag(MessageDataState.ExtensionInline))
                 {
-                    Extension = SmartSerializer.ToString(ArgumentData, serialize);
+                    Extension = SmartSerializer.ToString(ExtensionDictionary, serialize);
                 }
                 DataState |= MessageDataState.ExtensionOffline;
             }
@@ -233,7 +233,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <param name="name">名称</param>
         /// <param name="scope">参数范围</param>
         /// <returns>值</returns>
-        string GetScopeArgument(string name, ArgumentScope scope = ArgumentScope.HttpArgument)
+        string GetScopeArgument(string name, ArgumentScope scope = ArgumentScope.Dictionary)
         {
             if (ExtensionDictionary == null || !ExtensionDictionary.TryGetValue(name, out var value))
                 return null;

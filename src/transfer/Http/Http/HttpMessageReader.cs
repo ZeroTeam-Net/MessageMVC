@@ -119,12 +119,9 @@ namespace ZeroTeam.MessageMVC.Http
         {
             try
             {
-                Message.ExtensionDictionary ??= ReadForm();
-                Message.HttpArguments ??= ReadArgument();
-                foreach (var kv in Message.HttpArguments)
-                {
-                    Message.ExtensionDictionary.TryAdd(kv.Key, kv.Value);
-                }
+                Message.ExtensionDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                ReadArgument();
+                ReadForm();
                 ReadFiles();
                 Message.Content = Message.HttpContent ??= await ReadContent();
             }
@@ -173,9 +170,8 @@ namespace ZeroTeam.MessageMVC.Http
             return string.Empty;
         }
 
-        private Dictionary<string, string> ReadForm()
+        private void ReadForm()
         {
-            var arguments = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             var request = HttpContext.Request;
             try
             {
@@ -183,18 +179,16 @@ namespace ZeroTeam.MessageMVC.Http
                 {
                     foreach (var key in request.Form.Keys)
                     {
-                        arguments.TryAdd(key, request.Form[key]);
+                        Message.ExtensionDictionary.TryAdd(key, request.Form[key]);
                     }
                 }
             }
             catch
             {
             }
-            return arguments;
         }
-        private Dictionary<string, string> ReadArgument()
+        private void ReadArgument()
         {
-            var arguments = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             var request = HttpContext.Request;
             try
             {
@@ -206,14 +200,13 @@ namespace ZeroTeam.MessageMVC.Http
                         //    continue;
                         //if (key.Length >= 2 && key[0] == '_' && key[1] == '_')
                         //    continue;
-                        arguments.TryAdd(key, request.Query[key]);
+                        Message.ExtensionDictionary.TryAdd(key, request.Query[key]);
                     }
                 }
             }
             catch
             {
             }
-            return arguments;
         }
 
         private void ReadFiles()

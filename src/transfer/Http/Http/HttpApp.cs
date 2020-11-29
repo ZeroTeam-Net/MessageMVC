@@ -31,9 +31,7 @@ namespace ZeroTeam.MessageMVC.Http
             if (handerHttp)
                 app.Run(HttpReceiver.Call);
 
-            //进程退出事件
-            AppDomain.CurrentDomain.ProcessExit += ZeroFlowControl.OnShutdown;
-            DependencyHelper.BindingMessageMvc(app.ApplicationServices);
+            DependencyHelper.SetRootProvider(app.ApplicationServices);
             await ZeroFlowControl.Initialize();
             await ZeroFlowControl.RunAsync();
         }

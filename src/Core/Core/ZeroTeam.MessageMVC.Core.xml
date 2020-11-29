@@ -362,6 +362,12 @@
             应用扩展方法
             </summary>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.BindingMessageMvc(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+                显示式设置配置对象(依赖)
+            </summary>
+            <param name="service"></param>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApp.AddDependency(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Boolean)">
             <summary>
             检查并注入配置
@@ -523,7 +529,7 @@
         </member>
         <member name="E:ZeroTeam.MessageMVC.ZeroFlowControl.OnStop">
             <summary>
-            开始事件
+            结束事件
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.StartFailed">

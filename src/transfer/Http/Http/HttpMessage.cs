@@ -141,18 +141,6 @@ namespace ZeroTeam.MessageMVC.Http
         public string HttpContent { get; set; }
 
         /// <summary>
-        ///     请求的表单
-        /// </summary>
-        [JsonIgnore]
-        public Dictionary<string, string> HttpArguments { get; set; }
-
-        /// <summary>
-        ///     请求的表单
-        /// </summary>
-        [JsonIgnore]
-        public Dictionary<string, string> HttpForms { get => ExtensionDictionary; set => ExtensionDictionary = value; }
-
-        /// <summary>
         ///     请求的内容字典
         /// </summary>
         [JsonIgnore]
@@ -207,22 +195,11 @@ namespace ZeroTeam.MessageMVC.Http
             serialize ??= ResultSerializer;
             switch (scope)
             {
-                case ArgumentScope.HttpArgument:
-                    if (HttpArguments.Count > 0)
-                        return serialize.ToString(HttpArguments);
-                    return null;
-                case ArgumentScope.HttpForm:
-                    if (HttpForms.Count > 0)
-                        return serialize.ToString(HttpForms);
-                    return null;
+                case ArgumentScope.Dictionary:
+                    return ExtensionDictionary.Count > 0? serialize.ToString(ExtensionDictionary) : null;
+                default:
+                    return HttpContent;
             }
-            if (!string.IsNullOrEmpty(HttpContent))
-                return HttpContent;
-            if (ExtensionDictionary.Count > 0)
-            {
-                return serialize.ToString(ExtensionDictionary);
-            }
-            return null;
         }
 
         /// <summary>
@@ -265,28 +242,17 @@ namespace ZeroTeam.MessageMVC.Http
         /// <param name="name">名称</param>
         /// <param name="scope">参数范围</param>
         /// <returns>值</returns>
-        public string GetScopeArgument(string name, ArgumentScope scope = ArgumentScope.HttpArgument)
+        public string GetScopeArgument(string name, ArgumentScope scope = ArgumentScope.Dictionary)
         {
             if (string.IsNullOrWhiteSpace(name))
                 return null;
             switch (scope)
             {
-                case ArgumentScope.HttpArgument:
-                    if (HttpArguments.TryGetValue(name, out var ha))
+                case ArgumentScope.Dictionary:
+                    if (ExtensionDictionary.TryGetValue(name, out var ha))
                         return ha;
                     return null;
-                case ArgumentScope.HttpForm:
-                    if (HttpForms.TryGetValue(name, out var af))
-                        return af?.ToString();
-                    return null;
             }
-            if (ExtensionDictionary.TryGetValue(name, out var fm))
-                return fm?.ToString();
-            if (HttpForms.TryGetValue(name, out fm))
-                return fm?.ToString();
-            if (HttpArguments.TryGetValue(name, out var ar))
-                return ar;
-
             ContentObject ??= string.IsNullOrWhiteSpace(HttpContent)
                     ? new JObject()
                     : (JObject)JsonConvert.DeserializeObject(HttpContent);
@@ -359,8 +325,6 @@ namespace ZeroTeam.MessageMVC.Http
             code.AppendLine($"URL:{HttpContext.Request.GetDisplayUrl()}");
             code.AppendLine($"Trace:{JsonConvert.SerializeObject(Trace, Formatting.Indented)}");
 
-            if (HttpArguments != null && HttpArguments.Count > 0)
-                code.AppendLine($"Arguments:{JsonConvert.SerializeObject(HttpArguments, Formatting.Indented)}");
             if (ExtensionDictionary != null && ExtensionDictionary.Count > 0)
                 code.AppendLine($"Dictionary:{JsonConvert.SerializeObject(ExtensionDictionary, Formatting.Indented)}");
             if (HttpContent != null)
