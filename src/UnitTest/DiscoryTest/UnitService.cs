@@ -246,9 +246,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
                     {
                         UserId = "20200312",
                         NickName = "agebull",
-                        OpenId = "20200312",
-                        OrganizationId = "20200312",
-                        OrganizationName = "ZeroTeam"
+                        OrganizationId = "20200312"
                     }.ToJson() }
                 }
             });

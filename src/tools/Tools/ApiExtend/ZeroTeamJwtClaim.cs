@@ -158,18 +158,15 @@
         /// 组织ID
         /// </summary>
         public const string OrganizationId = "z_oids";
+
         /// <summary>
-        /// 职位名称
+        /// 当前权限
         /// </summary>
-        public const string Position = "z_pos";
+        public const string CurrentPermission = "z_cur_per";
         /// <summary>
-        /// 职位ID
+        /// 权限信息
         /// </summary>
-        public const string PositionIds = "z_pids";
-        /// <summary>
-        /// 角色ID
-        /// </summary>
-        public const string RoleIds = "z_rids";
+        public const string Permissions = "z_all_pers";
         /// <summary>
         /// 追踪码
         /// </summary>

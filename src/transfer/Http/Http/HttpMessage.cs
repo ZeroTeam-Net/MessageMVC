@@ -259,6 +259,8 @@ namespace ZeroTeam.MessageMVC.Http
 
             if (ContentObject.TryGetValue(name, out var vl))
                 return vl?.ToString();
+            if (ExtensionDictionary.TryGetValue(name, out var ar))
+                return ar;
             return null;
         }
 

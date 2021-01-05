@@ -12,11 +12,6 @@ namespace ZeroTeam.MessageMVC.Context
         string UserId { get; set; }
 
         /// <summary>
-        ///     用户编码
-        /// </summary>
-        string OpenId { get; set; }
-
-        /// <summary>
         ///     用户昵称
         /// </summary>
         string NickName { get; set; }
@@ -27,14 +22,14 @@ namespace ZeroTeam.MessageMVC.Context
         string OrganizationId { get; set; }
 
         /// <summary>
-        ///     用户组织名称
+        ///     确定后的当前权限信息
         /// </summary>
-        string OrganizationName { get; set; }
+        string CurrentPermission { get; set; }
 
         /// <summary>
         ///     角色集合
         /// </summary>
-        string RoleIds { get; set; }
+        string Permissions { get; set; }
         
         /// <summary>
         /// 通过Json来还原用户

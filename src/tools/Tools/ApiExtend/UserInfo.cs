@@ -36,16 +36,6 @@ namespace ZeroTeam.MessageMVC.Context
         }
 
         /// <summary>
-        ///     用户编码
-        /// </summary>
-        [JsonIgnore]
-        public string OpenId
-        {
-            get => claims.TryGetValue(ZeroTeamJwtClaim.AppUserId, out var val) ? val : null;
-            set => claims[ZeroTeamJwtClaim.AppUserId] = value;
-        }
-
-        /// <summary>
         ///     用户昵称
         /// </summary>
         [JsonIgnore]
@@ -66,23 +56,22 @@ namespace ZeroTeam.MessageMVC.Context
         }
 
         /// <summary>
-        ///     角色集合
+        ///     确定后的当前权限信息
         /// </summary>
-        [JsonIgnore]
-        public string RoleIds
+        public string CurrentPermission
         {
-            get => claims.TryGetValue(ZeroTeamJwtClaim.RoleIds, out var val) ? val : null;
-            set => claims[ZeroTeamJwtClaim.RoleIds] = value;
+            get => claims.TryGetValue(ZeroTeamJwtClaim.CurrentPermission, out var val) ? val : null;
+            set => claims[ZeroTeamJwtClaim.CurrentPermission] = value;
         }
 
         /// <summary>
-        ///     用户组织名称
+        ///     所有权限信息
         /// </summary>
         [JsonIgnore]
-        public string OrganizationName
+        public string Permissions
         {
-            get => claims.TryGetValue(ZeroTeamJwtClaim.Organization, out var val) ? val : null;
-            set => claims[ZeroTeamJwtClaim.Organization] = value;
+            get => claims.TryGetValue(ZeroTeamJwtClaim.Permissions, out var val) ? val : null;
+            set => claims[ZeroTeamJwtClaim.Permissions] = value;
         }
 
         /// <summary>

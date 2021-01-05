@@ -424,11 +424,6 @@
                用户数字标识
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Context.IUser.OpenId">
-            <summary>
-                用户编码
-            </summary>
-        </member>
         <member name="P:ZeroTeam.MessageMVC.Context.IUser.NickName">
             <summary>
                 用户昵称
@@ -439,12 +434,12 @@
                 用户组织数字标识
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Context.IUser.OrganizationName">
+        <member name="P:ZeroTeam.MessageMVC.Context.IUser.CurrentPermission">
             <summary>
-                用户组织名称
+                确定后的当前权限信息
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Context.IUser.RoleIds">
+        <member name="P:ZeroTeam.MessageMVC.Context.IUser.Permissions">
             <summary>
                 角色集合
             </summary>
@@ -483,11 +478,6 @@
                 应用用户数字标识
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Context.UserInfo.OpenId">
-            <summary>
-                用户编码
-            </summary>
-        </member>
         <member name="P:ZeroTeam.MessageMVC.Context.UserInfo.NickName">
             <summary>
                 用户昵称
@@ -498,14 +488,14 @@
                 用户组织数字标识
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Context.UserInfo.RoleIds">
+        <member name="P:ZeroTeam.MessageMVC.Context.UserInfo.CurrentPermission">
             <summary>
-                角色集合
+                确定后的当前权限信息
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Context.UserInfo.OrganizationName">
+        <member name="P:ZeroTeam.MessageMVC.Context.UserInfo.Permissions">
             <summary>
-                用户组织名称
+                所有权限信息
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.Context.UserInfo.claims">
@@ -732,19 +722,14 @@
             组织ID
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Position">
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.CurrentPermission">
             <summary>
-            职位名称
+            当前权限
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.PositionIds">
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Permissions">
             <summary>
-            职位ID
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.RoleIds">
-            <summary>
-            角色ID
+            权限信息
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.TraceMark">
