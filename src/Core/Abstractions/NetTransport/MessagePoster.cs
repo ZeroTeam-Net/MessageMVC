@@ -629,6 +629,76 @@ namespace ZeroTeam.MessageMVC
             }
             return (ApiResultHelper.Helper.Deserialize(msg.Result), msg.State);
         }
+        /// <summary>
+        /// 远程调用
+        /// </summary>
+        /// <param name="service">服务名称</param>
+        /// <param name="api">接口名称</param>
+        /// <param name="args">接口参数</param>
+        /// <returns></returns>
+        public static async Task<(IApiResult<TRes> res, MessageState state)> CallApiAsync<TRes>(string service, string api, Dictionary<string, string> args)
+             where TRes : class
+        {
+            var msg = await Post(MessageHelper.NewRemote(service, api, args), false, true);
+            if (msg.ResultData != null)
+            {
+                return (msg.ResultData as IApiResult<TRes>, msg.State);
+            }
+            if (string.IsNullOrEmpty(msg.Result) && msg.ResultData == null)
+            {
+                return (ApiResultHelper.Helper.State<TRes>(msg.State.ToErrorCode()), msg.State);
+            }
+            return (ApiResultHelper.Helper.Deserialize<TRes>(msg.Result), msg.State);
+        }
+
+        /// <summary>
+        /// 远程调用
+        /// </summary>
+        /// <param name="service">服务名称</param>
+        /// <param name="api">接口名称</param>
+        /// <param name="args">接口参数</param>
+        /// <returns></returns>
+        public static async Task<(IApiResult<TRes> res, MessageState state)> CallApiAsync<TRes>(string service, string api, params (string name,object value)[] args)
+             where TRes : class
+        {
+            var dir = new Dictionary<string, string>();
+            foreach(var arg in args)
+            {
+                dir.TryAdd(arg.name,arg.value?.ToString());
+            }
+            var msg = await Post(MessageHelper.NewRemote(service, api, dir), false, true);
+            if (msg.ResultData != null)
+            {
+                return (msg.ResultData as IApiResult<TRes>, msg.State);
+            }
+            if (string.IsNullOrEmpty(msg.Result) && msg.ResultData == null)
+            {
+                return (ApiResultHelper.Helper.State<TRes>(msg.State.ToErrorCode()), msg.State);
+            }
+            return (ApiResultHelper.Helper.Deserialize<TRes>(msg.Result), msg.State);
+        }
+
+        /// <summary>
+        /// 远程调用
+        /// </summary>
+        /// <param name="service">服务名称</param>
+        /// <param name="api">接口名称</param>
+        /// <param name="args">接口参数</param>
+        /// <returns></returns>
+        public static async Task<(IApiResult<TRes> res, MessageState state)> CallApiAsync<TRes>(string service, string api, string args)
+             where TRes : class
+        {
+            var msg = await Post(MessageHelper.NewRemote(service, api, args), false, true);
+            if (msg.ResultData != null)
+            {
+                return (msg.ResultData as IApiResult<TRes>, msg.State);
+            }
+            if (string.IsNullOrEmpty(msg.Result) && msg.ResultData == null)
+            {
+                return (ApiResultHelper.Helper.State<TRes>(msg.State.ToErrorCode()), msg.State);
+            }
+            return (ApiResultHelper.Helper.Deserialize<TRes>(msg.Result), msg.State);
+        }
 
         /// <summary>
         /// 远程调用
