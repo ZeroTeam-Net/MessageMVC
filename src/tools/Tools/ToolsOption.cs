@@ -21,7 +21,6 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <summary>
         ///     启用Monitor模式日志记录
         /// </summary>
-
         public bool EnableMonitorLog { get; set; }
 
         /// <summary>
@@ -37,7 +36,6 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <summary>
         ///     埋点服务名称
         /// </summary>
-
         public string MarkPointName { get; set; }
 
         /// <summary>
@@ -46,15 +44,28 @@ namespace ZeroTeam.MessageMVC.Tools
         public bool EnableMessageReConsumer { get; set; }
 
         /// <summary>
+        ///     启用页面信息记录
+        /// </summary>
+        public bool EnablePageInfo { get; set; }
+
+        /// <summary>
+        ///     页面信息服务名称
+        /// </summary>
+        public string PageInfoService { get; set; }
+
+        /// <summary>
+        ///     页面信息接口方法
+        /// </summary>
+        public string PageInfoApi { get; set; }
+
+        /// <summary>
         ///     回执服务名称
         /// </summary>
-
         public string ReceiptService { get; set; }
 
         /// <summary>
         ///     回执接口方法
         /// </summary>
-
         public string ReceiptApi { get; set; }
 
 
@@ -86,12 +97,7 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <summary>
         /// 实例
         /// </summary>
-        public static readonly ToolsOption Instance = new ToolsOption
-        {
-            ReceiptService = "TrdReceipt",
-            ReceiptApi = "receipt/v1/save",
-            MarkPointName = "MarkPoint"
-        };
+        public static readonly ToolsOption Instance = new ToolsOption();
 
         static ToolsOption()
         {
@@ -103,28 +109,25 @@ namespace ZeroTeam.MessageMVC.Tools
         /// </summary>
         private void Update(ToolsOption option)
         {
-            EnableReverseProxy = option.EnableReverseProxy;
             EnableMonitorLog = option.EnableMonitorLog;
+            EnableReverseProxy = option.EnableReverseProxy;
             EnableMessageReConsumer = option.EnableMessageReConsumer;
-            EnableMarkPoint = option.EnableMarkPoint;
 
-            EnableReceipt = option.EnableReceipt;
-            if (EnableReceipt)
-            {
-                if (!string.IsNullOrWhiteSpace(option.ReceiptService))
-                    ReceiptService = option.ReceiptService;
-                if (!string.IsNullOrWhiteSpace(option.ReceiptApi))
-                    ReceiptApi = option.ReceiptApi;
-                if (!string.IsNullOrWhiteSpace(option.ReceiptApi))
-                    ReceiptApi = option.ReceiptApi;
-            }
+            ReceiptService = option.ReceiptService;
+            ReceiptApi = option.ReceiptApi;
+            EnableReceipt = option.EnableReceipt && !string.IsNullOrWhiteSpace(ReceiptService) && !string.IsNullOrWhiteSpace(ReceiptApi);
 
-            EnableJwtToken = option.EnableJwtToken;
-            if (EnableJwtToken)
-            {
-                JwtAppSecretByte = option.JwtAppSecret.ToUtf8Bytes();
-                JwtIssue = option.JwtIssue;
-            }
+            JwtIssue = option.JwtIssue;
+            JwtAppSecretByte = option.JwtAppSecret?.ToUtf8Bytes();
+            EnableJwtToken = option.EnableJwtToken && !string.IsNullOrWhiteSpace(JwtIssue) && JwtAppSecretByte != null;
+
+            MarkPointName = option.MarkPointName;
+            EnableMarkPoint = option.EnableMarkPoint && !string.IsNullOrWhiteSpace(MarkPointName);
+
+
+            PageInfoService = option.PageInfoService;
+            PageInfoApi = option.PageInfoApi;
+            EnablePageInfo = option.EnablePageInfo && !string.IsNullOrWhiteSpace(PageInfoService) && !string.IsNullOrWhiteSpace(PageInfoApi);
         }
     }
 }

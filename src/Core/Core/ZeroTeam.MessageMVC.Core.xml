@@ -79,6 +79,11 @@
                 是合符合API契约规定
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAction.Info">
+            <summary>
+            接口信息
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiAction.Option">
             <summary>
                 访问控制

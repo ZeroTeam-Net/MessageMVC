@@ -63,8 +63,18 @@ namespace ZeroTeam.MessageMVC.Context
         public ActionTask Task { get; set; }
 
         /// <summary>
+        ///     当前用户
+        /// </summary>
+        public IUser User { get; set; }
+
+        /// <summary>
         /// 转为可传输的对象
         /// </summary>
-        public virtual Dictionary<string, string> ToTransfer() => Option;
+        public Dictionary<string, string> ToTransfer()
+        {
+            if (!Option.ContainsKey("User"))
+                Option.Add("User", User.ToJson());
+            return Option;
+        }
     }
 }

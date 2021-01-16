@@ -38,16 +38,4 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
     }
 
 
-    [Service("HttpTest2")]
-    public class HttpTest2Controler : IApiController
-    {
-        /// <summary>
-        /// 测试接口
-        /// </summary>
-        [Route("hello"), ApiOption(ApiOption.CustomContent)]
-        public string Hello()
-        {
-            return "hello2";
-        }
-    }
 }

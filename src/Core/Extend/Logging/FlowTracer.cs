@@ -1,3 +1,4 @@
+using Agebull.Common.Base;
 using Agebull.Common.Configuration;
 using Agebull.Common.Ioc;
 using Microsoft.Extensions.Logging;
@@ -7,10 +8,84 @@ using System.Text;
 namespace Agebull.Common.Logging
 {
     /// <summary>
+    /// 流程跟踪范围
+    /// </summary>
+    internal class FlowTracerScope : ScopeBase
+    {
+        ILogger _logger;
+        internal FlowTracerScope(string title, ILogger logger)
+        {
+            _logger = logger;
+            FlowTracer.BeginMonitor(title);
+        }
+
+        /// <inheritdoc/>
+        protected override void OnDispose()
+        {
+            _logger.TraceMonitor(FlowTracer.EndMonitor());
+        }
+    }
+    /// <summary>
+    /// 流程跟踪步骤范围
+    /// </summary>
+    internal class FlowTracerStepScope : ScopeBase
+    {
+        internal FlowTracerStepScope(string title)
+        {
+            FlowTracer.BeginStepMonitor(title);
+        }
+
+        /// <inheritdoc/>
+        protected override void OnDispose()
+        {
+            FlowTracer.EndStepMonitor();
+        }
+    }
+    /// <summary>
+    /// 流程跟踪调试步骤范围
+    /// </summary>
+    internal class FlowTracerDebugStepScope : ScopeBase
+    {
+        internal FlowTracerDebugStepScope(string title)
+        {
+            FlowTracer.BeginDebugStepMonitor(title);
+        }
+        /// <inheritdoc/>
+        protected override void OnDispose()
+        {
+            FlowTracer.EndDebugStepMonitor();
+        }
+    }
+
+    /// <summary>
     ///   流程跟踪器
     /// </summary>
     public static class FlowTracer
     {
+        #region Scope
+        /// <summary>
+        /// 跟踪范围
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="logger"></param>
+        /// <returns></returns>
+        public static IDisposable MonitorScope(string title, ILogger logger)
+            => new FlowTracerScope(title, logger);
+
+        /// <summary>
+        /// 步骤范围
+        /// </summary>
+        /// <param name="title"></param>
+        /// <returns></returns>
+        public static IDisposable TraceStepScope(string title) => new FlowTracerStepScope(title);
+
+        /// <summary>
+        /// 步骤范围
+        /// </summary>
+        /// <param name="title"></param>
+        /// <returns></returns>
+        public static IDisposable DebugStepScope(string title) => new FlowTracerDebugStepScope(title);
+        #endregion
         #region Option
 
         /// <summary>
@@ -446,7 +521,7 @@ namespace Agebull.Common.Logging
         /// </summary>
         public static void TraceMonitor(this ILogger logger, TraceStep root)
         {
-            if (root == null)
+            if (root == null || !logger.IsEnabled(LogLevel.Information))
                 return;
             var texter = new StringBuilder();
             Message(texter, root.Start, root);

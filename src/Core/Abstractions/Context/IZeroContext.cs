@@ -18,12 +18,17 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         /// 依赖范围
         /// </summary>
-        IDisposable  DependencyScope { get; set; }
+        IDisposable DependencyScope { get; set; }
 
         /// <summary>
         ///     跟踪信息
         /// </summary>
         TraceInfo Trace { get; }
+
+        /// <summary>
+        ///     当前用户
+        /// </summary>
+        IUser User { get; set; }
 
         /// <summary>
         /// 全局状态

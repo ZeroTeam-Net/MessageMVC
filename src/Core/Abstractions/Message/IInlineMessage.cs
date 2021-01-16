@@ -24,6 +24,11 @@ namespace ZeroTeam.MessageMVC.Messages
         Dictionary<string, string> ExtensionDictionary { get; set; }
 
         /// <summary>
+        /// 二进制字典参数
+        /// </summary>
+        Dictionary<string, byte[]> BinaryDictionary { get; set; }
+
+        /// <summary>
         /// 返回值
         /// </summary>
         public object ResultData { get; set; }
@@ -207,36 +212,13 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 取参数值
         /// </summary>
         /// <param name="name">名称</param>
-        /// <returns>值</returns>
-        string GetStringArgument(string name)
-        {
-            if (ExtensionDictionary == null || !ExtensionDictionary.TryGetValue(name, out var value) || !(value is string str))
-                return null;
-            return str;
-        }
-
-        /*// <summary>
-        /// 取参数值
-        /// </summary>
-        /// <param name="name">名称</param>
-        /// <returns>值</returns>
-        byte[] GetBinaryArgument(string name)
-        {
-            if (Binary == null || !Binary.TryGetValue(name, out var bytes))
-                return null;
-            return bytes;
-        }*/
-
-        /// <summary>
-        /// 取参数值
-        /// </summary>
-        /// <param name="name">名称</param>
         /// <param name="scope">参数范围</param>
+        /// <param name="def">缺省值</param>
         /// <returns>值</returns>
-        string GetScopeArgument(string name, ArgumentScope scope = ArgumentScope.Dictionary)
+        string GetScopeArgument(string name, ArgumentScope scope,string def)
         {
             if (ExtensionDictionary == null || !ExtensionDictionary.TryGetValue(name, out var value))
-                return null;
+                return def;
             return value;
         }
 
@@ -257,23 +239,59 @@ namespace ZeroTeam.MessageMVC.Messages
         }
 
         /// <summary>
-        /// 取参数值(动态IL代码调用)
+        /// 取基本参数值
         /// </summary>
         /// <param name="name">名称</param>
-        /// <param name="scope">参数范围</param>
-        /// <param name="serializeType">序列化类型</param>
-        /// <param name="serialize">序列化器</param>
-        /// <param name="type">序列化对象</param>
+        /// <param name="parse">转化方法</param>
         /// <returns>值</returns>
-        object FrameGetValueArgument(string name, int scope, int serializeType, ISerializeProxy serialize, Type type)
+        public T? GetNullableArgument<T>(string name, Func<string, T> parse) where T : struct
         {
-            if (ExtensionDictionary == null || !ExtensionDictionary.TryGetValue(name, out var value))
-            {
-                if (type != typeof(string))
-                    throw new MessageArgumentNullException(name);
+            if (ExtensionDictionary == null)
                 return null;
-            }
-            return value;
+            if (!ExtensionDictionary.TryGetValue(name, out var str) || string.IsNullOrWhiteSpace(str))
+                return null;
+            return parse(str);
+        }
+
+        /// <summary>
+        /// 取基本参数值
+        /// </summary>
+        /// <param name="name">名称</param>
+        /// <param name="parse">转化方法</param>
+        /// <returns>值</returns>
+        T GetBaseArgument<T>(string name, Func<string, T> parse) where T : struct
+        {
+            if (ExtensionDictionary == null)
+                return default;
+            if (!ExtensionDictionary.TryGetValue(name, out var str) || string.IsNullOrWhiteSpace(str))
+                return default;
+            return parse(str);
+        }
+
+        /// <summary>
+        /// 取基本参数值
+        /// </summary>
+        /// <param name="name">名称</param>
+        /// <returns>值</returns>
+        string GetStringArgument(string name)
+        {
+            if (ExtensionDictionary == null)
+                return null;
+            ExtensionDictionary.TryGetValue(name, out var str);
+            return str;
+        }
+
+        /// <summary>
+        /// 取二进制参数值
+        /// </summary>
+        /// <param name="name">名称</param>
+        /// <returns>值</returns>
+        byte[] GetBinaryArgument(string name)
+        {
+            if (BinaryDictionary == null)
+                return null;
+            BinaryDictionary.TryGetValue(name, out var str);
+            return str;
         }
         #endregion
 

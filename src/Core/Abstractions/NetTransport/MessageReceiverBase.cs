@@ -80,7 +80,11 @@ namespace ZeroTeam.MessageMVC.Messages
             FlowTracer.MonitorDetails(() => $"[{GetType().GetTypeName()}.Post] 进入本地隧道处理模式");
             //如此做法,避免上下文混乱
             var task = new TaskCompletionSource<IMessageResult>();
-            _ = MessageProcessor.OnMessagePush(Service, message, message.Content != null, task);
+
+#pragma warning disable CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
+            Task.Run(() => MessageProcessor.OnMessagePush(Service, message, message.Content != null, task));
+#pragma warning restore CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
+
             await task.Task;
 
             return null;//直接使用原始消息

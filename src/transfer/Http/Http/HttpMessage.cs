@@ -1,16 +1,10 @@
-using Agebull.Common.Ioc;
-using Agebull.Common.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using JsonIgnoreAttribute = System.Text.Json.Serialization.JsonIgnoreAttribute;
 
@@ -41,6 +35,11 @@ namespace ZeroTeam.MessageMVC.Http
         /// </summary>
         [JsonIgnore]
         public Dictionary<string, string> ExtensionDictionary { get; set; }
+
+        /// <summary>
+        /// 二进制字典参数
+        /// </summary>
+        public Dictionary<string, byte[]> BinaryDictionary { get; set; }
 
         /// <summary>
         /// 数据状态
@@ -200,26 +199,6 @@ namespace ZeroTeam.MessageMVC.Http
                 default:
                     return HttpContent;
             }
-        }
-
-        /// <summary>
-        /// 取参数值(动态IL代码调用)  BUG
-        /// </summary>
-        /// <param name="name">名称</param>
-        /// <param name="scope">参数范围</param>
-        /// <param name="serializeType">序列化类型</param>
-        /// <param name="serialize">序列化器</param>
-        /// <param name="type">序列化对象</param>
-        /// <returns>值</returns>
-        public object FrameGetValueArgument(string name, int scope, int serializeType, ISerializeProxy serialize, Type type)
-        {
-            var val = GetScopeArgument(name, (ArgumentScope)scope);
-
-            if (val == null && type != typeof(string))
-            {
-                throw new MessageArgumentNullException(name);
-            }
-            return val;
         }
 
         /// <summary>

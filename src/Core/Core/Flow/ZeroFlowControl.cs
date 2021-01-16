@@ -164,8 +164,8 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
             DestoryAll();
             ZeroAppOption.Instance.SetApplicationState(StationState.Destroy);
 
+            DependencyScope.DisposeLocal();
             DependencyHelper.LoggerFactory.Dispose();
-            DependencyScope.Local.Value?.Scope?.Dispose();
             logger.Information("【已退出，下次见！】");
         }
 

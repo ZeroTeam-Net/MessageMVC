@@ -17,6 +17,16 @@
             <param name="message"></param>
             <returns></returns>
         </member>
+        <member name="T:ZeroTeam.MessageMVC.Tools.AutoRegister">
+            <summary>
+              组件注册
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Tools.AutoRegister.ZeroTeam#MessageMVC#AddIn#IAutoRegister#AutoRegist(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            注册
+            </summary>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Tools.JwtTokenResolver">
             <summary>
             API扩展功能
@@ -32,16 +42,6 @@
             JWT校验
             </summary>
             <param name="jwt"></param>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.Tools.AutoRegister">
-            <summary>
-              组件注册
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Tools.AutoRegister.ZeroTeam#MessageMVC#AddIn#IAutoRegister#AutoRegist(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
-            <summary>
-            注册
-            </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Tools.ExceptionMiddleware">
             <summary>
@@ -272,6 +272,21 @@
                 启用异常消息本地重放
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.EnablePageInfo">
+            <summary>
+                启用页面信息记录
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.PageInfoService">
+            <summary>
+                页面信息服务名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.PageInfoApi">
+            <summary>
+                页面信息接口方法
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.ReceiptService">
             <summary>
                 回执服务名称
@@ -334,7 +349,17 @@
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiMarkDown">
             <summary>
-            API扩展功能
+            API扩展Markdown文档生成工具
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiMarkDown.CreateMarkdown(System.Type[])">
+            <summary>
+            生成Markdown文档(在当前目录的md目录下)
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiMarkDown.CreateMarkdown(System.Reflection.Assembly[])">
+            <summary>
+            生成Markdown文档(在当前目录的md目录下)
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiMarkDown.ServiceInfos">
@@ -413,53 +438,6 @@
             </summary>
             <param name="token"></param>
             <returns></returns>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.Context.IUser">
-            <summary>
-             用户信息
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Context.IUser.UserId">
-            <summary>
-               用户数字标识
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Context.IUser.NickName">
-            <summary>
-                用户昵称
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Context.IUser.OrganizationId">
-            <summary>
-                用户组织数字标识
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Context.IUser.CurrentPermission">
-            <summary>
-                确定后的当前权限信息
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Context.IUser.Permissions">
-            <summary>
-                角色集合
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Context.IUser.FormJson(System.String)">
-            <summary>
-            通过Json来还原用户
-            </summary>
-            <param name="json"></param>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Context.IUser.ToJson">
-            <summary>
-            序列化为JSON
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Context.IUser.Item(System.String)">
-            <summary>
-            快捷读写字典
-            </summary>
-            <param name="type"></param>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Context.UserInfo">
             <summary>
@@ -722,6 +700,11 @@
             组织ID
             </summary>
         </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.OrganizationCode">
+            <summary>
+            组织查询代码
+            </summary>
+        </member>
         <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.CurrentPermission">
             <summary>
             当前权限
@@ -778,6 +761,30 @@
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Context.GlobalContextMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Prepare(ZeroTeam.MessageMVC.Services.IService,ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
+            <summary>
+            准备
+            </summary>
+            <param name="service">当前服务</param>
+            <param name="message">当前消息</param>
+            <param name="tag">扩展信息</param>
+            <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Messages.PageInfoMiddleware">
+            <summary>
+            页面信息中间件
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.PageInfoMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Level">
+            <summary>
+            层级
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.PageInfoMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Scope">
+            <summary>
+            消息中间件的处理范围
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.PageInfoMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Prepare(ZeroTeam.MessageMVC.Services.IService,ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
             <summary>
             准备
             </summary>

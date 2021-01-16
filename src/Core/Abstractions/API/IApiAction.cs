@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using ZeroTeam.MessageMVC.Documents;
 using ZeroTeam.MessageMVC.Messages;
 using ActionTask = System.Threading.Tasks.TaskCompletionSource<(ZeroTeam.MessageMVC.Messages.MessageState state, object result)>;
 
@@ -11,9 +12,14 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     public interface IApiAction
     {
         /// <summary>
+        /// 接口信息
+        /// </summary>
+        ApiActionInfo Info { get; set; }
+
+        /// <summary>
         ///     API配置
         /// </summary>
-        ApiOption Option { get; set; }
+        ApiOption Option { get;  }
 
         /// <summary>
         ///     Api名称
@@ -24,7 +30,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ///     是合符合API契约规定
         /// </summary>
         bool IsApiContract { get; }
-
 
         /// <summary>
         ///     参数类型

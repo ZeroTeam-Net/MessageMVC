@@ -15,11 +15,6 @@ namespace ZeroTeam.MessageMVC.Http
         public const string AgentName = "MessageMVC";
 
         /// <summary>
-        /// 启用文件上传
-        /// </summary>
-        public bool EnableFormFile { get; set; }
-
-        /// <summary>
         /// 特殊URL取第几个路径作为服务名称的映射表
         /// </summary>
         /// <remarks>
@@ -45,7 +40,6 @@ namespace ZeroTeam.MessageMVC.Http
         {
             if (option.HostPaths != null)
                 Instance.HostPaths = option.HostPaths;
-            Instance.EnableFormFile = option.EnableFormFile;
         }
     }
 }

@@ -171,13 +171,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         {
             try
             {
-                if (!action.RestoreArgument(Message))
-                {
-                    FlowTracer.MonitorInfomation("错误 : 无法还原参数");
-                    Message.Result = "错误 : 无法还原参数";
-                    Message.RealState = MessageState.FormalError;
-                    return false;
-                }
+                action.RestoreArgument(Message);
             }
             catch (Exception ex)
             {
@@ -191,10 +185,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 return false;
             }
 
-            if (action.Option.HasFlag(ApiOption.DictionaryArgument))
-            {
-                return true;
-            }
             try
             {
                 if (action.ValidateArgument(Message, out var status))

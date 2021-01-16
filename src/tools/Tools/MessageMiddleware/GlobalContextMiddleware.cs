@@ -41,7 +41,6 @@ namespace ZeroTeam.MessageMVC.Context
                 message.Trace.LocalMachine = $"{ZeroAppOption.Instance.ServiceName}({ZeroAppOption.Instance.LocalIpAddress})";
             }
             var context = GlobalContext.Reset(message);
-            IUser user = null;
             if (message.IsOutAccess)
             {
                 try
@@ -49,7 +48,7 @@ namespace ZeroTeam.MessageMVC.Context
                     var resolver = DependencyHelper.GetService<ITokenResolver>();
                     if (resolver != null)
                     {
-                        user = resolver.TokenToUser(message.Trace.Token);
+                        context.User = resolver.TokenToUser(message.Trace.Token);
                     }
                 }
                 catch (Exception ex)
@@ -59,11 +58,10 @@ namespace ZeroTeam.MessageMVC.Context
             }
             else if (message.Context != null && message.Context.TryGetValue("User", out var json))
             {
-                user = new UserInfo();
-                user.FormJson(json);
+                context.User = DependencyHelper.GetService<IUser>();
+                context.User.FormJson(json);
             }
-            DependencyScope.Dependency.Annex(user);
-            FlowTracer.MonitorDetails(() => $"User => {user?.ToJson()}");
+            FlowTracer.MonitorDetails(() => $"User => {context.User?.ToJson()}");
             return Task.FromResult(true);
         }
     }

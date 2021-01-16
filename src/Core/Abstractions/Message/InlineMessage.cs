@@ -67,6 +67,11 @@ namespace ZeroTeam.MessageMVC.Messages
         private object argumentData;
 
         /// <summary>
+        /// 二进制字典参数
+        /// </summary>
+        public Dictionary<string, byte[]> BinaryDictionary { get; set; }
+
+        /// <summary>
         /// 实体参数
         /// </summary>
         [JsonIgnore]
@@ -145,6 +150,7 @@ namespace ZeroTeam.MessageMVC.Messages
                 ((IInlineMessage)this).RestoryContent(serialize, type);
             return ArgumentData;
         }
+
     }
 }
 

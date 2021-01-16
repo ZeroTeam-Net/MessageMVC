@@ -114,7 +114,7 @@ namespace ZeroTeam.MessageMVC.Messages
             else
             {
                 //正常清理范围
-                DependencyScope.Local.Value.Scope.Dispose();
+                DependencyScope.DisposeLocal();
             }
         }
 

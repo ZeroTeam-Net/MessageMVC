@@ -20,6 +20,11 @@ namespace ZeroTeam.MessageMVC.Context
         public static IZeroContext Current => DependencyScope.Dependency.TryGetDependency(DependencyHelper.GetService<IZeroContext>);
 
         /// <summary>
+        ///     当前线程的调用上下文
+        /// </summary>
+        public static IUser User => CurrentNoLazy?.User;
+
+        /// <summary>
         ///     当前线程的上下文中的对象
         /// </summary>
         public static T Get<T>() where T : class

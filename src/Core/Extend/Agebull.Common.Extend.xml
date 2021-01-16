@@ -2585,6 +2585,14 @@
             析构方法
             </summary>
         </member>
+        <member name="M:Agebull.Common.Ioc.DependencyScope.DisposeLocal">
+            <summary>
+            析构本地
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Ioc.DependencyScope.System#IDisposable#Dispose">
+            <inheritdoc/>
+        </member>
         <member name="T:Agebull.Common.Ioc.DynamicCreateBuilder">
             <summary>
             接口方法生成器
@@ -3705,10 +3713,56 @@
             <param name="nodes"> </param>
             <returns> </returns>
         </member>
+        <member name="T:Agebull.Common.Logging.FlowTracerScope">
+            <summary>
+            流程跟踪范围
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracerScope.OnDispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Agebull.Common.Logging.FlowTracerStepScope">
+            <summary>
+            流程跟踪步骤范围
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracerStepScope.OnDispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Agebull.Common.Logging.FlowTracerDebugStepScope">
+            <summary>
+            流程跟踪调试步骤范围
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracerDebugStepScope.OnDispose">
+            <inheritdoc/>
+        </member>
         <member name="T:Agebull.Common.Logging.FlowTracer">
             <summary>
               流程跟踪器
             </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.MonitorScope(System.String,Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            跟踪范围
+            </summary>
+            <param name="title"></param>
+            <param name="logger"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.TraceStepScope(System.String)">
+            <summary>
+            步骤范围
+            </summary>
+            <param name="title"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.DebugStepScope(System.String)">
+            <summary>
+            步骤范围
+            </summary>
+            <param name="title"></param>
+            <returns></returns>
         </member>
         <member name="M:Agebull.Common.Logging.FlowTracer.#cctor">
             <summary>

@@ -25,9 +25,8 @@ namespace ZeroTeam.MessageMVC.Tools
             {
                 return true;
             }
-            var user = DependencyScope.Dependency.Dependency<IUser>();
             //1 确定调用方法及对应权限
-            if (UserInfo.IsLoginUser(user))
+            if (UserInfo.IsLoginUser(GlobalContext.Current.User))
             {
                 return true;
             }

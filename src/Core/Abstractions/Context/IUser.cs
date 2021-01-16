@@ -42,7 +42,6 @@ namespace ZeroTeam.MessageMVC.Context
         /// </summary>
         string ToJson();
 
-
         /// <summary>
         /// 快捷读写字典
         /// </summary>

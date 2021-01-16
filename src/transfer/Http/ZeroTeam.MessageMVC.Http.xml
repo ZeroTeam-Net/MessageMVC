@@ -39,6 +39,11 @@
             字典参数
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.BinaryDictionary">
+            <summary>
+            二进制字典参数
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.DataState">
             <summary>
             数据状态
@@ -139,17 +144,6 @@
             </summary>
             <param name="scope">范围</param>
             <param name="serialize">序列化类型</param>
-            <returns>值</returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpMessage.FrameGetValueArgument(System.String,System.Int32,System.Int32,ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Type)">
-            <summary>
-            取参数值(动态IL代码调用)  BUG
-            </summary>
-            <param name="name">名称</param>
-            <param name="scope">参数范围</param>
-            <param name="serializeType">序列化类型</param>
-            <param name="serialize">序列化器</param>
-            <param name="type">序列化对象</param>
             <returns>值</returns>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Http.HttpMessage.GetValueArgument(System.String,System.Int32,System.Int32,ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Type)">
@@ -332,11 +326,6 @@
         <member name="F:ZeroTeam.MessageMVC.Http.MessageRouteOption.AgentName">
             <summary>
             标识内部调用的代理名称
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.MessageRouteOption.EnableFormFile">
-            <summary>
-            启用文件上传
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Http.MessageRouteOption.HostPaths">

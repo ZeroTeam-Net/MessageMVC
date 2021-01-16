@@ -200,6 +200,11 @@
                 Api方法
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.IApiAction.Info">
+            <summary>
+            接口信息
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.IApiAction.Option">
             <summary>
                 API配置
@@ -1442,6 +1447,11 @@
                 当前线程的调用上下文
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.GlobalContext.User">
+            <summary>
+                当前线程的调用上下文
+            </summary>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.Context.GlobalContext.Get``1">
             <summary>
                 当前线程的上下文中的对象
@@ -1490,6 +1500,53 @@
             <param name="name">配置名称</param>
             <returns></returns>
         </member>
+        <member name="T:ZeroTeam.MessageMVC.Context.IUser">
+            <summary>
+             用户信息
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.IUser.UserId">
+            <summary>
+               用户数字标识
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.IUser.NickName">
+            <summary>
+                用户昵称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.IUser.OrganizationId">
+            <summary>
+                用户组织数字标识
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.IUser.CurrentPermission">
+            <summary>
+                确定后的当前权限信息
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.IUser.Permissions">
+            <summary>
+                角色集合
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Context.IUser.FormJson(System.String)">
+            <summary>
+            通过Json来还原用户
+            </summary>
+            <param name="json"></param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Context.IUser.ToJson">
+            <summary>
+            序列化为JSON
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.IUser.Item(System.String)">
+            <summary>
+            快捷读写字典
+            </summary>
+            <param name="type"></param>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Context.IZeroContext">
             <summary>
                 全局上下文
@@ -1508,6 +1565,11 @@
         <member name="P:ZeroTeam.MessageMVC.Context.IZeroContext.Trace">
             <summary>
                 跟踪信息
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.IZeroContext.User">
+            <summary>
+                当前用户
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Context.IZeroContext.Status">
@@ -1690,6 +1752,11 @@
             当前任务，用于提前返回
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.ZeroContext.User">
+            <summary>
+                当前用户
+            </summary>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.Context.ZeroContext.ToTransfer">
             <summary>
             转为可传输的对象
@@ -1785,6 +1852,11 @@
         <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.HaseArgument">
             <summary>
                 是否有调用参数
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.IsDictionaryArgument">
+            <summary>
+                是否字典参数
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Documents.ApiDocument.Arguments">
@@ -2235,6 +2307,11 @@
             字典参数
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.BinaryDictionary">
+            <summary>
+            二进制字典参数
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.ResultData">
             <summary>
             返回值
@@ -2293,19 +2370,13 @@
             <param name="type">序列化对象</param>
             <returns>值</returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.GetStringArgument(System.String)">
-            <summary>
-            取参数值
-            </summary>
-            <param name="name">名称</param>
-            <returns>值</returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.GetScopeArgument(System.String,ZeroTeam.MessageMVC.Messages.ArgumentScope)">
+        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.GetScopeArgument(System.String,ZeroTeam.MessageMVC.Messages.ArgumentScope,System.String)">
             <summary>
             取参数值
             </summary>
             <param name="name">名称</param>
             <param name="scope">参数范围</param>
+            <param name="def">缺省值</param>
             <returns>值</returns>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.GetValueArgument(System.String,System.Int32,System.Int32,ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Type)">
@@ -2319,15 +2390,34 @@
             <param name="type">序列化对象</param>
             <returns>值</returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.FrameGetValueArgument(System.String,System.Int32,System.Int32,ZeroTeam.MessageMVC.Messages.ISerializeProxy,System.Type)">
+        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.GetNullableArgument``1(System.String,System.Func{System.String,``0})">
             <summary>
-            取参数值(动态IL代码调用)
+            取基本参数值
             </summary>
             <param name="name">名称</param>
-            <param name="scope">参数范围</param>
-            <param name="serializeType">序列化类型</param>
-            <param name="serialize">序列化器</param>
-            <param name="type">序列化对象</param>
+            <param name="parse">转化方法</param>
+            <returns>值</returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.GetBaseArgument``1(System.String,System.Func{System.String,``0})">
+            <summary>
+            取基本参数值
+            </summary>
+            <param name="name">名称</param>
+            <param name="parse">转化方法</param>
+            <returns>值</returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.GetStringArgument(System.String)">
+            <summary>
+            取基本参数值
+            </summary>
+            <param name="name">名称</param>
+            <returns>值</returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.GetBinaryArgument(System.String)">
+            <summary>
+            取二进制参数值
+            </summary>
+            <param name="name">名称</param>
             <returns>值</returns>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.ResultCreater">
@@ -2543,6 +2633,11 @@
         <member name="P:ZeroTeam.MessageMVC.Messages.InlineMessage.ExtensionDictionary">
             <summary>
             字典参数
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.InlineMessage.BinaryDictionary">
+            <summary>
+            二进制字典参数
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.InlineMessage.ArgumentData">

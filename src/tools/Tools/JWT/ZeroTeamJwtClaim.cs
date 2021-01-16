@@ -160,6 +160,11 @@
         public const string OrganizationId = "z_oids";
 
         /// <summary>
+        /// 组织查询代码
+        /// </summary>
+        public const string OrganizationCode = "z_oqc";
+
+        /// <summary>
         /// 当前权限
         /// </summary>
         public const string CurrentPermission = "z_cur_per";

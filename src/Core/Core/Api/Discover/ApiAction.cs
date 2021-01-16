@@ -2,6 +2,7 @@ using Agebull.Common.Ioc;
 using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
+using ZeroTeam.MessageMVC.Documents;
 using ZeroTeam.MessageMVC.Messages;
 using ActionTask = System.Threading.Tasks.TaskCompletionSource<(ZeroTeam.MessageMVC.Messages.MessageState state, object result)>;
 
@@ -25,6 +26,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         public bool IsApiContract { get; private set; }
 
+        /// <summary>
+        /// 接口信息
+        /// </summary>
+        public ApiActionInfo Info { get; set; }
         #endregion
 
         #region 权限
@@ -32,7 +37,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         ///     访问控制
         /// </summary>
-        public ApiOption Option { get; set; }
+        public ApiOption Option => Info.AccessOption;
 
         /// <summary>
         ///     需要登录
@@ -171,19 +176,18 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         public bool RestoreArgument(IInlineMessage message)
         {
-            if (message.ArgumentData != null)
-            {
-                return true;
-            }
             ArgumentSerializer ??= DependencyHelper.GetService<ISerializeProxy>();
-            if (Option.HasFlag(ApiOption.DictionaryArgument) || ArgumentType == null)
+            if (Info.IsDictionaryArgument)
+                message.RestoryContentToDictionary(ArgumentSerializer, true);
+
+            if (message.ArgumentData != null || Option.HasFlag(ApiOption.DictionaryArgument) || Option.HasFlag(ApiOption.CustomContent))
             {
-                if (!Option.HasFlag(ApiOption.CustomContent))
-                    message.RestoryContentToDictionary(ArgumentSerializer, true);
                 return true;
             }
-
-            message.ArgumentData = message.GetArgument((int)ArgumentScope, (int)ArgumentSerializeType, ArgumentSerializer, ArgumentType);
+            if (ArgumentType != null)
+            {
+                message.ArgumentData = message.GetArgument((int)ArgumentScope, (int)ArgumentSerializeType, ArgumentSerializer, ArgumentType);
+            }
             return true;
         }
 
@@ -195,24 +199,22 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <returns></returns>
         public bool ValidateArgument(IInlineMessage data, out IOperatorStatus status)
         {
-            if (ArgumentType == null)
+            if (ArgumentType == null || Option.HasFlag(ApiOption.DictionaryArgument) || Option.HasFlag(ApiOption.CustomContent))
             {
                 status = null;
                 return true;
+            }
+            if (data.ArgumentData == null && !Option.HasFlag(ApiOption.ArgumentCanNil))
+            {
+                status = ApiResultHelper.State(OperatorStatusCode.ArgumentError, "参数不能为空");
+                return false;
             }
             if (data.ArgumentData is IApiArgument arg)
             {
                 return arg.Validate(out status);
             }
-
-            if (data.ArgumentData != null || Option.HasFlag(ApiOption.ArgumentCanNil))
-            {
-                status = null;
-                return true;
-            }
-
-            status = ApiResultHelper.State(OperatorStatusCode.ArgumentError, "参数不能为空");
-            return false;
+            status = null;
+            return true;
         }
 
         #endregion
@@ -260,7 +262,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 else if (!GlobalContext.Current.IsDelay)//
                 {
                     //清理范围
-                    DependencyScope.Local.Value.Scope.Dispose();
+                    DependencyScope.DisposeLocal();
                 }
             }
             catch (Exception ex)
@@ -273,7 +275,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 else if (!GlobalContext.Current.IsDelay)
                 {
                     //清理范围
-                    DependencyScope.Local.Value.Scope.Dispose();
+                    DependencyScope.DisposeLocal();
                 }
             }
         }

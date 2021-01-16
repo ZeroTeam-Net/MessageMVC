@@ -8,7 +8,7 @@ using ZeroTeam.MessageMVC.ZeroApis;
 namespace ZeroTeam.MessageMVC.Sample.Controllers
 {
     [Service("test2")]
-    public class HttpTest3Controler : IApiController
+    public class HttpTest2Controler : IApiController
     {
         /// <summary>
         /// 测试接口

@@ -27,18 +27,18 @@ namespace ZeroTeam.MessageMVC.Http
         /// <returns></returns>
         public static async Task Call(HttpContext context)
         {
-            //if (string.Equals(context.Request.Method, "OPTIONS", StringComparison.OrdinalIgnoreCase))
-            //{
-            //    HttpProtocol.CrosOption(context.Response);
-            //    return;
-            //}
+            if (string.Equals(context.Request.Method, "OPTIONS", StringComparison.OrdinalIgnoreCase))
+            {
+                //HttpProtocol.CrosOption(context.Response);
+                return;
+            }
             var uri = context.Request.GetUri();
             if (uri.AbsolutePath == "/")
             {
                 await context.Response.WriteAsync("Wecome MessageMVC,Lucky every day!", Encoding.UTF8);
                 return;
             }
-            HttpProtocol.CrosCall(context.Response);
+            //HttpProtocol.CrosCall(context.Response);
             try
             {
                 //命令
@@ -81,7 +81,7 @@ namespace ZeroTeam.MessageMVC.Http
         async Task<bool> IMessageReceiver.OnResult(IInlineMessage message, object tag)
         {
             var context = (HttpContext)tag;
-            //同步HTTP状态码
+            /*/同步HTTP状态码
             switch (message.State)
             {
                 default:
@@ -116,7 +116,7 @@ namespace ZeroTeam.MessageMVC.Http
                 case MessageState.Processing:
                     context.Response.StatusCode = (int)HttpStatusCode.Accepted;
                     break;
-            }
+            }*/
             // 写入返回
             message.OfflineResult();
             context.Response.ContentType = "application/json; charset=UTF-8";

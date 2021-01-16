@@ -12,6 +12,7 @@ namespace Agebull.Common.Ioc
     public class DependencyScope : IDisposable
     {
         readonly bool isNew;
+        ScopeData backup;
         /// <summary>
         /// 生成一个范围
         /// </summary>
@@ -28,12 +29,23 @@ namespace Agebull.Common.Ioc
                     ServiceScope = DependencyHelper.ServiceScopeFactory.CreateScope()
                 };
             }
-            else if(Local.Value.ServiceScope == null)
+            else if (Local.Value.ServiceScope == null)
+            {
+                Local.Value.Scope = this;
+                Local.Value.Name ??= name ?? "Scope";
+                Local.Value.ServiceScope = DependencyHelper.ServiceScopeFactory.CreateScope();
+            }
+            else
             {
                 isNew = true;
-                Local.Value.Scope = this;
-                Local.Value.Name = name ?? "Scope";
-                Local.Value.ServiceScope = DependencyHelper.ServiceScopeFactory.CreateScope();
+                backup = Local.Value;
+                Local.Value = new ScopeData
+                {
+                    Name = name ?? "Scope",
+                    Scope = this,
+                    ServiceScope = DependencyHelper.ServiceScopeFactory.CreateScope()
+                };
+                Console.WriteLine($"【警告】 依赖范围（{name}）存在于一个Task链中,已启用备份. ");
             }
         }
 
@@ -49,7 +61,7 @@ namespace Agebull.Common.Ioc
         /// <summary>
         /// 活动实例
         /// </summary>
-        public static readonly AsyncLocal<ScopeData> Local = new AsyncLocal<ScopeData>();
+        static readonly AsyncLocal<ScopeData> Local = new AsyncLocal<ScopeData>();
 
         /// <summary>
         /// 内容
@@ -104,10 +116,17 @@ namespace Agebull.Common.Ioc
 
         #region 清理资源
 
+        /// <summary>
+        /// 析构本地
+        /// </summary>
+        public static void DisposeLocal()
+        {
+            Local?.Value.Scope?.Dispose();
+        }
         // 检测冗余调用
         private bool disposedValue = false;
 
-        // 添加此代码以正确实现可处置模式。
+        ///<inheritdoc/>
         void IDisposable.Dispose()
         {
             if (disposedValue)
@@ -116,19 +135,9 @@ namespace Agebull.Common.Ioc
             }
             disposedValue = true;
 
-            if (!isNew)
+            if (!isNew || !(Local.Value is ScopeData data))
                 return;
-            if (!(Local.Value is ScopeData data))
-                return;
-            Local.Value = null;
-            try
-            {
-                data.ServiceScope?.Dispose();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
+            Local.Value = backup;
             foreach (var func in data.DisposeFunc)
             {
                 try
@@ -152,6 +161,15 @@ namespace Agebull.Common.Ioc
                     Console.WriteLine(e);
                 }
             }
+            try
+            {
+                data.ServiceScope?.Dispose();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            data.ServiceScope = null;
         }
 
         #endregion

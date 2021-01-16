@@ -32,7 +32,7 @@ namespace ZeroTeam.MessageMVC.Http
         ///     调用检查
         /// </summary>
         /// <param name="context"></param>
-        public async Task<(bool success,IInlineMessage message)> CheckRequest(HttpContext context)
+        public async Task<(bool success, IInlineMessage message)> CheckRequest(HttpContext context)
         {
             HttpContext = context;
             var request = context.Request;
@@ -44,24 +44,24 @@ namespace ZeroTeam.MessageMVC.Http
                 var message = SmartSerializer.FromInnerString<InlineMessage>(content);
                 message.Trace ??= TraceInfo.New(message.ID);
                 message.DataState = MessageDataState.ArgumentOffline;
-                return (true,message);
+                return (true, message);
             }
 
             Message = new HttpMessage
             {
                 IsOutAccess = true,
-                HttpContext=context,
+                HttpContext = context,
                 Uri = request.Path.Value,
                 HttpMethod = request.Method.ToUpper(),
                 ID = Guid.NewGuid().ToString("N").ToUpper()
             };
             if (!CheckApiRoute())
             {
-                return (false,null);
+                return (false, null);
             }
             CheckTrace();
             await Prepare();
-            return (true,Message);
+            return (true, Message);
         }
 
         private static bool TryGetHeader(HttpRequest request, string name, out string value)
@@ -107,7 +107,7 @@ namespace ZeroTeam.MessageMVC.Http
                 return false;
             }
             Message.ApiHost = words[idx].ToLower();
-            Message.ApiName = string.Join('/', words.Skip(idx + 1).Select(p=>p.ToLower()));
+            Message.ApiName = string.Join('/', words.Skip(idx + 1).Select(p => p.ToLower()));
             return true;
         }
 
@@ -120,9 +120,14 @@ namespace ZeroTeam.MessageMVC.Http
             try
             {
                 Message.ExtensionDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-                ReadArgument();
-                ReadForm();
-                ReadFiles();
+                var request = HttpContext.Request;
+                if (!request.QueryString.HasValue)
+                    ReadArgument(request);
+                if (request.HasFormContentType)
+                {
+                    ReadForm(request);
+                    await ReadFiles(request);
+                }
                 Message.Content = Message.HttpContent ??= await ReadContent();
             }
             catch (Exception e)
@@ -170,38 +175,26 @@ namespace ZeroTeam.MessageMVC.Http
             return string.Empty;
         }
 
-        private void ReadForm()
+        private void ReadForm(HttpRequest request)
         {
-            var request = HttpContext.Request;
             try
             {
-                if (request.HasFormContentType)
+                foreach (var key in request.Form.Keys)
                 {
-                    foreach (var key in request.Form.Keys)
-                    {
-                        Message.ExtensionDictionary.TryAdd(key, request.Form[key]);
-                    }
+                    Message.ExtensionDictionary.TryAdd(key, request.Form[key]);
                 }
             }
             catch
             {
             }
         }
-        private void ReadArgument()
+        private void ReadArgument(HttpRequest request)
         {
-            var request = HttpContext.Request;
             try
             {
-                if (request.QueryString.HasValue)
+                foreach (var key in request.Query.Keys)
                 {
-                    foreach (var key in request.Query.Keys)
-                    {
-                        //if (key.Length == 1 && key[0] == '_')
-                        //    continue;
-                        //if (key.Length >= 2 && key[0] == '_' && key[1] == '_')
-                        //    continue;
-                        Message.ExtensionDictionary.TryAdd(key, request.Query[key]);
-                    }
+                    Message.ExtensionDictionary.TryAdd(key, request.Query[key]);
                 }
             }
             catch
@@ -209,28 +202,29 @@ namespace ZeroTeam.MessageMVC.Http
             }
         }
 
-        private void ReadFiles()
+        private async Task ReadFiles(HttpRequest request)
         {
-            //if (!MessageRouteOption.Instance.EnableFormFile)
-            //{
-            //    return;
-            //}
-            //Binary = new Dictionary<string, byte[]>();
-            //var request = HttpContext.Request;
-            //var files = request.Form?.Files;
-            //if (files == null || files.Count <= 0)
-            //{
-            //    return;
-            //}
-            //foreach (var file in files)
-            //{
-            //    var bytes = new byte[file.Length];
-            //    using (var stream = file.OpenReadStream())
-            //    {
-            //        stream.Read(bytes, 0, (int)file.Length);
-            //    }
-            //    Binary.TryAdd(file.Name, bytes);
-            //}
+            try
+            {
+                var files = request.Form?.Files;
+                if (files == null || files.Count <= 0)
+                {
+                    return;
+                }
+                Message.BinaryDictionary = new Dictionary<string, byte[]>();
+                foreach (var file in files)
+                {
+                    var bytes = new byte[file.Length];
+                    using (var stream = file.OpenReadStream())
+                    {
+                        await stream.ReadAsync(bytes, 0, (int)file.Length);
+                    }
+                    Message.BinaryDictionary.TryAdd(file.Name, bytes);
+                }
+            }
+            catch
+            {
+            }
         }
     }
 }

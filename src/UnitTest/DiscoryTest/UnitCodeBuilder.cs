@@ -1,6 +1,7 @@
 using Agebull.Common;
 using Agebull.Common.Ioc;
 using NUnit.Framework;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
@@ -70,12 +71,7 @@ namespace DiscoverTest
             ApiDiscover discover = new ApiDiscover();
             discover.Discover(typeof(NetEventControler).Assembly);
 
-            var path =
-                Path.GetDirectoryName(
-                Path.GetDirectoryName(
-                Path.GetDirectoryName(
-                    System.Environment.CurrentDirectory)));
-            path = IOHelper.CheckPath(path, "MarkDown");
+            var path = IOHelper.CheckPath(Environment.CurrentDirectory, "MarkDown");
 
             var extend = new ApiMarkDown
             {

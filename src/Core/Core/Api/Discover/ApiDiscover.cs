@@ -355,7 +355,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 api.ResultType = method.ReturnType;
                 api.ResultInfo = XmlDocumentDiscover.ReadEntity(method.ReturnType, "result");
-
+                
                 if (doc?.Returns != null)
                 {
                     api.ResultInfo.Caption = doc.Returns;
@@ -389,6 +389,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     argument.Name = argument.ParameterInfo.Name;
                     argument.IsEnum = argument.ParameterInfo.ParameterType.IsEnum;
                     argument.IsArray = argument.ParameterInfo.ParameterType.IsArray;
+                    argument.TypeName = argument.ParameterInfo.ParameterType.Name;
                     if (!argument.IsBaseType || argument.IsEnum)
                     {
                         var info = XmlDocumentDiscover.ReadEntity(argument.ParameterInfo.ParameterType, argument.ParameterInfo.Name);
@@ -411,6 +412,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     }
                 }
             }
+
             serviceInfo.Aips.Add(api.Route, api);
             logger.Debug(() => $"【找到接口方法】{api.Route}=>{api.Name} {api.Caption}");
         }

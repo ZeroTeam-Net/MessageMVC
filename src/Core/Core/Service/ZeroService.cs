@@ -353,7 +353,6 @@ namespace ZeroTeam.MessageMVC.Services
         }
         #endregion
 
-
         #region 状态机接口
 
         Task<bool> IStateMachineControl.DoStart()
@@ -409,7 +408,6 @@ namespace ZeroTeam.MessageMVC.Services
 
         #endregion
 
-
         #region 方法注册
 
         ISerializeProxy serialize;
@@ -450,8 +448,8 @@ namespace ZeroTeam.MessageMVC.Services
         {
             WildcardAction = new ApiAction
             {
+                Info = info,
                 Function = info.Action,
-                Option = info.AccessOption,
                 ResultType = info.ResultType,
                 IsAsync = info.IsAsync,
                 ResultSerializeType = info.ResultSerializeType,
@@ -473,11 +471,11 @@ namespace ZeroTeam.MessageMVC.Services
             {
                 var action = new ApiAction
                 {
+                    Info = info,
+                    IsAsync = info.IsAsync,
                     RouteName = api,
                     Function = info.Action,
-                    Option = info.AccessOption,
                     ResultType = info.ResultType,
-                    IsAsync = info.IsAsync,
                     ResultSerializeType = info.ResultSerializeType,
                     ArgumentSerializeType = info.ArgumentSerializeType
                 };
