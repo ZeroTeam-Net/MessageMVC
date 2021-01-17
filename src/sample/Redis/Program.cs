@@ -18,6 +18,7 @@ namespace MicroZero.Kafka.QueueStation
             service.AddMessageMvc();
             _ = Task.Run(Test);
             await service.UseMessageMvc();
+            //ZeroFlowControl.Shutdown();
             Console.WriteLine("Bye bye.");
         }
 

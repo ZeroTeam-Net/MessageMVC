@@ -1,6 +1,7 @@
 ﻿using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
@@ -187,7 +188,14 @@ namespace ZeroTeam.MessageMVC.AddIn
             }
             foreach (var reg in Registers)
             {
-                await reg.Close();
+                try
+                {
+                    await reg.Close();
+                }
+                catch (Exception ex)
+                {
+                    logger.Exception(ex);
+                }
             }
         }
 

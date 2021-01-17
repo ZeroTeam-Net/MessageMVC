@@ -178,7 +178,14 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         Task ILifeFlow.Open()
         {
             Logger.Information("RedisBackPoster >>> Start");
-            client = new CSRedisClient(RedisOption.Instance.ConnectionString);
+            try
+            {
+                client = new CSRedisClient(RedisOption.Instance.ConnectionString);
+            }
+            catch (Exception ex)
+            {
+                Logger.Exception(ex);
+            }
             return Task.CompletedTask;
         }
 
@@ -187,7 +194,14 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// </summary>
         Task ILifeFlow.Close()
         {
-            client.Dispose();
+            try
+            {
+                client?.Dispose();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
             return Task.CompletedTask;
         }
 

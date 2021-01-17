@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using ZeroTeam.MessageMVC.RedisMQ;
 
 namespace ZeroTeam.MessageMVC.Http
 {
@@ -18,6 +19,7 @@ namespace ZeroTeam.MessageMVC.Http
         {
             services.BindingMessageMvc();
             services.AddMessageMvcHttp();
+            services.AddMessageMvcRedis();
             services.AddMessageMvc();
             //services.AddControllers();
         }

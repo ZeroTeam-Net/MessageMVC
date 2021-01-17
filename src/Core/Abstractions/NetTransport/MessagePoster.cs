@@ -98,7 +98,14 @@ namespace ZeroTeam.MessageMVC
             }
             foreach (var task in tasks)
             {
-                await task;
+                try
+                {
+                    await task;
+                }
+                catch (Exception ex)
+                {
+                    logger.Exception(ex);
+                }
             }
         }
         #endregion

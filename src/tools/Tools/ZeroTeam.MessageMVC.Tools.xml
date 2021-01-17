@@ -705,6 +705,11 @@
             组织查询代码
             </summary>
         </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.DataScope">
+            <summary>
+            设备类型
+            </summary>
+        </member>
         <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.CurrentPermission">
             <summary>
             当前权限

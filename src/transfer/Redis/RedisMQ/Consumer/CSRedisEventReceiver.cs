@@ -78,8 +78,8 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         {
             try
             {
-                subscribeObject?.Dispose();
                 loopTask?.SetResult(true);
+                subscribeObject?.Dispose();
             }
             catch (Exception ex)
             {

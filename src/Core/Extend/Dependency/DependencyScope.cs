@@ -121,7 +121,7 @@ namespace Agebull.Common.Ioc
         /// </summary>
         public static void DisposeLocal()
         {
-            Local?.Value.Scope?.Dispose();
+            Local?.Value?.Scope?.Dispose();
         }
         // ºÏ≤‚»ﬂ”‡µ˜”√
         private bool disposedValue = false;

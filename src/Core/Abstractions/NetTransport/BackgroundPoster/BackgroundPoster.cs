@@ -40,7 +40,7 @@ namespace ZeroTeam.MessageMVC.MessageQueue
         /// </summary>
         Task IMessageWorker.Close()
         {
-            cancellation.Cancel();
+            cancellation?.Cancel();
             return Task.CompletedTask;
         }
 

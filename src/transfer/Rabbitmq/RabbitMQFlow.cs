@@ -148,8 +148,15 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
         /// </summary>
         Task ILifeFlow.Close()
         {
-            connection?.Close();
-            connection?.Dispose();
+            try
+            {
+                connection?.Close();
+                connection?.Dispose();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
             connection = null;
             return Task.CompletedTask;
         }

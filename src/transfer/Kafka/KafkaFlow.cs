@@ -139,7 +139,14 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// </summary>
         Task ILifeFlow.Close()
         {
-            producer?.Dispose();
+            try
+            {
+                producer?.Dispose();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
             producer = null;
             return Task.CompletedTask;
         }

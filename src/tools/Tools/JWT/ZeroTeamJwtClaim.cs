@@ -109,7 +109,7 @@
         /// http://openid.net/specs/openid-connect-core-1_0.html#IDToken
         /// </summary>
         public const string Website = "website";
-
+        
         /// <summary>
         /// 设备类型
         /// </summary>
@@ -164,6 +164,10 @@
         /// </summary>
         public const string OrganizationCode = "z_oqc";
 
+        /// <summary>
+        /// 设备类型
+        /// </summary>
+        public const string DataScope = "z_scope";
         /// <summary>
         /// 当前权限
         /// </summary>

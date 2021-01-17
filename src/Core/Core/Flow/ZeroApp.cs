@@ -28,7 +28,8 @@ namespace ZeroTeam.MessageMVC
         {
             DependencyHelper.Binding(service);
             //进程退出事件
-            AppDomain.CurrentDomain.ProcessExit += ZeroFlowControl.OnShutdown;
+            Console.CancelKeyPress += ZeroFlowControl.BeginClose;
+            AppDomain.CurrentDomain.ProcessExit += ZeroFlowControl.EndClose;
         }
 
         /// <summary>
@@ -144,7 +145,7 @@ namespace ZeroTeam.MessageMVC
             await ZeroFlowControl.Initialize();
             await ZeroFlowControl.RunAsync();
             Console.WriteLine("应用已启动.请键入 Ctrl+C 退出.");
-            Process.GetCurrentProcess().WaitForExit();
+            await ZeroFlowControl.WaiteEnd();
         }
     }
 }
