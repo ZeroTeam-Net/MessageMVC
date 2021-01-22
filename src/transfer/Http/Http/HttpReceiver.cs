@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Microsoft.AspNetCore.Http;
-using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.Services;
 using ZeroTeam.MessageMVC.ZeroApis;
@@ -32,8 +31,7 @@ namespace ZeroTeam.MessageMVC.Http
                 //HttpProtocol.CrosOption(context.Response);
                 return;
             }
-            var uri = context.Request.GetUri();
-            if (uri.AbsolutePath == "/")
+            if (context.Request.Path == "/")
             {
                 await context.Response.WriteAsync("Wecome MessageMVC,Lucky every day!", Encoding.UTF8);
                 return;
@@ -47,7 +45,7 @@ namespace ZeroTeam.MessageMVC.Http
                 //开始调用
                 if (success)
                 {
-                    var service = ZeroFlowControl.GetService(message.ServiceName) ?? new ZeroService
+                    var service = ZeroFlowControl.GetService(message.Service) ?? new ZeroService
                     {
                         ServiceName = "***",
                         Receiver = new HttpReceiver(),
@@ -62,14 +60,14 @@ namespace ZeroTeam.MessageMVC.Http
             }
             catch (Exception e)
             {
-                DependencyScope.Logger.Exception(e);
+                DependencyRun.Logger.Exception(e);
                 try
                 {
                     await context.Response.WriteAsync(ApiResultHelper.BusinessErrorJson, Encoding.UTF8);
                 }
                 catch (Exception exception)
                 {
-                    DependencyScope.Logger.Exception(exception);
+                    DependencyRun.Logger.Exception(exception);
                 }
             }
         }

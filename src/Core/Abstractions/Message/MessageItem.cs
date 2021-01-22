@@ -26,19 +26,19 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 分类
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public string Topic { get; set; }
+        public string Service { get; set; }
 
         /// <summary>
         /// 标题
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public string Title { get; set; }
+        public string Method { get; set; }
 
         /// <summary>
         /// 内容
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public string Content { get; set; }
+        public string Argument { get; set; }
 
         /// <summary>
         /// 扩展信息（固定为字典）

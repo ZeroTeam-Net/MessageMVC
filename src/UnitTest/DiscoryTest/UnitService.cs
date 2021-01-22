@@ -56,7 +56,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
 
                 var msg = await MessagePoster.Post(new InlineMessage
                 {
-                    ServiceName = "abbc"
+                    Service = "abbc"
                 });
                 Assert.Fail("不应执行");
             }
@@ -68,7 +68,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             {
                 var msg = await MessagePoster.Post(new InlineMessage
                 {
-                    ServiceName = "UnitService"
+                    Service = "UnitService"
                 });
                 Assert.Fail("不应执行");
             }
@@ -89,8 +89,8 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         {
             var msg = await MessagePoster.Post(new InlineMessage
             {
-                ServiceName = "UnitService",
-                ApiName = "abcccceerw"
+                Service = "UnitService",
+                Method = "abcccceerw"
             });
             Assert.IsTrue(msg.State == MessageState.Unhandled, msg.Result);
         }
@@ -106,9 +106,9 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         {
             var msg = await MessagePoster.Post(new InlineMessage
             {
-                ServiceName = "UnitService",
-                ApiName = "v1/argument",
-                Content =
+                Service = "UnitService",
+                Method = "v1/argument",
+                Argument =
 @"{
     ""Value"" : ""string""
 }"
@@ -125,9 +125,9 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         {
             var msg = await MessagePoster.Post(new InlineMessage
             {
-                ServiceName = "UnitService",
-                ApiName = "v1/customSerialize",
-                Content = "<xml><Value>val</Value></xml>"
+                Service = "UnitService",
+                Method = "v1/customSerialize",
+                Argument = "<xml><Value>val</Value></xml>"
             });
             msg.OfflineResult();
             Console.WriteLine(msg.Result);
@@ -142,9 +142,9 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         {
             var msg = await MessagePoster.Post(new InlineMessage
             {
-                ServiceName = "UnitService",
-                ApiName = "v1/validate",
-                Content =
+                Service = "UnitService",
+                Method = "v1/validate",
+                Argument =
 @"{
     
 }"
@@ -164,9 +164,9 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         {
             var msg = await MessagePoster.Post(new InlineMessage
             {
-                ServiceName = "UnitService",
-                ApiName = "v1/validate",
-                Content = @"{""Value"": ""value""}"
+                Service = "UnitService",
+                Method = "v1/validate",
+                Argument = @"{""Value"": ""value""}"
             });
             msg.OfflineResult();
             Console.WriteLine(msg.Result);
@@ -184,8 +184,8 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         {
             var msg = await MessagePoster.Post(new InlineMessage
             {
-                ServiceName = "UnitService",
-                ApiName = "v1/err"
+                Service = "UnitService",
+                Method = "v1/err"
             });
             msg.OfflineResult();
             var res = msg.ResultData as IApiResult;
@@ -199,8 +199,8 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         {
             var msg = await MessagePoster.Post(new InlineMessage
             {
-                ServiceName = "UnitService",
-                ApiName = "v1/empty"
+                Service = "UnitService",
+                Method = "v1/empty"
             });
             Assert.IsTrue(msg.State == MessageState.Success, msg.Result);
         }
@@ -214,9 +214,9 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         {
             var msg = await MessagePoster.Post(new InlineMessage
             {
-                ServiceName = "UnitService",
-                ApiName = "v1/async",
-                Content =
+                Service = "UnitService",
+                Method = "v1/async",
+                Argument =
 @"{
     
 }"
@@ -237,8 +237,8 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             };
             var msg = await MessagePoster.Post(new InlineMessage
             {
-                ServiceName = "UnitService",
-                ApiName = "v1/context",
+                Service = "UnitService",
+                Method = "v1/context",
                 Trace = traceInfo,
                 Context = new System.Collections.Generic.Dictionary<string, string>
                 {
@@ -267,8 +267,8 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         {
             var msg = await MessagePoster.Post(new InlineMessage
             {
-                ServiceName = "UnitService",
-                ApiName = "v1/exception"
+                Service = "UnitService",
+                Method = "v1/exception"
             });
             msg.OfflineResult();
             Assert.IsTrue(msg.State == MessageState.FrameworkError, msg.Result);
@@ -282,9 +282,9 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         {
             var msg = await MessagePoster.Post(new InlineMessage
             {
-                ServiceName = "UnitService",
-                ApiName = "v1/void",
-                Content = @"{""argument"": ""value""}"
+                Service = "UnitService",
+                Method = "v1/void",
+                Argument = @"{""argument"": ""value""}"
             });
             Assert.IsTrue(msg.Result == null, msg.Result);
         }
@@ -298,9 +298,9 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         {
             var msg = await MessagePoster.Post(new InlineMessage
             {
-                ServiceName = "UnitService",
-                ApiName = "v1/json",
-                Content = @"{""Value"": ""value""}"
+                Service = "UnitService",
+                Method = "v1/json",
+                Argument = @"{""Value"": ""value""}"
             });
             Assert.IsTrue(msg.Result[0] == '{', msg.Result);
         }
@@ -314,9 +314,9 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         {
             var msg = await MessagePoster.Post(new InlineMessage
             {
-                ServiceName = "UnitService",
-                ApiName = "v1/xml",
-                Content = @"{""Value"": ""value""}"
+                Service = "UnitService",
+                Method = "v1/xml",
+                Argument = @"{""Value"": ""value""}"
             });
             Assert.IsTrue(msg.Result[0] == '<', msg.Result);
         }
@@ -329,9 +329,9 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         {
             var msg = await MessagePoster.Post(new InlineMessage
             {
-                ServiceName = "UnitService",
-                ApiName = "v1/task",
-                Content = "{}"
+                Service = "UnitService",
+                Method = "v1/task",
+                Argument = "{}"
             });
             Assert.IsTrue(msg.State == MessageState.Success, msg.Result);
         }
@@ -344,9 +344,9 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         {
             var msg = await MessagePoster.Post(new InlineMessage
             {
-                ServiceName = "UnitService",
-                ApiName = "v1/FromServices",
-                Content = "{}"
+                Service = "UnitService",
+                Method = "v1/FromServices",
+                Argument = "{}"
             });
             Assert.IsTrue(msg.State == MessageState.Success, msg.Result);
         }
@@ -361,9 +361,9 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         {
             var msg = await MessagePoster.Post(new InlineMessage
             {
-                ServiceName = "UnitService",
-                ApiName = "v1/FromConfig",
-                Content =
+                Service = "UnitService",
+                Method = "v1/FromConfig",
+                Argument =
 @"{
     ""AppName"" : ""string"",
     ""MaxWorkThreads"" : 0,
@@ -388,9 +388,9 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         {
             var msg = await MessagePoster.Post(new InlineMessage
             {
-                ServiceName = "UnitService",
-                ApiName = "v1/mulitArg",
-                Content =
+                Service = "UnitService",
+                Method = "v1/mulitArg",
+                Argument =
 @"{
     ""a"" : ""string"",
     ""b"" : 0,

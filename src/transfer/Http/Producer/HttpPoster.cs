@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Json;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
 
@@ -29,7 +28,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// <returns></returns>
         async Task<IMessageResult> IMessagePoster.Post(IInlineMessage message)
         {
-            if (!HttpClientOption.ServiceMap.TryGetValue(message.Topic, out var name))
+            if (!HttpClientOption.ServiceMap.TryGetValue(message.Service, out var name))
             {
                 name = HttpClientOption.DefaultName;
             }
@@ -40,11 +39,11 @@ namespace ZeroTeam.MessageMVC.Http
                 var client = HttpClientOption.HttpClientFactory.CreateClient(name);
                 if (client.BaseAddress == null)
                 {
-                    FlowTracer.MonitorError(() => $"[{message.Topic}/{message.Title}]服务未注册");
+                    FlowTracer.MonitorError(() => $"[{message.Service}/{message.Method}]服务未注册");
                     message.State = MessageState.Unhandled;
                     return null;//直接使用状态
                 }
-                var uri = new Uri($"{client.BaseAddress }{message.Topic}/{message.Title}");
+                var uri = new Uri($"{client.BaseAddress }{message.Service}/{message.Method}");
                 FlowTracer.MonitorDetails(() =>
                 {
                     return $"URL : {uri.OriginalString}";

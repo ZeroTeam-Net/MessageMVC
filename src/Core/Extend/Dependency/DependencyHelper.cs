@@ -36,11 +36,11 @@ namespace Agebull.Common.Ioc
         {
             if (service == ServiceCollection)
                 return;
+            service.RemoveAll<IConfigurationBuilder>();
+            service.RemoveAll<IConfigurationRoot>();
+            service.AddTransient(p => ConfigurationHelper.Builder);
+            service.AddTransient(p => ConfigurationHelper.Root);
 
-            if (!service.Any(p => p.ServiceType == typeof(IConfigurationBuilder)))
-                service.TryAddTransient(p => ConfigurationHelper.Builder);
-            if (!service.Any(p => p.ServiceType == typeof(IConfigurationRoot)))
-                service.TryAddTransient(p => ConfigurationHelper.Root);
             if (ServiceCollection != null)
             {
                 foreach (var dod in ServiceCollection.ToArray())
@@ -68,6 +68,7 @@ namespace Agebull.Common.Ioc
                 }
             }
             ServiceCollection = service;
+            ConfigurationHelper.CreateBuilder();
             CheckLog();
         }
 
@@ -80,7 +81,7 @@ namespace Agebull.Common.Ioc
             CheckLog();
             _rootProvider = provider;
             _serviceScopeFactory = provider.GetService<IServiceScopeFactory>();
-            ConfigurationHelper.UpdateDependency();
+            //ConfigurationHelper.UpdateDependency();
         }
 
         /// <summary>
@@ -92,11 +93,11 @@ namespace Agebull.Common.Ioc
             CheckLog();
             _rootProvider = ServiceCollection.BuildServiceProvider(true);
             _serviceScopeFactory = _rootProvider.GetService<IServiceScopeFactory>();
-            if (ConfigurationHelper.UpdateDependency())
-            {
-                _rootProvider = ServiceCollection.BuildServiceProvider(true);
-                _serviceScopeFactory = _rootProvider.GetService<IServiceScopeFactory>();
-            }
+            //if (ConfigurationHelper.UpdateDependency())
+            //{
+            //    _rootProvider = ServiceCollection.BuildServiceProvider(true);
+            //    _serviceScopeFactory = _rootProvider.GetService<IServiceScopeFactory>();
+            //}
             ConfigurationHelper.Flush();
         }
 
@@ -118,7 +119,7 @@ namespace Agebull.Common.Ioc
         /// <summary>
         ///     “¿¿µ◊¢»Îππ‘Ï∆˜
         /// </summary>
-        public static IServiceProvider ServiceProvider => DependencyScope.ServiceScope?.ServiceProvider ?? RootProvider;
+        public static IServiceProvider ServiceProvider => DependencyRun.ServiceScope?.ServiceProvider ?? RootProvider;
 
         #endregion
 
@@ -134,9 +135,8 @@ namespace Agebull.Common.Ioc
             get => _loggerFactory ??= Microsoft.Extensions.Logging.LoggerFactory.Create(builder =>
             {
                 builder.Services.AddScoped(provider => ConfigurationHelper.Root);
-                var level = ConfigurationHelper.Root.GetValue<LogLevel>("Logging:LogLevel:Default");
-                builder.SetMinimumLevel(level);
-                if (!ConfigurationHelper.Root.GetValue("Logging:LogRecorder:noConsole", false))
+                builder.AddConfiguration(ConfigurationHelper.Root.GetSection("Logging"));
+                if (ConfigurationHelper.Root.GetValue("Logging:console", true))
                     builder.AddConsole();
             });
             set => _loggerFactory = value;
@@ -144,10 +144,7 @@ namespace Agebull.Common.Ioc
 
         static void CheckLog()
         {
-            if (ServiceCollection.Any(p => p.ServiceType == typeof(ILoggerFactory)))
-            {
-                ServiceCollection.Remove(ServiceCollection.First(p=>p.ServiceType == typeof(ILoggerFactory)));
-            }
+            ServiceCollection.RemoveAll<ILoggerFactory>();
             ServiceCollection.AddSingleton(pri => LoggerFactory);
         }
         #endregion

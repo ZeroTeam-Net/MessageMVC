@@ -9,26 +9,27 @@ namespace ZeroTeam.MessageMVC.Messages
     /// </summary>
     public interface IMessageItem
     {
+
         /// <summary>
-        /// 分类
+        /// 消息标识
         /// </summary>
         string ID { get; set; }
 
         /// <summary>
         /// 分类
         /// </summary>
-        string Topic { get; set; }
+        string Service { get; set; }
 
         /// <summary>
-        /// 标题
+        /// 方法
         /// </summary>
 
-        string Title { get; set; }
+        string Method { get; set; }
 
         /// <summary>
         /// 内容
         /// </summary>
-        string Content { get; set; }
+        string Argument { get; set; }
 
         /// <summary>
         /// 扩展信息（固定为字典）

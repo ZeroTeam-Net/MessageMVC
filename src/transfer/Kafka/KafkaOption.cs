@@ -28,6 +28,12 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// </summary>
         public ProducerConfig Producer = new ProducerConfig();
 
+
+        /// <summary>
+        /// 同时处理数据最大并发数
+        /// </summary>
+        public int Concurrency { get; set; }
+
         /// <summary>
         ///  唯一实例 
         /// </summary>
@@ -55,11 +61,12 @@ namespace ZeroTeam.MessageMVC.Kafka
         {
             BootstrapServers = ConfigurationHelper.Get(sectionName).GetStr("BootstrapServers", BootstrapServers);
             TestTopic = ConfigurationHelper.Get(sectionName).GetStr("TestTopic", TestTopic);
-            Producer.BootstrapServers = BootstrapServers;
-            Consumer.BootstrapServers = BootstrapServers;
+            Concurrency = ConfigurationHelper.Get(sectionName).GetInt("Concurrency", 0);
 
             ConsumerLoad(Consumer);
-            ProducerLoad();
+            Consumer.BootstrapServers = BootstrapServers;
+            ProducerLoad(Producer);
+            Producer.BootstrapServers = BootstrapServers;
         }
         internal ConsumerConfig CopyConsumer()
         {
@@ -70,30 +77,30 @@ namespace ZeroTeam.MessageMVC.Kafka
             ConsumerLoad(cfg);
             return cfg;
         }
-        void ProducerLoad()
+        static void ProducerLoad(ProducerConfig producer)
         {
-            ConfigLoad(Producer);
+            ConfigLoad(producer);
             var config = ConfigurationHelper.Get<ProducerConfig>(ProducerName);
             if (config == null)
                 return;
-            Producer.QueueBufferingBackpressureThreshold = config.QueueBufferingBackpressureThreshold;
-            Producer.RetryBackoffMs = config.RetryBackoffMs;
-            Producer.MessageSendMaxRetries = config.MessageSendMaxRetries;
-            Producer.LingerMs = config.LingerMs;
-            Producer.QueueBufferingMaxKbytes = config.QueueBufferingMaxKbytes;
-            Producer.QueueBufferingMaxMessages = config.QueueBufferingMaxMessages;
-            Producer.EnableGaplessGuarantee = config.EnableGaplessGuarantee;
-            Producer.CompressionLevel = config.CompressionLevel;
-            Producer.CompressionType = config.CompressionType;
-            Producer.Partitioner = config.Partitioner;
-            Producer.MessageTimeoutMs = config.MessageTimeoutMs;
-            Producer.RequestTimeoutMs = config.RequestTimeoutMs;
+            producer.QueueBufferingBackpressureThreshold = config.QueueBufferingBackpressureThreshold;
+            producer.RetryBackoffMs = config.RetryBackoffMs;
+            producer.MessageSendMaxRetries = config.MessageSendMaxRetries;
+            producer.LingerMs = config.LingerMs;
+            producer.QueueBufferingMaxKbytes = config.QueueBufferingMaxKbytes;
+            producer.QueueBufferingMaxMessages = config.QueueBufferingMaxMessages;
+            producer.EnableGaplessGuarantee = config.EnableGaplessGuarantee;
+            producer.CompressionLevel = config.CompressionLevel;
+            producer.CompressionType = config.CompressionType;
+            producer.Partitioner = config.Partitioner;
+            producer.MessageTimeoutMs = config.MessageTimeoutMs;
+            producer.RequestTimeoutMs = config.RequestTimeoutMs;
             if (!string.IsNullOrWhiteSpace(config.DeliveryReportFields))
-                Producer.DeliveryReportFields = config.DeliveryReportFields;
-            Producer.EnableDeliveryReports = config.EnableDeliveryReports;
-            Producer.EnableBackgroundPoll = config.EnableBackgroundPoll;
-            Producer.EnableIdempotence = config.EnableIdempotence;
-            Producer.BatchNumMessages = config.BatchNumMessages;
+                producer.DeliveryReportFields = config.DeliveryReportFields;
+            producer.EnableDeliveryReports = config.EnableDeliveryReports;
+            producer.EnableBackgroundPoll = config.EnableBackgroundPoll;
+            producer.EnableIdempotence = config.EnableIdempotence;
+            producer.BatchNumMessages = config.BatchNumMessages;
         }
 
         static void ConsumerLoad(ConsumerConfig con)

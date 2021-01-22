@@ -116,7 +116,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             {
                 if (SmartSerializer.TryToMessage(args.Body, out var message))
                 {
-                    message.Topic = Service.ServiceName;
+                    message.Service = Service.ServiceName;
                     MessageProcessor.OnMessagePush(Service, message, true, null).Wait();
                 }
             }

@@ -77,7 +77,7 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         async Task<IMessageResult> IMessagePoster.Post(IInlineMessage message)
         {
-            if (!ServiceMap.TryGetValue(message.ServiceName, out var map) || map == null || map.Length == 0)
+            if (!ServiceMap.TryGetValue(message.Service, out var map) || map == null || map.Length == 0)
             {
                 return new MessageResult
                 {
@@ -91,7 +91,7 @@ namespace ZeroTeam.MessageMVC
             {
                 string service = map[i];
                 var clone = message.Clone();
-                clone.Topic = service;
+                clone.Service = service;
                 tasks[i] = MessagePoster.Post(clone);
             }
             await Task.WhenAll(tasks);

@@ -92,7 +92,7 @@ namespace ZeroTeam.MessageMVC.MessageQueue
             return Post(new TQueueItem
             {
                 ID = message.ID,
-                Topic = message.Topic,
+                Topic = message.Service,
                 Message = SmartSerializer.SerializeMessage(message)
             });//直接使用状态
         }
@@ -106,7 +106,7 @@ namespace ZeroTeam.MessageMVC.MessageQueue
         {
             queues.Enqueue(item);
             semaphore.Release();
-            Logger.Trace(() => $"[异步消息投递]  {item.ID} 消息已投入发送队列,将在后台静默发送直到成功");
+            FlowTracer.MonitorDetails(() => $"[异步消息投递]  {item.ID} 消息已投入发送队列,将在后台静默发送直到成功");
             return Task.FromResult<IMessageResult>(null);//直接使用状态
         }
         #endregion
@@ -153,6 +153,7 @@ namespace ZeroTeam.MessageMVC.MessageQueue
 
                 while (queues.TryDequeue(out TQueueItem item))
                 {
+                    FlowTracer.BeginMonitor(Name);
                     isFailed = false;
                     try
                     {
@@ -173,6 +174,7 @@ namespace ZeroTeam.MessageMVC.MessageQueue
                         await Backup(item);
                         break;
                     }
+                    FlowTracer.EndMonitor();
                 }
             }
             Logger.Information("异步消息投递已关闭");

@@ -20,7 +20,44 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     public class ApiDiscover
     {
         #region 过程参数
-        static readonly ILogger logger;
+
+        ILogger logger;
+        /// <summary>
+        /// 构造
+        /// </summary>
+        public ApiDiscover()
+        {
+            logger = DependencyHelper.LoggerFactory.CreateLogger<ApiDiscover>();
+        }
+
+        /// <summary>
+        /// 查找API
+        /// </summary>
+        public void Discover(Assembly assembly)
+        {
+            logger = DependencyHelper.LoggerFactory.CreateLogger<ApiDiscover>();
+            XmlMember.Load(assembly);
+            Assembly = assembly;
+            var types = Assembly.GetTypes().Where(p => p.IsSupperInterface(typeof(IApiController))).ToArray();
+            foreach (var type in types)
+            {
+                FindApi(type);
+            }
+        }
+
+        /// <summary>
+        /// 查找API
+        /// </summary>
+        public void Discover(Type type)
+        {
+            logger = DependencyHelper.LoggerFactory.CreateLogger<ApiDiscover>();
+            Assembly = type.Assembly;
+            XmlMember.Load(Assembly);
+            if (type.IsSupperInterface(typeof(IApiController)))
+            {
+                FindApi(type);
+            }
+        }
 
         /// <summary>
         /// 主调用程序集
@@ -37,7 +74,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         static ApiDiscover()
         {
-            logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(ApiDiscover));
             XmlMember.Load(typeof(IMessageItem).Assembly);
             XmlMember.Load(typeof(ApiExecuter).Assembly);
         }
@@ -120,18 +156,18 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 return;
             }
+            var discover = new ApiDiscover
+            {
+                Assembly = asm
+            };
             try
             {
-                var discover = new ApiDiscover
-                {
-                    Assembly = asm
-                };
                 XmlMember.Load(asm);
                 discover.FindApies();
             }
             catch (Exception e2)
             {
-                logger.Debug(e2.ToString());
+                discover.logger.Debug(e2.ToString());
             }
         }
 
@@ -149,33 +185,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 FindApi(type);
             }
             RegistToZero();
-        }
-
-        /// <summary>
-        /// 查找API
-        /// </summary>
-        public void Discover(Assembly assembly)
-        {
-            XmlMember.Load(assembly);
-            Assembly = assembly;
-            var types = Assembly.GetTypes().Where(p => p.IsSupperInterface(typeof(IApiController))).ToArray();
-            foreach (var type in types)
-            {
-                FindApi(type);
-            }
-        }
-
-        /// <summary>
-        /// 查找API
-        /// </summary>
-        public void Discover(Type type)
-        {
-            Assembly = type.Assembly;
-            XmlMember.Load(Assembly);
-            if (type.IsSupperInterface(typeof(IApiController)))
-            {
-                FindApi(type);
-            }
         }
 
         #endregion
@@ -221,7 +230,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                             logger.Debug(() => $"[注册接口] {serviceInfo.Name}/* => {info.Caption} {info.ControllerName}.{info.Name}");
                             service.RegistWildcardAction(info);
                         }
-                        else if(!service.RegistAction(api.Key, info))
+                        else if (!service.RegistAction(api.Key, info))
                         {
                             logger.Error($"[注册接口]失败，因为路由名称已存在 {serviceInfo.Name}/{api.Key} => {info.Caption} {info.ControllerName}.{info.Name}");
                         }
@@ -355,7 +364,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 api.ResultType = method.ReturnType;
                 api.ResultInfo = XmlDocumentDiscover.ReadEntity(method.ReturnType, "result");
-                
+
                 if (doc?.Returns != null)
                 {
                     api.ResultInfo.Caption = doc.Returns;

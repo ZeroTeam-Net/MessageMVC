@@ -15,12 +15,13 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <summary>
         /// 层级
         /// </summary>
-        int IMessageMiddleware.Level => MiddlewareLevel.Front;
+        int IMessageMiddleware.Level => MiddlewareLevel.Last;
 
+        MessageHandleScope scope = MessageHandleScope.Handle;
         /// <summary>
         /// 消息中间件的处理范围
         /// </summary>
-        MessageHandleScope IMessageMiddleware.Scope => MessageHandleScope.Handle;
+        MessageHandleScope IMessageMiddleware.Scope => scope;
 
         /// <summary>
         /// 准备
@@ -32,12 +33,19 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <returns></returns>
         async Task IMessageMiddleware.Handle(IService service, IInlineMessage message, object tag, Func<Task> next)
         {
-            if (string.Equals(service.ServiceName, message.Topic, StringComparison.OrdinalIgnoreCase))
+            var serviceName = message.Service;
+            if (ToolsOption.Instance.ReverseProxyMap == null || !ToolsOption.Instance.ReverseProxyMap.TryGetValue(message.Service, out serviceName))
             {
-                await next();
-                return;
+                if (string.Equals(service.ServiceName, message.Service, StringComparison.OrdinalIgnoreCase))
+                {
+                    message.State = MessageState.Unhandled;
+                    message.ResultCreater = ApiResultHelper.State;
+                    await next();
+                    return;
+                }
             }
-            FlowTracer.BeginStepMonitor("[反向代理]");
+            FlowTracer.BeginStepMonitor($"[反向代理] {serviceName}/{message.Method}");
+            message.Service = serviceName;
             try
             {
                 message.ResultCreater ??= ApiResultHelper.State;

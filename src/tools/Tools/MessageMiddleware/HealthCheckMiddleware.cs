@@ -38,7 +38,7 @@ namespace ZeroTeam.MessageMVC.Tools
         async Task<bool> IMessageMiddleware.Prepare(IService service, IInlineMessage message, object tag)
         {
             message.Trace ??= TraceInfo.New(message.ID);
-            if (message.ServiceName != "_health_")
+            if (message.Service != "_health_")
             {
                 return true;
             }
@@ -150,7 +150,7 @@ namespace ZeroTeam.MessageMVC.Tools
                 }
                 if (level < 3)
                 {
-                    var name = $"{message.ServiceName}/{message.ApiName}";
+                    var name = $"{message.Service}/{message.Method}";
                     if (item.Apis.ContainsKey(name))
                         item.Apis[name] += 1;
                     else

@@ -254,7 +254,7 @@ namespace ZeroTeam.MessageMVC.Messages
             }
             catch (Exception ex)
             {
-                DependencyScope.Logger.Exception(ex);
+                DependencyRun.Logger.Exception(ex);
                 dest = default;
                 return false;
             }
@@ -278,9 +278,9 @@ namespace ZeroTeam.MessageMVC.Messages
             return JsonSerializer.Serialize(new MessageItem
             {
                 ID = message.ID,
-                Topic = message.Topic,
-                Title = message.Title,
-                Content = message.Content,
+                Service = message.Service,
+                Method = message.Method,
+                Argument = message.Argument,
                 Extension = message.Extension,
                 Trace = message.Trace,
                 Context = message.Context
@@ -303,9 +303,9 @@ namespace ZeroTeam.MessageMVC.Messages
             {
                 ID = message.ID,
                 State = message.State,
-                Topic = message.Topic,
-                Title = message.Title,
-                Content = message.Content,
+                Service = message.Service,
+                Method = message.Method,
+                Argument = message.Argument,
                 Extension = message.Extension,
                 Result = message.Result,
                 Trace = message.Trace,

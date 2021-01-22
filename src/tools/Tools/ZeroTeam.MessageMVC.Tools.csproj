@@ -19,7 +19,7 @@
     <Company>ZeroTeam</Company>
     <PackageReleaseNotes></PackageReleaseNotes>
     <Product>ZeroTeam.MessageMVC.ApiContract</Product>
-    <Version>1.0.1.143</Version>
+    <Version>1.1.1.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.1|AnyCPU'">
@@ -38,7 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.7.1" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.8.0" />
     <ProjectReference Include="..\..\Core\Core\ZeroTeam.MessageMVC.Core.csproj" />
   </ItemGroup>
 

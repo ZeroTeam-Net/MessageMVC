@@ -1,5 +1,6 @@
 using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
+using Agebull.EntityModel.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -25,18 +26,18 @@ namespace ZeroTeam.MessageMVC
         private static IFlowMiddleware[] Middlewares;
 
         #region Check
-        private static ILogger logger;
+
+        internal static ILogger _logger;
 
         /// <summary>
         ///     配置校验,作为第一步
         /// </summary>
-        public static void Check()
+        public static async Task Check()
         {
             if (ZeroAppOption.Instance.ApplicationState >= StationState.Check)
                 return;
             ZeroAppOption.Instance.SetApplicationState(StationState.Check);
             //LoggerExtend.DoInitialize();
-            logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(ZeroFlowControl));
 
             DependencyHelper.Flush();
             Middlewares = DependencyHelper.RootProvider.GetServices<IFlowMiddleware>().OrderBy(p => p.Level).ToArray();
@@ -44,11 +45,11 @@ namespace ZeroTeam.MessageMVC
             {
                 try
                 {
-                    mid.Check(ZeroAppOption.Instance);
+                    await mid.Check(ZeroAppOption.Instance);
                 }
                 catch (Exception ex)
                 {
-                    logger.Exception(ex, "ZeroFlowControl.Check:{0}", mid.GetTypeName());
+                    _logger.Exception(ex, "ZeroFlowControl.Check:{0}", mid.GetTypeName());
                     throw;
                 }
             }
@@ -89,7 +90,7 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
         /// <summary>
         ///     发现
         /// </summary>
-        public static void Discove(params Assembly[] assemblies) => ApiDiscover.FindApies(assemblies);
+        public static void Discove(params Assembly[] assemblies) => ApiDiscover.FindApies( assemblies);
 
         #endregion
 
@@ -133,64 +134,6 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
 
         #endregion
 
-        #region Shutdown
-
-        /// <summary>
-        ///     关闭
-        /// </summary>
-        public static void BeginClose(object sender, EventArgs e)
-        {
-            if (ZeroAppOption.Instance.ApplicationState >= StationState.Closing)
-            {
-                return;
-            }
-            logger.Information("【正在退出...】");
-            OnStop?.Invoke(null, null);
-            ZeroAppOption.Instance.SetApplicationState(StationState.Closing);
-            CloseAll();
-        }
-        /// <summary>
-        ///     关闭
-        /// </summary>
-        public static void EndClose(object sender, EventArgs e)
-        {
-            if (ZeroAppOption.Instance.ApplicationState != StationState.Closing)
-            {
-                return;
-            }
-            WaitAllObjectSafeClose();
-            ZeroAppOption.Instance.SetApplicationState(StationState.Closed);
-            DestoryAll();
-            ZeroAppOption.Instance.SetApplicationState(StationState.Destroy);
-
-            DependencyScope.DisposeLocal();
-            DependencyHelper.LoggerFactory.Dispose();
-            ZeroAppOption.Destory(sender, e);
-            waitingTask?.SetResult(true);
-            logger.Information("【已退出，下次见！】");
-            if (ZeroAppOption.Instance.IsDevelopment)
-                Process.GetCurrentProcess().Kill();
-        }
-        /// <summary>
-        ///     关闭
-        /// </summary>
-        public static void Shutdown(object sender = null, EventArgs e=null)
-        {
-            BeginClose(sender, e);
-            EndClose(sender, e);
-        }
-        /// <summary>
-        /// 等待结束
-        /// </summary>
-        /// <returns></returns>
-        public static Task WaiteEnd()
-        {
-            Console.CancelKeyPress += Shutdown;
-            waitingTask = new TaskCompletionSource<bool>();
-            return waitingTask.Task;
-        }
-        static TaskCompletionSource<bool> waitingTask;
-        #endregion
 
         #endregion
 
@@ -230,7 +173,7 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
         public static void OnObjectActive(IService obj)
         {
             bool can;
-            logger.Information("[OnObjectActive] {0}", obj.ServiceName);
+            _logger.Information("[OnObjectActive] {0}", obj.ServiceName);
             lock (ActiveObjects)
             {
                 ActiveObjects.Add(obj);
@@ -247,7 +190,7 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
         /// </summary>
         public static void OnObjectFailed(IService obj)
         {
-            logger.Information("[OnObjectFailed] {0}", obj.ServiceName);
+            _logger.Information("[OnObjectFailed] {0}", obj.ServiceName);
             bool can;
             lock (ActiveObjects)
             {
@@ -265,7 +208,7 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
         /// </summary>
         public static void OnObjectClose(IService obj)
         {
-            logger.Information("[服务关闭] {0}", obj.ServiceName);
+            _logger.Information("[服务关闭] {0}", obj.ServiceName);
             bool can;
             lock (ActiveObjects)
             {
@@ -281,7 +224,7 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
         /// <summary>
         ///     等待所有对象信号(全开或全关)
         /// </summary>
-        private static void WaitAllObjectSafeClose()
+        private static async Task WaitAllObjectSafeClose()
         {
             lock (ActiveObjects)
             {
@@ -290,7 +233,7 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
                     return;
                 }
             }
-            ActiveSemaphore.Wait();
+            await ActiveSemaphore.WaitAsync();
         }
 
         /// <summary>
@@ -308,21 +251,21 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
         {
             if (!Services.TryAdd(service.ServiceName, service))
             {
-                logger?.Error("服务注册失败({0}),因为同名服务已存在", service.ServiceName);
+                _logger?.Error("服务注册失败({0}),因为同名服务已存在", service.ServiceName);
                 return false;
             }
-            logger?.Information("[注册服务] {0}{1}", service.ServiceName, service.Receiver.GetTypeName());
+            _logger?.Information("[注册服务] {0}{1}", service.ServiceName, service.Receiver.GetTypeName());
 
             if (ZeroAppOption.Instance.ApplicationState >= StationState.Initialized)
             {
                 try
                 {
-                    logger.Information("[初始化服务] {0}", service.ServiceName);
+                    _logger.Information("[初始化服务] {0}", service.ServiceName);
                     service.Initialize();
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[初始化服务] {0}", service.ServiceName);
+                    _logger.Exception(e, "[初始化服务] {0}", service.ServiceName);
                 }
             }
             if (ZeroAppOption.Instance.ApplicationState != StationState.Run)
@@ -331,12 +274,12 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
             }
             try
             {
-                logger.Information("[启动服务] {0}", service.ServiceName);
+                _logger.Information("[启动服务] {0}", service.ServiceName);
                 service.Open();
             }
             catch (Exception e)
             {
-                logger.Exception(e, "[启动服务] {0}", service.ServiceName);
+                _logger.Exception(e, "[启动服务] {0}", service.ServiceName);
             }
             return true;
         }
@@ -346,7 +289,7 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
         /// </summary>
         public static bool RegistService(ref IService service)
         {
-            logger.Information("[注册服务] {0}", service.ServiceName);
+            _logger.Information("[注册服务] {0}", service.ServiceName);
 
             if (ZeroAppOption.Instance.ServiceMap.TryGetValue(service.ServiceName, out var map))
                 service.ServiceName = map;
@@ -356,7 +299,7 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
             }
             else if (!Services.TryAdd(service.ServiceName, service))
             {
-                logger.Error("服务注册失败({0}),因为同名服务已存在", service.ServiceName);
+                _logger.Error("服务注册失败({0}),因为同名服务已存在", service.ServiceName);
                 return false;
             }
 
@@ -364,12 +307,12 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
             {
                 try
                 {
-                    logger.Information("[初始化服务] {0}", service.ServiceName);
+                    _logger.Information("[初始化服务] {0}", service.ServiceName);
                     service.Initialize();
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[初始化服务] {0}", service.ServiceName);
+                    _logger.Exception(e, "[初始化服务] {0}", service.ServiceName);
                 }
             }
             if (ZeroAppOption.Instance.ApplicationState != StationState.Run)
@@ -378,12 +321,12 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
             }
             try
             {
-                logger.Information("[启动服务] {0}", service.ServiceName);
+                _logger.Information("[启动服务] {0}", service.ServiceName);
                 service.Open();
             }
             catch (Exception e)
             {
-                logger.Exception(e, "[启动服务] {0}", service.ServiceName);
+                _logger.Exception(e, "[启动服务] {0}", service.ServiceName);
             }
             return true;
         }
@@ -393,20 +336,20 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
         /// </summary>
         static async Task DiscoverAll()
         {
-            logger.Information("【发现】开始");
+            _logger.Information("【发现】开始");
             foreach (var mid in Middlewares)
             {
                 try
                 {
-                    logger.Information("[发现] {0}", mid.Name);
+                    _logger.Information("[发现] {0}", mid.Name);
                     await mid.Discover();
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[发现] {0}", mid.Name);
+                    _logger.Exception(e, "[发现] {0}", mid.Name);
                 }
             }
-            logger.Information("【发现】完成");
+            _logger.Information("【发现】完成");
         }
 
         /// <summary>
@@ -414,17 +357,17 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
         /// </summary>
         static async Task InitializeAll()
         {
-            logger.Information("【初始化】开始");
+            _logger.Information("【初始化】开始");
             foreach (var mid in Middlewares)
             {
                 try
                 {
-                    logger.Information("[初始化流程] {0}", mid.Name);
+                    _logger.Information("[初始化流程] {0}", mid.Name);
                     await mid.Initialize();
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[初始化流程] {0}", mid.Name);
+                    _logger.Exception(e, "[初始化流程] {0}", mid.Name);
                 }
             }
 
@@ -432,17 +375,16 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
             {
                 try
                 {
-                    logger.Information("[初始化服务] {0}", service.ServiceName);
+                    _logger.Information("[初始化服务] {0}", service.ServiceName);
                     await service.Initialize();
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[初始化服务] {0}", service.ServiceName);
+                    _logger.Exception(e, "[初始化服务] {0}", service.ServiceName);
                 }
             }
-            logger.Information("【初始化】完成");
+            _logger.Information("【初始化】完成");
 
-            OnStart?.Invoke(null, null);
         }
 
         /// <summary>
@@ -453,17 +395,17 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
             if (ZeroAppOption.Instance.ApplicationState >= StationState.BeginRun)
                 return false;
             ZeroAppOption.Instance.SetApplicationState(StationState.BeginRun);
-            logger.Information("【启动】开始");
+            _logger.Information("【启动】开始");
             foreach (var mid in Middlewares)
             {
                 try
                 {
-                    logger.Information("[启动流程] {0}", mid.Name);
+                    _logger.Information("[启动流程] {0}", mid.Name);
                     _ = mid.Open();
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[启动流程] {0}", mid.Name);
+                    _logger.Exception(e, "[启动流程] {0}", mid.Name);
                 }
             }
 
@@ -471,34 +413,23 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
             {
                 try
                 {
-                    logger.Information("[启动服务] {0}", service.ServiceName);
+                    _logger.Information("[启动服务] {0}", service.ServiceName);
                     _ = service.Open();
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[启动服务] {0}", service.ServiceName);
+                    _logger.Exception(e, "[启动服务] {0}", service.ServiceName);
                 }
             }
             //等待所有对象信号(Active or Failed)
             if (Services.Count > 0)
                 await ActiveSemaphore.WaitAsync();
             ZeroAppOption.Instance.SetApplicationState(StationState.Run);
-            logger.Information("【启动】完成");
+            _logger.Information("【启动】完成");
             return true;
         }
 
-        /// <summary>
-        /// 开始事件
-        /// </summary>
-        public static event EventHandler OnStart;
-
-        /// <summary>
-        /// 结束事件
-        /// </summary>
-        public static event EventHandler OnStop;
-
         private static int inFailed = 0;
-
 
         /// <summary>
         ///     重新启动未正常启动的项目
@@ -513,136 +444,229 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
             var faileds = FailedObjects.ToArray();
             if (faileds.Length == 0)
             {
-                logger.Information("[StartFailed] all service is runing,no action");
+                _logger.Information("[StartFailed] all service is runing,no action");
                 return;
             }
 
-            logger.Information("[StartFailed>>");
+            _logger.Information("[StartFailed>>");
             FailedObjects.Clear();
 
             foreach (var service in faileds)
             {
                 try
                 {
-                    logger.Information("[StartFailed] {0}", service.ServiceName);
+                    _logger.Information("[StartFailed] {0}", service.ServiceName);
                     service.Open();
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[StartFailed] {0}", service.ServiceName);
+                    _logger.Exception(e, "[StartFailed] {0}", service.ServiceName);
                 }
             }
 
             //等待所有对象信号(全开或全关)
             ActiveSemaphore.Wait();
             Interlocked.Decrement(ref inFailed);
-            logger.Information("<<StartFailed]");
+            _logger.Information("<<StartFailed]");
         }
         /// <summary>
         /// 等所有Task完成
         /// </summary>
         /// <param name="tasks"></param>
-        public static void WaiteAll(IEnumerable<Task> tasks)
+        static async Task WaiteAll(List<Task> tasks)
         {
             foreach (var task in tasks)
             {
                 try
                 {
-                    task.Wait();
+                    await task;
                 }
                 catch (Exception ex)
                 {
-                    logger.Exception(ex);
+                    _logger.Exception(ex);
                 }
             }
+            tasks.Clear();
         }
+        #endregion
+
+        #region 关闭
+
         /// <summary>
         ///     关闭
         /// </summary>
-        static void CloseAll()
+        public static async Task Shutdown()
+        {
+            if (ZeroAppOption.Instance.ApplicationState >= StationState.Closing)
+            {
+                return;
+            }
+            _logger.Information("【正在退出...】");
+
+            ZeroAppOption.Instance.SetApplicationState(StationState.Closing);
+            await CloseAll();
+            if (ZeroAppOption.Instance.ApplicationState != StationState.Closing)
+            {
+                return;
+            }
+            await WaitAllObjectSafeClose();
+            ZeroAppOption.Instance.SetApplicationState(StationState.Closed);
+            await DestoryAll();
+            ZeroAppOption.Instance.SetApplicationState(StationState.Destroy);
+
+            DependencyRun.DisposeLocal();
+            DependencyHelper.LoggerFactory.Dispose();
+            await ZeroAppOption.Destory();
+
+            _logger.Information("【已退出，下次见！】");
+            if (ZeroAppOption.Instance.IsDevelopment)
+                Process.GetCurrentProcess().Kill();
+        }
+
+        /// <summary>
+        ///     关闭
+        /// </summary>
+        static async Task CloseAll()
         {
             List<Task> tasks = new List<Task>();
-            logger.Information("【关闭】开始");
+            _logger.Information("【关闭】开始");
 
             foreach (var service in Services.Values.OrderByDescending(p => p.Level).ToArray())
             {
                 try
                 {
-                    logger.Information("[关闭服务] {0}", service.ServiceName);
+                    _logger.Information("[关闭服务] {0}", service.ServiceName);
                     tasks.Add(service.Close());
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[关闭服务] {0}", service.ServiceName);
+                    _logger.Exception(e, "[关闭服务] {0}", service.ServiceName);
                 }
             }
-            foreach(var task in tasks)
-            {
-                try
-                {
-                    task.Wait();
-                }
-                catch (Exception ex)
-                {
-                    logger.Exception(ex);
-                }
-            }
-            WaiteAll(tasks);
-            tasks.Clear();
+            await WaiteAll(tasks);
             foreach (var mid in Middlewares.OrderByDescending(p => p.Level).ToArray())
             {
                 try
                 {
-                    logger.Information("[关闭流程] {0}", mid.Name);
+                    _logger.Information("[关闭流程] {0}", mid.Name);
                     tasks.Add(mid.Close());
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[关闭流程] {0}", mid.Name);
+                    _logger.Exception(e, "[关闭流程] {0}", mid.Name);
                 }
             }
-            WaiteAll(tasks);
-            GC.Collect();
-
-            logger.Information("【关闭】结束");
+            await WaiteAll(tasks);
+            _logger.Information("【关闭】结束");
         }
         /// <summary>
         ///     注销
         /// </summary>
-        static void DestoryAll()
+        static async Task DestoryAll()
         {
             List<Task> tasks = new List<Task>();
-            logger.Information("【注销】开始");
+            _logger.Information("【注销】开始");
             foreach (var service in Services.Values.OrderByDescending(p => p.Level).ToArray())
             {
                 try
                 {
-                    logger.Information("[注销服务] {0}", service.ServiceName);
+                    _logger.Information("[注销服务] {0}", service.ServiceName);
                     tasks.Add(service.Destory());
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[注销服务]  {0}", service.ServiceName);
+                    _logger.Exception(e, "[注销服务]  {0}", service.ServiceName);
                 }
             }
-            WaiteAll(tasks);
-            tasks.Clear();
+            await WaiteAll(tasks);
+
             foreach (var mid in Middlewares.OrderByDescending(p => p.Level).ToArray())
             {
                 try
                 {
-                    logger.Information("[注销流程]  {0}", mid.Name);
+                    _logger.Information("[注销流程]  {0}", mid.Name);
                     tasks.Add(mid.Destory());
                 }
                 catch (Exception e)
                 {
-                    logger.Exception(e, "[注销流程]  {0}", mid.Name);
+                    _logger.Exception(e, "[注销流程]  {0}", mid.Name);
                 }
             }
-            WaiteAll(tasks);
-            logger.Information("【注销】完成");
+            await WaiteAll(tasks);
+            _logger.Information("【注销】完成");
         }
 
         #endregion
+
+        #region 开始结束任务
+
+        static readonly List<NameValue<string, Func<CancellationToken, Task>>> StartActions = new List<NameValue<string, Func<CancellationToken, Task>>>();
+
+        static readonly List<NameValue<string, Func<Task>>> StopActions = new List<NameValue<string, Func<Task>>>();
+
+        /// <summary>
+        /// 注册后台方法
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="action"></param>
+        public static void RegistStartAction(string name, Func<CancellationToken, Task> action)
+            => StartActions.Add(new NameValue<string, Func<CancellationToken, Task>>
+            {
+                Name = name,
+                Value = action
+            });
+
+        /// <summary>
+        /// 注册关机方法
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="action"></param>
+        public static void RegistStopAction(string name, Func<Task> action)
+            => StopActions.Add(new NameValue<string, Func<Task>>
+            {
+                Name = name,
+                Value = action
+            });
+
+        internal static async void OnStarted(CancellationTokenSource tokenSource)
+        {
+            _logger.LogInformation("执行启动后任务");
+            foreach (var item in StartActions)
+            {
+                _logger.LogInformation($"{item.Name}开始");
+                try
+                {
+                    await item.Value(tokenSource.Token);
+                    _logger.LogInformation($"{item.Name}完成");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogInformation($"{item.Name}异常\n{ex}");
+                }
+            }
+            _logger.LogInformation("启动后任务全部完成");
+        }
+
+        internal static async void OnStopping(CancellationTokenSource tokenSource)
+        {
+            _logger.LogInformation("执行关闭前任务");
+            tokenSource.Cancel();
+            foreach (var item in StopActions)
+            {
+                _logger.LogInformation($"{item.Name}开始");
+                try
+                {
+                    await item.Value();
+                    _logger.LogInformation($"{item.Name}完成");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogInformation($"{item.Name}异常\n{ex}");
+                }
+            }
+            _logger.LogInformation("关闭前任务全部完成");
+        }
+        #endregion
+
     }
 }

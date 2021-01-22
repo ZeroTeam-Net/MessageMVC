@@ -247,6 +247,11 @@
                 启用反向代理
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.ReverseProxyMap">
+            <summary>
+                反向代理服务名称映射
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.EnableMonitorLog">
             <summary>
                 启用Monitor模式日志记录
@@ -270,21 +275,6 @@
         <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.EnableMessageReConsumer">
             <summary>
                 启用异常消息本地重放
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.EnablePageInfo">
-            <summary>
-                启用页面信息记录
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.PageInfoService">
-            <summary>
-                页面信息服务名称
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.PageInfoApi">
-            <summary>
-                页面信息接口方法
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.ReceiptService">
@@ -505,251 +495,6 @@
             序列化为JSON
             </summary>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim">
-            <summary>
-            JWT兼容定义
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Actort">
-            <summary>
-            http://tools.ietf.org/html/rfc7519#section-5
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Typ">
-            <summary>
-            http://tools.ietf.org/html/rfc7519#section-5
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Sub">
-            <summary>
-            http://tools.ietf.org/html/rfc7519#section-4
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Sid">
-            <summary>
-            http://openid.net/specs/openid-connect-frontchannel-1_0.html#OPLogout
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Prn">
-            <summary>
-            http://openid.net/specs/openid-connect-frontchannel-1_0.html#OPLogout
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Nbf">
-            <summary>
-            http://tools.ietf.org/html/rfc7519#section-4
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Nonce">
-            <summary>
-             https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.NameId">
-            <summary>
-             https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Jti">
-            <summary>
-            http://tools.ietf.org/html/rfc7519#section-4
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Iss">
-            <summary>
-            http://tools.ietf.org/html/rfc7519#section-4
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Iat">
-            <summary>
-            http://tools.ietf.org/html/rfc7519#section-4
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.GivenName">
-            <summary>
-            http://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.FamilyName">
-            <summary>
-            http://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Gender">
-            <summary>
-            http://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Exp">
-            <summary>
-            http://tools.ietf.org/html/rfc7519#section-4
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Email">
-            <summary>
-            https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.AtHash">
-            <summary>
-            http://openid.net/specs/openid-connect-core-1_0.html#CodeIDToken
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.CHash">
-            <summary>
-            https://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Birthdate">
-            <summary>
-            https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Azp">
-            <summary>
-            http://openid.net/specs/openid-connect-core-1_0.html#IDToken
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.AuthTime">
-            <summary>
-            http://openid.net/specs/openid-connect-core-1_0.html#IDToken
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Aud">
-            <summary>
-            http://tools.ietf.org/html/rfc7519#section-4
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Amr">
-            <summary>
-            http://openid.net/specs/openid-connect-core-1_0.html#IDToken
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Acr">
-            <summary>
-            http://openid.net/specs/openid-connect-core-1_0.html#IDToken
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.UniqueName">
-            <summary>
-            http://openid.net/specs/openid-connect-core-1_0.html#IDToken
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Website">
-            <summary>
-            http://openid.net/specs/openid-connect-core-1_0.html#IDToken
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.TokenType">
-            <summary>
-            设备类型
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.LoginType">
-            <summary>
-            登录类型
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.LoginToken">
-            <summary>
-            登录令牌
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.GlobalUserId">
-            <summary>
-            全局用户ID
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.AppUserId">
-            <summary>
-            当前应用用户ID
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.OpenId">
-            <summary>
-            OpenId
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.AvatarUrl">
-            <summary>
-            头像
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Account">
-            <summary>
-            登录使用的账号
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.MobilePhone">
-            <summary>
-            手机号
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.DeviceId">
-            <summary>
-            设备标识
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Organization">
-            <summary>
-            组织名称
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.OrganizationId">
-            <summary>
-            组织ID
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.OrganizationCode">
-            <summary>
-            组织查询代码
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.DataScope">
-            <summary>
-            设备类型
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.CurrentPermission">
-            <summary>
-            当前权限
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Permissions">
-            <summary>
-            权限信息
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.TraceMark">
-            <summary>
-            追踪码
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.DeviceInfo">
-            <summary>
-            设备信息
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.SystemUserId">
-            <summary>
-            系统用户标识
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.SystemOrganizationId">
-            <summary>
-            系统组织标识
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.UnknownUserId">
-            <summary>
-            未知用户标识
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.UnknownOrganizationId">
-            <summary>
-            未知组织标识
-            </summary>
-        </member>
         <member name="T:ZeroTeam.MessageMVC.Context.GlobalContextMiddleware">
             <summary>
             上下文对象
@@ -766,30 +511,6 @@
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Context.GlobalContextMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Prepare(ZeroTeam.MessageMVC.Services.IService,ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
-            <summary>
-            准备
-            </summary>
-            <param name="service">当前服务</param>
-            <param name="message">当前消息</param>
-            <param name="tag">扩展信息</param>
-            <returns></returns>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.Messages.PageInfoMiddleware">
-            <summary>
-            页面信息中间件
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.PageInfoMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Level">
-            <summary>
-            层级
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.PageInfoMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Scope">
-            <summary>
-            消息中间件的处理范围
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.PageInfoMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Prepare(ZeroTeam.MessageMVC.Services.IService,ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
             <summary>
             准备
             </summary>

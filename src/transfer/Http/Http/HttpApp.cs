@@ -1,5 +1,8 @@
-﻿using Agebull.Common.Ioc;
+﻿using Agebull.Common.Configuration;
+using Agebull.Common.Ioc;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using ZeroTeam.MessageMVC.Messages;
@@ -26,14 +29,37 @@ namespace ZeroTeam.MessageMVC.Http
         /// <summary>
         ///     初始化
         /// </summary>
-        public static async void UseMessageMVC(this IApplicationBuilder app, bool handerHttp)
+        public static void UseMessageMVC(this IApplicationBuilder app)
         {
-            if (handerHttp)
-                app.Run(HttpReceiver.Call);
+            app.Run(HttpReceiver.Call);
+            app.ApplicationServices = DependencyHelper.RootProvider;
+        }
 
-            DependencyHelper.SetRootProvider(app.ApplicationServices);
-            await ZeroFlowControl.Initialize();
-            await ZeroFlowControl.RunAsync();
+        /// <summary>
+        ///     配置使用MessageMVC
+        /// </summary>
+        /// <param name="host">主机生成器</param>
+        /// <param name="registAction">配置注册方法</param>
+        /// <param name="autoDiscove">是否自动发现API方法</param>
+        public static IWebHostBuilder UseMessageMVC(this IWebHostBuilder host, Action<IServiceCollection> registAction, bool autoDiscove=true)
+        {
+            host.ConfigureAppConfiguration((ctx, builder) =>
+                {
+                    DependencyHelper.ServiceCollection.AddSingleton(p => builder);
+                    ConfigurationHelper.BindBuilder(builder);
+                    ConfigurationHelper.Flush();
+                    ctx.Configuration = ConfigurationHelper.Root;
+                    ZeroAppOption.LoadConfig();
+                    ZeroAppOption.Instance.AutoDiscover = autoDiscove;
+                })
+                .ConfigureServices((ctx, services) =>
+                {
+                    DependencyHelper.Binding(services);
+                    services.AddHostedService<ZeroHostedService>();
+                    registAction(services);
+                    ZeroApp.AddDependency(services, false);
+                });
+            return host;
         }
     }
 }

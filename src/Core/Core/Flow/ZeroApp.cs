@@ -1,6 +1,8 @@
-﻿using Agebull.Common.Ioc;
+﻿using Agebull.Common.Configuration;
+using Agebull.Common.Ioc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Diagnostics;
 using System.Reflection;
@@ -18,32 +20,50 @@ namespace ZeroTeam.MessageMVC
     /// </summary>
     public static class ZeroApp
     {
-        static int isInitialized = 0;
+        /// <summary>
+        ///     配置使用MessageMVC
+        /// </summary>
+        /// <param name="builder">主机生成器</param>
+        /// <param name="action">配置注册方法</param>
+        public static IHostBuilder UseMessageMVC(this IHostBuilder builder, Action<IServiceCollection> action)
+        {
+            return UseMessageMVC(builder, true, action);
+        }
 
         /// <summary>
-        ///     显示式设置配置对象(依赖)
+        ///     配置使用MessageMVC
         /// </summary>
-        /// <param name="service"></param>
-        public static void BindingMessageMvc(this IServiceCollection service)
+        /// <param name="builder">主机生成器</param>
+        /// <param name="autoDiscove">是否自动发现API方法</param>
+        /// <param name="action">配置注册方法</param>
+        public static IHostBuilder UseMessageMVC(this IHostBuilder builder, bool autoDiscove, Action<IServiceCollection> action)
         {
-            DependencyHelper.Binding(service);
-            //进程退出事件
-            Console.CancelKeyPress += ZeroFlowControl.BeginClose;
-            AppDomain.CurrentDomain.ProcessExit += ZeroFlowControl.EndClose;
+            builder.ConfigureAppConfiguration((ctx, builder) =>
+                {
+                    DependencyHelper.ServiceCollection.AddSingleton(p => builder);
+                    ConfigurationHelper.BindBuilder(builder);
+                    ConfigurationHelper.Flush();
+                    ctx.Configuration = ConfigurationHelper.Root;
+                    ZeroAppOption.LoadConfig();
+                    ZeroAppOption.Instance.AutoDiscover = autoDiscove;
+                })
+                .ConfigureServices((ctx, services) =>
+                {
+                    DependencyHelper.Binding(services);
+                    services.AddHostedService<ZeroHostedService>();
+                    action(services);
+                    AddDependency(services, false);
+                });
+            return builder;
         }
 
         /// <summary>
         /// 检查并注入配置
         /// </summary>
-        static void AddDependency(IServiceCollection services, bool msJson)
+        public static void AddDependency(IServiceCollection services, bool msJson)
         {
             //IZeroContext构造
-            services.TryAddScoped<IZeroContext, ZeroContext>();
-            //序列化工具
-            services.TryAddTransient<ISerializeProxy, NewtonJsonSerializeProxy>();
-            services.TryAddTransient<IJsonSerializeProxy, NewtonJsonSerializeProxy>();
-            services.TryAddTransient<IXmlSerializeProxy, XmlSerializeProxy>();
-
+            services.TryAddTransient<IZeroContext, ZeroContext>();
             //配置\依赖对象初始化,系统配置获取
             services.AddTransient<IFlowMiddleware, ConfigMiddleware>();
             //消息选择器
@@ -59,6 +79,7 @@ namespace ZeroTeam.MessageMVC
             }
             services.TryAddSingleton<IInlineMessage, InlineMessage>();
 
+            //序列化工具
             if (msJson)
             {
                 services.TryAddTransient<ISerializeProxy, JsonSerializeProxy>();
@@ -71,43 +92,10 @@ namespace ZeroTeam.MessageMVC
                 services.TryAddTransient<IJsonSerializeProxy, NewtonJsonSerializeProxy>();
                 services.TryAddTransient<IXmlSerializeProxy, XmlSerializeProxy>();
             }
+
         }
 
-        /// <summary>
-        /// 启动主流程控制器
-        /// </summary>
-        /// <param name="services">依赖服务</param>
-        /// <param name="msJson">true 使用System.Text.Json,false 使用NewtonsoftJson</param>
-        /// <param name="autoDiscover">对接口自动发现</param>
-        public static void AddMessageMvc(this IServiceCollection services, bool autoDiscover = true, bool msJson = false)
-        {
-            if (Interlocked.Increment(ref isInitialized) != 1)
-            {
-                return;
-            }
-            AddDependency(services, msJson);
-            ZeroFlowControl.Check();
-            if (autoDiscover)
-                ZeroFlowControl.Discove();
-        }
-
-        /// <summary>
-        /// 启动主流程控制器，发现指定程序集的Api，由参数决定是否等待系统退出
-        /// </summary>
-        /// <param name="services">依赖服务</param>
-        /// <param name="msJson">true 使用System.Text.Json,false 使用NewtonsoftJson</param>
-        /// <param name="assembly">需要发现服务的程序集</param>
-        public static void AddMessageMvc(this IServiceCollection services, Assembly assembly, bool msJson = false)
-        {
-            if (Interlocked.Increment(ref isInitialized) != 1)
-            {
-                return;
-            }
-            AddDependency(services, msJson);
-            ZeroFlowControl.Check();
-            ZeroFlowControl.Discove(assembly);
-        }
-
+        static int isInitialized;
         /// <summary>
         /// 启动主流程控制器，发现指定程序集的Api，适用于测试的场景
         /// </summary>
@@ -124,28 +112,14 @@ namespace ZeroTeam.MessageMVC
             services.TryAddTransient<IMessageConsumer, EmptyReceiver>();
             services.TryAddTransient<INetEvent, EmptyReceiver>();
             AddDependency(services, msJson);
-            ZeroFlowControl.Check();
-            ZeroFlowControl.Discove(assembly);
-            ZeroFlowControl.Check();
-            if (assembly != null)
-                ZeroFlowControl.Discove(assembly);
+            //ZeroFlowControl.Check();
+            //ZeroFlowControl.Discove(assembly);
+            //ZeroFlowControl.Check();
+            //if (assembly != null)
+            //    ZeroFlowControl.Discove(assembly);
             await ZeroFlowControl.Initialize();
             await ZeroFlowControl.RunAsync();
         }
 
-        /// <summary>
-        /// 启动主流程控制器，发现指定程序集的Api，由参数决定是否等待系统退出
-        /// </summary>
-        public static async Task UseMessageMvc(this IServiceCollection _)
-        {
-            if (Interlocked.Increment(ref isInitialized) != 2)
-            {
-                return;
-            }
-            await ZeroFlowControl.Initialize();
-            await ZeroFlowControl.RunAsync();
-            Console.WriteLine("应用已启动.请键入 Ctrl+C 退出.");
-            await ZeroFlowControl.WaiteEnd();
-        }
     }
 }

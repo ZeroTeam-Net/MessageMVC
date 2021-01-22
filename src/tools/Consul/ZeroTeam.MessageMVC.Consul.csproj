@@ -3,7 +3,6 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Description>MessageMVC的Consul服务注册</Description>
     <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     <DebugType>portable</DebugType>
     <PackageProjectUrl>https://github.com/ZeroTeam-Net/MessageMVC</PackageProjectUrl>
@@ -19,7 +18,7 @@
     <Company>ZeroTeam</Company>
     <PackageReleaseNotes></PackageReleaseNotes>
     <Product>ZeroTeam.MessageMVC.Consul</Product>
-    <Version>1.0.1.143</Version>
+    <Version>1.1.1.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.1|AnyCPU'">

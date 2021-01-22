@@ -17,29 +17,24 @@ namespace ZeroTeam.MessageMVC.Http
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
-            services.BindingMessageMvc();
-            services.AddMessageMvcHttp();
-            services.AddMessageMvcRedis();
-            services.AddMessageMvc();
-            //services.AddControllers();
+            services.AddControllers();
         }
 
         /// <summary>
         ///  This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         /// </summary>
         /// <param name="app"></param>
-        public void Configure(IApplicationBuilder app,IWebHostEnvironment _)
+        public void Configure(IApplicationBuilder app,IWebHostEnvironment environment)
         {
             app.UseStaticFiles();
-            //app.UseRouting();
-            app.UseMessageMVC(true);
 
-            
+            //app.UseRouting();
             //app.UseEndpoints(endpoints =>
             //{
             //    endpoints.MapControllers();
             //});
-
+            
+            app.UseMessageMVC();
         }
     }
 }

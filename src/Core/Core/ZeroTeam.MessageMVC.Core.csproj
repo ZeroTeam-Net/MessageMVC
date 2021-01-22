@@ -24,7 +24,7 @@
     <Company>ZeroTeam</Company>
     <PackageReleaseNotes></PackageReleaseNotes>
     <Product>ZeroTeam.MessageMVC.Core</Product>
-    <Version>1.0.1.143</Version>
+    <Version>1.1.1.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -53,12 +53,6 @@
 
   <ItemGroup>
     <Folder Include="Properties\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-    <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
-    <PackageReference Include="System.Threading.Tasks" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>

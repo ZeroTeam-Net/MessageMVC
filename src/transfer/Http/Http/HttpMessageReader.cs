@@ -106,8 +106,8 @@ namespace ZeroTeam.MessageMVC.Http
             {
                 return false;
             }
-            Message.ApiHost = words[idx].ToLower();
-            Message.ApiName = string.Join('/', words.Skip(idx + 1).Select(p => p.ToLower()));
+            Message.Service = words[idx].ToLower();
+            Message.Method = string.Join('/', words.Skip(idx + 1).Select(p => p.ToLower()));
             return true;
         }
 
@@ -128,11 +128,11 @@ namespace ZeroTeam.MessageMVC.Http
                     ReadForm(request);
                     await ReadFiles(request);
                 }
-                Message.Content = Message.HttpContent ??= await ReadContent();
+                Message.Argument = Message.HttpContent ??= await ReadContent();
             }
             catch (Exception e)
             {
-                DependencyScope.Logger.Exception(e);
+                DependencyRun.Logger.Exception(e);
                 Message.State = MessageState.FormalError;
             }
             Message.DataState = MessageDataState.ArgumentOffline | MessageDataState.ExtensionInline | MessageDataState.ExtensionOffline;

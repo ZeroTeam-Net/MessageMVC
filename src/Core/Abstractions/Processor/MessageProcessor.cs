@@ -19,7 +19,8 @@ namespace ZeroTeam.MessageMVC.Messages
         #region 处理入口
 
         ILogger logger;
-        TaskCompletionSource<IMessageItem> WaitTask;
+
+        TaskCompletionSource<bool> WaitTask;
         /// <summary>
         /// 当前站点
         /// </summary>
@@ -56,12 +57,31 @@ namespace ZeroTeam.MessageMVC.Messages
                 Message = message,
                 Original = original,
                 IsOffline = offline,
-                WaitTask = new TaskCompletionSource<IMessageItem>()
+                WaitTask = new TaskCompletionSource<bool>()
             };
-            _ = process.Process();
+            DependencyRun.RunScope($"{message.Service}/{message.Method}" ,Process, process);
             return process.WaitTask.Task;
         }
 
+        /// <summary>
+        /// 消息处理(异步)
+        /// </summary>
+        /// <param name="service">服务</param>
+        /// <param name="message">消息</param>
+        /// <param name="offline">是否离线消息</param>
+        /// <param name="original">原始透传对象</param>
+        public static void RunOnMessagePush(IService service, IInlineMessage message, bool offline, object original)
+        {
+            message.RealState = MessageState.Recive;
+            var process = new MessageProcessor
+            {
+                Service = service,
+                Message = message,
+                Original = original,
+                IsOffline = offline
+            };
+            DependencyRun.RunScope($"{message.Service}/{message.Method}", Process, process);
+        }
         #endregion
 
         #region 中间件链式调用
@@ -76,21 +96,21 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         private int index = 0;
 
-        /// <summary>
-        /// 活动实例
-        /// </summary>
-        public static readonly AsyncLocal<ScopeData> Local = new AsyncLocal<ScopeData>();
-
-        private async Task Process()
+        private static void Process(object arg)
         {
-            await Task.Yield();
-            var name = $"{Message.Topic}/{Message.Title}";
-            DependencyScope.CreateScope(name);
-            FlowTracer.BeginMonitor(name);
-            logger = DependencyHelper.LoggerFactory.CreateLogger(name);
+            var processor = (MessageProcessor)arg;
+            processor.DoProcess();
+        }
+        private async void DoProcess()
+        {
             try
             {
-                middlewares = DependencyHelper.ServiceProvider.GetServices<IMessageMiddleware>().OrderBy(p => p.Level).ToArray();
+                await Task.Yield();
+                var name = $"{Message.Service}/{Message.Method}({Message.ID})";
+
+                FlowTracer.BeginMonitor(name);
+                logger = DependencyHelper.LoggerFactory.CreateLogger(name);
+                middlewares = DependencyHelper.ServiceProvider.GetServices<IMessageMiddleware>().Where(p => p.Scope > MessageHandleScope.None).OrderBy(p => p.Level).ToArray();
 
                 //BUG:Prepare处理需要检查
                 if (await Prepare() && Message.State <= MessageState.Processing)
@@ -99,14 +119,17 @@ namespace ZeroTeam.MessageMVC.Messages
                     await DoHandle();
                 }
                 if (Message.State != MessageState.NoUs)
+                {
                     await Write();
+                    await OnEnd();
+                }
             }
-            finally
+            catch (Exception ex)
             {
-                WaitTask.SetResult(Message);
+                logger.Exception(ex);
             }
-            if (Message.State != MessageState.NoUs)
-                await OnEnd();
+            //提前返回
+            //WaitTask.TrySetResult(Message);
             if (GlobalContext.Current.IsDelay)//标记为需要延迟处理依赖范围
             {
                 GlobalContext.Current.IsDelay = false;//让另一个处理不再等等
@@ -114,10 +137,10 @@ namespace ZeroTeam.MessageMVC.Messages
             else
             {
                 //正常清理范围
-                DependencyScope.DisposeLocal();
+                DependencyRun.DisposeLocal();
             }
+            WaitTask?.TrySetResult(true);
         }
-
         /// <summary>
         /// 准备处理
         /// </summary>
@@ -237,7 +260,7 @@ namespace ZeroTeam.MessageMVC.Messages
             }
             catch (Exception ex)
             {
-              await  OnMessageError(ex);
+                await OnMessageError(ex);
             }
             try
             {
@@ -251,8 +274,6 @@ namespace ZeroTeam.MessageMVC.Messages
                     FlowTracer.MonitorDetails(() => $"[Write>{Service.Receiver.GetTypeName()}.OnResult] 写入返回值");
                     await Service.Receiver.OnResult(Message, Original);
                 }
-
-
             }
             catch (Exception ex)
             {
@@ -313,11 +334,12 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         async Task OnEnd()
         {
+            FlowTracer.BeginStepMonitor("[OnEnd]");
+            FlowTracer.MonitorInfomation($"[State] {Message.State} [Result] {Message.Result}");
+
             var array = middlewares.Where(p => p.Scope.HasFlag(MessageHandleScope.End)).ToArray();
             if (array.Length == 0)
                 return;
-            FlowTracer.BeginStepMonitor("[OnEnd]");
-            Message.Offline(null);
             foreach (var middleware in array.OrderByDescending(p => p.Level))
             {
                 try

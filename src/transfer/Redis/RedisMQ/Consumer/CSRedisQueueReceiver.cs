@@ -278,7 +278,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                 return true;
             }
             //item.Trace ??= TraceInfo.New(item.ID);
-            item.Topic = Service.ServiceName;
+            item.Service = Service.ServiceName;
 
             _ = MessageProcessor.OnMessagePush(Service, item, true, null);
 

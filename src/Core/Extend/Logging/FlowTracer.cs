@@ -1,61 +1,12 @@
-using Agebull.Common.Base;
 using Agebull.Common.Configuration;
 using Agebull.Common.Ioc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text;
 namespace Agebull.Common.Logging
 {
-    /// <summary>
-    /// 流程跟踪范围
-    /// </summary>
-    internal class FlowTracerScope : ScopeBase
-    {
-        ILogger _logger;
-        internal FlowTracerScope(string title, ILogger logger)
-        {
-            _logger = logger;
-            FlowTracer.BeginMonitor(title);
-        }
-
-        /// <inheritdoc/>
-        protected override void OnDispose()
-        {
-            _logger.TraceMonitor(FlowTracer.EndMonitor());
-        }
-    }
-    /// <summary>
-    /// 流程跟踪步骤范围
-    /// </summary>
-    internal class FlowTracerStepScope : ScopeBase
-    {
-        internal FlowTracerStepScope(string title)
-        {
-            FlowTracer.BeginStepMonitor(title);
-        }
-
-        /// <inheritdoc/>
-        protected override void OnDispose()
-        {
-            FlowTracer.EndStepMonitor();
-        }
-    }
-    /// <summary>
-    /// 流程跟踪调试步骤范围
-    /// </summary>
-    internal class FlowTracerDebugStepScope : ScopeBase
-    {
-        internal FlowTracerDebugStepScope(string title)
-        {
-            FlowTracer.BeginDebugStepMonitor(title);
-        }
-        /// <inheritdoc/>
-        protected override void OnDispose()
-        {
-            FlowTracer.EndDebugStepMonitor();
-        }
-    }
 
     /// <summary>
     ///   流程跟踪器
@@ -63,14 +14,6 @@ namespace Agebull.Common.Logging
     public static class FlowTracer
     {
         #region Scope
-        /// <summary>
-        /// 跟踪范围
-        /// </summary>
-        /// <param name="title"></param>
-        /// <param name="logger"></param>
-        /// <returns></returns>
-        public static IDisposable MonitorScope(string title, ILogger logger)
-            => new FlowTracerScope(title, logger);
 
         /// <summary>
         /// 步骤范围
@@ -101,14 +44,14 @@ namespace Agebull.Common.Logging
         /// </summary>
         private static void ReadConfig()
         {
-            var sec = ConfigurationHelper.Get("Logging:LogLevel");
-            if (sec != null && Enum.TryParse<LogLevel>(sec.GetStr("MessageMVC"), out var l))
+            var sec = ConfigurationHelper.GetSection("Logging:LogLevel:MessageMVC");
+            if (sec != null && Enum.TryParse<LogLevel>(sec.Value, out var l))
             {
                 Level = l;
             }
             else
             {
-                Level = LogLevel.Information;
+                Level = LogLevel.Error;
             }
         }
 
@@ -116,8 +59,6 @@ namespace Agebull.Common.Logging
         /// 当前日志级别
         /// </summary>
         public static LogLevel Level { get; set; }
-
-        #endregion
 
         /// <summary>
         /// 是否启动跟踪日志
@@ -142,7 +83,9 @@ namespace Agebull.Common.Logging
         /// <summary>
         /// 当前范围数据
         /// </summary>
-        static Local MonitorItem => DependencyScope.Dependency.Dependency<Local>();
+        static Local MonitorItem => DependencyRun.Dependency.Dependency<Local>();
+
+        #endregion
 
         #region 跟踪输出
 
@@ -158,7 +101,7 @@ namespace Agebull.Common.Logging
             }
             var item = new Local();
             item.BeginMonitor(title);
-            DependencyScope.Dependency.Annex(item);
+            DependencyRun.Dependency.Annex(item);
         }
         /// <summary>
         /// 开始检测资源
@@ -172,7 +115,7 @@ namespace Agebull.Common.Logging
             }
             var item = new Local();
             item.BeginMonitor(fix);
-            DependencyScope.Dependency.Annex(item);
+            DependencyRun.Dependency.Annex(item);
         }
 
         /// <summary>
@@ -509,7 +452,7 @@ namespace Agebull.Common.Logging
             {
                 return null;
             }
-            DependencyScope.Dependency.Remove<Local>();
+            DependencyRun.Dependency.Remove<Local>();
             item.End();
             return item.Stack.FixValue;
         }
@@ -628,9 +571,32 @@ namespace Agebull.Common.Logging
         #region SUB
 
         /// <summary>
+        /// 流程跟踪步骤范围
+        /// </summary>
+        internal class FlowTracerStepScope : IDisposable
+        {
+            internal FlowTracerStepScope(string title) => BeginStepMonitor(title);
+
+            /// <inheritdoc/>
+            void IDisposable.Dispose() => EndStepMonitor();
+
+        }
+
+        /// <summary>
+        /// 流程跟踪调试步骤范围
+        /// </summary>
+        internal class FlowTracerDebugStepScope : IDisposable
+        {
+            internal FlowTracerDebugStepScope(string title) => BeginDebugStepMonitor(title);
+            /// <inheritdoc/>
+            void IDisposable.Dispose() => EndDebugStepMonitor();
+            
+        }
+
+        /// <summary>
         ///     跟踪信息
         /// </summary>
-        class Local
+        class Local : IDisposable
         {
             /// <summary>
             ///     记录堆栈
@@ -711,6 +677,10 @@ namespace Agebull.Common.Logging
                 });
             }
 
+            void IDisposable.Dispose()
+            {
+                DependencyRun.Logger.TraceMonitor(End());
+            }
         }
         #endregion
     }

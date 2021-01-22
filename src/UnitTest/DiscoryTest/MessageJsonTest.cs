@@ -34,9 +34,9 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
                 {
                     ID = id,
                     State = MessageState.Accept,
-                    Topic = "Topic",
-                    Title = "Title",
-                    Content = @"{""Value"": ""Content""}",
+                    Service = "Topic",
+                    Method = "Title",
+                    Argument = @"{""Value"": ""Content""}",
                     Trace = TraceInfo.New(id),
                     Result = @"{""Value"": ""Result""}"
                 };
@@ -47,8 +47,8 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
 
                 Assert.IsTrue(message2.ID == message.ID, json);
                 Assert.IsTrue(message2.State == message.State, json);
-                Assert.IsTrue(message2.Topic == message.Topic, json);
-                Assert.IsTrue(message2.Content == message.Content, json);
+                Assert.IsTrue(message2.Service == message.Service, json);
+                Assert.IsTrue(message2.Argument == message.Argument, json);
                 Assert.IsTrue(message2.Result == message.Result, json);
                 Assert.IsTrue(message2.Trace.LocalMachine == message.Trace.LocalMachine, json);
             }
@@ -71,9 +71,9 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
                 {
                     ID = id,
                     State = MessageState.Accept,
-                    Topic = "Topic",
-                    Title = "Title",
-                    Content = @"{""Value"": ""Content""}",
+                    Service = "Topic",
+                    Method = "Title",
+                    Argument = @"{""Value"": ""Content""}",
                     Trace = TraceInfo.New(id),
                     Result = @"{""Value"": ""Result""}"
                 };
@@ -103,9 +103,9 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             {
                 ID = id,
                 State = MessageState.Accept,
-                Topic = "Topic",
-                Title = "Title",
-                Content = @"{""Value"": ""Content""}",
+                Service = "Topic",
+                Method = "Title",
+                Argument = @"{""Value"": ""Content""}",
                 Trace = TraceInfo.New(id),
                 Result = @"{""Value"": ""Result""}"
             };
@@ -132,9 +132,9 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             {
                 ID = id,
                 State = MessageState.Accept,
-                Topic = "Topic",
-                Title = "Title",
-                Content = @"{""Value"": ""Content""}",
+                Service = "Topic",
+                Method = "Title",
+                Argument = @"{""Value"": ""Content""}",
                 Trace = TraceInfo.New(id),
                 Result = @"{""Value"": ""Result""}"
             };
@@ -162,9 +162,9 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             {
                 ID = id,
                 State = MessageState.Accept,
-                Topic = "Topic",
-                Title = "Title",
-                Content = @"{""Value"": ""Content""}",
+                Service = "Topic",
+                Method = "Title",
+                Argument = @"{""Value"": ""Content""}",
                 Trace = TraceInfo.New(id),
                 Result = @"{""Value"": ""Result""}"
             };
@@ -190,9 +190,9 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             {
                 ID = id,
                 State = MessageState.Accept,
-                Topic = "Topic",
-                Title = "Title",
-                Content = @"{""Value"": ""Content""}",
+                Service = "Topic",
+                Method = "Title",
+                Argument = @"{""Value"": ""Content""}",
                 Trace = TraceInfo.New(id),
                 ResultData = new Argument<int>
                 {
@@ -232,9 +232,9 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             {
                 ID = id,
                 State = MessageState.Accept,
-                Topic = "Topic",
-                Title = "Title",
-                Content = @"{""Value"": ""Content""}",
+                Service = "Topic",
+                Method = "Title",
+                Argument = @"{""Value"": ""Content""}",
                 Trace = TraceInfo.New(id),
                 Result = @"{""Value"": ""Result""}"
             };
@@ -251,9 +251,9 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             {
                 ID = id,
                 State = MessageState.Accept,
-                Topic = "Topic",
-                Title = "Title",
-                Content = @"{""Value"": ""Content""}",
+                Service = "Topic",
+                Method = "Title",
+                Argument = @"{""Value"": ""Content""}",
                 Trace = TraceInfo.New(id),
                 Result = @"{""Value"": ""Result""}"
             };

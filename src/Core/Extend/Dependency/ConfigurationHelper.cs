@@ -23,18 +23,39 @@ namespace Agebull.Common.Configuration
         /// <summary>
         /// 全局配置
         /// </summary>
-        public static IConfiguration Root { get; internal set; }
+        public static IConfiguration Root { get; private set; }
 
         /// <summary>
         /// 基本目录
         /// </summary>
         public static string BasePath { get; set; }
 
-
-        static ConfigurationHelper()
+        /// <summary>
+        /// 绑定
+        /// </summary>
+        /// <param name="builder"></param>
+        public static void BindBuilder(IConfigurationBuilder builder)
+        {
+            Builder = builder;
+            SyncBuilder();
+        }
+        /// <summary>
+        /// 建造生成器，使用前请调用
+        /// </summary>
+        public static void CreateBuilder()
+        {
+            if (Builder != null)
+                return;
+            Builder = DependencyHelper.GetService<IConfigurationBuilder>() ?? new ConfigurationBuilder();
+            SyncBuilder();
+        }
+        
+        /// <summary>
+        /// 建造生成器，使用前请调用
+        /// </summary>
+        static void SyncBuilder()
         {
             BasePath = Environment.CurrentDirectory;
-            Builder = DependencyHelper.GetService<IConfigurationBuilder>() ?? new ConfigurationBuilder();
             Builder.SetBasePath(Environment.CurrentDirectory);
 
             var files = new string[] { "appsettings.json", "appSettings.json", "AppSettings.json", "Appsettings.json" };
@@ -50,15 +71,6 @@ namespace Agebull.Common.Configuration
             Root = Builder.Build();
         }
 
-        /// <summary>
-        /// 修改根
-        /// </summary>
-        /// <param name="builder"></param>
-        public static void ChangeBuilder(IConfigurationBuilder builder)
-        {
-            Builder = builder;
-            Flush();
-        }
 
         #endregion
 
@@ -90,7 +102,7 @@ namespace Agebull.Common.Configuration
                 : string.Equals(sec.Value, "false", StringComparison.OrdinalIgnoreCase);
         }
 
-        /// <summary>
+        /*// <summary>
         /// 刷新
         /// </summary>
         internal static bool UpdateDependency()
@@ -115,7 +127,7 @@ namespace Agebull.Common.Configuration
                 changed = true;
             }
             return changed;
-        }
+        }*/
 
         /// <summary>
         /// 刷新
@@ -156,19 +168,22 @@ namespace Agebull.Common.Configuration
 
         internal class ChangeAction
         {
-            internal bool IsLoading { get; set; }
             internal string Section { get; set; }
             internal Action Action { get; set; }
 
             internal IDisposable Disposable { get; set; }
 
+            bool first = true;
+
+            bool loading;
+
             internal void SetAction(Action action)
             {
                 Action = () =>
                 {
-                    if (IsLoading)
+                    if (loading)
                         return;
-                    IsLoading = true;
+                    loading = true;
                     try
                     {
                         action();
@@ -179,21 +194,27 @@ namespace Agebull.Common.Configuration
                     }
                     finally
                     {
-                        IsLoading = false;
+                        loading = false;
                     }
                 };
             }
             internal void SetAction<TConfig>(Action<TConfig> action)
-            where TConfig : class
+            where TConfig : class,new()
             {
                 Action = () =>
                 {
-                    if (IsLoading)
+                    if (loading)
                         return;
-                    IsLoading = true;
+                    loading = true;
                     try
                     {
                         var opt = Option<TConfig>(Section);
+                        if (first)
+                        {
+                            first = false;
+                            if (opt == null)
+                                opt = new TConfig();
+                        }
                         if (opt != null)
                             action(opt);
                     }
@@ -203,7 +224,7 @@ namespace Agebull.Common.Configuration
                     }
                     finally
                     {
-                        IsLoading = false;
+                        loading = false;
                     }
                 };
             }
@@ -236,7 +257,7 @@ namespace Agebull.Common.Configuration
         /// <param name="reload">更新处理方法</param>
         /// <param name="runNow">是否现在执行一次</param>
         public static void RegistOnChange<TConfig>(string section, Action<TConfig> reload, bool runNow = true)
-            where TConfig : class
+            where TConfig : class,new()
         {
             var cfg = new ChangeAction
             {
@@ -520,6 +541,14 @@ namespace Agebull.Common.Configuration
             Configuration = Root.GetSection("ConnectionStrings")
         };
 
+        /// <summary>
+        /// 显示式设置配置对象(依赖)
+        /// </summary>
+        public static IConfigurationSection GetSection(string section)
+        {
+            return Root.GetSection(section);
+        }
+
 
         /// <summary>
         /// 显示式设置配置对象(依赖)
@@ -531,7 +560,6 @@ namespace Agebull.Common.Configuration
                 Configuration = Root.GetSection(section)
             };
         }
-
 
         /// <summary>
         /// 强类型取根节点

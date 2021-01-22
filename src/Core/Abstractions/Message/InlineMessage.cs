@@ -12,22 +12,9 @@ namespace ZeroTeam.MessageMVC.Messages
     public class InlineMessage : MessageItem, IInlineMessage
     {
         /// <summary>
-        /// 服务名称,即Topic
+        /// 消息类型
         /// </summary>
-        [JsonIgnore]
-        public string ServiceName { get => Topic; set => Topic = value; }
-
-        /// <summary>
-        /// 接口名称,即Title
-        /// </summary>
-        [JsonIgnore]
-        public string ApiName { get => Title; set => Title = value; }
-
-        /// <summary>
-        /// 接口参数,即Content
-        /// </summary>
-        [JsonIgnore]
-        public string Argument { get => Content; set => Content = value; }
+        string IInlineMessage.MessageType => "InlineMessage";
 
         /// <summary>
         /// 是否外部访问
@@ -82,7 +69,7 @@ namespace ZeroTeam.MessageMVC.Messages
             {
                 argumentData = value;
                 DataState |= MessageDataState.ArgumentInline;
-                if (Content == null && value == null)
+                if (base.Argument == null && value == null)
                     DataState |= MessageDataState.ArgumentOffline;
                 else
                     DataState &= ~MessageDataState.ArgumentOffline;

@@ -4,47 +4,26 @@ using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.RabbitMQ;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Agebull.Common.Configuration;
 using Microsoft.Extensions.Logging;
+
 namespace Rabbit
 {
     class Program
     {
-        static async Task Main(string[] args)
+        static async Task Main()
         {
-            DependencyHelper.ServiceCollection.AddLogging(builder =>
-            {
-                builder.AddConfiguration(ConfigurationHelper.Root.GetSection("Logging"));
-                builder.AddConsole();
-                DependencyHelper.Flush();
-            });
-            var services = DependencyHelper.ServiceCollection;
-            services.AddMessageMvcRabbitMQ();
-            DependencyHelper.Flush();
-            _ = Test();
-            await services.UseMessageMvc();
-        }
-        static async Task Test()
-        {
-            for (int i = 0; ZeroAppOption.Instance.IsAlive && i < 100; i++)
-            {
-                if (!ZeroAppOption.Instance.IsRuning)
+            var builder = new HostBuilder()
+                .UseMessageMVC(true, services =>
                 {
-                    await Task.Delay(1000);
-                    continue;
-                }
-                await Task.Delay(100);
-                //await Task.Delay(1);
-                //await MessagePoster.PublishAsync("test1", "test/res", "agebull");
-                //await MessagePoster.PublishAsync("test1", "test/arg", "{'Value':'test'}");
-                await MessagePoster.PublishAsync("test1", "test/full", "{'name':'test'}");
-                //await MessagePoster.PublishAsync("test1", "test/void", "agebull");
-
-                //await MessagePoster.PublishAsync("test1", "async/res", "{'Value':'test'}");
-                //await MessagePoster.PublishAsync("test1", "async/arg", "{'Value':'test'}");
-                //await MessagePoster.PublishAsync("test1", "async/full", "{'Value':'test'}");
-                //await MessagePoster.PublishAsync("test1", "async/void", "{'Value':'test'}");
-            }
+                    services.AddMessageMvcRabbitMQ();
+                })
+                .ConfigureServices((ctx, services) =>
+                {
+                    services.AddHostedService<TestHost>();
+                });
+            await builder.Build().RunAsync();
         }
     }
 }

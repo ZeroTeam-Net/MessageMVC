@@ -1,7 +1,5 @@
-﻿using CSRedis;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using System;
 using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC.RedisMQ
@@ -20,14 +18,14 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             if (isUsed)
                 return;
             isUsed = true;
-            ZeroAppOption.RegistDestoryAction(CsredisProcessExitHelper.HandleExit());
+            //ZeroAppOption.RegistDestoryAction(CsredisProcessExitHelper.HandleExit());
             services.AddSingleton<IFlowMiddleware>(RedisFlow.Instance);
             services.AddSingleton<IHealthCheck>(RedisFlow.Instance);
 
             services.TryAddTransient<INetEvent, CSRedisEventReceiver>();//Redis订阅
-            services.TryAddTransient<IMessageConsumer, CSRedisQueueReceiver>();//Redis订阅
-            services.AddSingleton<IMessagePoster, CsRedisQueuePoster>();//Redis发布
-            services.AddSingleton<IMessagePoster, CsRedisEventPoster>();//Redis发布
+            //services.TryAddTransient<IMessageConsumer, CSRedisQueueReceiver>();//Redis订阅
+            //services.AddSingleton<IMessagePoster, CsRedisQueuePoster>();//Redis发布
+            services.AddSingleton<IMessagePoster, CsRedisPoster>();//Redis发布
         }
 
         /// <summary>
@@ -35,35 +33,12 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// </summary>
         public static void AddMessageMvcRedisPoster(this IServiceCollection services)
         {
-            ZeroAppOption.RegistDestoryAction(CsredisProcessExitHelper.HandleExit());
+            //ZeroAppOption.RegistDestoryAction(CsredisProcessExitHelper.HandleExit());
             services.AddSingleton<IFlowMiddleware>(RedisFlow.Instance);
             services.AddSingleton<IHealthCheck>(RedisFlow.Instance);
 
-            services.AddSingleton<IMessagePoster, CsRedisQueuePoster>();//Redis发布
-            services.AddSingleton<IMessagePoster, CsRedisEventPoster>();//Redis发布
-        }
-
-        /// <summary>
-        /// 使用Redis消息队列
-        /// </summary>
-        public static void AddMessageMvcRedisQueue(this IServiceCollection services)
-        {
-            ZeroAppOption.RegistDestoryAction(CsredisProcessExitHelper.HandleExit());
-            services.AddSingleton<IFlowMiddleware>(RedisFlow.Instance);
-            services.AddSingleton<IHealthCheck>(RedisFlow.Instance);
-            services.TryAddTransient<IMessageConsumer, CSRedisQueueReceiver>();//Redis订阅
-            services.AddSingleton<IMessagePoster, CsRedisQueuePoster>();//Redis发布
-        }
-
-        /// <summary>
-        /// 使用Redis消息队列
-        /// </summary>
-        public static void AddMessageMvcRedisQueueClient(this IServiceCollection services)
-        {
-            ZeroAppOption.RegistDestoryAction(CsredisProcessExitHelper.HandleExit());
-            services.AddSingleton<IFlowMiddleware>(RedisFlow.Instance);
-            services.AddSingleton<IHealthCheck>(RedisFlow.Instance);
-            services.AddSingleton<IMessagePoster, CsRedisQueuePoster>();//Redis发布
+            //services.AddSingleton<IMessagePoster, CsRedisQueuePoster>();//Redis发布
+            services.AddSingleton<IMessagePoster, CsRedisPoster>();//Redis发布
         }
 
         /// <summary>
@@ -71,11 +46,11 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// </summary>
         public static void AddMessageMvcRedisEvent(this IServiceCollection services)
         {
-            ZeroAppOption.RegistDestoryAction(CsredisProcessExitHelper.HandleExit());
+           // ZeroAppOption.RegistDestoryAction(CsredisProcessExitHelper.HandleExit());
             services.AddSingleton<IFlowMiddleware>(RedisFlow.Instance);
             services.AddSingleton<IHealthCheck>(RedisFlow.Instance);
             services.TryAddTransient<INetEvent, CSRedisEventReceiver>();//Redis订阅
-            services.AddSingleton<IMessagePoster, CsRedisEventPoster>();//Redis发布
+            services.AddSingleton<IMessagePoster, CsRedisPoster>();//Redis发布
         }
 
         /// <summary>
@@ -83,10 +58,10 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// </summary>
         public static void AddMessageMvcRedisEventClient(this IServiceCollection services)
         {
-            ZeroAppOption.RegistDestoryAction(CsredisProcessExitHelper.HandleExit());
+            //ZeroAppOption.RegistDestoryAction(CsredisProcessExitHelper.HandleExit());
             services.AddSingleton<IFlowMiddleware>(RedisFlow.Instance);
             services.AddSingleton<IHealthCheck>(RedisFlow.Instance);
-            services.AddSingleton<IMessagePoster, CsRedisEventPoster>();//Redis发布
+            services.AddSingleton<IMessagePoster, CsRedisPoster>();//Redis发布
         }
 
     }

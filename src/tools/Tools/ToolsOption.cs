@@ -1,5 +1,6 @@
 ﻿using Agebull.Common.Configuration;
 using System;
+using System.Collections.Generic;
 
 namespace ZeroTeam.MessageMVC.Tools
 {
@@ -17,6 +18,11 @@ namespace ZeroTeam.MessageMVC.Tools
         ///     启用反向代理
         /// </summary>
         public bool EnableReverseProxy { get; set; }
+
+        /// <summary>
+        ///     反向代理服务名称映射
+        /// </summary>
+        public Dictionary<string,string> ReverseProxyMap { get; set; }
 
         /// <summary>
         ///     启用Monitor模式日志记录
@@ -42,21 +48,6 @@ namespace ZeroTeam.MessageMVC.Tools
         ///     启用异常消息本地重放
         /// </summary>
         public bool EnableMessageReConsumer { get; set; }
-
-        /// <summary>
-        ///     启用页面信息记录
-        /// </summary>
-        public bool EnablePageInfo { get; set; }
-
-        /// <summary>
-        ///     页面信息服务名称
-        /// </summary>
-        public string PageInfoService { get; set; }
-
-        /// <summary>
-        ///     页面信息接口方法
-        /// </summary>
-        public string PageInfoApi { get; set; }
 
         /// <summary>
         ///     回执服务名称
@@ -110,8 +101,10 @@ namespace ZeroTeam.MessageMVC.Tools
         private void Update(ToolsOption option)
         {
             EnableMonitorLog = option.EnableMonitorLog;
-            EnableReverseProxy = option.EnableReverseProxy;
             EnableMessageReConsumer = option.EnableMessageReConsumer;
+
+            EnableReverseProxy = option.EnableReverseProxy;
+            ReverseProxyMap = option.ReverseProxyMap;
 
             ReceiptService = option.ReceiptService;
             ReceiptApi = option.ReceiptApi;
@@ -123,11 +116,6 @@ namespace ZeroTeam.MessageMVC.Tools
 
             MarkPointName = option.MarkPointName;
             EnableMarkPoint = option.EnableMarkPoint && !string.IsNullOrWhiteSpace(MarkPointName);
-
-
-            PageInfoService = option.PageInfoService;
-            PageInfoApi = option.PageInfoApi;
-            EnablePageInfo = option.EnablePageInfo && !string.IsNullOrWhiteSpace(PageInfoService) && !string.IsNullOrWhiteSpace(PageInfoApi);
         }
     }
 }

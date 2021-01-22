@@ -14,14 +14,27 @@
                 初始化
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpApp.UseMessageMVC(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.Boolean)">
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpApp.UseMessageMVC(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
             <summary>
                 初始化
             </summary>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpApp.UseMessageMVC(Microsoft.AspNetCore.Hosting.IWebHostBuilder,System.Action{Microsoft.Extensions.DependencyInjection.IServiceCollection},System.Boolean)">
+            <summary>
+                配置使用MessageMVC
+            </summary>
+            <param name="host">主机生成器</param>
+            <param name="registAction">配置注册方法</param>
+            <param name="autoDiscove">是否自动发现API方法</param>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Http.HttpMessage">
             <summary>
                 路由数据
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.ZeroTeam#MessageMVC#Messages#IInlineMessage#MessageType">
+            <summary>
+            消息类型
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.IsOutAccess">
@@ -78,21 +91,6 @@
                 Http上下文
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.ServiceName">
-            <summary>
-            服务名称,即Topic
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.ApiHost">
-            <summary>
-                当前请求调用的主机名称
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.ApiName">
-            <summary>
-                当前请求调用的API名称
-            </summary>
-        </member>
         <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.Uri">
             <summary>
                 请求地址
@@ -101,11 +99,6 @@
         <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.HttpMethod">
             <summary>
                 HTTP method
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.Argument">
-            <summary>
-            接口参数,即Content
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.HttpContent">

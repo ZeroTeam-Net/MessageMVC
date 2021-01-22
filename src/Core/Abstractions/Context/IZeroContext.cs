@@ -18,7 +18,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         /// 依赖范围
         /// </summary>
-        IDisposable DependencyScope { get; set; }
+        IDisposable DependencyRun { get; set; }
 
         /// <summary>
         ///     跟踪信息

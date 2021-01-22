@@ -65,7 +65,7 @@ namespace ZeroTeam.MessageMVC.Messages
                     var json = File.ReadAllText(file);
                     if (SmartSerializer.TryToMessage(json, out var message))
                     {
-                        service.ServiceName = message.ServiceName;
+                        service.ServiceName = message.Service;
                         await MessageProcessor.OnMessagePush(service, message, true, null);
                     }
                 }

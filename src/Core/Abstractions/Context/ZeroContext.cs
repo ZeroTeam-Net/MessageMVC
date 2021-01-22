@@ -30,7 +30,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         /// 依赖范围
         /// </summary>
-        public IDisposable DependencyScope { get; set; }
+        public IDisposable DependencyRun { get; set; }
 
         /// <summary>
         /// 上下文配置
@@ -72,7 +72,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// </summary>
         public Dictionary<string, string> ToTransfer()
         {
-            if (!Option.ContainsKey("User"))
+            if (!Option.ContainsKey("User") && User != null)
                 Option.Add("User", User.ToJson());
             return Option;
         }

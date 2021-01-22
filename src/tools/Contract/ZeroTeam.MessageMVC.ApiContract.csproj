@@ -14,10 +14,11 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Authors>Agebull</Authors>
     <Company>ZeroTeam</Company>
-    <Version>1.0.1.143</Version>
+    <Version>1.1.1.0</Version>
     <PackageReleaseNotes></PackageReleaseNotes>
     <Product>ZeroTeam.MessageMVC.Tools</Product>
   </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Abstractions\ZeroTeam.MessageMVC.Abstractions.csproj" />
   </ItemGroup>

@@ -17,7 +17,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         ///     当前线程的调用上下文
         /// </summary>
-        public static IZeroContext Current => DependencyScope.Dependency.TryGetDependency(DependencyHelper.GetService<IZeroContext>);
+        public static IZeroContext Current => (IZeroContext)(DependencyRun.Context ??= DependencyHelper.GetService<IZeroContext>());
 
         /// <summary>
         ///     当前线程的调用上下文
@@ -29,7 +29,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// </summary>
         public static T Get<T>() where T : class
         {
-            return DependencyScope.Dependency.Dependency<T>();
+            return DependencyRun.Dependency.Dependency<T>();
         }
 
         /// <summary>
@@ -37,13 +37,13 @@ namespace ZeroTeam.MessageMVC.Context
         /// </summary>
         public static T Set<T>(T value) where T : class
         {
-            return DependencyScope.Dependency.TryAnnex<T>(value);
+            return DependencyRun.Dependency.TryAnnex<T>(value);
         }
 
         /// <summary>
         ///     当前线程的调用上下文(无懒构造)
         /// </summary>
-        public static IZeroContext CurrentNoLazy => DependencyScope.Dependency.Dependency<IZeroContext>();
+        public static IZeroContext CurrentNoLazy => (IZeroContext)(DependencyRun.Context);
 
         /// <summary>
         ///     设置当前上下文（框架内调用，外部误用后果未知）
@@ -59,7 +59,7 @@ namespace ZeroTeam.MessageMVC.Context
                     ctx.Option[kv.Key] = kv.Value;
                 }
             }
-            DependencyScope.Dependency.Annex(ctx);
+            DependencyRun.Context = ctx;
             return ctx;
         }
 

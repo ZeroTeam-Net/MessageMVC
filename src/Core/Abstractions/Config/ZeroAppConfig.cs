@@ -72,7 +72,6 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public TraceInfoType TraceInfo { get; set; }
 
-
         #region 复制
 
         /// <summary>

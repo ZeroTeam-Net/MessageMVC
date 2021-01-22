@@ -22,10 +22,12 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         int IMessageMiddleware.Level => MiddlewareLevel.General;
 
+        MessageHandleScope scope = MessageHandleScope.Handle | MessageHandleScope.Prepare;
+
         /// <summary>
         /// 消息中间件的处理范围
         /// </summary>
-        MessageHandleScope IMessageMiddleware.Scope => MessageHandleScope.Handle | MessageHandleScope.Prepare;
+        MessageHandleScope IMessageMiddleware.Scope => scope;
 
         /// <summary>
         /// 当前站点
@@ -56,21 +58,25 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <returns></returns>
         Task<bool> IMessageMiddleware.Prepare(IService service, IInlineMessage message, object tag)
         {
-            if (!string.Equals(service.ServiceName, message.ServiceName, StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(service.ServiceName, message.Service, StringComparison.OrdinalIgnoreCase))
                 return Task.FromResult(true);
 
             Service = service;
             Message = message;
             Tag = tag;
 
-            action = Service.GetApiAction(Message.Title);
+            action = Service.GetApiAction(Message.Method);
             //1 查找调用方法
             if (action == null)
             {
-                FlowTracer.MonitorDetails(() => $"错误: 接口({Message.Title})不存在");
+                FlowTracer.MonitorDetails(() => $"错误: 接口({Message.Method})不存在");
                 Message.State = MessageState.Unhandled;
                 Message.ResultCreater = ApiResultHelper.State;
-                return Task.FromResult(false);
+                scope = MessageHandleScope.None;
+            }
+            else
+            {
+                FlowTracer.MonitorTrace($"[Action] {action.Info.ControllerName}.{action.Info.Name}");
             }
             return Task.FromResult(true);
         }
@@ -83,36 +89,38 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <param name="tag"></param>
         /// <param name="next">下一个处理方法</param>
         /// <returns></returns>
-        async Task IMessageMiddleware.Handle(IService service, IInlineMessage message, object tag, Func<Task> next)
+        Task IMessageMiddleware.Handle(IService service, IInlineMessage message, object tag, Func<Task> next)
         {
-            if (string.Equals(service.ServiceName, message.ServiceName, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(service.ServiceName, message.Service, StringComparison.OrdinalIgnoreCase))
             {
-                if (await Handle())
-                    return;
+                return Handle();
             }
-            await next();
+            else
+            {
+                return next();
+            }
         }
 
         /// <summary>
         /// 处理
         /// </summary>
         /// <returns></returns>
-        async Task<bool> Handle()
+        async Task Handle()
         {
             Message.RealState = MessageState.Processing;
             //参数处理
             if (!ArgumentPrepare(action))
             {
-                return false;
+                return;
             }
             Message.ResultSerializer = action.ResultSerializer;
             Message.ResultCreater = action.ResultCreater;
             //扩展检查
             var checkers = DependencyHelper.GetServices<IApiActionChecker>();
-            foreach(var checker in checkers)
+            foreach (var checker in checkers)
             {
                 if (!checker.Check(action, Message))
-                    return false;
+                    return;
             }
 
             //方法执行
@@ -120,12 +128,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             GlobalContext.Current.Task = new ActionTask();
             try
             {
-                _ = action.Execute( GlobalContext.Current.Task, Message, Service.Serialize);
+                _ = action.Execute(GlobalContext.Current.Task, Message, Service.Serialize);
                 await GlobalContext.Current.Task.Task;
                 var (state, result) = GlobalContext.Current.Task.Task.Result;
                 Message.State = state;
                 Message.ResultData = result;
-                return false;
             }
             //catch (TaskCanceledException)
             //{
@@ -155,7 +162,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 status.Message = msg;
                 Message.ResultData = status;
             }
-            return false;
         }
 
         #endregion
@@ -169,6 +175,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <returns></returns>
         private bool ArgumentPrepare(IApiAction action)
         {
+            FlowTracer.MonitorInfomation($"[Argument] {Message.Argument}");
+
             try
             {
                 action.RestoreArgument(Message);

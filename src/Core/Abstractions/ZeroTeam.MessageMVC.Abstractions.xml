@@ -1339,6 +1339,11 @@
                 是否在Linux黑环境下
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppOption.AutoDiscover">
+            <summary>
+            全部自动发现
+            </summary>
+        </member>
         <member name="F:ZeroTeam.MessageMVC.ZeroAppOption._appState">
             <summary>
                 运行状态
@@ -1380,15 +1385,20 @@
             实例
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroAppOption.RegistDestoryAction(System.Action{System.Object,System.EventArgs})">
+        <member name="M:ZeroTeam.MessageMVC.ZeroAppOption.RegistDestoryAction(System.Func{System.Threading.Tasks.Task})">
             <summary>
             注册析构方法
             </summary>
             <param name="action"></param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroAppOption.Destory(System.Object,System.EventArgs)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroAppOption.Destory">
             <summary>
             执行析构方法
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroAppOption.LoadConfig">
+            <summary>
+            载入配置
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Context.ContextStatus">
@@ -1557,7 +1567,7 @@
                 是否延迟处理
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Context.IZeroContext.DependencyScope">
+        <member name="P:ZeroTeam.MessageMVC.Context.IZeroContext.DependencyRun">
             <summary>
             依赖范围
             </summary>
@@ -1722,7 +1732,7 @@
                 是否延迟处理
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Context.ZeroContext.DependencyScope">
+        <member name="P:ZeroTeam.MessageMVC.Context.ZeroContext.DependencyRun">
             <summary>
             依赖范围
             </summary>
@@ -1760,6 +1770,251 @@
         <member name="M:ZeroTeam.MessageMVC.Context.ZeroContext.ToTransfer">
             <summary>
             转为可传输的对象
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim">
+            <summary>
+            JWT兼容定义
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Actort">
+            <summary>
+            http://tools.ietf.org/html/rfc7519#section-5
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Typ">
+            <summary>
+            http://tools.ietf.org/html/rfc7519#section-5
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Sub">
+            <summary>
+            http://tools.ietf.org/html/rfc7519#section-4
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Sid">
+            <summary>
+            http://openid.net/specs/openid-connect-frontchannel-1_0.html#OPLogout
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Prn">
+            <summary>
+            http://openid.net/specs/openid-connect-frontchannel-1_0.html#OPLogout
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Nbf">
+            <summary>
+            http://tools.ietf.org/html/rfc7519#section-4
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Nonce">
+            <summary>
+             https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.NameId">
+            <summary>
+             https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Jti">
+            <summary>
+            http://tools.ietf.org/html/rfc7519#section-4
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Iss">
+            <summary>
+            http://tools.ietf.org/html/rfc7519#section-4
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Iat">
+            <summary>
+            http://tools.ietf.org/html/rfc7519#section-4
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.GivenName">
+            <summary>
+            http://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.FamilyName">
+            <summary>
+            http://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Gender">
+            <summary>
+            http://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Exp">
+            <summary>
+            http://tools.ietf.org/html/rfc7519#section-4
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Email">
+            <summary>
+            https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.AtHash">
+            <summary>
+            http://openid.net/specs/openid-connect-core-1_0.html#CodeIDToken
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.CHash">
+            <summary>
+            https://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Birthdate">
+            <summary>
+            https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Azp">
+            <summary>
+            http://openid.net/specs/openid-connect-core-1_0.html#IDToken
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.AuthTime">
+            <summary>
+            http://openid.net/specs/openid-connect-core-1_0.html#IDToken
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Aud">
+            <summary>
+            http://tools.ietf.org/html/rfc7519#section-4
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Amr">
+            <summary>
+            http://openid.net/specs/openid-connect-core-1_0.html#IDToken
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Acr">
+            <summary>
+            http://openid.net/specs/openid-connect-core-1_0.html#IDToken
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.UniqueName">
+            <summary>
+            http://openid.net/specs/openid-connect-core-1_0.html#IDToken
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Website">
+            <summary>
+            http://openid.net/specs/openid-connect-core-1_0.html#IDToken
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.TokenType">
+            <summary>
+            设备类型
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.LoginType">
+            <summary>
+            登录类型
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.LoginToken">
+            <summary>
+            登录令牌
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.GlobalUserId">
+            <summary>
+            全局用户ID
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.AppUserId">
+            <summary>
+            当前应用用户ID
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.OpenId">
+            <summary>
+            OpenId
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.AvatarUrl">
+            <summary>
+            头像
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Account">
+            <summary>
+            登录使用的账号
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.MobilePhone">
+            <summary>
+            手机号
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.DeviceId">
+            <summary>
+            设备标识
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Organization">
+            <summary>
+            组织名称
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.OrganizationId">
+            <summary>
+            组织ID
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.OrganizationCode">
+            <summary>
+            组织查询代码
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.DataScope">
+            <summary>
+            设备类型
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.CurrentPermission">
+            <summary>
+            当前权限
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.Permissions">
+            <summary>
+            权限信息
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.TraceMark">
+            <summary>
+            追踪码
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.DeviceInfo">
+            <summary>
+            设备信息
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.SystemUserId">
+            <summary>
+            系统用户标识
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.SystemOrganizationId">
+            <summary>
+            系统组织标识
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.UnknownUserId">
+            <summary>
+            未知用户标识
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.ZeroTeamJwtClaim.UnknownOrganizationId">
+            <summary>
+            未知组织标识
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Documents.AnnotationsConfig">
@@ -2297,6 +2552,11 @@
             在线消息参数
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.MessageType">
+            <summary>
+            消息类型
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.ArgumentData">
             <summary>
             实体参数
@@ -2315,6 +2575,11 @@
         <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.ResultData">
             <summary>
             返回值
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.IsOutAccess">
+            <summary>
+            是否外部访问
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.RealState">
@@ -2466,26 +2731,6 @@
             复制返回值
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.IsOutAccess">
-            <summary>
-            是否外部访问
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.ServiceName">
-            <summary>
-            服务名称,即Topic
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.ApiName">
-            <summary>
-            接口名称,即Title
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.IInlineMessage.Argument">
-            <summary>
-            接口参数,即Content
-            </summary>
-        </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.IInlineMessage.TraceInfo">
             <summary>
             跟踪消息
@@ -2499,20 +2744,20 @@
         </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.IMessageItem.ID">
             <summary>
-            分类
+            消息标识
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.IMessageItem.Topic">
+        <member name="P:ZeroTeam.MessageMVC.Messages.IMessageItem.Service">
             <summary>
             分类
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.IMessageItem.Title">
+        <member name="P:ZeroTeam.MessageMVC.Messages.IMessageItem.Method">
             <summary>
-            标题
+            方法
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.IMessageItem.Content">
+        <member name="P:ZeroTeam.MessageMVC.Messages.IMessageItem.Argument">
             <summary>
             内容
             </summary>
@@ -2600,19 +2845,9 @@
             消息交互格式
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.InlineMessage.ServiceName">
+        <member name="P:ZeroTeam.MessageMVC.Messages.InlineMessage.ZeroTeam#MessageMVC#Messages#IInlineMessage#MessageType">
             <summary>
-            服务名称,即Topic
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.InlineMessage.ApiName">
-            <summary>
-            接口名称,即Title
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.InlineMessage.Argument">
-            <summary>
-            接口参数,即Content
+            消息类型
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Messages.InlineMessage.IsOutAccess">
@@ -2772,17 +3007,17 @@
             处理状态
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.MessageItem.Topic">
+        <member name="P:ZeroTeam.MessageMVC.Messages.MessageItem.Service">
             <summary>
             分类
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.MessageItem.Title">
+        <member name="P:ZeroTeam.MessageMVC.Messages.MessageItem.Method">
             <summary>
             标题
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Messages.MessageItem.Content">
+        <member name="P:ZeroTeam.MessageMVC.Messages.MessageItem.Argument">
             <summary>
             内容
             </summary>
@@ -3355,6 +3590,15 @@
             <param name="offline">是否离线消息</param>
             <param name="original">原始透传对象</param>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.MessageProcessor.RunOnMessagePush(ZeroTeam.MessageMVC.Services.IService,ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Boolean,System.Object)">
+            <summary>
+            消息处理(异步)
+            </summary>
+            <param name="service">服务</param>
+            <param name="message">消息</param>
+            <param name="offline">是否离线消息</param>
+            <param name="original">原始透传对象</param>
+        </member>
         <member name="F:ZeroTeam.MessageMVC.Messages.MessageProcessor.middlewares">
             <summary>
             所有消息处理中间件
@@ -3363,11 +3607,6 @@
         <member name="F:ZeroTeam.MessageMVC.Messages.MessageProcessor.index">
             <summary>
             当前中间件序号
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.Messages.MessageProcessor.Local">
-            <summary>
-            活动实例
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.MessageProcessor.Prepare">

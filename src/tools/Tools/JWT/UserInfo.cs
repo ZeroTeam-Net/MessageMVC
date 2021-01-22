@@ -130,7 +130,7 @@ namespace ZeroTeam.MessageMVC.Context
             }
             catch (Exception ex)
             {
-                DependencyScope.Logger.Exception(ex, "UserInfo.FormJson\n{ex}", ex);
+                DependencyRun.Logger.Exception(ex, "UserInfo.FormJson\n{ex}", ex);
             }
         }
 

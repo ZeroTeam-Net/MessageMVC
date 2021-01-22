@@ -54,10 +54,6 @@ namespace ZeroTeam.MessageMVC.Tools
             //异常处理
             services.AddTransient<IMessageMiddleware, ExceptionMiddleware>();
 
-            //页面信息记录
-            if (ToolsOption.Instance.EnablePageInfo)
-                services.AddSingleton<IMessageMiddleware, PageInfoMiddleware>();
-            
             //显示
             Console.WriteLine($@"-----[工具信息]-----
      健康检查 : 启用
@@ -70,7 +66,6 @@ GlobalContext : 启用
      跟踪日志 : {(ToolsOption.Instance.EnableMonitorLog ? "启用" : "关闭")}
      数据埋点 : {(ToolsOption.Instance.EnableMarkPoint ? $"启用({ToolsOption.Instance.MarkPointName})" : "关闭")}
      调用回执 : {(ToolsOption.Instance.EnableReceipt ? $"启用({ToolsOption.Instance.ReceiptService}/{ToolsOption.Instance.ReceiptApi})" : "关闭")}
- 页面信息记录 : {(ToolsOption.Instance.EnablePageInfo ? $"启用({ToolsOption.Instance.PageInfoService}/{ToolsOption.Instance.PageInfoApi})" : "关闭")}
 ");
             return Task.FromResult(false);
         }

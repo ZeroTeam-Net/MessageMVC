@@ -75,7 +75,12 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
         void CheckResult()
         {
-            if (ResultType == typeof(void) || ResultType == null)
+            if (ResultType == null)
+            {
+                ResultSerializeType = SerializeType.None;
+                return;
+            }
+            if (ResultType == typeof(void))
             {
                 IsAsync = false;
                 ResultType = null;
@@ -262,7 +267,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 else if (!GlobalContext.Current.IsDelay)//
                 {
                     //清理范围
-                    DependencyScope.DisposeLocal();
+                    DependencyRun.DisposeLocal();
                 }
             }
             catch (Exception ex)
@@ -275,7 +280,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 else if (!GlobalContext.Current.IsDelay)
                 {
                     //清理范围
-                    DependencyScope.DisposeLocal();
+                    DependencyRun.DisposeLocal();
                 }
             }
         }

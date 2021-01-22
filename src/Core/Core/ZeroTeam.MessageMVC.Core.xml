@@ -183,6 +183,21 @@
             Controler发现工具,解析并生成服务对象及路由对象
             </summary>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.#ctor">
+            <summary>
+            构造
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.Discover(System.Reflection.Assembly)">
+            <summary>
+            查找API
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.Discover(System.Type)">
+            <summary>
+            查找API
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.Assembly">
             <summary>
             主调用程序集
@@ -214,16 +229,6 @@
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.FindApies">
-            <summary>
-            查找API
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.Discover(System.Reflection.Assembly)">
-            <summary>
-            查找API
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiDiscover.Discover(System.Type)">
             <summary>
             查找API
             </summary>
@@ -367,32 +372,25 @@
             应用扩展方法
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApp.BindingMessageMvc(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseMessageMVC(Microsoft.Extensions.Hosting.IHostBuilder,System.Action{Microsoft.Extensions.DependencyInjection.IServiceCollection})">
             <summary>
-                显示式设置配置对象(依赖)
+                配置使用MessageMVC
             </summary>
-            <param name="service"></param>
+            <param name="builder">主机生成器</param>
+            <param name="action">配置注册方法</param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseMessageMVC(Microsoft.Extensions.Hosting.IHostBuilder,System.Boolean,System.Action{Microsoft.Extensions.DependencyInjection.IServiceCollection})">
+            <summary>
+                配置使用MessageMVC
+            </summary>
+            <param name="builder">主机生成器</param>
+            <param name="autoDiscove">是否自动发现API方法</param>
+            <param name="action">配置注册方法</param>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApp.AddDependency(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Boolean)">
             <summary>
             检查并注入配置
             </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApp.AddMessageMvc(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Boolean,System.Boolean)">
-            <summary>
-            启动主流程控制器
-            </summary>
-            <param name="services">依赖服务</param>
-            <param name="msJson">true 使用System.Text.Json,false 使用NewtonsoftJson</param>
-            <param name="autoDiscover">对接口自动发现</param>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApp.AddMessageMvc(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly,System.Boolean)">
-            <summary>
-            启动主流程控制器，发现指定程序集的Api，由参数决定是否等待系统退出
-            </summary>
-            <param name="services">依赖服务</param>
-            <param name="msJson">true 使用System.Text.Json,false 使用NewtonsoftJson</param>
-            <param name="assembly">需要发现服务的程序集</param>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseTest(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly,System.Boolean)">
             <summary>
@@ -401,11 +399,6 @@
             <param name="services">依赖服务</param>
             <param name="msJson">true 使用System.Text.Json,false 使用NewtonsoftJson</param>
             <param name="assembly">需要发现服务的程序集</param>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseMessageMvc(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
-            <summary>
-            启动主流程控制器，发现指定程序集的Api，由参数决定是否等待系统退出
-            </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroFlowControl">
             <summary>
@@ -441,27 +434,6 @@
             <summary>
                 运行
             </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.BeginClose(System.Object,System.EventArgs)">
-            <summary>
-                关闭
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.EndClose(System.Object,System.EventArgs)">
-            <summary>
-                关闭
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.Shutdown(System.Object,System.EventArgs)">
-            <summary>
-                关闭
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.WaiteEnd">
-            <summary>
-            等待结束
-            </summary>
-            <returns></returns>
         </member>
         <member name="F:ZeroTeam.MessageMVC.ZeroFlowControl.Services">
             <summary>
@@ -538,26 +510,21 @@
                 系统启动时调用
             </summary>
         </member>
-        <member name="E:ZeroTeam.MessageMVC.ZeroFlowControl.OnStart">
-            <summary>
-            开始事件
-            </summary>
-        </member>
-        <member name="E:ZeroTeam.MessageMVC.ZeroFlowControl.OnStop">
-            <summary>
-            结束事件
-            </summary>
-        </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.StartFailed">
             <summary>
                 重新启动未正常启动的项目
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.WaiteAll(System.Collections.Generic.IEnumerable{System.Threading.Tasks.Task})">
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.WaiteAll(System.Collections.Generic.List{System.Threading.Tasks.Task})">
             <summary>
             等所有Task完成
             </summary>
             <param name="tasks"></param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.Shutdown">
+            <summary>
+                关闭
+            </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.CloseAll">
             <summary>
@@ -568,6 +535,32 @@
             <summary>
                 注销
             </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.RegistStartAction(System.String,System.Func{System.Threading.CancellationToken,System.Threading.Tasks.Task})">
+            <summary>
+            注册后台方法
+            </summary>
+            <param name="name"></param>
+            <param name="action"></param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.RegistStopAction(System.String,System.Func{System.Threading.Tasks.Task})">
+            <summary>
+            注册关机方法
+            </summary>
+            <param name="name"></param>
+            <param name="action"></param>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroHostedService">
+            <summary>
+            主机服务
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroHostedService.#ctor(Microsoft.Extensions.Logging.ILogger{ZeroTeam.MessageMVC.ZeroHostedService},Microsoft.Extensions.Hosting.IHostApplicationLifetime)">
+            <summary>
+            构造
+            </summary>
+            <param name="logger"></param>
+            <param name="appLifetime"></param>
         </member>
         <member name="T:ZeroTeam.MessageMVC.EmptyReceiver">
             <summary>

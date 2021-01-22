@@ -225,24 +225,24 @@ namespace ZeroTeam.MessageMVC
         /// <returns>返回值,如果未进行离线交换message返回为空,此时请检查state</returns>
         public static async Task<IInlineMessage> Post(IMessageItem message, bool autoOffline = true, bool defPoster = true)
         {
-            FlowTracer.BeginStepMonitor(() => $"{message.Topic}/{message.Title}");
+            FlowTracer.BeginStepMonitor(() => $"[MessagePoster] {message.Service}/{message.Method}");
             try
             {
-                if (message == null || string.IsNullOrEmpty(message.Topic) || string.IsNullOrEmpty(message.Title))
+                if (message == null || string.IsNullOrEmpty(message.Service) || string.IsNullOrEmpty(message.Method))
                 {
                     FlowTracer.MonitorError("服务不存在");
                     throw new NotSupportedException("参数[message]不能为空且[message.Topic]与[message.Title]必须为有效值");
                 }
 
                 var inline = CheckMessage(message);
-                var producer = GetService(message.Topic, defPoster);
+                var producer = GetService(message.Service, defPoster);
                 if (producer == null)
                 {
                     FlowTracer.MonitorError("服务不存在");
                     inline.State = MessageState.Unhandled;
                     return inline;
                 }
-                FlowTracer.MonitorDetails(() => $"Poster => {producer.GetTypeName()}");
+                FlowTracer.MonitorDetails(() => $"[Poster] {producer.GetTypeName()}");
                 try
                 {
                     var msg = await producer.Post(inline);
@@ -250,7 +250,7 @@ namespace ZeroTeam.MessageMVC
                     {
                         inline.CopyResult(msg);
                     }
-                    FlowTracer.MonitorInfomation(() => $"[{inline.State}] => {inline.Result}");
+                    FlowTracer.MonitorInfomation(() => $"[State] {inline.State} [Result] {inline.Result ?? "无返回值"}");
                     if (autoOffline)
                     {
                         inline.OfflineResult();
@@ -309,10 +309,10 @@ namespace ZeroTeam.MessageMVC
                 {
                     ID = message.ID,
                     State = MessageState.Accept,
-                    Topic = message.Topic,
-                    Title = message.Title,
+                    Service = message.Service,
+                    Method = message.Method,
                     Result = message.Result,
-                    Content = message.Content,
+                    Argument = message.Argument,
                     Trace = message.Trace,
                     DataState = dataState
                 };

@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace ZeroTeam.MessageMVC
 {
@@ -56,6 +57,11 @@ namespace ZeroTeam.MessageMVC
         [IgnoreDataMember]
         public bool IsLinux { get; set; }
 
+        /// <summary>
+        /// 全部自动发现
+        /// </summary>
+        public bool AutoDiscover { get; set; }
+
         #region State
 
         /// <summary>
@@ -100,13 +106,13 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public static ZeroAppOption Instance { get; }
 
-        static readonly List<Action<object, EventArgs>> DestoryAction = new List<Action<object, EventArgs>>();
+        static readonly List<Func<Task>> DestoryAction = new List<Func<Task>>();
 
         /// <summary>
         /// 注册析构方法
         /// </summary>
         /// <param name="action"></param>
-        public static void RegistDestoryAction(Action<object, EventArgs> action)
+        public static void RegistDestoryAction(Func<Task> action)
         {
             DestoryAction.Add(action);
         }
@@ -114,11 +120,11 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 执行析构方法
         /// </summary>
-        public static void Destory(object sender, EventArgs e)
+        public static async Task Destory()
         {
             foreach (var action in DestoryAction)
             {
-                action(sender,e);
+                await action();
             }
         }
 
@@ -132,6 +138,12 @@ namespace ZeroTeam.MessageMVC
                 BinPath = Environment.CurrentDirectory,
                 IsLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
             };
+        }
+        /// <summary>
+        /// 载入配置
+        /// </summary>
+        public static void LoadConfig()
+        {
             Instance.CopyByHase(ConfigurationHelper.Get<ZeroAppConfig>("MessageMVC:Option"));
             if (Instance.TraceInfo == TraceInfoType.None)
                 Instance.TraceInfo = TraceInfoType.LinkTrace | TraceInfoType.App;

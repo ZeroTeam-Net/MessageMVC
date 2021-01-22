@@ -1822,11 +1822,21 @@
             基本目录
             </summary>
         </member>
-        <member name="M:Agebull.Common.Configuration.ConfigurationHelper.ChangeBuilder(Microsoft.Extensions.Configuration.IConfigurationBuilder)">
+        <member name="M:Agebull.Common.Configuration.ConfigurationHelper.BindBuilder(Microsoft.Extensions.Configuration.IConfigurationBuilder)">
             <summary>
-            修改根
+            绑定
             </summary>
             <param name="builder"></param>
+        </member>
+        <member name="M:Agebull.Common.Configuration.ConfigurationHelper.CreateBuilder">
+            <summary>
+            建造生成器，使用前请调用
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Configuration.ConfigurationHelper.SyncBuilder">
+            <summary>
+            建造生成器，使用前请调用
+            </summary>
         </member>
         <member name="M:Agebull.Common.Configuration.ConfigurationHelper.IsEnable(System.String,System.Boolean)">
             <summary>
@@ -1841,11 +1851,6 @@
             </summary>
             <param name="key">配置的键名称，应已约定为bool类型</param>
             <param name="def">不存在时默认值</param>
-        </member>
-        <member name="M:Agebull.Common.Configuration.ConfigurationHelper.UpdateDependency">
-            <summary>
-            刷新
-            </summary>
         </member>
         <member name="M:Agebull.Common.Configuration.ConfigurationHelper.Flush">
             <summary>
@@ -1997,6 +2002,11 @@
             </summary>
         </member>
         <member name="P:Agebull.Common.Configuration.ConfigurationHelper.ConnectionStrings">
+            <summary>
+            显示式设置配置对象(依赖)
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Configuration.ConfigurationHelper.GetSection(System.String)">
             <summary>
             显示式设置配置对象(依赖)
             </summary>
@@ -2528,70 +2538,61 @@
             </summary>
             <typeparam name="TService"></typeparam>
         </member>
-        <member name="T:Agebull.Common.Ioc.DependencyScope">
+        <member name="T:Agebull.Common.Ioc.DependencyRun">
             <summary>
             IOC范围对象,内部框架使用
             </summary>
         </member>
-        <member name="M:Agebull.Common.Ioc.DependencyScope.#ctor(System.String)">
+        <member name="M:Agebull.Common.Ioc.DependencyRun.RunScope(System.String,System.Threading.ContextCallback,System.Object)">
             <summary>
-            生成一个范围
+            运行在一个依赖范围，析构请调用DependencyRun.DisposeLocal
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Agebull.Common.Ioc.DependencyScope.CreateScope(System.String)">
-            <summary>
-            生成一个范围
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="F:Agebull.Common.Ioc.DependencyScope.Local">
-            <summary>
-            活动实例
-            </summary>
-        </member>
-        <member name="P:Agebull.Common.Ioc.DependencyScope.Value">
-            <summary>
-            内容
-            </summary>
-        </member>
-        <member name="P:Agebull.Common.Ioc.DependencyScope.Name">
-            <summary>
-            范围名称
-            </summary>
-        </member>
-        <member name="P:Agebull.Common.Ioc.DependencyScope.Logger">
-            <summary>
-            日志记录器
-            </summary>
-        </member>
-        <member name="P:Agebull.Common.Ioc.DependencyScope.Dependency">
-            <summary>
-            附件内容
-            </summary>
-        </member>
-        <member name="P:Agebull.Common.Ioc.DependencyScope.ServiceScope">
-            <summary>
-            依赖服务范围
-            </summary>
-        </member>
-        <member name="P:Agebull.Common.Ioc.DependencyScope.InnerModel">
-            <summary>
-            内部模式,框架使用
-            </summary>
-        </member>
-        <member name="P:Agebull.Common.Ioc.DependencyScope.DisposeFunc">
-            <summary>
-            析构方法
-            </summary>
-        </member>
-        <member name="M:Agebull.Common.Ioc.DependencyScope.DisposeLocal">
+        <member name="M:Agebull.Common.Ioc.DependencyRun.DisposeLocal">
             <summary>
             析构本地
             </summary>
         </member>
-        <member name="M:Agebull.Common.Ioc.DependencyScope.System#IDisposable#Dispose">
-            <inheritdoc/>
+        <member name="F:Agebull.Common.Ioc.DependencyRun.Local">
+            <summary>
+            活动实例
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Ioc.DependencyRun.Name">
+            <summary>
+            范围名称
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Ioc.DependencyRun.Logger">
+            <summary>
+            日志记录器
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Ioc.DependencyRun.Context">
+            <summary>
+            上下文
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Ioc.DependencyRun.Dependency">
+            <summary>
+            附件内容
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Ioc.DependencyRun.ServiceScope">
+            <summary>
+            依赖服务范围
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Ioc.DependencyRun.InnerModel">
+            <summary>
+            内部模式,框架使用
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Ioc.DependencyRun.DisposeFunc">
+            <summary>
+            析构方法
+            </summary>
         </member>
         <member name="T:Agebull.Common.Ioc.DynamicCreateBuilder">
             <summary>
@@ -2616,11 +2617,6 @@
             依赖服务范围
             </summary>
         </member>
-        <member name="P:Agebull.Common.Ioc.ScopeData.Scope">
-            <summary>
-            当前范围
-            </summary>
-        </member>
         <member name="P:Agebull.Common.Ioc.ScopeData.Name">
             <summary>
             范围名称
@@ -2636,6 +2632,11 @@
             内部模式,框架使用
             </summary>
         </member>
+        <member name="P:Agebull.Common.Ioc.ScopeData.Context">
+            <summary>
+            存储上下文对象,框架使用
+            </summary>
+        </member>
         <member name="F:Agebull.Common.Ioc.ScopeData.DisposeFunc">
             <summary>
             析构方法
@@ -2645,6 +2646,9 @@
             <summary>
             附件内容
             </summary>
+        </member>
+        <member name="M:Agebull.Common.Ioc.ScopeData.Dispose">
+            <inheritdoc/>
         </member>
         <member name="T:Agebull.Common.ByteHelper">
             <summary>
@@ -3713,42 +3717,10 @@
             <param name="nodes"> </param>
             <returns> </returns>
         </member>
-        <member name="T:Agebull.Common.Logging.FlowTracerScope">
-            <summary>
-            流程跟踪范围
-            </summary>
-        </member>
-        <member name="M:Agebull.Common.Logging.FlowTracerScope.OnDispose">
-            <inheritdoc/>
-        </member>
-        <member name="T:Agebull.Common.Logging.FlowTracerStepScope">
-            <summary>
-            流程跟踪步骤范围
-            </summary>
-        </member>
-        <member name="M:Agebull.Common.Logging.FlowTracerStepScope.OnDispose">
-            <inheritdoc/>
-        </member>
-        <member name="T:Agebull.Common.Logging.FlowTracerDebugStepScope">
-            <summary>
-            流程跟踪调试步骤范围
-            </summary>
-        </member>
-        <member name="M:Agebull.Common.Logging.FlowTracerDebugStepScope.OnDispose">
-            <inheritdoc/>
-        </member>
         <member name="T:Agebull.Common.Logging.FlowTracer">
             <summary>
               流程跟踪器
             </summary>
-        </member>
-        <member name="M:Agebull.Common.Logging.FlowTracer.MonitorScope(System.String,Microsoft.Extensions.Logging.ILogger)">
-            <summary>
-            跟踪范围
-            </summary>
-            <param name="title"></param>
-            <param name="logger"></param>
-            <returns></returns>
         </member>
         <member name="M:Agebull.Common.Logging.FlowTracer.TraceStepScope(System.String)">
             <summary>
@@ -3913,6 +3885,22 @@
             <summary>
                 刷新资源检测
             </summary>
+        </member>
+        <member name="T:Agebull.Common.Logging.FlowTracer.FlowTracerStepScope">
+            <summary>
+            流程跟踪步骤范围
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.FlowTracerStepScope.System#IDisposable#Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Agebull.Common.Logging.FlowTracer.FlowTracerDebugStepScope">
+            <summary>
+            流程跟踪调试步骤范围
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.FlowTracerDebugStepScope.System#IDisposable#Dispose">
+            <inheritdoc/>
         </member>
         <member name="T:Agebull.Common.Logging.FlowTracer.Local">
             <summary>

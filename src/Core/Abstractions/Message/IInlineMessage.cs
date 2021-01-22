@@ -11,6 +11,11 @@ namespace ZeroTeam.MessageMVC.Messages
     /// </summary>
     public interface IInlineMessage : IMessageItem
     {
+        /// <summary>
+        /// 消息类型
+        /// </summary>
+        string MessageType { get; }
+
         #region 数据
 
         /// <summary>
@@ -36,6 +41,11 @@ namespace ZeroTeam.MessageMVC.Messages
         #endregion
 
         #region 状态
+
+        /// <summary>
+        /// 是否外部访问
+        /// </summary>
+        bool IsOutAccess { get; }
 
         /// <summary>
         /// 过程状态
@@ -137,7 +147,7 @@ namespace ZeroTeam.MessageMVC.Messages
             {
                 if (DataState.HasFlag(MessageDataState.ArgumentInline))
                 {
-                    Content = SmartSerializer.ToString(ArgumentData, serialize);
+                    Argument = SmartSerializer.ToString(ArgumentData, serialize);
                 }
                 DataState |= MessageDataState.ArgumentOffline;
             }
@@ -165,11 +175,11 @@ namespace ZeroTeam.MessageMVC.Messages
 
             if (serializer != null)
             {
-                contentDictionary = serializer.ToObject<Dictionary<string, string>>(Content);
+                contentDictionary = serializer.ToObject<Dictionary<string, string>>(Argument);
             }
             else
             {
-                contentDictionary = SmartSerializer.ToObject<Dictionary<string, string>>(Content);
+                contentDictionary = SmartSerializer.ToObject<Dictionary<string, string>>(Argument);
             }
 
             if (contentDictionary != null && contentDictionary.Count >= 0)
@@ -189,11 +199,11 @@ namespace ZeroTeam.MessageMVC.Messages
         {
             if (serializer != null)
             {
-                ArgumentData = serializer.ToObject(Content, argumentType);
+                ArgumentData = serializer.ToObject(Argument, argumentType);
             }
             else
             {
-                ArgumentData = SmartSerializer.ToObject(Content, argumentType);
+                ArgumentData = SmartSerializer.ToObject(Argument, argumentType);
             }
             DataState |= MessageDataState.ArgumentInline | MessageDataState.ArgumentOffline;
         }
@@ -418,10 +428,10 @@ namespace ZeroTeam.MessageMVC.Messages
         {
             return new InlineMessage
             {
-                Title = Title,
-                Topic = Topic,
+                Method = Method,
+                Service = Service,
                 ArgumentData = ArgumentData,
-                Content = Content,
+                Argument = Argument,
                 ExtensionDictionary = ExtensionDictionary,
                 ID = ID,
                 Result = Result,
@@ -460,30 +470,6 @@ namespace ZeroTeam.MessageMVC.Messages
                 DataState &= ~MessageDataState.ResultOffline;
             }
         }
-
-        #endregion
-
-        #region 扩展名称
-
-        /// <summary>
-        /// 是否外部访问
-        /// </summary>
-        bool IsOutAccess { get; }
-
-        /// <summary>
-        /// 服务名称,即Topic
-        /// </summary>
-        string ServiceName => Topic;
-
-        /// <summary>
-        /// 接口名称,即Title
-        /// </summary>
-        string ApiName => Title;
-
-        /// <summary>
-        /// 接口参数,即Content
-        /// </summary>
-        string Argument => Content;
 
         #endregion
 

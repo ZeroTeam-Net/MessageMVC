@@ -69,7 +69,7 @@ namespace ZeroTeam.MessageMVC.Tools
             }
             catch(Exception ex)
             {
-                DependencyScope.Logger.Exception(ex);
+                DependencyRun.Logger.Exception(ex);
                 return (false, null);
             }
         }

@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -16,6 +15,11 @@ namespace ZeroTeam.MessageMVC.Http
     [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class HttpMessage : MessageItem, IInlineMessage
     {
+        /// <summary>
+        /// 消息类型
+        /// </summary>
+        string IInlineMessage.MessageType => "HttpMessage";
+
         #region IMessageItem
 
         /// <summary>
@@ -98,24 +102,6 @@ namespace ZeroTeam.MessageMVC.Http
         public HttpContext HttpContext { get; set; }
 
         /// <summary>
-        /// 服务名称,即Topic
-        /// </summary>
-        [JsonIgnore]
-        public string ServiceName { get => Topic; set => Topic = value; }
-
-        /// <summary>
-        ///     当前请求调用的主机名称
-        /// </summary>
-        [JsonIgnore]
-        public string ApiHost { get => Topic; internal set => Topic = value; }
-
-        /// <summary>
-        ///     当前请求调用的API名称
-        /// </summary>
-        [JsonIgnore]
-        public string ApiName { get => Title; internal set => Title = value; }
-
-        /// <summary>
         ///     请求地址
         /// </summary>
         [JsonIgnore]
@@ -126,12 +112,6 @@ namespace ZeroTeam.MessageMVC.Http
         /// </summary>
         [JsonIgnore]
         public string HttpMethod { get; internal set; }
-
-        /// <summary>
-        /// 接口参数,即Content
-        /// </summary>
-        [JsonIgnore]
-        public string Argument { get => Content; set => Content = value; }
 
         /// <summary>
         ///     请求的内容
@@ -285,7 +265,7 @@ namespace ZeroTeam.MessageMVC.Http
             }
             catch (Exception e)
             {
-                DependencyScope.Logger.Exception(e);
+                DependencyRun.Logger.Exception(e);
                 State = MessageState.FormalError;
             }
             return Task.CompletedTask;
@@ -303,7 +283,7 @@ namespace ZeroTeam.MessageMVC.Http
         {
             var code = new StringBuilder();
             code.AppendLine($"ID:{ID}");
-            code.AppendLine($"URL:{HttpContext.Request.GetDisplayUrl()}");
+            code.AppendLine($"URL:{HttpContext.Request.Path}");
             code.AppendLine($"Trace:{JsonConvert.SerializeObject(Trace, Formatting.Indented)}");
 
             if (ExtensionDictionary != null && ExtensionDictionary.Count > 0)
