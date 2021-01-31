@@ -45,6 +45,33 @@ namespace ZeroTeam.MessageMVC.Messages
             return default;
         }
 
+        /// <summary>
+        /// 反序列化
+        /// </summary>
+        public T ToObject<T>(byte[] json)
+        {
+            if (json == null || json.Length == 0)
+            {
+                return default;
+            }
+            return JsonSerializer.Deserialize<T>(json, Options(false));
+        }
+
+        /// <summary>
+        /// 序列化妻字节
+        /// </summary>
+        /// <param name="obj">对象</param>
+        /// <returns>Utf8字节</returns>
+        public byte[] ToBytes<T>(T obj) where T : class
+        {
+            if (obj == null)
+            {
+                return default;
+            }
+            return JsonSerializer.SerializeToUtf8Bytes<T>(obj, Options(false));
+        }
+
+
         ///<inheritdoc/>
         public object ToObject(string json, Type type)
         {

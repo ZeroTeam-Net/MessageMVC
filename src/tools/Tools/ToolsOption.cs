@@ -10,11 +10,6 @@ namespace ZeroTeam.MessageMVC.Tools
     public class ToolsOption
     {
         /// <summary>
-        ///     启用调用链跟踪
-        /// </summary>
-        public bool EnableLinkTrace => ZeroAppOption.Instance.TraceInfo.HasFlag(TraceInfoType.LinkTrace);
-
-        /// <summary>
         ///     启用反向代理
         /// </summary>
         public bool EnableReverseProxy { get; set; }
@@ -22,27 +17,17 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <summary>
         ///     反向代理服务名称映射
         /// </summary>
-        public Dictionary<string,string> ReverseProxyMap { get; set; }
+        public Dictionary<string, string> ReverseProxyMap { get; set; }
 
         /// <summary>
-        ///     启用Monitor模式日志记录
+        ///     启用健康检查
         /// </summary>
-        public bool EnableMonitorLog { get; set; }
-
+        public bool EnableHealthCheck { get; set; }
+        
         /// <summary>
         ///     启用第三方回执
         /// </summary>
         public bool EnableReceipt { get; set; }
-
-        /// <summary>
-        ///     启用埋点
-        /// </summary>
-        public bool EnableMarkPoint { get; set; }
-
-        /// <summary>
-        ///     埋点服务名称
-        /// </summary>
-        public string MarkPointName { get; set; }
 
         /// <summary>
         ///     启用异常消息本地重放
@@ -100,9 +85,9 @@ namespace ZeroTeam.MessageMVC.Tools
         /// </summary>
         private void Update(ToolsOption option)
         {
-            EnableMonitorLog = option.EnableMonitorLog;
             EnableMessageReConsumer = option.EnableMessageReConsumer;
-
+            EnableHealthCheck = option.EnableHealthCheck;
+            
             EnableReverseProxy = option.EnableReverseProxy;
             ReverseProxyMap = option.ReverseProxyMap;
 
@@ -113,9 +98,6 @@ namespace ZeroTeam.MessageMVC.Tools
             JwtIssue = option.JwtIssue;
             JwtAppSecretByte = option.JwtAppSecret?.ToUtf8Bytes();
             EnableJwtToken = option.EnableJwtToken && !string.IsNullOrWhiteSpace(JwtIssue) && JwtAppSecretByte != null;
-
-            MarkPointName = option.MarkPointName;
-            EnableMarkPoint = option.EnableMarkPoint && !string.IsNullOrWhiteSpace(MarkPointName);
         }
     }
 }

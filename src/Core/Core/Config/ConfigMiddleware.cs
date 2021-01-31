@@ -65,12 +65,10 @@ namespace ZeroTeam.MessageMVC
         {
             #region 配置组合
 
-            bool useZero = !string.IsNullOrEmpty(config.RootPath);
-            config.IsDevelopment = ConfigurationHelper.Root["ASPNETCORE_ENVIRONMENT_"] == "Development";
-            if (!useZero)
+            config.IsDevelopment = ConfigurationHelper.IsEquals("ASPNETCORE_ENVIRONMENT_", "Development");
+            if (string.IsNullOrEmpty(config.RootPath))
             {
-                bool.TryParse(ConfigurationHelper.Root["MessageMVC:Option:UseZero"] ?? "false", out useZero);
-                if (!useZero || config.IsDevelopment)
+                if (config.IsDevelopment)
                 {
                     config.RootPath = Environment.CurrentDirectory;
                 }
@@ -79,40 +77,40 @@ namespace ZeroTeam.MessageMVC
                     config.RootPath = Path.GetDirectoryName(Environment.CurrentDirectory);
                 }
             }
-            ConfigurationHelper.BasePath = config.RootPath;
-            if (useZero)
+            var file = Path.Combine(config.RootPath, "config", $"{config.AppName}.json");
+            if (File.Exists(file))
             {
-                var file = Path.Combine(config.RootPath, "config", "zero.json");
-                if (File.Exists(file))
-                {
-                    ConfigurationHelper.Load(file);
-                    config.CopyByEmpty(ConfigurationHelper.Get<ZeroAppConfig>("MessageMVC:Option"));
-                }
-                file = Path.Combine(config.RootPath, "config", $"{config.AppName}.json");
-                if (File.Exists(file))
-                {
-                    ConfigurationHelper.Load(file);
-                    config.CopyByHase(ConfigurationHelper.Get<ZeroAppConfig>("MessageMVC:Option"));
-                }
+                ConfigurationHelper.Load(file);
+                config.CopyByHase(ConfigurationHelper.Get<ZeroAppConfig>("MessageMVC:Option"));
+            }
+            file = Path.Combine(config.RootPath, "config", "zero.json");
+            if (File.Exists(file))
+            {
+                ConfigurationHelper.Load(file);
+                config.CopyByEmpty(ConfigurationHelper.Get<ZeroAppConfig>("MessageMVC:Option"));
+            }
+            config.ServiceMap ??= new Dictionary<string, string>();
+            if(config.TraceOption.TryGetValue("Default",out var def))
+            {
+                config.defaultTraceOption = def;
             }
 
-            config.ServiceMap ??= new Dictionary<string, string>();
             #endregion
 
             #region ServiceName
 
             try
             {
-                config.ServiceName = Dns.GetHostName();
+                config.HostName = Dns.GetHostName();
             }
             catch (Exception e)
             {
                 logger.Exception(e);
-                config.ServiceName = config.ServiceName;
+                config.HostName = config.HostName;
             }
             config.LocalIpAddress = GetHostIps();
 
-            config.TraceName = $"{config.AppName}({config.AppVersion})|{config.ServiceName}|{config.LocalIpAddress}";
+            config.TraceName = $"{config.AppName}({config.AppVersion})|{config.HostName}|{config.LocalIpAddress}";
 
             #endregion
 

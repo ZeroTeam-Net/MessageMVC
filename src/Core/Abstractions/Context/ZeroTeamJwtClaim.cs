@@ -109,7 +109,7 @@
         /// http://openid.net/specs/openid-connect-core-1_0.html#IDToken
         /// </summary>
         public const string Website = "website";
-        
+
         /// <summary>
         /// 设备类型
         /// </summary>
@@ -117,7 +117,11 @@
         /// <summary>
         /// 登录类型
         /// </summary>
-        public const string LoginType = "z_type";
+        public const string LoginState = "z_state";
+        /// <summary>
+        /// 登录类型
+        /// </summary>
+        public const string LoginType = "z_login";
         /// <summary>
         /// 登录令牌
         /// </summary>

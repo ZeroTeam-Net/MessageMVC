@@ -73,13 +73,18 @@ namespace ZeroTeam.MessageMVC.Messages
         ///     跟踪信息
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public TraceInfo Trace { get; set; }
+        public TraceInfo TraceInfo { get; set; }
 
         /// <summary>
         /// 上下文信息
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public Dictionary<string, string> Context { get; set; }
+
+        /// <summary>
+        /// 用户
+        /// </summary>
+        public Dictionary<string, string> User { get; set; }
 
     }
 }

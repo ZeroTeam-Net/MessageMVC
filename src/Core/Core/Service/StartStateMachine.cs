@@ -12,23 +12,8 @@ namespace ZeroTeam.MessageMVC.Services.StateMachine
         /// </summary>
         Task<bool> IStationStateMachine.Start()
         {
+            IsDisposed = false;
             return Control.DoStart();
-        }
-
-        /// <summary>
-        ///     关闭的处理
-        /// </summary>
-        Task<bool> IStationStateMachine.Close()
-        {
-            return Task.FromResult(false);
-        }
-
-        /// <summary>
-        ///     结束的处理
-        /// </summary>
-        Task<bool> IStationStateMachine.End()
-        {
-            return Control.DoEnd();
         }
     }
 }

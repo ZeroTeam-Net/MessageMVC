@@ -14,5 +14,12 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <param name="message">消息</param>
         /// <returns></returns>
         Task<IMessageResult> Post(IInlineMessage message);
+
+        /// <summary>
+        /// 消息检查
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        IInlineMessage CheckMessage(IMessageItem message) => null;
     }
 }

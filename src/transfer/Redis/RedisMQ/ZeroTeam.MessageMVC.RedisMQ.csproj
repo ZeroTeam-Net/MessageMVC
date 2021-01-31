@@ -24,8 +24,9 @@
     <Authors>Agebull</Authors>
     <Company>ZeroTeam</Company>
     <PackageReleaseNotes></PackageReleaseNotes>
-    <Product>ZeroTeam.MessageMVC</Product>
-    <Version>1.1.1.0</Version>
+    <Product>MessageMVC</Product>
+    <Version>1.1.4.14</Version>
+    <PackageTags>MessageMVC</PackageTags>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>ZeroTeam.MessageMVC.RedisMQ.xml</DocumentationFile>

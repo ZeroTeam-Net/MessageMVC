@@ -4,7 +4,7 @@ namespace ZeroTeam.MessageMVC.Context
     /// <summary>
     ///  用户信息
     /// </summary>
-    public interface IUser
+    public interface IUser : IDictionaryTransfer
     {
         /// <summary>
         ///    用户数字标识
@@ -30,22 +30,13 @@ namespace ZeroTeam.MessageMVC.Context
         ///     角色集合
         /// </summary>
         string Permissions { get; set; }
-        
-        /// <summary>
-        /// 通过Json来还原用户
-        /// </summary>
-        /// <param name="json"></param>
-        void FormJson(string json);
-
-        /// <summary>
-        /// 序列化为JSON
-        /// </summary>
-        string ToJson();
 
         /// <summary>
         /// 快捷读写字典
         /// </summary>
         /// <param name="type"></param>
-        string this[string type] { get;set; }
+        string this[string type] { get; set; }
+
+
     }
 }

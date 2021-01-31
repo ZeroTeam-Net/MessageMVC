@@ -1,6 +1,4 @@
-﻿using Agebull.Common;
-using Microsoft.AspNetCore.Http;
-using System.IO;
+﻿using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using System.Web;
 using ZeroTeam.MessageMVC.Services;
@@ -59,6 +57,6 @@ namespace ZeroTeam.MessageMVC.Messages
             return true;
         }
 
-         
+
     }
 }

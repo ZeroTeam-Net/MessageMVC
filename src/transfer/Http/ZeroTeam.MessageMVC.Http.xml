@@ -9,6 +9,11 @@
             Http应用
             </summary>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpApp.AddMessageMvcHttpClient(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+                初始化
+            </summary>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.Http.HttpApp.AddMessageMvcHttp(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
                 初始化
@@ -26,6 +31,13 @@
             <param name="host">主机生成器</param>
             <param name="registAction">配置注册方法</param>
             <param name="autoDiscove">是否自动发现API方法</param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpApp.Call(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+                调用
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Http.HttpMessage">
             <summary>
@@ -158,7 +170,7 @@
             <param name="scope">参数范围</param>
             <returns>值</returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpMessage.ZeroTeam#MessageMVC#Messages#IInlineMessage#TraceInfo">
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpMessage.ZeroTeam#MessageMVC#Messages#IInlineMessage#Look">
             <summary>
             跟踪消息
             </summary>
@@ -212,39 +224,16 @@
                 跨域支持
             </summary>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.Http.HttpReceiver">
+        <member name="T:ZeroTeam.MessageMVC.Http.HttpWriter">
             <summary>
                 Http进站出站的处理类
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpReceiver.Call(Microsoft.AspNetCore.Http.HttpContext)">
-            <summary>
-                调用
-            </summary>
-            <param name="context"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpReceiver.ZeroTeam#MessageMVC#Messages#IMessageReceiver#OnResult(ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpWriter.ZeroTeam#MessageMVC#Messages#IMessageWriter#OnResult(ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
             <summary>
             标明调用结束
             </summary>
             <returns>是否发送成功</returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpReceiver.#ctor">
-            <summary>
-            构造
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.HttpReceiver.ZeroTeam#MessageMVC#Messages#IMessageReceiver#PosterName">
-            <summary>
-            对应发送器名称
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpReceiver.ZeroTeam#MessageMVC#Messages#IMessageWorker#Close">
-            <summary>
-            关闭
-            </summary>
-            <returns></returns>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Http.HttpClientItem">
             <summary>
@@ -296,6 +285,11 @@
             默认超时（秒）
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpClientOption.IncludeTrace">
+            <summary>
+            可以包含的跟踪信息
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.Http.HttpClientOption.Services">
             <summary>
             所有服务
@@ -332,22 +326,6 @@
         <member name="F:ZeroTeam.MessageMVC.Http.MessageRouteOption.Instance">
             <summary>
             选项
-            </summary>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.Http.HttpAttribute">
-            <summary>
-                表示Http服务
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpAttribute.#ctor(System.String)">
-            <summary>
-            构造
-            </summary>
-            <param name="name"></param>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.HttpAttribute.ServiceName">
-            <summary>
-            消息节点
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Http.HttpPoster">

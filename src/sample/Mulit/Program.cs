@@ -1,14 +1,9 @@
-﻿using System;
-using Agebull.Common.Ioc;
+﻿using Microsoft.Extensions.Hosting;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
-using ZeroTeam.MessageMVC.RabbitMQ;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Agebull.Common.Configuration;
-using Microsoft.Extensions.Logging;
-using ZeroTeam.MessageMVC.Kafka;
 using ZeroTeam.MessageMVC.Http;
+using ZeroTeam.MessageMVC.Kafka;
+using ZeroTeam.MessageMVC.RabbitMQ;
 using ZeroTeam.MessageMVC.RedisMQ;
 
 namespace Rabbit

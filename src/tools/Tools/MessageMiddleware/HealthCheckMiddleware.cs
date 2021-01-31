@@ -24,7 +24,9 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <summary>
         /// 消息中间件的处理范围
         /// </summary>
-        MessageHandleScope IMessageMiddleware.Scope => MessageHandleScope.Prepare | MessageHandleScope.End;
+        MessageHandleScope IMessageMiddleware.Scope => ToolsOption.Instance.EnableHealthCheck
+            ? MessageHandleScope.Prepare | MessageHandleScope.End
+            : MessageHandleScope.None;
 
 
 
@@ -37,7 +39,6 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <returns></returns>
         async Task<bool> IMessageMiddleware.Prepare(IService service, IInlineMessage message, object tag)
         {
-            message.Trace ??= TraceInfo.New(message.ID);
             if (message.Service != "_health_")
             {
                 return true;
@@ -52,7 +53,7 @@ namespace ZeroTeam.MessageMVC.Tools
             var checkers = DependencyHelper.GetServices<IHealthCheck>();
             var res = new NameValue<Dictionary<string, HealthInfo>>
             {
-                Name = ZeroAppOption.Instance.ServiceName,
+                Name = ZeroAppOption.Instance.HostName,
                 Value = new Dictionary<string, HealthInfo>(StringComparer.OrdinalIgnoreCase)
             };
             res.Value.Add("ApiCollection", new HealthInfo
@@ -113,7 +114,7 @@ namespace ZeroTeam.MessageMVC.Tools
             col.End = DateTime.Now;
 
             Interlocked.Increment(ref col.Count);
-            var time = (message.Trace.Start.Value - message.Trace.End.Value).TotalMilliseconds;
+            var time = (message.TraceInfo.Start.Value - message.TraceInfo.End.Value).TotalMilliseconds;
             int level;
             if (time < 100)
                 level = 5;

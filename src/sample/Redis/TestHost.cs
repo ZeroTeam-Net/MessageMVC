@@ -1,5 +1,4 @@
-﻿using Agebull.Common.Ioc;
-using Agebull.Common.Logging;
+﻿using Agebull.Common.Logging;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
@@ -20,7 +19,7 @@ namespace MicroZero.Kafka.QueueStation
 
         async Task IHostedService.StartAsync(CancellationToken cancellationToken)
         {
-            while(!cancellationToken.IsCancellationRequested)
+            while (!cancellationToken.IsCancellationRequested)
             {
                 FlowTracer.BeginMonitor("OrderEvent");
                 await MessagePoster.PublishAsync("OrderEvent", "offline/v1/new", new UnionOrder

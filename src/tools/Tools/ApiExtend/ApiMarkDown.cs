@@ -39,7 +39,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         public static void CreateMarkdown(params Assembly[] assemblies)
         {
-           foreach(var assembly in assemblies)
+            foreach (var assembly in assemblies)
             {
                 ApiDiscover discover = new ApiDiscover();
                 discover.Discover(assembly);
@@ -73,8 +73,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 }
                 var file = Path.Combine(path, $"{serviceInfo.Name}.md");
                 var code = new StringBuilder();
-                
-                foreach (var apis in serviceInfo.Aips.Values.Cast<ApiActionInfo>().GroupBy(p=>p.ControllerCaption ?? p.ControllerName))
+
+                foreach (var apis in serviceInfo.Aips.Values.Cast<ApiActionInfo>().GroupBy(p => p.ControllerCaption ?? p.ControllerName))
                 {
                     var first = apis.First();
                     HeadDoc(serviceInfo, first, code);
@@ -85,7 +85,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             }
         }
 
-        private static void HeadDoc(ServiceInfo serviceInfo,ApiActionInfo api, StringBuilder code)
+        private static void HeadDoc(ServiceInfo serviceInfo, ApiActionInfo api, StringBuilder code)
         {
             code.AppendLine($@"# {(api.ControllerCaption ?? api.ControllerName)} 
 ---

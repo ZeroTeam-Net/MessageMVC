@@ -1,11 +1,9 @@
-﻿using System.Threading.Tasks;
-
-namespace ZeroTeam.MessageMVC.Messages
+﻿namespace ZeroTeam.MessageMVC.Messages
 {
     /// <summary>
     /// 消息处理对象
     /// </summary>
-    public interface IMessageWorker : IZeroDependency
+    public interface IMessageWorker : IZeroDependency, ILifeFlow
     {
         /// <summary>
         /// 是否可用
@@ -22,19 +20,5 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         StationStateType State { get; set; }
 
-        /// <summary>
-        ///     初始化
-        /// </summary>
-        void Initialize() { }
-
-        /// <summary>
-        /// 开启
-        /// </summary>
-        Task Open() => Task.CompletedTask;
-
-        /// <summary>
-        /// 关闭
-        /// </summary>
-        Task Close() => Task.CompletedTask;
     }
 }

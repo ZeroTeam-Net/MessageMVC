@@ -25,6 +25,11 @@ namespace ZeroTeam.MessageMVC.Http
         public int DefaultTimeOut { get; set; }
 
         /// <summary>
+        /// 可以包含的跟踪信息
+        /// </summary>
+        public MessageTraceType IncludeTrace { get; set; }
+
+        /// <summary>
         /// 所有服务
         /// </summary>
         public List<HttpClientItem> Services { get; set; }

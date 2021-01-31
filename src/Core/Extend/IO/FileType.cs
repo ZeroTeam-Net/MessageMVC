@@ -5,7 +5,7 @@
 
 #region
 
-using System.ComponentModel ;
+using System.ComponentModel;
 
 
 #endregion
@@ -21,43 +21,43 @@ namespace Agebull.Common
         ///   其它文件
         /// </summary>
         [Description("其它文件")]
-        None ,
+        None,
 
         /// <summary>
         ///   图像
         /// </summary>
         [Description("图像")]
-        Image ,
+        Image,
 
         /// <summary>
         ///   音频
         /// </summary>
         [Description("音频")]
-        Audio ,
+        Audio,
 
         /// <summary>
         ///   视频
         /// </summary>
         [Description("视频")]
-        Vedio ,
+        Vedio,
 
         /// <summary>
         ///   WORD文档
         /// </summary>
         [Description("WORD文档")]
-        Doc ,
+        Doc,
 
         /// <summary>
         ///   EXCEL文档
         /// </summary>
         [Description("EXCEL文档")]
-        Xls ,
+        Xls,
 
         /// <summary>
         ///   PPT文档
         /// </summary>
         [Description("PPT文档")]
-        PPT ,
+        PPT,
 
         /// <summary>
         ///   PDF文档

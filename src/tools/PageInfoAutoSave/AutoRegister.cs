@@ -1,13 +1,7 @@
-﻿using Agebull.Common.Logging;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using System;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel.Composition;
-using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.AddIn;
-using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Tools
 {
@@ -21,14 +15,11 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <summary>
         /// 注册
         /// </summary>
-        Task<bool> IAutoRegister.AutoRegist(IServiceCollection services)
+        void IAutoRegister.AutoRegist(IServiceCollection services, Microsoft.Extensions.Logging.ILogger logger)
         {
             //页面信息记录
             if (ToolsOption.Instance.EnablePageInfo)
                 services.AddSingleton<IMessageMiddleware, PageInfoMiddleware>();
-            
-            return Task.FromResult(false);
         }
-
     }
 }

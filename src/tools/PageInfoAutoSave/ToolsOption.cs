@@ -1,6 +1,4 @@
 ﻿using Agebull.Common.Configuration;
-using System;
-using System.Collections.Generic;
 
 namespace ZeroTeam.MessageMVC.Tools
 {

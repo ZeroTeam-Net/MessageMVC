@@ -1,9 +1,7 @@
 ﻿using Confluent.Kafka;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using ZeroTeam.MessageMVC.Kafka;
 
 namespace ZeroTeam.MessageMVC.Kafka
 {
@@ -42,8 +40,8 @@ namespace ZeroTeam.MessageMVC.Kafka
             try
             {
                 DateTime start = DateTime.Now;
-                var re = await producer.ProduceAsync(KafkaOption.Instance.TestTopic,
-                    new Message<Null, string> { Value = "HealthCheck" });
+                var re = await producer.ProduceAsync(KafkaOption.Instance.Message.TestTopic,
+                    new Message<byte[], string> { Value = "HealthCheck" });
 
                 item.Value = (DateTime.Now - start).TotalMilliseconds;
                 item.Details = re.Status.ToString();
@@ -86,7 +84,7 @@ namespace ZeroTeam.MessageMVC.Kafka
                 config.GroupId = ZeroAppOption.Instance.AppName;
                 var builder = new ConsumerBuilder<Ignore, string>(config);
                 using var consumer = builder.Build();
-                consumer.Subscribe(KafkaOption.Instance.TestTopic);
+                consumer.Subscribe(KafkaOption.Instance.Message.TestTopic);
 
                 DateTime start = DateTime.Now;
                 var re = consumer.Consume(new TimeSpan(0, 0, 3));
@@ -113,7 +111,7 @@ namespace ZeroTeam.MessageMVC.Kafka
 
         #region IFlowMiddleware 
 
-        internal IProducer<Null, string> producer;
+        internal IProducer<byte[], string> producer;
 
         /// <summary>
         /// 实例名称
@@ -130,7 +128,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// </summary>
         Task ILifeFlow.Open()
         {
-            producer = new ProducerBuilder<Null, string>(KafkaOption.Instance.Producer).Build();
+            producer = new ProducerBuilder<byte[], string>(KafkaOption.Instance.Producer).Build();
             return Task.CompletedTask;
         }
 

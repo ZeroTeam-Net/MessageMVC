@@ -52,13 +52,13 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.ZeroTeam#MessageMVC#Messages#IMessageReceiver#LoopComplete">
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.ZeroTeam#MessageMVC#ILifeFlow#Close">
             <summary>
             同步关闭状态
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.ZeroTeam#MessageMVC#Messages#IMessageReceiver#OnResult(ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
+        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaConsumer.ZeroTeam#MessageMVC#Messages#IMessageWriter#OnResult(ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
             <summary>
             标明调用结束
             </summary>
@@ -94,6 +94,26 @@
             关闭
             </summary>
         </member>
+        <member name="T:ZeroTeam.MessageMVC.Kafka.MessageOption">
+            <summary>
+            消息配置
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Kafka.MessageOption.Concurrency">
+            <summary>
+            同时处理数据最大并发数
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Kafka.MessageOption.TestTopic">
+            <summary>
+            测试主题
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Kafka.MessageOption.AsyncPost">
+            <summary>
+            是否异步发送
+            </summary>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Kafka.KafkaOption">
             <summary>
             Kafka配置
@@ -102,11 +122,6 @@
         <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaOption.BootstrapServers">
             <summary>
             服务地址
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaOption.TestTopic">
-            <summary>
-            测试主题
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.Kafka.KafkaOption.Consumer">
@@ -119,9 +134,9 @@
             服务地址
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaOption.Concurrency">
+        <member name="P:ZeroTeam.MessageMVC.Kafka.KafkaOption.Message">
             <summary>
-            同时处理数据最大并发数
+            消息配置
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.Kafka.KafkaOption.Instance">
@@ -132,11 +147,6 @@
         <member name="T:ZeroTeam.MessageMVC.Kafka.KafkaPoster">
             <summary>
                 Kafka消息发布
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Kafka.KafkaPoster.OnClose">
-            <summary>
-            关闭处理
             </summary>
         </member>
     </members>

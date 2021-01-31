@@ -1,37 +1,18 @@
 ﻿using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
-using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ZeroTeam.MessageMVC.AddIn
 {
     /// <summary>
     /// MEF插件导入器
     /// </summary>
-    public class AddInImporter : IFlowMiddleware
+    public class AddInImporter
     {
-        /// <summary>
-        /// 单例
-        /// </summary>
-        public static AddInImporter Instance = new AddInImporter();
-
-
-        /// <summary>
-        /// 实例名称
-        /// </summary>
-        string IZeroDependency.Name => nameof(AddInImporter);
-
-        /// <summary>
-        /// 等级
-        /// </summary>
-        int IZeroMiddleware.Level => MiddlewareLevel.Framework;
-        ILogger logger;
         /// <summary>
         /// 插件对象
         /// </summary>
@@ -39,17 +20,12 @@ namespace ZeroTeam.MessageMVC.AddIn
         public IEnumerable<IAutoRegister> Import { get; set; }
 
         /// <summary>
-        /// 插件对象
+        /// 载入插件
         /// </summary>
-        readonly List<IAutoRegister> Registers = new List<IAutoRegister>();
-
-        /// <summary>
-        /// 检查
-        /// </summary>
-        async Task ILifeFlow.Check(ZeroAppOption config)
+        internal void LoadAddIn(ZeroAppOption config)
         {
-            logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(AddInImporter));
-            logger.Information("AddInImporter >>> 检查");
+            var logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(AddInImporter));
+            logger.Information("载入插件");
 
             if (string.IsNullOrEmpty(ZeroAppOption.Instance.AddInPath))
             {
@@ -62,6 +38,9 @@ namespace ZeroTeam.MessageMVC.AddIn
             }
             if (!Directory.Exists(ZeroAppOption.Instance.AddInPath))
                 return;
+
+            var registers = new List<IAutoRegister>();
+
             var files = Directory.GetFiles(ZeroAppOption.Instance.AddInPath, "*.dll", SearchOption.TopDirectoryOnly);
             foreach (var file in files)
             {
@@ -83,7 +62,7 @@ namespace ZeroTeam.MessageMVC.AddIn
                             c.ComposeParts(this);
                             if (Import != null && Import.Any())
                             {
-                                Registers.AddRange(Import);
+                                registers.AddRange(Import);
                             }
                             Import = null;
                         }
@@ -95,16 +74,15 @@ namespace ZeroTeam.MessageMVC.AddIn
                 }
             }
 
-            if (Registers.Count == 0)
+            if (registers.Count == 0)
             {
                 return;
             }
-            foreach (var reg in Registers.ToArray())
+            foreach (var reg in registers.ToArray())
             {
                 try
                 {
-                    if (!await reg.AutoRegist(DependencyHelper.ServiceCollection))
-                        Registers.Remove(reg);
+                    reg.AutoRegist(DependencyHelper.ServiceCollection, logger);
                     logger.Information(() => $"插件【{reg.GetType().Assembly.FullName}】注册成功");
                 }
                 catch (System.Exception ex)
@@ -112,107 +90,6 @@ namespace ZeroTeam.MessageMVC.AddIn
                     logger.Information(() => $"插件【{reg.GetType().Assembly.FullName}】注册异常.{ex.Message}");
                     logger.Exception(ex);
                 }
-            }
-            foreach (var reg in Registers)
-            {
-                try
-                {
-                    await reg.Check(config);
-                }
-                catch (System.Exception ex)
-                {
-                    logger.Information(() => $"插件【{reg.GetType().Assembly.FullName}】预检异常.{ex.Message}");
-                    logger.Exception(ex);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 发现
-        /// </summary>
-        async Task ILifeFlow.Discover()
-        {
-            logger.Information("AddInImporter >>> 发现");
-            if (Registers == null)
-            {
-                return;
-            }
-            foreach (var reg in Registers)
-            {
-                await reg.Discover();
-            }
-        }
-
-        /// <summary>
-        /// 准备
-        /// </summary>
-        async Task ILifeFlow.Initialize()
-        {
-            logger.Information("AddInImporter >>> 准备");
-            if (Registers == null)
-            {
-                return;
-            }
-            foreach (var reg in Registers)
-            {
-                await reg.Initialize();
-            }
-        }
-
-        /// <summary>
-        /// 启动
-        /// </summary>
-        Task ILifeFlow.Open()
-        {
-            logger.Information("AddInImporter >>> 启动");
-            if (Registers == null)
-            {
-                return Task.CompletedTask;
-            }
-            foreach (var reg in Registers)
-            {
-                _ = reg.Open();
-            }
-            return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// 关闭
-        /// </summary>
-        async Task ILifeFlow.Close()
-        {
-            logger.Information("AddInImporter >>> 关闭");
-            if (Registers == null)
-            {
-                return;
-            }
-            foreach (var reg in Registers)
-            {
-                try
-                {
-                    await reg.Close();
-                }
-                catch (Exception ex)
-                {
-                    logger.Exception(ex);
-                }
-            }
-        }
-
-
-        /// <summary>
-        /// 注销
-        /// </summary>
-        async Task ILifeFlow.Destory()
-        {
-            logger.Information("AddInImporter >>> 注销");
-            if (Registers == null)
-            {
-                return;
-            }
-            foreach (var reg in Registers)
-            {
-                await reg.Destory();
             }
         }
     }

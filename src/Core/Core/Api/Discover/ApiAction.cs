@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Documents;
 using ZeroTeam.MessageMVC.Messages;
-using ActionTask = System.Threading.Tasks.TaskCompletionSource<(ZeroTeam.MessageMVC.Messages.MessageState state, object result)>;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -245,12 +244,15 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ///     执行
         /// </summary>
         /// <returns></returns>
-        public async Task Execute(ActionTask task, IInlineMessage message, ISerializeProxy serializer)
+        public async void Execute(IInlineMessage message, ISerializeProxy serializer)
         {
+            var requestTask = GlobalContext.Current.RequestTask;
+            var actionTask = GlobalContext.Current.ActionTask;
             await Task.Yield();
-            (MessageState state, object result) res;
+            using var scope = ScopeRuner.AddReferenct();
             try
             {
+                (MessageState state, object result) res;
                 if (IsAsync)
                 {
                     res = await FuncAsync(message, ArgumentSerializer ?? serializer, message.ArgumentData);
@@ -259,29 +261,16 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 {
                     res = FuncSync(message, ArgumentSerializer ?? serializer, message.ArgumentData);
                 }
-                if (task.Task.Status < TaskStatus.RanToCompletion)
-                {
-                    GlobalContext.Current.IsDelay = false;
-                    task.SetResult(res);
-                }
-                else if (!GlobalContext.Current.IsDelay)//
-                {
-                    //清理范围
-                    DependencyRun.DisposeLocal();
-                }
+                if (requestTask.Task.Status < TaskStatus.RanToCompletion)
+                    requestTask.TrySetResult(res);
+
+                actionTask.TrySetResult(true);
             }
             catch (Exception ex)
             {
-                if (task.Task.Status < TaskStatus.RanToCompletion)
-                {
-                    GlobalContext.Current.IsDelay = false;
-                    task.SetException(ex);
-                }
-                else if (!GlobalContext.Current.IsDelay)
-                {
-                    //清理范围
-                    DependencyRun.DisposeLocal();
-                }
+                if (requestTask.Task.Status < TaskStatus.RanToCompletion)
+                    requestTask.TrySetException(ex);
+                actionTask.TrySetException(ex);
             }
         }
 

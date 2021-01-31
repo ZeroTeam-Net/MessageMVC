@@ -28,6 +28,11 @@ namespace ZeroTeam.MessageMVC.Http
         /// <returns></returns>
         async Task<IMessageResult> IMessagePoster.Post(IInlineMessage message)
         {
+            if (!ZeroAppOption.Instance.IsAlive)
+            {
+                message.State = MessageState.Cancel;
+                return null;
+            }
             if (!HttpClientOption.ServiceMap.TryGetValue(message.Service, out var name))
             {
                 name = HttpClientOption.DefaultName;
@@ -35,6 +40,7 @@ namespace ZeroTeam.MessageMVC.Http
             FlowTracer.BeginDebugStepMonitor("[HttpPoster.Post]");
             try
             {
+                ZeroAppOption.Instance.BeginRequest();
                 message.ArgumentOffline();
                 var client = HttpClientOption.HttpClientFactory.CreateClient(name);
                 if (client.BaseAddress == null)
@@ -48,7 +54,7 @@ namespace ZeroTeam.MessageMVC.Http
                 {
                     return $"URL : {uri.OriginalString}";
                 });
-                using var content = new StringContent(SmartSerializer.SerializeRequest(message));
+                using var content = new StringContent(message.Argument);
                 using var requestMessage = new HttpRequestMessage
                 {
                     RequestUri = uri,
@@ -56,7 +62,14 @@ namespace ZeroTeam.MessageMVC.Http
                     Method = HttpMethod.Post
                 };
 
-                requestMessage.Headers.Add("x-zmvc-ver", message.ID);
+                requestMessage.Headers.Add("x-zmvc-ver", "v2");
+                requestMessage.Headers.Add("x-zmvc-id", message.ID);
+                if (message.TraceInfo != null)
+                    requestMessage.Headers.Add("x-zmvc-trace", message.TraceInfo.ToInnerString());
+                if (message.User != null)
+                    requestMessage.Headers.Add("x-zmvc-user", message.User.ToInnerString());
+                if (message.Context != null)
+                    requestMessage.Headers.Add("x-zmvc-ctx", message.Context.ToInnerString());
 
                 using var response = await client.SendAsync(requestMessage);
                 if (response.Headers.TryGetValues("x-zmvc-state", out var state))
@@ -93,6 +106,7 @@ namespace ZeroTeam.MessageMVC.Http
             finally
             {
                 FlowTracer.EndDebugStepMonitor();
+                ZeroAppOption.Instance.EndRequest();
             }
             return null;//直接使用状态
         }

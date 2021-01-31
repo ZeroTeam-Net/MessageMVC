@@ -6,9 +6,24 @@ using ZeroTeam.MessageMVC.Services;
 namespace ZeroTeam.MessageMVC.Messages
 {
     /// <summary>
+    /// 表示一个消息写入对象
+    /// </summary>
+    public interface IMessageWriter
+    {
+        /// <summary>
+        /// 发送返回值 
+        /// </summary>
+        /// <returns>发送是否成功</returns>
+        /// <remarks>
+        /// 默认实现为保证OnCallEnd可控制且不再抛出异常,无特殊需要不应再次实现
+        /// </remarks>
+        Task<bool> OnResult(IInlineMessage message, object tag) => Task.FromResult(true);
+    }
+
+    /// <summary>
     /// 表示一个消息接收对象
     /// </summary>
-    public interface IMessageReceiver : IMessagePoster
+    public interface IMessageReceiver : IMessagePoster, IMessageWriter
     {
         /// <summary>
         /// 对应发送器名称
@@ -24,18 +39,6 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 日志记录器
         /// </summary>
         ILogger Logger { set; }
-
-        /// <summary>
-        /// 关闭
-        /// </summary>
-        void End()
-        {
-        }
-
-        /// <summary>
-        /// 准备
-        /// </summary>
-        bool Prepare() => true;
 
         /// <summary>
         /// 开始轮询前的工作
@@ -58,15 +61,6 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         /// <returns></returns>
         Task LoopComplete() => Task.CompletedTask;
-
-        /// <summary>
-        /// 发送返回值 
-        /// </summary>
-        /// <returns>发送是否成功</returns>
-        /// <remarks>
-        /// 默认实现为保证OnCallEnd可控制且不再抛出异常,无特殊需要不应再次实现
-        /// </remarks>
-        Task<bool> OnResult(IInlineMessage message, object tag) => Task.FromResult(true);
 
     }
 }

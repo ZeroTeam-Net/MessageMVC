@@ -12,7 +12,7 @@ namespace Agebull.Common.Ioc
     public class DependencyScope : IDisposable
     {
         readonly bool isNew;
-        ScopeData backup;
+        ScopeInnerData backup;
         /// <summary>
         /// 生成一个范围
         /// </summary>
@@ -22,7 +22,7 @@ namespace Agebull.Common.Ioc
             if (Local.Value == null)
             {
                 isNew = true;
-                Local.Value = new ScopeData
+                Local.Value = new ScopeInnerData
                 {
                     Name = name ?? "Scope",
                     Scope = this,
@@ -39,7 +39,7 @@ namespace Agebull.Common.Ioc
             {
                 isNew = true;
                 backup = Local.Value;
-                Local.Value = new ScopeData
+                Local.Value = new ScopeInnerData
                 {
                     Name = name ?? "Scope",
                     Scope = this,
@@ -61,12 +61,12 @@ namespace Agebull.Common.Ioc
         /// <summary>
         /// 活动实例
         /// </summary>
-        static readonly AsyncLocal<ScopeData> Local = new AsyncLocal<ScopeData>();
+        static readonly AsyncLocal<ScopeInnerData> Local = new AsyncLocal<ScopeInnerData>();
 
         /// <summary>
         /// 内容
         /// </summary>
-        public static ScopeData Value => Local.Value;
+        public static ScopeInnerData Value => Local.Value;
 
         /// <summary>
         /// 范围名称
@@ -81,7 +81,7 @@ namespace Agebull.Common.Ioc
             get
             {
                 if (Local.Value == null)
-                    Local.Value = new ScopeData();
+                    Local.Value = new ScopeInnerData();
                 return Local.Value.Logger;
             }
         }
@@ -89,12 +89,12 @@ namespace Agebull.Common.Ioc
         /// <summary>
         /// 附件内容
         /// </summary>
-        public static DependencyObjects Dependency
+        public static ScopeAttachData Dependency
         {
             get
             {
                 if (Local.Value == null)
-                    Local.Value = new ScopeData();
+                    Local.Value = new ScopeInnerData();
                 return Local.Value.Dependency;
             }
         }
@@ -135,7 +135,7 @@ namespace Agebull.Common.Ioc
             }
             disposedValue = true;
 
-            if (!isNew || !(Local.Value is ScopeData data))
+            if (!isNew || !(Local.Value is ScopeInnerData data))
                 return;
             Local.Value = backup;
             foreach (var func in data.DisposeFunc)

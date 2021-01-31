@@ -38,14 +38,14 @@ namespace ZeroTeam.MessageMVC.Messages
         TraceInfo Trace { get; set; }
 
         /// <summary>
-        /// 返回值
-        /// </summary>
-        public object ResultData { get; set; }
-
-        /// <summary>
         /// 数据状态
         /// </summary>
         public MessageDataState DataState { get; set; }
+
+        /// <summary>
+        /// 返回值
+        /// </summary>
+        public object ResultData { get; set; }
 
     }
 }

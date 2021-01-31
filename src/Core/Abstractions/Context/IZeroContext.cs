@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
 using ActionTask = System.Threading.Tasks.TaskCompletionSource<(ZeroTeam.MessageMVC.Messages.MessageState state, object result)>;
 
@@ -8,22 +8,12 @@ namespace ZeroTeam.MessageMVC.Context
     /// <summary>
     ///     全局上下文
     /// </summary>
-    public interface IZeroContext
+    public interface IZeroContext : IScopeContext
     {
-        /// <summary>
-        ///     是否延迟处理
-        /// </summary>
-        bool IsDelay { get; set; }
-
-        /// <summary>
-        /// 依赖范围
-        /// </summary>
-        IDisposable DependencyRun { get; set; }
-
         /// <summary>
         ///     跟踪信息
         /// </summary>
-        TraceInfo Trace { get; }
+        TraceInfo TraceInfo { get; }
 
         /// <summary>
         ///     当前用户
@@ -33,12 +23,12 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         /// 全局状态
         /// </summary>
-        ContextStatus Status { get;  }
+        ContextStatus Status { get; }
 
         /// <summary>
         /// 上下文配置
         /// </summary>
-        Dictionary<string, string> Option { get;}
+        Dictionary<string, string> Option { get; }
 
         /// <summary>
         /// 当前消息
@@ -46,16 +36,19 @@ namespace ZeroTeam.MessageMVC.Context
         IInlineMessage Message { get; set; }
 
         /// <summary>
-        /// 当前任务，用于提前返回
+        /// 请求的任务，用于提前返回
         /// </summary>
-        ActionTask Task { get; set; }
-
+        ActionTask RequestTask { get; set; }
 
         /// <summary>
-        /// 转为可传输的对象
+        /// 当前执行的任务，用于正确等待
         /// </summary>
-        Dictionary<string, string> ToTransfer();
+        TaskCompletionSource<bool> ActionTask { get; set; }
 
+        /// <summary>
+        /// 提前设置返回值，这会导致方法不中断，而框架则提前返回到消息调用处
+        /// </summary>
+        void SetResult(MessageState state, object result);
     }
 }
 

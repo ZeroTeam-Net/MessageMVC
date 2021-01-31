@@ -175,7 +175,7 @@ namespace ZeroTeam.MessageMVC.Http
             switch (scope)
             {
                 case ArgumentScope.Dictionary:
-                    return ExtensionDictionary.Count > 0? serialize.ToString(ExtensionDictionary) : null;
+                    return ExtensionDictionary.Count > 0 ? serialize.ToString(ExtensionDictionary) : null;
                 default:
                     return HttpContent;
             }
@@ -279,12 +279,12 @@ namespace ZeroTeam.MessageMVC.Http
         /// 跟踪消息
         /// </summary>
         /// <returns></returns>
-        string IInlineMessage.TraceInfo()
+        string IInlineMessage.Look()
         {
             var code = new StringBuilder();
             code.AppendLine($"ID:{ID}");
             code.AppendLine($"URL:{HttpContext.Request.Path}");
-            code.AppendLine($"Trace:{JsonConvert.SerializeObject(Trace, Formatting.Indented)}");
+            code.AppendLine($"Trace:{JsonConvert.SerializeObject(TraceInfo, Formatting.Indented)}");
 
             if (ExtensionDictionary != null && ExtensionDictionary.Count > 0)
                 code.AppendLine($"Dictionary:{JsonConvert.SerializeObject(ExtensionDictionary, Formatting.Indented)}");

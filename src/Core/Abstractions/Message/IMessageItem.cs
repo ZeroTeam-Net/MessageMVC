@@ -3,7 +3,6 @@ using ZeroTeam.MessageMVC.Context;
 
 namespace ZeroTeam.MessageMVC.Messages
 {
-
     /// <summary>
     /// 标准消息交互格式
     /// </summary>
@@ -11,30 +10,9 @@ namespace ZeroTeam.MessageMVC.Messages
     {
 
         /// <summary>
-        /// 消息标识
+        /// 标识
         /// </summary>
-        string ID { get; set; }
-
-        /// <summary>
-        /// 分类
-        /// </summary>
-        string Service { get; set; }
-
-        /// <summary>
-        /// 方法
-        /// </summary>
-
-        string Method { get; set; }
-
-        /// <summary>
-        /// 内容
-        /// </summary>
-        string Argument { get; set; }
-
-        /// <summary>
-        /// 扩展信息（固定为字典）
-        /// </summary>
-        string Extension { get; set; }
+        string ID { get; }
 
         /// <summary>
         /// 处理结果,对应状态的解释信息
@@ -58,12 +36,38 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         ///     跟踪信息
         /// </summary>
-        TraceInfo Trace { get; set; }
+        TraceInfo TraceInfo { get; set; }
+
+        /// <summary>
+        /// 分类
+        /// </summary>
+        string Service { get; set; }
+
+        /// <summary>
+        /// 方法
+        /// </summary>
+
+        string Method { get; set; }
+
+        /// <summary>
+        /// 内容
+        /// </summary>
+        string Argument { get; set; }
+
+        /// <summary>
+        /// 扩展信息（固定为字典）
+        /// </summary>
+        string Extension { get; set; }
 
         /// <summary>
         /// 上下文信息
         /// </summary>
         Dictionary<string, string> Context { get; set; }
+
+        /// <summary>
+        /// 用户
+        /// </summary>
+        Dictionary<string, string> User { get; set; }
 
         /*// <summary>
         /// 生产者信息

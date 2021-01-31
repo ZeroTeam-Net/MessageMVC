@@ -24,7 +24,7 @@ namespace ZeroTeam.MessageMVC.Tools
             var user = DependencyHelper.GetService<IUser>();
             foreach (var item in claims)
             {
-                user[item.Type]= item.Value;
+                user[item.Type] = item.Value;
             }
             return user;
         }
@@ -57,7 +57,7 @@ namespace ZeroTeam.MessageMVC.Tools
                 return (false, null);
             try
             {
-                jwt = jwt.Split(new char[] { ' ', '&' },StringSplitOptions.RemoveEmptyEntries).Last();
+                jwt = jwt.Split(new char[] { ' ', '&' }, StringSplitOptions.RemoveEmptyEntries).Last();
                 var handler = new JwtSecurityTokenHandler();
 
                 handler.ValidateToken(jwt, tokenValidationParameters, out SecurityToken tk);
@@ -67,9 +67,9 @@ namespace ZeroTeam.MessageMVC.Tools
                     return (false, null);
                 return (true, sk.Claims);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                DependencyRun.Logger.Exception(ex);
+                ScopeRuner.ScopeLogger.Exception(ex);
                 return (false, null);
             }
         }

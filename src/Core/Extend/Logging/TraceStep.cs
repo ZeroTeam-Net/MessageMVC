@@ -14,11 +14,11 @@ namespace Agebull.Common.Logging
         /// <summary>
         /// 子级
         /// </summary>
-        public List<TraceItem> Children { get; } =new List<TraceItem>();
+        public List<TraceItem> Children { get; } = new List<TraceItem>();
 
         /// <summary>
         ///     起止时间
         /// </summary>
-        public DateTime Start,End;
+        public DateTime Start, End;
     }
 }

@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-
-using System;
-using System.Threading;
+﻿using Agebull.Common.Ioc;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Agebull.EntityModel.Common
 {
@@ -74,7 +74,7 @@ namespace Agebull.EntityModel.Common
             if (Data != null)
             {
                 if (expiration < DateTime.Now && Interlocked.Increment(ref IsLoading) == 1)
-                    _ = Task.Run(LoadInner);
+                    ScopeRuner.RunScope($"{GetType().Name}-LoadData", LoadInner, ContextInheritType.None);
                 return Task.FromResult(Data);
             }
             if (IsLoading < 0)
@@ -84,7 +84,7 @@ namespace Agebull.EntityModel.Common
             waitTasks.Add((DateTime.Now, task));
             if (Interlocked.Increment(ref IsLoading) == 1)
             {
-                _ = Task.Run(LoadInner);
+                ScopeRuner.RunScope($"{GetType().Name}-LoadData", LoadInner, ContextInheritType.None);
             }
             return task.Task;
         }
@@ -148,7 +148,7 @@ namespace Agebull.EntityModel.Common
                 }
 
                 await Task.Delay(RetryWaitSecond * 1000);
-                _ = Task.Run(LoadInner);
+                ScopeRuner.RunScope($"{GetType().Name}-LoadData", LoadInner, ContextInheritType.None);
             }
             else
             {

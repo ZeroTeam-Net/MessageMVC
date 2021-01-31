@@ -45,7 +45,7 @@ namespace ZeroTeam.MessageMVC.Messages
             {
                 return;
             }
-            ILogger logger = DependencyHelper.LoggerFactory.CreateLogger< ReConsumerMiddleware>();
+            ILogger logger = DependencyHelper.LoggerFactory.CreateLogger<ReConsumerMiddleware>();
             logger.Information($"重新消费错误消息.共{files.Count}个");
             var service = new ZeroService
             {

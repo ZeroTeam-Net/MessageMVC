@@ -8,7 +8,7 @@ namespace ZeroTeam.MessageMVC
     /// <summary>
     /// 主机服务
     /// </summary>
-    public class ZeroHostedService : IHostedService
+    internal class ZeroHostedService : IHostedService
     {
         #region 主机流程
 
@@ -31,8 +31,8 @@ namespace ZeroTeam.MessageMVC
         async Task IHostedService.StartAsync(CancellationToken cancellationToken)
         {
             _tokenSource = new CancellationTokenSource();
-            _appLifetime.ApplicationStarted.Register(()=> ZeroFlowControl.OnStarted(_tokenSource));
-            _appLifetime.ApplicationStopping.Register(()=> ZeroFlowControl.OnStopping(_tokenSource));
+            _appLifetime.ApplicationStarted.Register(() => ZeroFlowControl.OnStarted(_tokenSource));
+            _appLifetime.ApplicationStopping.Register(() => ZeroFlowControl.OnStopping(_tokenSource));
             ZeroFlowControl._logger = _logger;
 
             await ZeroFlowControl.Check();

@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
@@ -37,33 +36,69 @@ namespace ZeroTeam.MessageMVC.Http
             HttpContext = context;
             var request = context.Request;
             //ITokenResolver
-            if (TryGetHeader(request, "x-zmvc-ver", out _))
+            if (!TryGetHeader(request, "x-zmvc-ver", out var ver))
             {
-                var content = await ReadContent();
-                FlowTracer.MonitorTrace(content);
+                Message = new HttpMessage
+                {
+                    IsOutAccess = true,
+                    HttpContext = context,
+                    Uri = request.Path.Value,
+                    HttpMethod = request.Method.ToUpper(),
+                    ID = Guid.NewGuid().ToString("N").ToUpper()
+                };
+                if (!CheckApiRoute())
+                {
+                    return (false, null);
+                }
+                CheckTrace();
+                await Prepare();
+                return (true, Message);
+            }
+            var content = await ReadContent();
+            FlowTracer.MonitorDebug(content);
+            if (ver != "v2")
+            {
                 var message = SmartSerializer.FromInnerString<InlineMessage>(content);
-                message.Trace ??= TraceInfo.New(message.ID);
                 message.DataState = MessageDataState.ArgumentOffline;
                 return (true, message);
             }
-
             Message = new HttpMessage
             {
-                IsOutAccess = true,
+                ID = GetHeader(context.Request, "x-zmvc-id"),
                 HttpContext = context,
                 Uri = request.Path.Value,
                 HttpMethod = request.Method.ToUpper(),
-                ID = Guid.NewGuid().ToString("N").ToUpper()
+                Argument = content,
+                ExtensionDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+                DataState = MessageDataState.ArgumentOffline
             };
             if (!CheckApiRoute())
             {
                 return (false, null);
             }
-            CheckTrace();
-            await Prepare();
+            if (TryGetHeader(context.Request, "x-zmvc-trace", out var trace))
+            {
+                Message.TraceInfo = SmartSerializer.ToObject<TraceInfo>(trace);
+            }
+            if (TryGetHeader(context.Request, "x-zmvc-user", out var user))
+            {
+                Message.User = SmartSerializer.ToObject<Dictionary<string, string>>(user);
+            }
+            if (TryGetHeader(context.Request, "x-zmvc-ctx", out var ctx))
+            {
+                Message.Context = SmartSerializer.ToObject<Dictionary<string, string>>(ctx);
+            }
             return (true, Message);
         }
 
+        private static string GetHeader(HttpRequest request, string name)
+        {
+            if (!request.Headers.TryGetValue(name, out var head))
+            {
+                return null;
+            }
+            return head.First();
+        }
         private static bool TryGetHeader(HttpRequest request, string name, out string value)
         {
             if (!request.Headers.TryGetValue(name, out var head))
@@ -132,7 +167,7 @@ namespace ZeroTeam.MessageMVC.Http
             }
             catch (Exception e)
             {
-                DependencyRun.Logger.Exception(e);
+                ScopeRuner.ScopeLogger.Exception(e);
                 Message.State = MessageState.FormalError;
             }
             Message.DataState = MessageDataState.ArgumentOffline | MessageDataState.ExtensionInline | MessageDataState.ExtensionOffline;
@@ -141,25 +176,43 @@ namespace ZeroTeam.MessageMVC.Http
         private void CheckTrace()
         {
             HttpRequest request = HttpContext.Request;
-            Message.Trace = TraceInfo.New(Message.ID);
-            if (ZeroAppOption.Instance.TraceInfo.HasFlag(TraceInfoType.App))
-            {
-                GetHeaderAndSet(request, "x-zmvc-app", app => Message.Trace.RequestApp = app);
-                GetHeaderAndSet(request, "Referer", referer => Message.Trace.RequestPage = referer?.ToLower());
-            }
-            if (ZeroAppOption.Instance.TraceInfo.HasFlag(TraceInfoType.LinkTrace))
-            {
-                Message.Trace.CallMachine = $"{HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.RemotePort}";
-                Message.Trace.CallId = HttpContext.Connection.Id;
-            }
-            GetHeaderAndSet(request, "Authorization", token => Message.Trace.Token = token);
 
-            if (ZeroAppOption.Instance.TraceInfo.HasFlag(TraceInfoType.Headers))
+            Message.TraceInfo = new TraceInfo
             {
-                Message.Trace.Headers = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+                Option = ZeroAppOption.Instance.GetTraceOption(Message.Service),
+                Start = DateTime.Now,
+                TraceId = Message.ID,
+                LocalId = Message.ID,
+            };
+            if (Message.TraceInfo.Option.HasFlag(MessageTraceType.Request))
+            {
+                GetHeaderAndSet(request, "x-zmvc-app", app => Message.TraceInfo.RequestApp = app);
+                GetHeaderAndSet(request, "Referer", referer => Message.TraceInfo.RequestPage = referer?.ToLower());
+            }
+            if (Message.TraceInfo.Option.HasFlag(MessageTraceType.LinkTrace))
+            {
+                Message.TraceInfo.CallMachine = $"{HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.RemotePort}";
+                Message.TraceInfo.CallId = HttpContext.Connection.Id;
+            }
+            GetHeaderAndSet(request, "Authorization", token =>
+            {
+                if (token.IsNullOrEmpty())
+                {
+                    token = request.Cookies["access_token"];
+                }
+                else
+                {
+                    token = token.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries).Last();
+                }
+                Message.TraceInfo.Token = token.IsNullOrEmpty() || token.Length < 12 ? null : token;
+            });
+
+            if (Message.TraceInfo.Option.HasFlag(MessageTraceType.Headers))
+            {
+                Message.TraceInfo.Headers = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
                 foreach (var head in request.Headers)
                 {
-                    Message.Trace.Headers.Add(head.Key.ToUpper(), head.Value.ToList());
+                    Message.TraceInfo.Headers.Add(head.Key.ToUpper(), head.Value.ToList());
                 }
             }
         }

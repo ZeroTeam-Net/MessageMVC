@@ -8,7 +8,6 @@
 
 #region 引用
 
-using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
 #endregion
@@ -26,7 +25,7 @@ namespace Agebull.EntityModel.Common
         /// <summary>
         ///     名称
         /// </summary>
-        [JsonProperty ("name")]
+        [JsonProperty("name")]
         public TName Name;
 
         /// <summary>

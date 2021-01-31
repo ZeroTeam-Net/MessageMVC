@@ -1,11 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Agebull.Common.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Agebull.Common.Ioc
 {
@@ -119,31 +119,71 @@ namespace Agebull.Common.Ioc
         /// <summary>
         ///     依赖注入构造器
         /// </summary>
-        public static IServiceProvider ServiceProvider => DependencyRun.ServiceScope?.ServiceProvider ?? RootProvider;
+        public static IServiceProvider ServiceProvider => ScopeRuner.ServiceScope?.ServiceProvider ?? RootProvider;
 
         #endregion
 
         #region ILoggerFactory
 
+        static ILogger logger;
+        /// <summary>
+        /// 默认日志记录器
+        /// </summary>
+        internal static ILogger Logger => logger;
+
         static ILoggerFactory _loggerFactory;
 
         /// <summary>
-        ///     全局依赖
+        ///     日志工厂
         /// </summary>
-        public static ILoggerFactory LoggerFactory
+        public static ILoggerFactory LoggerFactory => _loggerFactory;
+
+        /// <summary>
+        /// 日志配置
+        /// </summary>
+        /// <param name="builder"></param>
+        public static void LoggingConfig(ILoggingBuilder builder)
         {
-            get => _loggerFactory ??= Microsoft.Extensions.Logging.LoggerFactory.Create(builder =>
-            {
-                builder.Services.AddScoped(provider => ConfigurationHelper.Root);
-                builder.AddConfiguration(ConfigurationHelper.Root.GetSection("Logging"));
-                if (ConfigurationHelper.Root.GetValue("Logging:console", true))
-                    builder.AddConsole();
-            });
-            set => _loggerFactory = value;
+            builder.Services.AddTransient(provider => ConfigurationHelper.Root);
+            var config = ConfigurationHelper.Root.GetSection("Logging");
+            builder.AddConfiguration(config);
+            if (config.GetValue("console", true))
+                builder.AddConsole();
+            builder.AddConsole();
+        }
+
+        /// <summary>
+        /// 绑定其它的日志工厂
+        /// </summary>
+        /// <param name="factory">日志工厂</param>
+        public static void BindingLoggerFactory(ILoggerFactory factory)
+        {
+            if (factory == null)
+                return;
+            _loggerFactory = factory;
+            logger = _loggerFactory.CreateLogger("Agebull.Common.Ioc");
+            ServiceCollection.RemoveAll<ILoggerFactory>();
+            ServiceCollection.AddSingleton(pri => LoggerFactory);
         }
 
         static void CheckLog()
         {
+            if (_loggerFactory == null)
+            {
+                _loggerFactory = Microsoft.Extensions.Logging.LoggerFactory.Create(LoggingConfig);
+                logger = _loggerFactory.CreateLogger("Agebull.Common.Ioc");
+            }
+            ServiceCollection.RemoveAll<ILoggerFactory>();
+            ServiceCollection.AddSingleton(pri => LoggerFactory);
+        }
+        /// <summary>
+        /// 重置
+        /// </summary>
+        /// <param name="action"></param>
+        public static void ResetLoggerFactory(Action<ILoggingBuilder> action)
+        {
+            _loggerFactory = Microsoft.Extensions.Logging.LoggerFactory.Create(action);
+            logger = _loggerFactory.CreateLogger("Agebull.Common.Ioc");
             ServiceCollection.RemoveAll<ILoggerFactory>();
             ServiceCollection.AddSingleton(pri => LoggerFactory);
         }
@@ -325,6 +365,140 @@ namespace Agebull.Common.Ioc
         }
         #endregion
 
+        #region 名称构造
+
+        static readonly Dictionary<string, Type> NameTypes = new Dictionary<string, Type>(StringComparer.InvariantCultureIgnoreCase);
+        /// <summary>
+        ///     注册瞬时命名类型
+        /// </summary>
+        /// <typeparam name="TService">服务类型</typeparam>
+        /// <typeparam name="TImplementation">目标类型</typeparam>
+        /// <paramref name="name">命名</paramref>
+        /// <returns>IServiceCollection实例</returns>
+        public static IServiceCollection AddTransient<TService, TImplementation>(this IServiceCollection services, string name)
+            where TService : class
+            where TImplementation : class, TService
+        {
+            services.AddTransient<TService, TImplementation>();
+            services.AddTransient<TImplementation>();
+            NameTypes[name] = typeof(TImplementation);
+            return services;
+        }
+
+        /// <summary>
+        ///     注册范围命名类型
+        /// </summary>
+        /// <typeparam name="TService">服务类型</typeparam>
+        /// <typeparam name="TImplementation">目标类型</typeparam>
+        /// <paramref name="name">命名</paramref>
+        /// <returns>IServiceCollection实例</returns>
+        public static IServiceCollection AddScope<TService, TImplementation>(this IServiceCollection services, string name)
+            where TService : class
+            where TImplementation : class, TService
+        {
+            services.AddScoped<TService, TImplementation>();
+            services.AddScoped<TImplementation>();
+            NameTypes[name] = typeof(TImplementation);
+            return services;
+        }
+
+        /// <summary>
+        ///     注册单例命名类型
+        /// </summary>
+        /// <typeparam name="TService">服务类型</typeparam>
+        /// <typeparam name="TImplementation">目标类型</typeparam>
+        /// <paramref name="name">命名</paramref>
+        /// <returns>IServiceCollection实例</returns>
+        public static IServiceCollection AddSingleton<TService, TImplementation>(this IServiceCollection services, string name)
+            where TService : class
+            where TImplementation : class, TService
+        {
+            services.AddSingleton<TService, TImplementation>();
+            services.AddSingleton<TImplementation>();
+            NameTypes[name] = typeof(TImplementation);
+            return services;
+        }
+        /// <summary>
+        ///     注册瞬时命名类型,名称为TImplementation的类型短名称
+        /// </summary>
+        /// <typeparam name="TService">服务类型</typeparam>
+        /// <typeparam name="TImplementation">目标类型</typeparam>
+        /// <returns>IServiceCollection实例</returns>
+        public static IServiceCollection AddNameTransient<TService, TImplementation>(this IServiceCollection services)
+            where TService : class
+            where TImplementation : class, TService
+        {
+            services.AddTransient<TService, TImplementation>();
+            services.AddTransient<TImplementation>();
+            var type = typeof(TImplementation);
+            NameTypes[type.Name] = type;
+            return services;
+        }
+
+        /// <summary>
+        ///     注册范围命名类型,名称为TImplementation的类型短名称
+        /// </summary>
+        /// <typeparam name="TService">服务类型</typeparam>
+        /// <typeparam name="TImplementation">目标类型</typeparam>
+        /// <returns>IServiceCollection实例</returns>
+        public static IServiceCollection AddNameScope<TService, TImplementation>(this IServiceCollection services)
+            where TService : class
+            where TImplementation : class, TService
+        {
+            services.AddScoped<TService, TImplementation>();
+            services.AddScoped<TImplementation>();
+            var type = typeof(TImplementation);
+            NameTypes[type.Name] = type;
+            return services;
+        }
+
+        /// <summary>
+        ///     注册单例命名类型,名称为TImplementation的类型短名称
+        /// </summary>
+        /// <typeparam name="TService">服务类型</typeparam>
+        /// <typeparam name="TImplementation">目标类型</typeparam>
+        /// <returns>IServiceCollection实例</returns>
+        public static IServiceCollection AddNameSingleton<TService, TImplementation>(this IServiceCollection services, Func<IServiceProvider, TImplementation> implementationFactory)
+            where TService : class
+            where TImplementation : class, TService
+        {
+            services.AddSingleton<TService, TImplementation>(implementationFactory);
+            services.AddSingleton(implementationFactory);
+            var type = typeof(TImplementation);
+            NameTypes[type.Name] = type;
+            return services;
+        }
+
+        /// <summary>
+        ///     注册单例命名类型,名称为TImplementation的类型短名称
+        /// </summary>
+        /// <typeparam name="TService">服务类型</typeparam>
+        /// <typeparam name="TImplementation">目标类型</typeparam>
+        /// <returns>IServiceCollection实例</returns>
+        public static IServiceCollection AddNameSingleton<TService, TImplementation>(this IServiceCollection services)
+            where TService : class
+            where TImplementation : class, TService
+        {
+            services.AddSingleton<TService, TImplementation>();
+            services.AddSingleton<TImplementation>();
+            var type = typeof(TImplementation);
+            NameTypes[type.Name] = type;
+            return services;
+        }
+        /// <summary>
+        ///     生成接口实例
+        /// </summary>
+        /// <typeparam name="TInterface"></typeparam>
+        /// <paramref name="name">命名</paramref>
+        /// <returns>对象</returns>
+        public static TInterface GetService<TInterface>(string name)
+        {
+            if (!NameTypes.TryGetValue(name, out var type))
+                return default;
+            return (TInterface)ServiceProvider.GetService(type);
+        }
+        #endregion
+
         #region 拿来主义
 
         /// <summary>
@@ -358,7 +532,6 @@ namespace Agebull.Common.Ioc
         {
             return ServiceCollection.AddTransient(serviceType, implementationFactory);
         }
-
 
         /// <summary>
         ///     Adds a transient service of the type specified in <typeparamref name="TService" /> with an

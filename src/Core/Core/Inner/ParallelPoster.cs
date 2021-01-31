@@ -77,47 +77,60 @@ namespace ZeroTeam.MessageMVC
         /// <returns></returns>
         async Task<IMessageResult> IMessagePoster.Post(IInlineMessage message)
         {
+            if (!ZeroAppOption.Instance.IsAlive)
+            {
+                message.State = MessageState.Cancel;
+                return null;
+            }
             if (!ServiceMap.TryGetValue(message.Service, out var map) || map == null || map.Length == 0)
             {
                 return new MessageResult
                 {
                     ID = message.ID,
-                    Trace = message.Trace,
+                    Trace = message.TraceInfo,
                     State = MessageState.Cancel
                 };
             }
-            var tasks = new Task<IInlineMessage>[map.Length];
-            for (int i = 0; i < map.Length; i++)
+            try
             {
-                string service = map[i];
-                var clone = message.Clone();
-                clone.Service = service;
-                tasks[i] = MessagePoster.Post(clone);
+                ZeroAppOption.Instance.BeginRequest();
+                var tasks = new Task<IInlineMessage>[map.Length];
+                for (int i = 0; i < map.Length; i++)
+                {
+                    string service = map[i];
+                    var clone = message.Clone();
+                    clone.Service = service;
+                    tasks[i] = MessagePoster.Post(clone);
+                }
+                await Task.WhenAll(tasks);
+
+                var results = new List<IMessageResult>();
+
+                foreach (var task in tasks)
+                {
+                    if (task.Result.State == MessageState.Success)
+                        results.Add(task.Result.ToMessageResult(true));
+                    else
+                        results.Add(new MessageResult
+                        {
+                            ID = message.ID,
+                            Trace = message.TraceInfo,
+                            State = task.Result.State
+                        });
+                }
+
+                return new MessageResult
+                {
+                    ID = message.ID,
+                    Trace = message.TraceInfo,
+                    State = MessageState.Success,
+                    ResultData = results
+                };
             }
-            await Task.WhenAll(tasks);
-
-            var results = new List<IMessageResult>();
-
-            foreach (var task in tasks)
+            finally
             {
-                if (task.Result.State == MessageState.Success)
-                    results.Add(task.Result.ToMessageResult(true));
-                else
-                    results.Add(new MessageResult
-                    {
-                        ID = message.ID,
-                        Trace = message.Trace,
-                        State = task.Result.State
-                    });
+                ZeroAppOption.Instance.EndRequest();
             }
-
-            return new MessageResult
-            {
-                ID = message.ID,
-                Trace = message.Trace,
-                State = MessageState.Success,
-                ResultData = results
-            };
         }
 
     }

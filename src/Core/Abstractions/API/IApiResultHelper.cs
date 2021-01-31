@@ -154,6 +154,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>ÍøÂçÒì³£</summary>
         IApiResult NetworkError { get; }
 
+        /// <summary>ÁîÅÆ³¬Ê±</summary>
+        IApiResult TokenTimeOut { get; }
+
         /// <summary>ÍøÂç³¬Ê±</summary>
         IApiResult NetTimeOut { get; }
 

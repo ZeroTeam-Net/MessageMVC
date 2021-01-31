@@ -1,7 +1,5 @@
 ﻿#region
-using System;
 using System.Threading.Tasks;
-using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 #endregion
@@ -11,13 +9,13 @@ namespace MicroZero.Kafka.QueueStation
     /// <summary>
     ///  监控记录
     /// </summary>
-    [Consumer("DeviceDataEvent")]
+    [Consumer("DeviceReport")]
     public class DeviceDataController : IApiController
     {
         /// <summary>
         /// 设备消息
         /// </summary>
-        [Route("DeviceData")]
+        [Route("Report")]
         public Task DeviceData()
         {
             return Task.CompletedTask;

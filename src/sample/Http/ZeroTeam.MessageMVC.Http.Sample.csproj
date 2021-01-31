@@ -37,6 +37,7 @@
     <Compile Remove="HttpTest2Controler.cs" />
     <Compile Remove="HttpTestControler.cs" />
     <Compile Remove="TestControler.cs" />
+    <Compile Remove="WeatherForecastController.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -54,6 +55,7 @@
     <ProjectReference Include="..\..\tools\Tools\ZeroTeam.MessageMVC.Tools.csproj" />
     <ProjectReference Include="..\..\transfer\Http\ZeroTeam.MessageMVC.Http.csproj" />
     <ProjectReference Include="..\..\transfer\redis\RedisMQ\ZeroTeam.MessageMVC.RedisMQ.csproj" />
+    <ProjectReference Include="..\..\transfer\Tcp\ZeroTeam.MessageMVC.Tcp.csproj" />
   </ItemGroup>
 
   <ItemGroup>

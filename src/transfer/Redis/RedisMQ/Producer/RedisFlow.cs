@@ -192,7 +192,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <summary>
         /// 关闭
         /// </summary>
-        Task ILifeFlow.Close()
+        Task ILifeFlow.Destory()
         {
             try
             {

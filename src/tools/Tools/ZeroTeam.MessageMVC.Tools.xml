@@ -22,7 +22,7 @@
               组件注册
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Tools.AutoRegister.ZeroTeam#MessageMVC#AddIn#IAutoRegister#AutoRegist(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:ZeroTeam.MessageMVC.Tools.AutoRegister.ZeroTeam#MessageMVC#AddIn#IAutoRegister#AutoRegist(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Logging.ILogger)">
             <summary>
             注册
             </summary>
@@ -154,37 +154,6 @@
             相关接口
             </summary>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.Tools.MarkPointMiddleware">
-            <summary>
-            埋点发出中间件
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Tools.MarkPointMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Level">
-            <summary>
-            层级
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Tools.MarkPointMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Scope">
-            <summary>
-            消息中间件的处理范围
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Tools.MarkPointMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Prepare(ZeroTeam.MessageMVC.Services.IService,ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
-            <summary>
-            准备
-            </summary>
-            <param name="service">当前服务</param>
-            <param name="message">当前消息</param>
-            <param name="tag">扩展信息</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Tools.MarkPointMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#OnEnd(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
-            <summary>
-            结果处理
-            </summary>
-            <param name="message">当前消息</param>
-            <returns></returns>
-        </member>
         <member name="T:ZeroTeam.MessageMVC.Tools.ReceiptMiddleware">
             <summary>
             回执服务中间件
@@ -237,11 +206,6 @@
             扩展工具配置
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.EnableLinkTrace">
-            <summary>
-                启用调用链跟踪
-            </summary>
-        </member>
         <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.EnableReverseProxy">
             <summary>
                 启用反向代理
@@ -252,24 +216,14 @@
                 反向代理服务名称映射
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.EnableMonitorLog">
+        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.EnableHealthCheck">
             <summary>
-                启用Monitor模式日志记录
+                启用健康检查
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.EnableReceipt">
             <summary>
                 启用第三方回执
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.EnableMarkPoint">
-            <summary>
-                启用埋点
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.MarkPointName">
-            <summary>
-                埋点服务名称
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.EnableMessageReConsumer">
@@ -441,6 +395,12 @@
             <param name="user"></param>
             <returns></returns>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.Context.UserInfo.IsLogin">
+            <summary>
+            是否一个有效用户
+            </summary>
+            <returns></returns>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.Context.UserInfo.UserId">
             <summary>
                 应用用户数字标识
@@ -471,6 +431,11 @@
             JWT信息字典
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.UserInfo.Claims">
+            <summary>
+            快捷读写字典
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.Context.UserInfo.Item(System.String)">
             <summary>
             快捷读写字典
@@ -484,15 +449,14 @@
             <param name="type"></param>
             <param name="value"></param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Context.UserInfo.FormJson(System.String)">
+        <member name="M:ZeroTeam.MessageMVC.Context.UserInfo.ZeroTeam#MessageMVC#Context#IDictionaryTransfer#ToDictionary">
             <summary>
-            通过Json来还原用户
+            转为可传输的对象
             </summary>
-            <param name="json"></param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Context.UserInfo.ToJson">
+        <member name="M:ZeroTeam.MessageMVC.Context.UserInfo.ZeroTeam#MessageMVC#Context#IDictionaryTransfer#Reset(System.Collections.Generic.Dictionary{System.String,System.String})">
             <summary>
-            序列化为JSON
+            转为可传输的对象
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Context.GlobalContextMiddleware">

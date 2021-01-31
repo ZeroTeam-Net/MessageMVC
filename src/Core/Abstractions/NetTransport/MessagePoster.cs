@@ -1,12 +1,12 @@
 ﻿using Agebull.Common.Configuration;
 using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
-using Agebull.EntityModel.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
@@ -28,62 +28,98 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         ///     初始化
         /// </summary>
-        Task ILifeFlow.Initialize()
+        Task ILifeFlow.Check(ZeroAppOption config)
         {
-            logger ??= DependencyHelper.LoggerFactory.CreateLogger(nameof(MessagePoster));
+            logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(MessagePoster));
+
+            var option = ConfigurationHelper.Get<Dictionary<string, string>>("MessageMVC:MessagePoster");
+            if (option == null)
+            {
+                return Task.CompletedTask;
+            }
+            foreach (var kv in option)
+            {
+                if (kv.Value.IsNullOrEmpty())
+                    continue;
+
+                if ("localTunnel".IsMe(kv.Key))
+                    LocalTunnel = bool.TryParse(kv.Value, out var bl) && bl;
+                else if ("default".IsMe(kv.Key))
+                    DefaultPosterName = kv.Value;
+                else
+                    PosterServices.Add(kv.Key, kv.Value.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+            }
+
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        ///     初始化
+        /// </summary>
+        async Task ILifeFlow.Initialize()
+        {
             posters = new Dictionary<string, IMessagePoster>();
             foreach (var poster in DependencyHelper.RootProvider.GetServices<IMessagePoster>())
             {
                 posters.TryAdd(poster.GetTypeName(), poster);
             }
-            var sec = ConfigurationHelper.Get("MessageMVC:MessagePoster");
-            if (sec == null)
+
+            if (!DefaultPosterName.IsNullOrEmpty() && posters.TryGetValue(DefaultPosterName, out DefaultPoster))
             {
-                if (posters.TryGetValue("HttpPoster", out Default))
-                {
-                    logger.Information("缺省发布器为HttpPoster.");
-                }
-                else
-                {
-                    logger.Information("无发布器,所有外部请求将失败.");
-                }
-                return Task.CompletedTask;
-            }
-            localTunnel = sec.GetBool("localTunnel", false);
-            var def = sec.GetStr("default", "");
-            if (posters.TryGetValue(def, out Default))
-            {
-                logger.Information(() => $"缺省发布器为{def}.");
+                logger.Information(() => $"缺省发布器为{DefaultPosterName}.");
             }
 
             foreach (var poster in posters)
             {
-                poster.Value.Initialize();
-                var cfgs = sec.GetStr(poster.Key, "");
-                if (string.IsNullOrWhiteSpace(cfgs))
-                {
+                await poster.Value.Initialize();
+                if (!PosterServices.TryGetValue(poster.Key, out var services) || services == null || services.Length == 0)
                     continue;
-                }
-                logger.Information(() => $"服务[{cfgs}]配置为使用发布器{poster.Key}");
-                var services = cfgs.Split(',', StringSplitOptions.RemoveEmptyEntries);
-                foreach (var service in services)
-                {
-                    AddPoster(poster.Value, service);
-                }
+                BindingPoster(poster.Key, poster.Value, services);
             }
-            return Task.CompletedTask;
         }
 
         /// <summary>
         /// 开启
         /// </summary>
-        Task ILifeFlow.Open()
+        async Task ILifeFlow.Open()
         {
+            logger.Debug(() =>
+            {
+                var builder = new StringBuilder();
+                builder.AppendLine("Service & Poster");
+                foreach (var service in ServiceMap)
+                {
+                    builder.AppendLine($"{service.Key} <> {service.Value.Keys.LinkToString(',')}");
+                }
+                return builder.ToString();
+            });
             foreach (var poster in posters.Values.Where(p => !p.IsLocalReceiver))
             {
-                _ = poster.Open();
+                await poster.Open();
             }
-            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// 关闭
+        /// </summary>
+        async Task ILifeFlow.Closing()
+        {
+            var tasks = new List<Task>();
+            foreach (var poster in posters.Values.Where(p => !p.IsLocalReceiver))
+            {
+                tasks.Add(poster.Closing());
+            }
+            foreach (var task in tasks)
+            {
+                try
+                {
+                    await task;
+                }
+                catch (Exception ex)
+                {
+                    logger.Exception(ex);
+                }
+            }
         }
 
         /// <summary>
@@ -108,60 +144,96 @@ namespace ZeroTeam.MessageMVC
                 }
             }
         }
+        /// <summary>
+        /// 关闭
+        /// </summary>
+        async Task ILifeFlow.Destory()
+        {
+            var tasks = new List<Task>();
+            foreach (var poster in posters.Values.Where(p => !p.IsLocalReceiver))
+            {
+                tasks.Add(poster.Destory());
+            }
+            foreach (var task in tasks)
+            {
+                try
+                {
+                    await task;
+                }
+                catch (Exception ex)
+                {
+                    logger.Exception(ex);
+                }
+            }
+        }
+
         #endregion
 
-        #region 消息生产者
+        #region 配置
 
         /// <summary>
         /// 启用本地隧道（即本地接收器存在的话，本地处理）
         /// </summary>
-        private static bool localTunnel;
+        public static bool LocalTunnel { get; private set; }
 
         /// <summary>
         /// 默认的生产者
         /// </summary>
-        private static IMessagePoster Default;
+        public static string DefaultPosterName { get; private set; }
+
+        /// <summary>
+        /// 生产者与服务关联
+        /// </summary>
+        public static Dictionary<string, string[]> PosterServices = new Dictionary<string, string[]>(StringComparer.CurrentCultureIgnoreCase);
+
+        /// <summary>
+        /// 默认的生产者
+        /// </summary>
+        private static IMessagePoster DefaultPoster;
+
         /// <summary>
         /// 服务查找表
         /// </summary>
-        private static readonly Dictionary<string, List<IMessagePoster>> ServiceMap = new Dictionary<string, List<IMessagePoster>>(StringComparer.OrdinalIgnoreCase);
+        private static readonly Dictionary<string, Dictionary<string, IMessagePoster>> ServiceMap = new Dictionary<string, Dictionary<string, IMessagePoster>>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// 服务查找表
         /// </summary>
         private static Dictionary<string, IMessagePoster> posters = new Dictionary<string, IMessagePoster>();
 
+
+        #endregion
+
+        #region 消息生产者
+
         /// <summary>
         /// 日志对象
         /// </summary>
         private static ILogger logger;
 
-
-        private static void AddPoster(IMessagePoster poster, string service)
+        /// <summary>
+        ///     手动注销
+        /// </summary>
+        static void BindingPoster(string posterName, IMessagePoster poster, params string[] services)
         {
-            if (!ServiceMap.TryGetValue(service, out _))
-                _ = ServiceMap.TryAdd(service, new List<IMessagePoster>());
-            var items = ServiceMap[service];
-            bool hase = false;
-            foreach (var item in items)
+            foreach (var service in services)
             {
-                if (item.GetType() == poster.GetType())
+                if (!ServiceMap.TryGetValue(service, out var items))
                 {
-                    hase = true;
-                    break;
+                    ServiceMap.Add(service, items = new Dictionary<string, IMessagePoster>());
                 }
+                items[posterName] = poster;
             }
-            if (!hase)
-                items.Add(poster);
         }
 
         /// <summary>
         ///     手动注销
         /// </summary>
-        public static void UnRegistPoster(string service)
+        public static void UnRegistPoster(string poster)
         {
-            posters.Remove(service);
-            ServiceMap.Remove(service);
+            posters.Remove(poster);
+            foreach (var items in ServiceMap.Values)
+                items.Remove(poster);
         }
 
         /// <summary>
@@ -171,15 +243,11 @@ namespace ZeroTeam.MessageMVC
             where TMessagePoster : IMessagePoster, new()
         {
             var name = typeof(TMessagePoster).GetTypeName();
-            if (!posters.TryGetValue(name, out var poster))
-            {
-                posters.Add(name, poster = new TMessagePoster());
-                poster.Initialize();
-            }
-            foreach (var service in services)
-            {
-                AddPoster(poster, service);
-            }
+            var poster = new TMessagePoster();
+            poster.Initialize();
+
+            posters[name] = poster;
+            BindingPoster(name, poster, services);
             logger ??= DependencyHelper.LoggerFactory.CreateLogger(nameof(MessagePoster));
             logger.Information(() => $"服务[{string.Join(',', services)}]注册为使用发布器{name}");
         }
@@ -189,10 +257,9 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public static void RegistPoster(IMessagePoster poster, params string[] services)
         {
-            foreach (var service in services.Where(p => !string.IsNullOrEmpty(p)))
-            {
-                AddPoster(poster, service);
-            }
+            var name = poster.GetTypeName();
+            posters[name] = poster;
+            BindingPoster(name, poster, services);
             logger ??= DependencyHelper.LoggerFactory.CreateLogger(nameof(MessagePoster));
             logger.Information(() => $"服务[{string.Join(',', services)}]注册为使用发布器{poster.GetTypeName()}");
         }
@@ -200,20 +267,20 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 发现传输对象
         /// </summary>
-        /// <param name="name">服务名称</param>
+        /// <param name="service">服务名称</param>
         /// <param name="def">是否使用默认投递器</param>
         /// <returns>传输对象构造器</returns>
-        static IMessagePoster GetService(string name, bool def)
+        static IMessagePoster GetService(string service, bool def)
         {
-            if (!ServiceMap.TryGetValue(name, out var items))
-                return def ? Default : null;
-            foreach (var item in items)
+            if (!ServiceMap.TryGetValue(service, out var items))
+                return def ? DefaultPoster : null;
+            foreach (var item in items.Values)
             {
-                if (item.IsLocalReceiver && !localTunnel)
+                if (item.IsLocalReceiver && !LocalTunnel)
                     continue;
                 return item;
             }
-            return def ? Default : null;
+            return def ? DefaultPoster : null;
         }
 
         /// <summary>
@@ -225,144 +292,135 @@ namespace ZeroTeam.MessageMVC
         /// <returns>返回值,如果未进行离线交换message返回为空,此时请检查state</returns>
         public static async Task<IInlineMessage> Post(IMessageItem message, bool autoOffline = true, bool defPoster = true)
         {
-            FlowTracer.BeginStepMonitor(() => $"[MessagePoster] {message.Service}/{message.Method}");
+            if (message == null || string.IsNullOrEmpty(message.Service) || string.IsNullOrEmpty(message.Method))
+            {
+                FlowTracer.MonitorError($"参数错误：Service:{message?.Service}  Method:{message?.Method}");
+                throw new ArgumentException("参数[message]不能为空且[message.Topic]与[message.Title]必须为有效值");
+            }
+
+            using var scope = FlowTracer.DebugStepScope(() => $"[MessagePoster] {message.Service}/{message.Method}");
+
+            if (!ZeroAppOption.Instance.CanRun)
+            {
+                FlowTracer.MonitorError($"系统未运行,当前状态为：{ZeroAppOption.Instance.ApplicationState}");
+
+                if (message is IInlineMessage inlineMessage)
+                {
+                    message.State = MessageState.Cancel;
+                    return inlineMessage;
+                }
+                else
+                {
+                    return new InlineMessage
+                    {
+                        ID = message.ID,
+                        State = MessageState.Cancel,
+                        Service = message.Service,
+                        Method = message.Method,
+                        Result = message.Result,
+                        Argument = message.Argument,
+                        TraceInfo = message.TraceInfo
+                    };
+                }
+            }
+
+            var producer = GetService(message.Service, defPoster);
+            if (producer == null)
+            {
+                FlowTracer.MonitorError($"服务({message.Service})不存在");
+                if (message is IInlineMessage inlineMessage)
+                {
+                    message.State = MessageState.Unhandled;
+                    return inlineMessage;
+                }
+                else
+                {
+                    return new InlineMessage
+                    {
+                        ID = message.ID,
+                        State = MessageState.Unhandled,
+                        Service = message.Service,
+                        Method = message.Method,
+                        Result = message.Result,
+                        Argument = message.Argument,
+                        TraceInfo = message.TraceInfo
+                    };
+                }
+            }
+            FlowTracer.MonitorDetails(() => $"[Poster] {producer.GetTypeName()}");
+            
+
+            var inline = CheckMessage(producer,message);
+
             try
             {
-                if (message == null || string.IsNullOrEmpty(message.Service) || string.IsNullOrEmpty(message.Method))
+                FlowTracer.MonitorTrace(() => $"[Context]    {message.Context?.ToInnerString()}");
+                FlowTracer.MonitorTrace(() => $"[User]       {message.User?.ToInnerString()}");
+                FlowTracer.MonitorTrace(() => $"[TraceInfo]  {message.TraceInfo?.ToInnerString()}");
+                FlowTracer.MonitorDetails(() => $"[Argument]   {inline.Argument ?? inline.ArgumentData?.ToInnerString()}");
+                var msg = await producer.Post(inline);
+                if (msg != null)
                 {
-                    FlowTracer.MonitorError("服务不存在");
-                    throw new NotSupportedException("参数[message]不能为空且[message.Topic]与[message.Title]必须为有效值");
+                    inline.CopyResult(msg);
                 }
-
-                var inline = CheckMessage(message);
-                var producer = GetService(message.Service, defPoster);
-                if (producer == null)
+                if (autoOffline)
                 {
-                    FlowTracer.MonitorError("服务不存在");
-                    inline.State = MessageState.Unhandled;
-                    return inline;
+                    inline.OfflineResult();
                 }
-                FlowTracer.MonitorDetails(() => $"[Poster] {producer.GetTypeName()}");
-                try
-                {
-                    var msg = await producer.Post(inline);
-                    if (msg != null)
-                    {
-                        inline.CopyResult(msg);
-                    }
-                    FlowTracer.MonitorInfomation(() => $"[State] {inline.State} [Result] {inline.Result ?? "无返回值"}");
-                    if (autoOffline)
-                    {
-                        inline.OfflineResult();
-                    }
-                    return inline;
-                }
-                catch (MessagePostException ex)
-                {
-                    logger.Exception(ex);
-                    inline.State = MessageState.NetworkError;
-                    return inline;
-                }
-                catch (Exception ex)
-                {
-                    logger.Exception(ex);
-                    inline.State = MessageState.FrameworkError;
-                    return inline;
-                }
+                FlowTracer.MonitorDetails(() => $"[State] {inline.State} [Result] {inline.Result ?? inline.ResultData?.ToJson() ?? "无返回值"}");
+                return inline;
+            }
+            catch (MessagePostException ex)
+            {
+                logger.Exception(ex);
+                inline.State = MessageState.NetworkError;
+                return inline;
+            }
+            catch (Exception ex)
+            {
+                logger.Exception(ex);
+                inline.State = MessageState.FrameworkError;
+                return inline;
             }
             finally
             {
-                FlowTracer.EndStepMonitor();
             }
-
         }
 
-        static IInlineMessage CheckMessage(IMessageItem message)
+        static IInlineMessage CheckMessage(IMessagePoster poster, IMessageItem message)
         {
+            var re = poster.CheckMessage(message);
+            if (re != null)
+                return re;
+
             var ctx = GlobalContext.CurrentNoLazy;
             if (message is IInlineMessage inline)
             {
-                inline.ResetToRequest();
                 if (ctx != null && ctx.Message == message)
                 {
-                    if (!ZeroAppOption.Instance.TraceInfo.HasFlag(TraceInfoType.Token))
-                        inline.Trace.Token = null;
-                    inline.Context = ctx.ToTransfer();
-                    //反向代理，此次调用透明
-                    //if (ZeroAppOption.Instance.TraceInfo.HasFlag(TraceInfoType.LinkTrace))
-                    //{
-                    //    //远程机器使用,所以Call是本机信息
-                    //    inline.Trace.CallId = ctx.Trace.LocalId;
-                    //    inline.Trace.CallApp = ctx.Trace.LocalApp;
-                    //    inline.Trace.CallMachine = ctx.Trace.LocalMachine;
-                    //}
-                    return inline;
+                    inline = inline.CopyToRequest();
                 }
-                inline.State = MessageState.Accept;
+                else
+                {
+                    inline.ResetToRequest();
+                }
             }
             else
             {
-                var dataState = MessageDataState.ArgumentOffline;
-                if (!string.IsNullOrEmpty(message.Result))
-                    dataState |= MessageDataState.ResultOffline;
                 inline = new InlineMessage
                 {
                     ID = message.ID,
-                    State = MessageState.Accept,
                     Service = message.Service,
                     Method = message.Method,
                     Result = message.Result,
                     Argument = message.Argument,
-                    Trace = message.Trace,
-                    DataState = dataState
+                    DataState = MessageDataState.ArgumentOffline
                 };
             }
-            inline.Context = ctx?.ToTransfer();
-            if (!GlobalContext.EnableLinkTrace)
-            {
-                return inline;
-            }
-            if (ctx == null)
-            {
-                inline.Trace = TraceInfo.New(inline.ID);
-                return inline;
-            }
-            if (ctx.Trace == null)
-            {
-                inline.Trace = TraceInfo.New(inline.ID);
-                return inline;
-            }
+            inline.CheckPostTraceInfo();
 
-            inline.Trace = new TraceInfo
-            {
-                Start = DateTime.Now,
-                Level = ctx.Trace.Level + 1,
-                ContentInfo = ZeroAppOption.Instance.TraceInfo
-            };
-
-            if (ZeroAppOption.Instance.TraceInfo.HasFlag(TraceInfoType.App))
-            {
-                inline.Trace.RequestApp = ctx.Trace.RequestApp;
-                inline.Trace.RequestPage = ctx.Trace.RequestPage;
-            }
-            if (ZeroAppOption.Instance.TraceInfo.HasFlag(TraceInfoType.Token))
-                inline.Trace.Token = ctx.Trace.Token;
-
-            if (ZeroAppOption.Instance.TraceInfo.HasFlag(TraceInfoType.Headers))
-                inline.Trace.Headers = ctx.Trace.Headers;
-
-            if (ZeroAppOption.Instance.TraceInfo.HasFlag(TraceInfoType.LinkTrace))
-            {
-                inline.Trace.TraceId = ctx.Trace.TraceId;
-                //远程机器使用,所以Call是本机信息
-                inline.Trace.CallId = ctx.Trace.LocalId;
-                inline.Trace.CallApp = ctx.Trace.LocalApp;
-                inline.Trace.CallMachine = ctx.Trace.LocalMachine;
-                inline.Trace.LocalId = RandomCode.Generate(16);
-            }
             return inline;
         }
-
         #endregion
 
         #region Publish
@@ -665,13 +723,13 @@ namespace ZeroTeam.MessageMVC
         /// <param name="api">接口名称</param>
         /// <param name="args">接口参数</param>
         /// <returns></returns>
-        public static async Task<(IApiResult<TRes> res, MessageState state)> CallApiAsync<TRes>(string service, string api, params (string name,object value)[] args)
+        public static async Task<(IApiResult<TRes> res, MessageState state)> CallApiAsync<TRes>(string service, string api, params (string name, object value)[] args)
              where TRes : class
         {
             var dir = new Dictionary<string, string>();
-            foreach(var arg in args)
+            foreach (var arg in args)
             {
-                dir.TryAdd(arg.name,arg.value?.ToString());
+                dir.TryAdd(arg.name, arg.value?.ToString());
             }
             var msg = await Post(MessageHelper.NewRemote(service, api, dir), false, true);
             if (msg.ResultData != null)

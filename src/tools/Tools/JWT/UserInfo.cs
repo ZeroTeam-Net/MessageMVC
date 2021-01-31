@@ -1,16 +1,13 @@
-﻿using Agebull.Common.Ioc;
-using Agebull.Common.Logging;
-using Newtonsoft.Json;
-using System;
+﻿using Newtonsoft.Json;
 using System.Collections.Generic;
-using ZeroTeam.MessageMVC.Messages;
+using System.Text.Json.Serialization;
 
 namespace ZeroTeam.MessageMVC.Context
 {
     /// <summary>
     ///  用户信息
     /// </summary>
-    [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
+    [JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class UserInfo : IUser
     {
         /// <summary>
@@ -26,9 +23,20 @@ namespace ZeroTeam.MessageMVC.Context
         }
 
         /// <summary>
+        /// 是否一个有效用户
+        /// </summary>
+        /// <returns></returns>
+        public bool IsLogin()
+        {
+            return !string.IsNullOrEmpty(UserId)
+                && UserId != ZeroTeamJwtClaim.UnknownUserId
+                && UserId != ZeroTeamJwtClaim.SystemUserId;
+        }
+
+        /// <summary>
         ///     应用用户数字标识
         /// </summary>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore, System.Text.Json.Serialization.JsonIgnore]
         public string UserId
         {
             get => claims.TryGetValue(ZeroTeamJwtClaim.AppUserId, out var val) ? val : null;
@@ -38,7 +46,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         ///     用户昵称
         /// </summary>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore, System.Text.Json.Serialization.JsonIgnore]
         public string NickName
         {
             get => claims.TryGetValue(ZeroTeamJwtClaim.GivenName, out var val) ? val : null;
@@ -48,7 +56,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         ///     用户组织数字标识
         /// </summary>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore, System.Text.Json.Serialization.JsonIgnore]
         public string OrganizationId
         {
             get => claims.TryGetValue(ZeroTeamJwtClaim.OrganizationId, out var val) ? val : null;
@@ -58,6 +66,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         ///     确定后的当前权限信息
         /// </summary>
+        [Newtonsoft.Json.JsonIgnore, System.Text.Json.Serialization.JsonIgnore]
         public string CurrentPermission
         {
             get => claims.TryGetValue(ZeroTeamJwtClaim.CurrentPermission, out var val) ? val : null;
@@ -67,7 +76,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         ///     所有权限信息
         /// </summary>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore, System.Text.Json.Serialization.JsonIgnore]
         public string Permissions
         {
             get => claims.TryGetValue(ZeroTeamJwtClaim.Permissions, out var val) ? val : null;
@@ -77,8 +86,26 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         /// JWT信息字典
         /// </summary>
-        [JsonIgnore]
-        protected readonly Dictionary<string, string> claims = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        protected Dictionary<string, string> claims = new Dictionary<string, string>();
+
+        /// <summary>
+        /// 快捷读写字典
+        /// </summary>
+        [JsonProperty("claims"), JsonPropertyName("claims")]
+        public Dictionary<string, string> Claims
+        {
+            get
+            {
+                return claims;
+            }
+            set
+            {
+                if (value == null || value.Count == 0)
+                    claims.Clear();
+                foreach (var kv in value)
+                    claims[kv.Key] = kv.Value;
+            }
+        }
 
         /// <summary>
         /// 快捷读写字典
@@ -109,37 +136,18 @@ namespace ZeroTeam.MessageMVC.Context
         }
 
         /// <summary>
-        /// 通过Json来还原用户
+        /// 转为可传输的对象
         /// </summary>
-        /// <param name="json"></param>
-        public void FormJson(string json)
+        Dictionary<string, string> IDictionaryTransfer.ToDictionary()
         {
-            if (string.IsNullOrEmpty(json))
-                return;
-            claims.Clear();
-            try
-            {
-                var dest = SmartSerializer.FromInnerString<Dictionary<string, string>>(json);
-                if (dest != null)
-                {
-                    foreach (var claim in dest)
-                    {
-                        claims.TryAdd(claim.Key, claim.Value);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                DependencyRun.Logger.Exception(ex, "UserInfo.FormJson\n{ex}", ex);
-            }
+            return claims.Count == 0 ? null : claims;
         }
-
         /// <summary>
-        /// 序列化为JSON
+        /// 转为可传输的对象
         /// </summary>
-        public string ToJson()
+        void IDictionaryTransfer.Reset(Dictionary<string, string> dict)
         {
-            return SmartSerializer.ToInnerString(claims);
+            claims = dict ?? new Dictionary<string, string>();
         }
     }
 }

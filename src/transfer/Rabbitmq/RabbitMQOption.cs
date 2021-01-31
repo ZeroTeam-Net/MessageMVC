@@ -151,6 +151,16 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
         /// </summary>
         public Dictionary<string, RabbitMQItemOption> ItemOptions { get; set; }
 
+        /// <summary>
+        /// 同时处理数据最大并发数
+        /// </summary>
+        public int Concurrency { get; set; }
+
+        /// <summary>
+        /// 是否异步发送
+        /// </summary>
+        public bool AsyncPost { get; set; }
+
         #endregion
 
         #region 配置自动更新
@@ -171,6 +181,10 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
             Port = option.Port;
             UserName = option.UserName;
             Password = option.Password;
+            AsyncPost = option.AsyncPost;
+            Concurrency = option.Concurrency;
+            if (Concurrency <= 0)
+                Concurrency = 1;
             if (ItemOptions == null)
                 ItemOptions = new Dictionary<string, RabbitMQItemOption>(StringComparer.OrdinalIgnoreCase);
             if (option.ItemOptions == null || option.ItemOptions.Count == 0)
@@ -234,7 +248,7 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
         /// </summary>
         public bool AckBySuccess { get; set; }
 
-        
+
         /// <summary>
         /// 自动删除
         /// </summary>

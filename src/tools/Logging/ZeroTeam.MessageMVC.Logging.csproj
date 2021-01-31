@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Description>MessageMVC日志工具包</Description>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    <DebugType>portable</DebugType>
+    <PackageProjectUrl>https://github.com/ZeroTeam-Net/MessageMVC</PackageProjectUrl>
+    <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/ZeroTeam-Net/MessageMVC.git</RepositoryUrl>
+
+    <IncludeSource>false</IncludeSource>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+
+    <Authors>Agebull</Authors>
+    <Company>ZeroTeam</Company>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <Product>MessageMVC</Product>
+    <Version>1.1.4.14</Version>
+    <PackageTags>MessageMVC</PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp3.1|AnyCPU'">
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\Abstractions\ZeroTeam.MessageMVC.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

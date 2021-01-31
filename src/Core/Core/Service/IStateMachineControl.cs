@@ -15,6 +15,11 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 系统关闭时调用
         /// </summary>
+        Task<bool> DoClosing();
+
+        /// <summary>
+        /// 系统关闭时调用
+        /// </summary>
         Task<bool> DoClose();
 
         /// <summary>

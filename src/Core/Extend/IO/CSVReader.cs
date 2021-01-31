@@ -28,7 +28,7 @@ namespace Agebull.Common.Help
         /// <param name="value"></param>
         /// <param name="setValue"></param>
         /// <returns></returns>
-        public static List<T> Import<T>(string value, Action<T, string, string> setValue) where T : class,new()
+        public static List<T> Import<T>(string value, Action<T, string, string> setValue) where T : class, new()
         {
             var lines = Split(value);
             if (lines.Count <= 1)

@@ -67,7 +67,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             if (!type.HaseArgument)
                 return string.Empty;
             var code = new StringBuilder();
-            if(type.Arguments.Count == 1 && !type.Arguments.Values.First().IsBaseType)
+            if (type.Arguments.Count == 1 && !type.Arguments.Values.First().IsBaseType)
             {
                 var arg = type.Arguments.Values.First();
 

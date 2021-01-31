@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Messages
@@ -69,16 +70,31 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         void ResetToRequest()
         {
+            State = MessageState.None;
             Result = null;
             ResultData = null;
             CheckState();
         }
 
         /// <summary>
+        /// 复制一个请求
+        /// </summary>
+        IInlineMessage CopyToRequest()
+        {
+            var req = new InlineMessage
+            {
+                Argument = Argument,
+                ArgumentData = ArgumentData
+            } as IInlineMessage;
+            req.CheckState();
+            return req;
+        }
+
+        /// <summary>
         /// 在线(框架内调用)
         /// </summary>
         /// <returns></returns>
-        Task CheckState()
+        void CheckState()
         {
             DataState = MessageDataState.None;
 
@@ -119,7 +135,6 @@ namespace ZeroTeam.MessageMVC.Messages
             {
                 DataState |= MessageDataState.ResultInline;
             }
-            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -225,7 +240,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <param name="scope">参数范围</param>
         /// <param name="def">缺省值</param>
         /// <returns>值</returns>
-        string GetScopeArgument(string name, ArgumentScope scope,string def)
+        string GetScopeArgument(string name, ArgumentScope scope, string def)
         {
             if (ExtensionDictionary == null || !ExtensionDictionary.TryGetValue(name, out var value))
                 return def;
@@ -384,7 +399,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 复制构造一个返回值对象
         /// </summary>
         /// <returns></returns>
-        IMessageResult ToMessageResult(bool offline, ISerializeProxy serialize = null)
+        MessageResult ToMessageResult(bool offline, ISerializeProxy serialize = null)
         {
             if (offline)
                 OfflineResult(serialize);
@@ -393,7 +408,7 @@ namespace ZeroTeam.MessageMVC.Messages
                 {
                     ID = ID,
                     State = State,
-                    Trace = Trace,
+                    Trace = TraceInfo,
                     Result = Result,
                     DataState = MessageDataState.ResultOffline
                 }
@@ -401,7 +416,7 @@ namespace ZeroTeam.MessageMVC.Messages
                 {
                     ID = ID,
                     State = State,
-                    Trace = Trace,
+                    Trace = TraceInfo,
                     Result = Result,
                     ResultData = ResultData,
                     DataState = DataState & (MessageDataState.ResultInline | MessageDataState.ResultOffline)
@@ -438,7 +453,7 @@ namespace ZeroTeam.MessageMVC.Messages
                 ResultData = ResultData,
                 DataState = DataState,
                 State = State,
-                Trace = Trace
+                TraceInfo = TraceInfo
             };
         }
 
@@ -449,7 +464,7 @@ namespace ZeroTeam.MessageMVC.Messages
         {
             State = message.State;
             if (message.Trace != null)
-                Trace = message.Trace;
+                TraceInfo = message.Trace;
 
             ResultData = message.ResultData;
             if (message.DataState.HasFlag(MessageDataState.ResultInline))
@@ -475,10 +490,10 @@ namespace ZeroTeam.MessageMVC.Messages
 
         #region 快捷方法
         /// <summary>
-        /// 跟踪消息
+        /// 查看
         /// </summary>
         /// <returns></returns>
-        string TraceInfo()
+        string Look()
         {
             return JsonConvert.SerializeObject(this, Formatting.Indented);
         }

@@ -1,10 +1,9 @@
-﻿using System;
+﻿using Agebull.Common.Ioc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Primitives;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using Agebull.Common.Ioc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Primitives;
 
 namespace Agebull.Common.Configuration
 {
@@ -26,11 +25,6 @@ namespace Agebull.Common.Configuration
         public static IConfiguration Root { get; private set; }
 
         /// <summary>
-        /// 基本目录
-        /// </summary>
-        public static string BasePath { get; set; }
-
-        /// <summary>
         /// 绑定
         /// </summary>
         /// <param name="builder"></param>
@@ -49,13 +43,12 @@ namespace Agebull.Common.Configuration
             Builder = DependencyHelper.GetService<IConfigurationBuilder>() ?? new ConfigurationBuilder();
             SyncBuilder();
         }
-        
+
         /// <summary>
         /// 建造生成器，使用前请调用
         /// </summary>
         static void SyncBuilder()
         {
-            BasePath = Environment.CurrentDirectory;
             Builder.SetBasePath(Environment.CurrentDirectory);
 
             var files = new string[] { "appsettings.json", "appSettings.json", "AppSettings.json", "Appsettings.json" };
@@ -76,31 +69,6 @@ namespace Agebull.Common.Configuration
 
         #region 配置文件组合
 
-        /// <summary>
-        /// 指定配置是否启用
-        /// </summary>
-        /// <param name="key">配置的键名称，应已约定为bool类型</param>
-        /// <param name="def">不存在时默认值</param>
-        public static bool IsEnable(string key, bool def = false)
-        {
-            var sec = Root.GetSection(key);
-            return sec == null
-                ? def
-                : string.Equals(sec.Value, "true", StringComparison.OrdinalIgnoreCase);
-        }
-
-        /// <summary>
-        /// 刷新
-        /// </summary>
-        /// <param name="key">配置的键名称，应已约定为bool类型</param>
-        /// <param name="def">不存在时默认值</param>
-        public static bool IsDisable(string key, bool def = false)
-        {
-            var sec = Root.GetSection(key);
-            return sec == null
-                ? def
-                : string.Equals(sec.Value, "false", StringComparison.OrdinalIgnoreCase);
-        }
 
         /*// <summary>
         /// 刷新
@@ -199,7 +167,7 @@ namespace Agebull.Common.Configuration
                 };
             }
             internal void SetAction<TConfig>(Action<TConfig> action)
-            where TConfig : class,new()
+            where TConfig : class, new()
             {
                 Action = () =>
                 {
@@ -257,7 +225,7 @@ namespace Agebull.Common.Configuration
         /// <param name="reload">更新处理方法</param>
         /// <param name="runNow">是否现在执行一次</param>
         public static void RegistOnChange<TConfig>(string section, Action<TConfig> reload, bool runNow = true)
-            where TConfig : class,new()
+            where TConfig : class, new()
         {
             var cfg = new ChangeAction
             {
@@ -594,6 +562,59 @@ namespace Agebull.Common.Configuration
 
         #region 内容获取
 
+        /// <summary>
+        /// 指定配置是否启用
+        /// </summary>
+        /// <param name="key">配置的键名称，应已约定为bool类型</param>
+        /// <param name="def">不存在时默认值</param>
+        public static bool IsEnable(string key, bool def = false)
+        {
+            var sec = Root.GetSection(key);
+            return sec == null || string.IsNullOrWhiteSpace(sec.Value)
+                ? def
+                : string.Equals(sec.Value, "true", StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// 指定配置是否相同
+        /// </summary>
+        /// <param name="key">配置的键名称，应已约定为bool类型</param>
+        /// <param name="value">对比的内容</param>
+        /// <param name="def">不存在配置时的返回值</param>
+        public static bool IsEquals(string key, string value, bool def = false)
+        {
+            var sec = Root.GetSection(key);
+            return sec == null || string.IsNullOrWhiteSpace(sec.Value)
+                ? def
+                : string.Equals(sec.Value, value, StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// 指定配置是否不相同
+        /// </summary>
+        /// <param name="key">配置的键名称，应已约定为bool类型</param>
+        /// <param name="value">对比的内容</param>
+        /// <param name="def">不存在配置时的返回值</param>
+        public static bool IsNotEquals(string key, string value, bool def = false)
+        {
+            var sec = Root.GetSection(key);
+            return sec == null
+                ? def
+                : string.Equals(sec.Value, value, StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// 刷新
+        /// </summary>
+        /// <param name="key">配置的键名称，应已约定为bool类型</param>
+        /// <param name="def">不存在时默认值</param>
+        public static bool IsDisable(string key, bool def = false)
+        {
+            var sec = Root.GetSection(key);
+            return sec == null || string.IsNullOrWhiteSpace(sec.Value)
+                ? def
+                : string.Equals(sec.Value, "false", StringComparison.OrdinalIgnoreCase);
+        }
 
         /// <summary>
         ///   得到文本值

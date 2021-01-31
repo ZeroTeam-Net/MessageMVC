@@ -1,5 +1,8 @@
-﻿using RabbitMQ.Client;
+﻿using Agebull.Common.Ioc;
+using Agebull.Common.Logging;
+using RabbitMQ.Client;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -146,10 +149,17 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
         /// <summary>
         /// 关闭
         /// </summary>
-        Task ILifeFlow.Close()
+        Task ILifeFlow.Destory()
         {
             try
             {
+                foreach (var (model, _) in channels.Values)
+                {
+                    model.Close();
+                    model.Dispose();
+                }
+                channels.Clear();
+
                 connection?.Close();
                 connection?.Dispose();
             }
@@ -159,6 +169,72 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
             }
             connection = null;
             return Task.CompletedTask;
+        }
+
+        #endregion
+
+        #region Channel
+
+        /// <summary>
+        /// 当前通道
+        /// </summary>
+        internal readonly ConcurrentDictionary<string, (IModel model, RabbitMQItemOption option)> channels = new ConcurrentDictionary<string, (IModel model, RabbitMQItemOption option)>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// 取得通道
+        /// </summary>
+        /// <param name="name">消息</param>
+        /// <returns></returns>
+        internal (IModel model, RabbitMQItemOption option) GetChannel(string name)
+        {
+            if (channels.TryGetValue(name, out var item))
+            {
+                return item;
+            }
+            if (!RabbitMQOption.Instance.ItemOptions.TryGetValue(name, out var opt))
+            {
+                opt = new RabbitMQItemOption
+                {
+                    WrokType = RabbitMQWrokType.Default
+                };
+            }
+            try
+            {
+                var channel = connection.CreateModel();//创建连接会话对象
+                switch (opt.WrokType)
+                {
+                    case RabbitMQWrokType.Fanout:
+                        channel.ExchangeDeclare(exchange: opt.ExchangeName, type: "fanout");
+                        break;
+                    case RabbitMQWrokType.Direct:
+                        channel.QueueDeclare(
+                                  queue: name,//消息队列名称
+                                  durable: opt.Durable,//是否缓存
+                                  exclusive: opt.Exclusive,
+                                  autoDelete: opt.AutoDelete,
+                                  arguments: null);
+                        channel.ExchangeDeclare(exchange: opt.ExchangeName, type: "direct");
+                        break;
+                    case RabbitMQWrokType.Topic:
+                        channel.QueueDeclare(
+                                  queue: name,//消息队列名称
+                                  durable: opt.Durable,//是否缓存
+                                  exclusive: opt.Exclusive,
+                                  autoDelete: opt.AutoDelete,
+                                  arguments: null);
+                        channel.ExchangeDeclare(exchange: opt.ExchangeName, type: "topic");
+                        break;
+                }
+                if (!channels.TryAdd(name, (channel, opt)))
+                    channel.Dispose();
+                return channels[name];
+            }
+            catch (Exception ex)
+            {
+                ScopeRuner.ScopeLogger.Error(() => $"[异步消息投递] 构建Channel失败,{ex}");
+            }
+
+            return (null, null);
         }
 
         #endregion

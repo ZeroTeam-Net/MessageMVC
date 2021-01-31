@@ -4,11 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using ZeroTeam.MessageMVC.AddIn;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
@@ -60,10 +58,10 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 检查并注入配置
         /// </summary>
-        public static void AddDependency(IServiceCollection services, bool msJson)
+        internal static void AddDependency(IServiceCollection services, bool msJson)
         {
             //IZeroContext构造
-            services.TryAddTransient<IZeroContext, ZeroContext>();
+            services.AddTransient<IZeroContext, ZeroContext>();
             //配置\依赖对象初始化,系统配置获取
             services.AddTransient<IFlowMiddleware, ConfigMiddleware>();
             //消息选择器
@@ -72,12 +70,8 @@ namespace ZeroTeam.MessageMVC
             services.AddTransient<IMessageMiddleware, ApiExecuter>();
             //并行发送器
             services.AddTransient<IFlowMiddleware, ParallelPoster>();
-            //插件载入
-            //if (ZeroAppOption.Instance.EnableAddIn)
-            {
-                services.AddSingleton<IFlowMiddleware>(pri => AddInImporter.Instance);
-            }
-            services.TryAddSingleton<IInlineMessage, InlineMessage>();
+            services.AddTransient<IInlineMessage, InlineMessage>();
+            services.AddTransient<IMessageResult, MessageResult>();
 
             //序列化工具
             if (msJson)

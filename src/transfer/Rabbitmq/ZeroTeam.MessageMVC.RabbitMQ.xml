@@ -66,19 +66,18 @@
             轮询的Task
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQConsumer.OnMessagePush(RabbitMQ.Client.Events.BasicDeliverEventArgs)">
+        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQConsumer.OnMessagePush(System.Object,RabbitMQ.Client.Events.BasicDeliverEventArgs)">
             <summary>
             消息处理
             </summary>
-            <param name="arg"></param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQConsumer.ZeroTeam#MessageMVC#Messages#IMessageReceiver#OnResult(ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
+        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQConsumer.ZeroTeam#MessageMVC#Messages#IMessageWriter#OnResult(ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
             <summary>
             标明调用结束
             </summary>
             <returns>是否发送成功</returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQConsumer.ZeroTeam#MessageMVC#Messages#IMessageWorker#Close">
+        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQConsumer.ZeroTeam#MessageMVC#ILifeFlow#Closing">
             <summary>
             同步关闭状态
             </summary>
@@ -95,7 +94,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQConsumer.ZeroTeam#MessageMVC#Messages#IMessageReceiver#LoopComplete">
+        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQConsumer.ZeroTeam#MessageMVC#ILifeFlow#Close">
             <summary>
             同步关闭状态
             </summary>
@@ -131,10 +130,22 @@
             开启
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQFlow.ZeroTeam#MessageMVC#ILifeFlow#Close">
+        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQFlow.ZeroTeam#MessageMVC#ILifeFlow#Destory">
             <summary>
             关闭
             </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQFlow.channels">
+            <summary>
+            当前通道
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQFlow.GetChannel(System.String)">
+            <summary>
+            取得通道
+            </summary>
+            <param name="name">消息</param>
+            <returns></returns>
         </member>
         <member name="T:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQOption">
             <summary>
@@ -169,6 +180,16 @@
         <member name="P:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQOption.ItemOptions">
             <summary>
             节点配置
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQOption.Concurrency">
+            <summary>
+            同时处理数据最大并发数
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQOption.AsyncPost">
+            <summary>
+            是否异步发送
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQWrokType">
@@ -236,32 +257,17 @@
             交换机
             </summary>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQQueueItem">
-            <summary>
-            队列内容
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQQueueItem.Option">
-            <summary>
-            配置
-            </summary>
-        </member>
         <member name="T:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQPoster">
             <summary>
                 RabbitMQ消息发布
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQPoster.channels">
+        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQPoster.#ctor">
             <summary>
-            当前通道
+            构造
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQPoster.OnClose">
-            <summary>
-            关闭处理
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQPoster.DoPost(ZeroTeam.MessageMVC.RabbitMQ.RabbitMQQueueItem)">
+        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQPoster.DoPost(ZeroTeam.MessageMVC.MessageQueue.QueueItem)">
             <summary>
             生产消息
             </summary>

@@ -39,6 +39,11 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         public bool NoSupperIsError { get; set; }
 
         /// <summary>
+        /// 是否异步发送
+        /// </summary>
+        public bool AsyncPost { get; set; }
+
+        /// <summary>
         /// 实例
         /// </summary>
         public static readonly RedisOption Instance = new RedisOption();
@@ -60,6 +65,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             MessageLockTime = option.MessageLockTime;
             FailedIsError = option.FailedIsError;
             NoSupperIsError = option.NoSupperIsError;
+            AsyncPost = option.AsyncPost;
 
             if (GuardCheckTime <= 0)
             {

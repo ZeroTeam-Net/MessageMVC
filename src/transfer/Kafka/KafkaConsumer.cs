@@ -1,12 +1,10 @@
 ﻿using Agebull.Common.Logging;
 using Confluent.Kafka;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
-using ConsumeResult = Confluent.Kafka.ConsumeResult<Confluent.Kafka.Ignore, string>;
+using ConsumeResult = Confluent.Kafka.ConsumeResult<byte[], string>;
 
 namespace ZeroTeam.MessageMVC.Kafka
 {
@@ -29,7 +27,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// </summary>
         string IMessageReceiver.PosterName => nameof(KafkaPoster);
 
-        private IConsumer<Ignore, string> consumer;
+        private IConsumer<byte[], string> consumer;
 
 
         async Task<bool> IMessageReceiver.Loop(CancellationToken token)
@@ -38,32 +36,65 @@ namespace ZeroTeam.MessageMVC.Kafka
             {
                 try
                 {
-                    if (KafkaOption.Instance.Concurrency > 0)
+                    if (KafkaOption.Instance.Message.Concurrency > 0)
                         await ConcurrencySemaphore.WaitAsync(token);
                     var cr = consumer.Consume(token);
                     if (cr == null)
                     {
+                        if (KafkaOption.Instance.Message.Concurrency > 0)
+                            ConcurrencySemaphore.Release();
                         continue;
                     }
                     if (cr.IsPartitionEOF)
                     {
+                        if (KafkaOption.Instance.Message.Concurrency > 0)
+                            ConcurrencySemaphore.Release();
                         continue;
                     }
-                    IInlineMessage message;
-                    try
+                    if (cr.Message.Key == null)
                     {
-                        if (!SmartSerializer.TryToMessage(cr.Message.Value, out message))
-                        {
-                            continue;
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Exception(e);
+                        if (KafkaOption.Instance.Message.Concurrency > 0)
+                            ConcurrencySemaphore.Release();
+                        consumer.Commit(cr);
                         continue;
                     }
+                    var message = SmartSerializer.ToObject<InlineMessage>(cr.Message.Key);
+                    message.Service = cr.Topic;
+                    message.Argument = cr.Message.Value;
+                    //try
+                    //{
+                    //    foreach (var header in cr.Message.Headers)
+                    //    {
+                    //        byte[] bytes = header.GetValueBytes();
+                    //        if (bytes == null)
+                    //            continue;
+                    //        switch (header.Key)
+                    //        {
+                    //            case "zid":
+                    //                message.ID = Encoding.ASCII.GetString(bytes);
+                    //                break;
+                    //            case "method":
+                    //                message.Method = Encoding.ASCII.GetString(bytes);
+                    //                break;
+                    //            case "trace":
+                    //                message.Trace = JsonSerializer.Deserialize<Context.TraceInfo>(bytes);
+                    //                break;
+                    //            case "ctx":
+                    //                message.Context = JsonSerializer.Deserialize<Dictionary<string, string>>(bytes);
+                    //                break;
+                    //            case "user":
+                    //                message.User = JsonSerializer.Deserialize<Dictionary<string, string>>(bytes);
+                    //                break;
+                    //        }
+                    //    }
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    Logger.Exception(e);
+                    //    continue;
+                    //}
 
-                    if (KafkaOption.Instance.Concurrency <= 0)
+                    if (KafkaOption.Instance.Message.Concurrency <= 0)
                     {
                         await MessageProcessor.OnMessagePush(Service, message, true, cr);
                     }
@@ -74,10 +105,14 @@ namespace ZeroTeam.MessageMVC.Kafka
                 }
                 catch (OperationCanceledException)//取消为正常操作,不记录
                 {
+                    if (KafkaOption.Instance.Message.Concurrency > 0)
+                        ConcurrencySemaphore.Release();
                     return true;
                 }
                 catch (Exception ex)
                 {
+                    if (KafkaOption.Instance.Message.Concurrency > 0)
+                        ConcurrencySemaphore.Release();
                     Logger.Exception(ex, "KafkaConsumer.Loop");
                 }
             }
@@ -85,7 +120,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         }
 
 
-        private ConsumerBuilder<Ignore, string> builder;
+        private ConsumerBuilder<byte[], string> builder;
 
         /// <summary>
         /// 同步运行状态
@@ -93,22 +128,26 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <returns></returns>
         Task<bool> IMessageReceiver.LoopBegin()
         {
-            builder = new ConsumerBuilder<Ignore, string>(KafkaOption.Instance.Consumer);
+            KafkaOption.Instance.Consumer.Set(ConfigPropertyNames.Consumer.ConsumeResultFields, "all");
+            builder = new ConsumerBuilder<byte[], string>(KafkaOption.Instance.Consumer);
+            var value = KafkaOption.Instance.Consumer.Get(ConfigPropertyNames.Consumer.ConsumeResultFields);
+
             builder.SetErrorHandler(OnError);
             builder.SetLogHandler(OnLog);
             consumer = builder.Build();
 
             consumer.Subscribe(Service.ServiceName);
 
-            if (KafkaOption.Instance.Concurrency > 0)
-                ConcurrencySemaphore = new SemaphoreSlim(KafkaOption.Instance.Concurrency, KafkaOption.Instance.Concurrency);
+            if (KafkaOption.Instance.Message.Concurrency > 0)
+                ConcurrencySemaphore = new SemaphoreSlim(KafkaOption.Instance.Message.Concurrency, KafkaOption.Instance.Message.Concurrency);
             return Task.FromResult(true);
         }
+
         /// <summary>
         /// 同步关闭状态
         /// </summary>
         /// <returns></returns>
-        Task IMessageReceiver.LoopComplete()
+        Task ILifeFlow.Close()
         {
             consumer.Close();
             consumer.Dispose();
@@ -120,14 +159,14 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// 标明调用结束
         /// </summary>
         /// <returns>是否发送成功</returns>
-        Task<bool> IMessageReceiver.OnResult(IInlineMessage item, object tag)
+        Task<bool> IMessageWriter.OnResult(IInlineMessage item, object tag)
         {
-            if (KafkaOption.Instance.Concurrency > 0)
-                ConcurrencySemaphore.Release();
-
             var consumeResult = (ConsumeResult)tag;
             try
             {
+                if (KafkaOption.Instance.Message.Concurrency > 0)
+                    ConcurrencySemaphore.Release();
+
                 if (item.State.IsEnd())
                     consumer.Commit(consumeResult);
                 return Task.FromResult(true);
@@ -140,7 +179,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         }
         #region 日志
 
-        void OnError(IConsumer<Ignore, string> consumer, Error error)
+        void OnError(IConsumer<byte[], string> consumer, Error error)
         {/*
         //
         // 摘要:
@@ -179,7 +218,7 @@ namespace ZeroTeam.MessageMVC.Kafka
             //    Logger.Error(() => $"【Kafka】服务网络异常({error.Code})\n {error.Reason}");
             //}
         }
-        void OnLog(IConsumer<Ignore, string> consumer, LogMessage msg)
+        void OnLog(IConsumer<byte[], string> consumer, LogMessage msg)
         {/*        //
         // 摘要:
         //     Gets the librdkafka client instance name.

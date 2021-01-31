@@ -29,18 +29,13 @@
             订阅对象
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisEventReceiver.ZeroTeam#MessageMVC#Messages#IMessageWorker#Initialize">
-            <summary>
-            初始化
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisEventReceiver.ZeroTeam#MessageMVC#Messages#IMessageWorker#Close">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisEventReceiver.ZeroTeam#MessageMVC#ILifeFlow#Closing">
             <summary>
             关闭
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisEventReceiver.ZeroTeam#MessageMVC#Messages#IMessageReceiver#LoopComplete">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CSRedisEventReceiver.ZeroTeam#MessageMVC#ILifeFlow#Close">
             <summary>
             同步关闭状态
             </summary>
@@ -71,13 +66,6 @@
             <summary>
                 Redis生产者
             </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.ZeroTeam#MessageMVC#Messages#IMessagePoster#Post(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
-            <summary>
-            生产消息
-            </summary>
-            <param name="message">消息</param>
-            <returns></returns>
         </member>
         <member name="T:ZeroTeam.MessageMVC.RedisMQ.RedisFlow">
             <summary>
@@ -114,7 +102,7 @@
             关闭
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisFlow.ZeroTeam#MessageMVC#ILifeFlow#Close">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisFlow.ZeroTeam#MessageMVC#ILifeFlow#Destory">
             <summary>
             关闭
             </summary>
@@ -195,6 +183,11 @@
         <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisOption.NoSupperIsError">
             <summary>
             无处理方法按发生异常处理
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisOption.AsyncPost">
+            <summary>
+            是否异步发送
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.RedisMQ.RedisOption.Instance">

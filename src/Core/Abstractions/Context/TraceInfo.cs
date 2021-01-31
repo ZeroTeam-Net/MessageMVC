@@ -9,14 +9,14 @@ namespace ZeroTeam.MessageMVC.Context
     /// <summary>
     /// 跟踪信息
     /// </summary>
-    [Category("跟踪信息"), JsonObject(MemberSerialization.OptIn)]
+    [Category("跟踪信息"), JsonObject(MemberSerialization.OptIn,ItemNullValueHandling = NullValueHandling.Ignore)]
     public class TraceInfo
     {
         /// <summary>
         /// 跟踪信息内容
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public TraceInfoType ContentInfo { get; set; }
+        public MessageTraceType Option { get; set; }
 
         /// <summary>
         /// 全局请求标识（源头为用户请求）
@@ -103,50 +103,6 @@ namespace ZeroTeam.MessageMVC.Context
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string CallMachine { get; set; }
 
-        /// <summary>
-        /// 构造
-        /// </summary>
-        public static TraceInfo New(string traceId)
-        {
-            if(ZeroAppOption.Instance.TraceInfo.HasFlag(TraceInfoType.LinkTrace))
-                return new TraceInfo
-                {
-                    TraceId = traceId,
-                    ContentInfo = ZeroAppOption.Instance.TraceInfo,
-                    Start = DateTime.Now,
-                    LocalId = RandomCode.Generate(16),
-                    LocalApp = $"{ZeroAppOption.Instance.ShortName ?? ZeroAppOption.Instance.AppName}({ZeroAppOption.Instance.AppVersion})",
-                    LocalMachine = $"{ZeroAppOption.Instance.ServiceName}({ZeroAppOption.Instance.LocalIpAddress})"
-                };
-            return new TraceInfo
-            {
-                TraceId = traceId,
-                ContentInfo = ZeroAppOption.Instance.TraceInfo,
-                Start = DateTime.Now
-            };
-        }
-
-        /// <summary>
-        /// 构造
-        /// </summary>
-        public TraceInfo Copy()
-        {
-            return new TraceInfo
-            {
-                TraceId = TraceId,
-                Start = Start,
-                RequestPage = RequestPage,
-                LocalId = LocalId,
-                LocalApp = LocalApp,
-                LocalMachine = LocalMachine,
-                CallId = CallId,
-                CallApp = CallApp,
-                CallMachine = CallMachine,
-                Headers = Headers,
-                Token = Token,
-                Level = Level
-            };
-        }
     }
 }
 

@@ -5,10 +5,9 @@
 
 #region
 
-using System ;
-using System.Collections.Generic ;
-using System.Runtime.Serialization ;
-using System.Text ;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 #endregion
 
@@ -17,7 +16,7 @@ namespace Agebull.Common.Text
     /// <summary>
     ///   多文本的一个集合
     /// </summary>
-    public class MulitStringDictionary : Dictionary<string , List<string>>
+    public class MulitStringDictionary : Dictionary<string, List<string>>
     {
         /// <summary>
         ///   构造
@@ -31,47 +30,47 @@ namespace Agebull.Common.Text
         /// </summary>
         public string Global => ListToString(_global);
 
-        private readonly List<string> _global = new List<string>() ;
+        private readonly List<string> _global = new List<string>();
 
         /// <summary>
         ///   加入
         /// </summary>
         /// <param name="name"> </param>
         /// <param name="value"> </param>
-        public void Add(string name , string value)
+        public void Add(string name, string value)
         {
-            if(string.IsNullOrWhiteSpace(value))
+            if (string.IsNullOrWhiteSpace(value))
             {
-                return ;
+                return;
             }
-            if(string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(name))
             {
-                _global.Add(value) ;
+                _global.Add(value);
             }
             else
             {
-                name = name.Trim() ;
-                value = value.Trim() ;
-                if(!ContainsKey(name))
+                name = name.Trim();
+                value = value.Trim();
+                if (!ContainsKey(name))
                 {
-                    Add(name , new List<string>()) ;
+                    Add(name, new List<string>());
                 }
-                base[name].Add(value) ;
+                base[name].Add(value);
             }
         }
 
         private string ListToString(List<string> ls)
         {
-            if(ls == null || ls.Count == 0)
+            if (ls == null || ls.Count == 0)
             {
-                return string.Empty ;
+                return string.Empty;
             }
-            var sb = new StringBuilder() ;
-            foreach(var s in ls)
+            var sb = new StringBuilder();
+            foreach (var s in ls)
             {
-                sb.AppendFormat("{0}；" , s) ;
+                sb.AppendFormat("{0}；", s);
             }
-            return sb.ToString() ;
+            return sb.ToString();
         }
 
         /// <summary>
@@ -83,16 +82,16 @@ namespace Agebull.Common.Text
         {
             get
             {
-                if(string.IsNullOrWhiteSpace(name))
+                if (string.IsNullOrWhiteSpace(name))
                 {
-                    return ListToString(_global) ;
+                    return ListToString(_global);
                 }
-                name = name.Trim() ;
+                name = name.Trim();
                 return !ContainsKey(name)
                                ? null
-                               : ListToString(base[name]) ;
+                               : ListToString(base[name]);
             }
-            set => Add(name , value);
+            set => Add(name, value);
         }
 
         /// <summary>
@@ -101,19 +100,19 @@ namespace Agebull.Common.Text
         /// <returns> </returns>
         public override string ToString()
         {
-            var sb = new StringBuilder() ;
-            if(_global.Count > 0)
+            var sb = new StringBuilder();
+            if (_global.Count > 0)
             {
-                sb.AppendFormat("〖{0}〗" , Global) ;
+                sb.AppendFormat("〖{0}〗", Global);
             }
-            foreach(var name in Keys)
+            foreach (var name in Keys)
             {
-                if(base[name].Count > 0)
+                if (base[name].Count > 0)
                 {
-                    sb.AppendFormat("{0}:{1}" , name , this[name]) ;
+                    sb.AppendFormat("{0}:{1}", name, this[name]);
                 }
             }
-            return sb.ToString() ;
+            return sb.ToString();
         }
     }
 }

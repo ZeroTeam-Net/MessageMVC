@@ -161,7 +161,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 var ca = pro.GetCustomAttribute<FromConfigAttribute>();
                 if (ca == null)
                 {
-                    MakeTypeSet(pro.PropertyType,true);
+                    MakeTypeSet(pro.PropertyType, true);
                 }
                 else
                 {
@@ -283,6 +283,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 Context(ilGenerator);
             }
+            else if (type == typeof(IInlineMessage))
+            {
+                MessageCreate(ilGenerator);
+            }
             else if (type == typeof(IUser))
             {
                 User(ilGenerator);
@@ -399,6 +403,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             method = methods.First(p => p.Name == "CreateLogger" && p.GetParameters().Length == 1);
             method = method.MakeGenericMethod(TypeInfo.AsType());
             ilGenerator.Emit(OpCodes.Call, method);
+        }
+
+        private static void MessageCreate(ILGenerator ilGenerator)
+        {
+            ilGenerator.Emit(OpCodes.Ldarg, 0);
         }
 
         private static void ConfigCreate(ILGenerator ilGenerator, string name, Type type)

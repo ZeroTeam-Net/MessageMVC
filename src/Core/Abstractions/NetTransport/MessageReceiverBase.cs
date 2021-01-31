@@ -6,6 +6,7 @@ using ZeroTeam.MessageMVC.Services;
 
 namespace ZeroTeam.MessageMVC.Messages
 {
+
     /// <summary>
     /// 消息接收对象基类
     /// </summary>
@@ -22,6 +23,11 @@ namespace ZeroTeam.MessageMVC.Messages
         {
             Name = name;
         }
+
+        /// <summary>
+        /// 是否可启动本地隧道
+        /// </summary>
+        protected bool CanLocalTunnel { get; set; }
 
         /// <summary>
         /// 是否本地接收者
@@ -41,7 +47,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 日志记录器
         /// </summary>
-        public ILogger Logger { protected get; set; }
+        public ILogger Logger { get; set; }
 
         /// <summary>
         /// 服务
@@ -61,13 +67,17 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 初始化
         /// </summary>
-        void IMessageWorker.Initialize()
+        Task ILifeFlow.Initialize()
         {
             if (state >= StationStateType.Initialized)
-                return;
+                return Task.CompletedTask;
+
             state = StationStateType.Initialized;
             Logger.Information(() => $"服务[{Service.ServiceName}] 使用接收器{Name}");
-            MessagePoster.RegistPoster(this, Service.ServiceName);
+            if (CanLocalTunnel && MessagePoster.LocalTunnel)
+                MessagePoster.RegistPoster(this, Service.ServiceName);
+
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -77,16 +87,16 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <returns></returns>
         async Task<IMessageResult> IMessagePoster.Post(IInlineMessage message)
         {
-            FlowTracer.MonitorDetails(() => $"[{GetType().GetTypeName()}.Post] 进入本地隧道处理模式");
-            //如此做法,避免上下文混乱
-            var task = new TaskCompletionSource<IMessageResult>();
-
-#pragma warning disable CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
-            Task.Run(() => MessageProcessor.OnMessagePush(Service, message, message.Argument != null, task));
-#pragma warning restore CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
-
-            await task.Task;
-
+            if (!ZeroAppOption.Instance.IsAlive)
+            {
+                message.State = MessageState.Cancel;
+                return null;
+            }
+            if (CanLocalTunnel && MessagePoster.LocalTunnel)
+            {
+                FlowTracer.MonitorDetails(() => $"[{GetType().GetTypeName()}.Post] 进入本地隧道处理模式");
+                await MessageProcessor.OnMessagePush(Service, message, message.Argument != null, null);
+            }
             return null;//直接使用原始消息
         }
     }

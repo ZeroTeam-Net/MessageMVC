@@ -17,19 +17,28 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         ///     当前线程的调用上下文
         /// </summary>
-        public static IZeroContext Current => (IZeroContext)(DependencyRun.Context ??= DependencyHelper.GetService<IZeroContext>());
+        public static IZeroContext Current => (IZeroContext)(ScopeRuner.ScopeContext ??= DependencyHelper.GetService<IZeroContext>());
 
         /// <summary>
-        ///     当前线程的调用上下文
+        ///     当前用户
         /// </summary>
-        public static IUser User => CurrentNoLazy?.User;
+        public static IUser User
+        {
+            get => ScopeRuner.ScopeUser;
+            set => ScopeRuner.ScopeUser = value;
+        }
+
+        /// <summary>
+        ///     当前消息
+        /// </summary>
+        public static IInlineMessage Message => ScopeRuner.ScopeContext == null ? null : ((IZeroContext)(ScopeRuner.ScopeContext)).Message;
 
         /// <summary>
         ///     当前线程的上下文中的对象
         /// </summary>
         public static T Get<T>() where T : class
         {
-            return DependencyRun.Dependency.Dependency<T>();
+            return ScopeRuner.ScopeDependency.Get<T>();
         }
 
         /// <summary>
@@ -37,13 +46,13 @@ namespace ZeroTeam.MessageMVC.Context
         /// </summary>
         public static T Set<T>(T value) where T : class
         {
-            return DependencyRun.Dependency.TryAnnex<T>(value);
+            return ScopeRuner.ScopeDependency.TryAttach<T>(value);
         }
 
         /// <summary>
         ///     当前线程的调用上下文(无懒构造)
         /// </summary>
-        public static IZeroContext CurrentNoLazy => (IZeroContext)(DependencyRun.Context);
+        public static IZeroContext CurrentNoLazy => (IZeroContext)(ScopeRuner.ScopeContext);
 
         /// <summary>
         ///     设置当前上下文（框架内调用，外部误用后果未知）
@@ -59,27 +68,15 @@ namespace ZeroTeam.MessageMVC.Context
                     ctx.Option[kv.Key] = kv.Value;
                 }
             }
-            DependencyRun.Context = ctx;
+            ScopeRuner.ScopeContext = ctx;
+            ScopeRuner.ScopeUser = DependencyHelper.GetService<IUser>();
+            ScopeRuner.ScopeUser.Reset(message.User);
             return ctx;
         }
 
         #endregion
 
         #region 上下文配置
-
-        /// <summary>
-        ///     启用调用链跟踪,默认为AppOption中的设置, 可通过远程传递而扩散
-        /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public static bool EnableLinkTrace
-        {
-            get
-            {
-                var lazy = CurrentNoLazy;
-                return ZeroAppOption.Instance.TraceInfo.HasFlag(TraceInfoType.LinkTrace) ||
-                (lazy != null && lazy.Trace.ContentInfo.HasFlag(TraceInfoType.LinkTrace));
-            }
-        }
 
         /// <summary>
         /// 上下文配置指定名称是否配置为true

@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Http;
-using System.Threading.Tasks;
 
 namespace ZeroTeam.MessageMVC.Http
 {
@@ -9,16 +8,16 @@ namespace ZeroTeam.MessageMVC.Http
     internal class HttpProtocol
     {
         static string[] methods = new[] { "GET", "POST", "OPTIONS" };
-        static string[] headers = new[] 
-        { 
+        static string[] headers = new[]
+        {
             "x-requested-with",
-            "content-type", 
+            "content-type",
             "authorization",
             "x-zmvc-app",
             "x-zmvc-page-title",
             "x-zmvc-action-code",
             "x-zmvc-action-title",
-            "*" 
+            "*"
         };
 
         /// <summary>

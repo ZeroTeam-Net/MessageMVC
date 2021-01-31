@@ -1,5 +1,4 @@
-﻿using Agebull.Common.Ioc;
-using Agebull.Common.Logging;
+﻿using Agebull.Common.Logging;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.ApiContract;
@@ -47,7 +46,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         public async Task<IApiResult> ResultAsync()
         {
             Logger.Trace($"ResultAsync");
-           return await Task.Factory.StartNew(TaskTest);
+            return await Task.Factory.StartNew(TaskTest);
         }
 
         [Route("async/arg")]
@@ -66,10 +65,10 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         }
 
         [Route("async/void")]
-        public  Task VoidAsync()
+        public Task VoidAsync()
         {
             Logger.Trace(Task.CurrentId?.ToString());
-            return  Task.Factory.StartNew(TaskTest);
+            return Task.Factory.StartNew(TaskTest);
         }
 
 

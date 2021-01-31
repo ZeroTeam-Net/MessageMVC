@@ -9,7 +9,7 @@
               组件注册
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Consul.AutoRegister.ZeroTeam#MessageMVC#AddIn#IAutoRegister#AutoRegist(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:ZeroTeam.MessageMVC.Consul.AutoRegister.ZeroTeam#MessageMVC#AddIn#IAutoRegister#AutoRegist(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Logging.ILogger)">
             <summary>
             注册
             </summary>

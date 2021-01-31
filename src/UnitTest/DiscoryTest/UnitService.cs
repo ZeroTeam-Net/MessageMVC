@@ -4,7 +4,6 @@ using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.Tools;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
@@ -239,7 +238,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             {
                 Service = "UnitService",
                 Method = "v1/context",
-                Trace = traceInfo,
+                TraceInfo = traceInfo,
                 Context = new System.Collections.Generic.Dictionary<string, string>
                 {
                     {"User" , new UserInfo
@@ -254,8 +253,8 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             Console.WriteLine(msg.Result);
             var ctx = msg.ResultData;
             Assert.IsTrue(ctx != null, msg.Result);
-            Assert.IsTrue(msg.Trace.CallApp == traceInfo.CallApp, msg.Trace.CallApp);
-            Assert.IsTrue(msg.Trace.Start == traceInfo.Start, msg.Trace.Start?.ToString());
+            Assert.IsTrue(msg.TraceInfo.CallApp == traceInfo.CallApp, msg.TraceInfo.CallApp);
+            Assert.IsTrue(msg.TraceInfo.Start == traceInfo.Start, msg.TraceInfo.Start?.ToString());
             //Assert.IsTrue(ctx.User.OrganizationId == ZeroTeamJwtClaim.UnknownOrganizationId, ctx.User.OrganizationId.ToString());
         }
 

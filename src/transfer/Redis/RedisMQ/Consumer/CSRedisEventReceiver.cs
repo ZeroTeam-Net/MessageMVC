@@ -1,7 +1,5 @@
-﻿using Agebull.Common.Ioc;
-using Agebull.Common.Logging;
+﻿using Agebull.Common.Logging;
 using CSRedis;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,8 +25,6 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// </summary>
         string IMessageReceiver.PosterName => nameof(CSRedisEventReceiver);
 
-        ILogger logger;
-
         /// <summary>
         /// 本地代理
         /// </summary>
@@ -38,13 +34,6 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// 订阅对象
         /// </summary>
         private SubscribeObject subscribeObject;
-        /// <summary>
-        /// 初始化
-        /// </summary>
-        void IMessageWorker.Initialize()
-        {
-            logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(CSRedisEventReceiver));
-        }
 
         private TaskCompletionSource<bool> loopTask;
         private CancellationToken token;
@@ -61,7 +50,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                 }
                 catch (Exception ex)
                 {
-                    logger.Error(() => $"CSRedisEventReceiver Loop.\r\n{ex}");
+                    Logger.Error(() => $"CSRedisEventReceiver Loop.\r\n{ex}");
                     await Task.Delay(3000);
                 }
             }
@@ -74,16 +63,15 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// 关闭
         /// </summary>
         /// <returns></returns>
-        Task IMessageWorker.Close()
+        Task ILifeFlow.Closing()
         {
             try
             {
                 loopTask?.SetResult(true);
-                subscribeObject?.Dispose();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"CSRedisEventReceiver Close error.\r\n{ex}");
+                Logger.Exception(ex);
             }
             return Task.CompletedTask;
         }
@@ -92,7 +80,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// 同步关闭状态
         /// </summary>
         /// <returns></returns>
-        Task IMessageReceiver.LoopComplete()
+        Task ILifeFlow.Close()
         {
             try
             {
@@ -101,7 +89,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"CSRedisEventReceiver LoopComplete error.\r\n{ex}");
+                Logger.Exception(ex);
             }
             return Task.CompletedTask;
         }
@@ -122,7 +110,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             }
             catch (Exception ex)
             {
-                logger.Exception(ex);
+                Logger.Exception(ex);
             }
         }
 

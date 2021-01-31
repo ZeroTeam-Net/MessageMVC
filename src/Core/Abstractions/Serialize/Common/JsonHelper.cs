@@ -27,6 +27,15 @@ namespace ZeroTeam.MessageMVC.Messages
         {
             return porxy.ToString(t, indented);
         }
+        /// <summary>
+        /// 序列化
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public static string ToInnerString(this object t)
+        {
+            return SmartSerializer.ToInnerString(t);
+        }
 
         /// <summary>
         /// 序列化

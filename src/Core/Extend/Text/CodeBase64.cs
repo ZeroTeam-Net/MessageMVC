@@ -17,7 +17,7 @@ namespace System.Text
         /// <returns> 返回编码的值($SG$) </returns>
         public static string EncodeToBase64(this string code)
         {
-            return EncodeBase64(code) ;
+            return EncodeBase64(code);
         }
 
         /// <summary>
@@ -27,17 +27,17 @@ namespace System.Text
         /// <returns> 编码后的文本 </returns>
         public static string EncodeBase64(string code)
         {
-            string encode ;
-            var bytes = Encoding.UTF8.GetBytes(code) ;
+            string encode;
+            var bytes = Encoding.UTF8.GetBytes(code);
             try
             {
-                encode = Convert.ToBase64String(bytes) ;
+                encode = Convert.ToBase64String(bytes);
             }
             catch
             {
-                encode = code ;
+                encode = code;
             }
-            return encode ;
+            return encode;
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace System.Text
         /// <returns> 返回编码的值($SG$) </returns>
         public static string DecodeFromBase64(this string code)
         {
-            return DecodeBase64(code) ;
+            return DecodeBase64(code);
         }
 
         /// <summary>
@@ -57,17 +57,17 @@ namespace System.Text
         /// <returns> 解码后的文本 </returns>
         public static string DecodeBase64(string code)
         {
-            string decode ;
-            var bytes = Convert.FromBase64String(code) ;
+            string decode;
+            var bytes = Convert.FromBase64String(code);
             try
             {
-                decode = Encoding.UTF8.GetString(bytes , 0 , bytes.Length) ;
+                decode = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
             }
             catch
             {
-                decode = code ;
+                decode = code;
             }
-            return decode ;
+            return decode;
         }
     }
 }

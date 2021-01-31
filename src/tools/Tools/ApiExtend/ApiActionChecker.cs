@@ -1,6 +1,5 @@
 ﻿using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
-using System;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
@@ -41,4 +40,4 @@ namespace ZeroTeam.MessageMVC.Tools
             return false;
         }
     }
-    }
+}

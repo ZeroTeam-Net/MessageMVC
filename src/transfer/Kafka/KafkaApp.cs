@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Agebull.Common.Ioc;
+using Microsoft.Extensions.DependencyInjection;
 using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC.Kafka
@@ -17,7 +18,7 @@ namespace ZeroTeam.MessageMVC.Kafka
             services.AddSingleton<IHealthCheck>(KafkaFlow.Instance);
             services.AddSingleton<IFlowMiddleware>(KafkaFlow.Instance);//Kafka环境
             services.AddSingleton<IMessagePoster, KafkaPoster>();//采用Kafka生产端
-            services.AddTransient<IMessageConsumer, KafkaConsumer>();//采用Kafka消费客户端
+            services.AddNameTransient<IMessageConsumer, KafkaConsumer>();//采用Kafka消费客户端
         }
     }
 }

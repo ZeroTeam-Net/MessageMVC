@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Documents;
 using ZeroTeam.MessageMVC.Messages;
-using ActionTask = System.Threading.Tasks.TaskCompletionSource<(ZeroTeam.MessageMVC.Messages.MessageState state, object result)>;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -19,7 +17,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         ///     API配置
         /// </summary>
-        ApiOption Option { get;  }
+        ApiOption Option { get; }
 
         /// <summary>
         ///     Api名称
@@ -89,7 +87,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ///     执行
         /// </summary>
         /// <returns></returns>
-        Task Execute(ActionTask task, IInlineMessage message, ISerializeProxy serializer);
+        void Execute(IInlineMessage message, ISerializeProxy serializer);
 
         /// <summary>
         /// 初始化检查

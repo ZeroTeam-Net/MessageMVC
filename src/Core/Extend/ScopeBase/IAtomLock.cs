@@ -10,11 +10,11 @@ namespace Agebull.Common
         /// <summary>
         ///   正在被锁定,应该用AtomLockNames是否为空来表示，或自行处理
         /// </summary>
-        bool IsAtomLock { get ; }
+        bool IsAtomLock { get; }
 
         /// <summary>
         ///   正在被锁定名字集合
         /// </summary>
-        List<string> AtomLockNames { get ; set ; }
+        List<string> AtomLockNames { get; set; }
     }
 }

@@ -204,20 +204,37 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 var service = ZeroFlowControl.TryGetZeroObject(serviceInfo.Name);
                 if (service == null)
                 {
-                    service = new ZeroService
-                    {
-                        IsAutoService = true,
-                        ServiceName = serviceInfo.Name,
-                        Receiver = serviceInfo.NetBuilder(serviceInfo.Name),
-                        Serialize = serviceInfo.Serialize switch
+                    var receiver = serviceInfo.NetBuilder(serviceInfo.Name);
+                    if (receiver == null || receiver is EmptyService )
+                        service = new EmptyService
                         {
-                            SerializeType.Json => DependencyHelper.GetService<IJsonSerializeProxy>(),
-                            SerializeType.NewtonJson => new NewtonJsonSerializeProxy(),
-                            SerializeType.Xml => DependencyHelper.GetService<IXmlSerializeProxy>(),
-                            SerializeType.Bson => DependencyHelper.GetService<IBsonSerializeProxy>(),
-                            _ => DependencyHelper.GetService<IJsonSerializeProxy>(),
-                        }
-                    };
+                            IsAutoService = true,
+                            ServiceName = serviceInfo.Name,
+                            Serialize = serviceInfo.Serialize switch
+                            {
+                                SerializeType.Json => DependencyHelper.GetService<IJsonSerializeProxy>(),
+                                SerializeType.NewtonJson => new NewtonJsonSerializeProxy(),
+                                SerializeType.Xml => DependencyHelper.GetService<IXmlSerializeProxy>(),
+                                SerializeType.Bson => DependencyHelper.GetService<IBsonSerializeProxy>(),
+                                _ => DependencyHelper.GetService<IJsonSerializeProxy>(),
+                            }
+                        };
+                    else
+                        service = new ZeroService
+                        {
+                            IsAutoService = true,
+                            ServiceName = serviceInfo.Name,
+                            Receiver = receiver,
+                            Serialize = serviceInfo.Serialize switch
+                            {
+                                SerializeType.Json => DependencyHelper.GetService<IJsonSerializeProxy>(),
+                                SerializeType.NewtonJson => new NewtonJsonSerializeProxy(),
+                                SerializeType.Xml => DependencyHelper.GetService<IXmlSerializeProxy>(),
+                                SerializeType.Bson => DependencyHelper.GetService<IBsonSerializeProxy>(),
+                                _ => DependencyHelper.GetService<IJsonSerializeProxy>(),
+                            }
+                        };
+
                     ZeroFlowControl.RegistService(ref service);
                 }
                 foreach (var api in serviceInfo.Aips)

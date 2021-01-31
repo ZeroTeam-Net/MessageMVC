@@ -24,6 +24,13 @@ namespace System
     public static class ValueToStringHelper
     {
         /// <summary>
+        /// 是否为空
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns>是否为空</returns>
+        public static bool IsNullOrEmpty(this string str) => string.IsNullOrWhiteSpace(str);
+
+        /// <summary>
         /// 清理XML使之最短
         /// </summary>
         /// <param name="xml"></param>
@@ -181,6 +188,17 @@ namespace System
             var aNull = string.IsNullOrWhiteSpace(a);
             var bNull = string.IsNullOrWhiteSpace(b);
             return aNull && bNull || (aNull == bNull && a.Equals(b, StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
+        ///   文本是否大小写不敏感的相同
+        /// </summary>
+        /// <param name="a"> </param>
+        /// <param name="b"> </param>
+        /// <returns> </returns>
+        public static bool IsMe(this string a, string b)
+        {
+            return a.Equals(b, StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -1052,7 +1070,7 @@ namespace System.Text
         /// <param name="head">头部文字</param>
         /// <param name="first">是否缩进首行</param>
         /// <returns>结果文本</returns>
-        public static string SpaceLine(this string str,string head, bool first = true)
+        public static string SpaceLine(this string str, string head, bool first = true)
         {
             if (str == null)
                 return null;

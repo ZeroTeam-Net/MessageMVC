@@ -1,4 +1,5 @@
-﻿using ZeroTeam.MessageMVC.Documents;
+﻿using System;
+using ZeroTeam.MessageMVC.Documents;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
 
@@ -13,6 +14,11 @@ namespace ZeroTeam.MessageMVC.Services
         /// 服务名称
         /// </summary>
         string ServiceName { get; set; }
+
+        /// <summary>
+        ///     是否可以运行的判断方法
+        /// </summary>
+        Func<bool> CanRun { get; set; }
 
         /// <summary>
         ///     运行状态
@@ -58,10 +64,6 @@ namespace ZeroTeam.MessageMVC.Services
         /// </summary>
         /// <param name="info">反射信息</param>
         void RegistWildcardAction(ApiActionInfo info);
-        
-        /// <summary>
-        /// 重置状态机,请谨慎使用
-        /// </summary>
-        void ResetStateMachine();
+
     }
 }

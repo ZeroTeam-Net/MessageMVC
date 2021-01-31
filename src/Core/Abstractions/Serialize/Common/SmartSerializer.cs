@@ -21,6 +21,7 @@ namespace ZeroTeam.MessageMVC.Messages
         static readonly IJsonSerializeProxy Json = DependencyHelper.GetService<IJsonSerializeProxy>();
         static readonly IXmlSerializeProxy Xml = DependencyHelper.GetService<IXmlSerializeProxy>();
         static readonly Type MessageType = DependencyHelper.GetService<IInlineMessage>().GetType();
+        static readonly Type ResultType = DependencyHelper.GetService<IMessageResult>().GetType();
 
         #endregion
         #region 普通
@@ -254,7 +255,7 @@ namespace ZeroTeam.MessageMVC.Messages
             }
             catch (Exception ex)
             {
-                DependencyRun.Logger.Exception(ex);
+                ScopeRuner.ScopeLogger.Exception(ex);
                 dest = default;
                 return false;
             }
@@ -281,8 +282,9 @@ namespace ZeroTeam.MessageMVC.Messages
                 Service = message.Service,
                 Method = message.Method,
                 Argument = message.Argument,
+                Result = message.Result,
                 Extension = message.Extension,
-                Trace = message.Trace,
+                TraceInfo = message.TraceInfo,
                 Context = message.Context
             });
         }
@@ -308,7 +310,7 @@ namespace ZeroTeam.MessageMVC.Messages
                 Argument = message.Argument,
                 Extension = message.Extension,
                 Result = message.Result,
-                Trace = message.Trace,
+                TraceInfo = message.TraceInfo,
                 Context = message.Context
             });
         }
@@ -377,6 +379,65 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 自动根据字符特点反序列化
         /// </summary>
         /// <param name="str">文本</param>
+        /// <param name="result">返回的消息</param>
+        /// <param name="trim">执行Trim,以消除空白字符</param>
+        /// <returns>是否成功</returns>
+        /// <remarks>
+        /// xml以&lt;为第一个字符
+        /// json以[或{为第一个字符
+        /// </remarks>
+        public static bool TryToResult(string str, out IMessageResult result, bool trim = true)
+        {
+            try
+            {
+                result = ToResult(str, trim);
+                return result != null;
+            }
+            catch
+            {
+                result = null;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 自动根据字符特点反序列化
+        /// </summary>
+        /// <param name="str">文本</param>
+        /// <param name="trim">执行Trim,以消除空白字符</param>
+        /// <returns>对象</returns>
+        /// <remarks>
+        /// xml以&lt;为第一个字符
+        /// json以[或{为第一个字符
+        /// </remarks>
+        public static IMessageResult ToResult(string str, bool trim = true)
+        {
+            if (string.IsNullOrWhiteSpace(str))
+            {
+                return null;
+            }
+            if (trim)
+                str = str.Trim();
+            IMessageResult message;
+            switch (str[0])
+            {
+                case '{':
+                case '[':
+                    message = MsJson.ToObject(str, ResultType) as IMessageResult;
+                    break;
+                case '<':
+                    message = Xml.ToObject(str, ResultType) as IMessageResult;
+                    break;
+                default:
+                    return null;
+            }
+            message.DataState = MessageDataState.ArgumentOffline | MessageDataState.ExtensionOffline;
+            return message;
+        }
+        /// <summary>
+        /// 自动根据字符特点反序列化
+        /// </summary>
+        /// <param name="str">文本</param>
         /// <param name="trim">执行Trim,以消除空白字符</param>
         /// <returns>对象</returns>
         /// <remarks>
@@ -406,6 +467,34 @@ namespace ZeroTeam.MessageMVC.Messages
             }
             message.DataState = MessageDataState.ArgumentOffline | MessageDataState.ExtensionOffline;
             return message;
+        }
+
+        /// <summary>
+        /// 序列化妻字节
+        /// </summary>
+        /// <param name="obj">对象</param>
+        /// <returns>Utf8字节</returns>
+        public static byte[] ToBytes<T>(T obj) where T : class
+        {
+            if (obj == null)
+            {
+                return default;
+            }
+            return MsJson.ToBytes<T>(obj);
+        }
+
+        /// <summary>
+        /// 反序列化字节
+        /// </summary>
+        /// <param name="bytes">Utf8字节</param>
+        /// <returns>对象</returns>
+        public static T ToObject<T>(byte[] bytes)
+        {
+            if (bytes == null || bytes.Length == 0)
+            {
+                return default;
+            }
+            return MsJson.ToObject<T>(bytes);
         }
         #endregion
     }

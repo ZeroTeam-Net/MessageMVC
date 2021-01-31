@@ -1,9 +1,4 @@
-﻿using Agebull.Common.Ioc;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using System;
-using System.Diagnostics;
-using System.Security.Permissions;
+﻿using Microsoft.Extensions.Hosting;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Kafka;
@@ -17,12 +12,13 @@ namespace MicroZero.Kafka.QueueStation
             var builder = new HostBuilder()
                 .UseMessageMVC(true, services =>
                 {
-                services.AddMessageMvcKafka();
+                    services.AddMessageMvcKafka();
                 })
-                .ConfigureServices((ctx, services) =>
-                {
-                    services.AddHostedService<TestHost>();
-                });
+                //.ConfigureServices((ctx, services) =>
+                //{
+                //    services.AddHostedService<TestHost>();
+                //})
+                ;
             await builder.Build().RunAsync();
         }
     }

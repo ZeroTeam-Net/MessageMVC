@@ -38,6 +38,11 @@ namespace ZeroTeam.MessageMVC
         public int MaxIOThreads { get; set; }
 
         /// <summary>
+        ///   关闭最大等待时长
+        /// </summary>
+        public int MaxCloseSecond { get; set; }
+
+        /// <summary>
         ///     站点数据使用AppName为文件夹
         /// </summary>
         public bool IsolateFolder { get; set; }
@@ -68,9 +73,10 @@ namespace ZeroTeam.MessageMVC
         public Dictionary<string, string> ServiceMap { get; set; }
 
         /// <summary>
-        /// 跟踪信息内容
+        /// 跟踪信息内容配置
         /// </summary>
-        public TraceInfoType TraceInfo { get; set; }
+        public Dictionary<string, MessageTraceType> TraceOption { get; set; }
+
 
         #region 复制
 
@@ -84,7 +90,12 @@ namespace ZeroTeam.MessageMVC
             {
                 return;
             }
-            TraceInfo |= option.TraceInfo;
+            if (option.TraceOption != null)
+            {
+                foreach (var trace in option.TraceOption)
+                    TraceOption[trace.Key] = trace.Value;
+            }
+
             if (ServiceMap == null)
             {
                 ServiceMap = option.ServiceMap;
@@ -121,6 +132,18 @@ namespace ZeroTeam.MessageMVC
                 DataFolder = option.DataFolder;
             }
 
+            if (option.MaxIOThreads > 0)
+            {
+                MaxIOThreads = option.MaxIOThreads;
+            }
+            if (option.MaxWorkThreads > 0)
+            {
+                MaxWorkThreads = option.MaxWorkThreads;
+            }
+            if (option.MaxCloseSecond > 0)
+            {
+                MaxCloseSecond = option.MaxCloseSecond;
+            }
             //if (option.EnableAddIn)
             //{
             //    EnableAddIn = option.EnableAddIn;
@@ -146,7 +169,11 @@ namespace ZeroTeam.MessageMVC
             {
                 return;
             }
-            TraceInfo |= option.TraceInfo;
+            if(TraceOption.Count == 0 && option.TraceOption != null)
+            {
+                foreach (var trace in option.TraceOption)
+                    TraceOption.Add(trace.Key, trace.Value);
+            }
             if (ServiceMap == null)
             {
                 ServiceMap = option.ServiceMap;
@@ -195,6 +222,19 @@ namespace ZeroTeam.MessageMVC
             if (string.IsNullOrWhiteSpace(AddInPath))
             {
                 AddInPath = option.AddInPath;
+            }
+
+            if (MaxIOThreads <= 0)
+            {
+                MaxIOThreads = option.MaxIOThreads;
+            }
+            if (MaxWorkThreads <= 0)
+            {
+                MaxWorkThreads = option.MaxWorkThreads;
+            }
+            if (MaxCloseSecond <= 0)
+            {
+                MaxCloseSecond = option.MaxCloseSecond;
             }
         }
         #endregion

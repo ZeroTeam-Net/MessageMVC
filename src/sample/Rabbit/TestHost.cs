@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
-using ZeroTeam.MessageMVC;
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Hosting;
 using System.Threading;
+using System.Threading.Tasks;
+using ZeroTeam.MessageMVC;
 
 namespace Rabbit
 {

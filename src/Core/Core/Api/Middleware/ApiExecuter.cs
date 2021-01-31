@@ -1,6 +1,5 @@
 using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
@@ -122,15 +121,12 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 if (!checker.Check(action, Message))
                     return;
             }
-
-            //方法执行
-            GlobalContext.Current.IsDelay = true;
-            GlobalContext.Current.Task = new ActionTask();
+            GlobalContext.Current.RequestTask = new ActionTask();
+            GlobalContext.Current.ActionTask = new TaskCompletionSource<bool>();
             try
             {
-                _ = action.Execute(GlobalContext.Current.Task, Message, Service.Serialize);
-                await GlobalContext.Current.Task.Task;
-                var (state, result) = GlobalContext.Current.Task.Task.Result;
+                action.Execute(Message, Service.Serialize);
+                var (state, result) = await GlobalContext.Current.RequestTask.Task;
                 Message.State = state;
                 Message.ResultData = result;
             }
@@ -175,8 +171,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <returns></returns>
         private bool ArgumentPrepare(IApiAction action)
         {
-            FlowTracer.MonitorInfomation($"[Argument] {Message.Argument}");
-
             try
             {
                 action.RestoreArgument(Message);

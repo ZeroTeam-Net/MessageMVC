@@ -42,6 +42,14 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 关闭
         /// </summary>
+        Task Closing()
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// 关闭
+        /// </summary>
         Task Close()
         {
             return Task.CompletedTask;

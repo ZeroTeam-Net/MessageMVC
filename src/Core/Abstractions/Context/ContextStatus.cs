@@ -104,7 +104,7 @@ namespace ZeroTeam.MessageMVC.Context
         ///     最后一个的操作消息
         /// </summary>
         public bool IsFailed => LastState != OperatorStatusCode.Success;
-        
+
         #endregion
         /*
         /// <summary>

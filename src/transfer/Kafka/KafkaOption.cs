@@ -4,6 +4,28 @@ using Confluent.Kafka;
 namespace ZeroTeam.MessageMVC.Kafka
 {
     /// <summary>
+    /// 消息配置
+    /// </summary>
+    public class MessageOption
+    {
+        /// <summary>
+        /// 同时处理数据最大并发数
+        /// </summary>
+        public int Concurrency { get; set; }
+
+        /// <summary>
+        /// 测试主题
+        /// </summary>
+        public string TestTopic { get; set; }
+
+        /// <summary>
+        /// 是否异步发送
+        /// </summary>
+        public bool AsyncPost { get; set; }
+
+    }
+
+    /// <summary>
     /// Kafka配置
     /// </summary>
     public class KafkaOption
@@ -12,11 +34,6 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// 服务地址
         /// </summary>
         public string BootstrapServers { get; set; }
-
-        /// <summary>
-        /// 测试主题
-        /// </summary>
-        public string TestTopic { get; set; }
 
         /// <summary>
         /// 消费配置
@@ -28,19 +45,15 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// </summary>
         public ProducerConfig Producer = new ProducerConfig();
 
-
         /// <summary>
-        /// 同时处理数据最大并发数
+        /// 消息配置
         /// </summary>
-        public int Concurrency { get; set; }
+        public MessageOption Message { get; set; }
 
         /// <summary>
         ///  唯一实例 
         /// </summary>
-        public readonly static KafkaOption Instance = new KafkaOption
-        {
-            TestTopic = "HealthCheck"
-        };
+        public readonly static KafkaOption Instance = new KafkaOption();
 
         #region 配置自动更新
 
@@ -52,6 +65,8 @@ namespace ZeroTeam.MessageMVC.Kafka
 
         const string ProducerName = "MessageMVC:Kafka:Producer";
 
+        const string MessageName = "MessageMVC:Kafka:Message";
+
         static KafkaOption()
         {
             ConfigurationHelper.RegistOnChange(sectionName, Instance.Load, true);
@@ -60,13 +75,31 @@ namespace ZeroTeam.MessageMVC.Kafka
         void Load()
         {
             BootstrapServers = ConfigurationHelper.Get(sectionName).GetStr("BootstrapServers", BootstrapServers);
-            TestTopic = ConfigurationHelper.Get(sectionName).GetStr("TestTopic", TestTopic);
-            Concurrency = ConfigurationHelper.Get(sectionName).GetInt("Concurrency", 0);
+            CopyMessage();
 
             ConsumerLoad(Consumer);
+            Consumer.ConsumeResultFields = "all";
             Consumer.BootstrapServers = BootstrapServers;
             ProducerLoad(Producer);
             Producer.BootstrapServers = BootstrapServers;
+        }
+        internal void CopyMessage()
+        {
+            var config = ConfigurationHelper.Get<MessageOption>(MessageName);
+            if (config == null)
+            {
+                if (Message == null)
+                {
+                    Message = new MessageOption
+                    {
+                        TestTopic = "HealthCheck"
+                    };
+                }
+                return;
+            }
+
+            Message.Concurrency = config.Concurrency;
+            Message.AsyncPost = config.AsyncPost;
         }
         internal ConsumerConfig CopyConsumer()
         {
@@ -109,6 +142,7 @@ namespace ZeroTeam.MessageMVC.Kafka
             var config = ConfigurationHelper.Get<ConsumerConfig>(ConsumerName);
             if (config == null)
                 return;
+            con.ConsumeResultFields = "all";
             con.IsolationLevel = config.IsolationLevel;
             con.FetchErrorBackoffMs = config.FetchErrorBackoffMs;
             con.FetchMinBytes = config.FetchMinBytes;

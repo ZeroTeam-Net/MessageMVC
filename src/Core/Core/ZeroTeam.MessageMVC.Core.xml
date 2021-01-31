@@ -9,59 +9,14 @@
             MEF插件导入器
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.AddIn.AddInImporter.Instance">
-            <summary>
-            单例
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.AddIn.AddInImporter.ZeroTeam#MessageMVC#IZeroDependency#Name">
-            <summary>
-            实例名称
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.AddIn.AddInImporter.ZeroTeam#MessageMVC#IZeroMiddleware#Level">
-            <summary>
-            等级
-            </summary>
-        </member>
         <member name="P:ZeroTeam.MessageMVC.AddIn.AddInImporter.Import">
             <summary>
             插件对象
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.AddIn.AddInImporter.Registers">
+        <member name="M:ZeroTeam.MessageMVC.AddIn.AddInImporter.LoadAddIn(ZeroTeam.MessageMVC.ZeroAppOption)">
             <summary>
-            插件对象
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.AddIn.AddInImporter.ZeroTeam#MessageMVC#ILifeFlow#Check(ZeroTeam.MessageMVC.ZeroAppOption)">
-            <summary>
-            检查
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.AddIn.AddInImporter.ZeroTeam#MessageMVC#ILifeFlow#Discover">
-            <summary>
-            发现
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.AddIn.AddInImporter.ZeroTeam#MessageMVC#ILifeFlow#Initialize">
-            <summary>
-            准备
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.AddIn.AddInImporter.ZeroTeam#MessageMVC#ILifeFlow#Open">
-            <summary>
-            启动
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.AddIn.AddInImporter.ZeroTeam#MessageMVC#ILifeFlow#Close">
-            <summary>
-            关闭
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.AddIn.AddInImporter.ZeroTeam#MessageMVC#ILifeFlow#Destory">
-            <summary>
-            注销
+            载入插件
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiAction">
@@ -167,7 +122,7 @@
                 执行行为
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiAction.Execute(System.Threading.Tasks.TaskCompletionSource{System.ValueTuple{ZeroTeam.MessageMVC.Messages.MessageState,System.Object}},ZeroTeam.MessageMVC.Messages.IInlineMessage,ZeroTeam.MessageMVC.Messages.ISerializeProxy)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiAction.Execute(ZeroTeam.MessageMVC.Messages.IInlineMessage,ZeroTeam.MessageMVC.Messages.ISerializeProxy)">
             <summary>
                 执行
             </summary>
@@ -405,6 +360,12 @@
                 主流程控制器
             </summary>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.WaiteAll(System.Collections.Generic.List{System.Threading.Tasks.Task})">
+            <summary>
+            等所有Task完成
+            </summary>
+            <param name="tasks"></param>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.Check">
             <summary>
                 配置校验,作为第一步
@@ -435,6 +396,66 @@
                 运行
             </summary>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.Shutdown">
+            <summary>
+                关闭
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.CloseAll">
+            <summary>
+                关闭
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.DestoryAll">
+            <summary>
+                注销
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ZeroFlowControl.FlowServices">
+            <summary>
+            需要运行流程的服务
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.OnObjectActive(ZeroTeam.MessageMVC.Services.IService)">
+            <summary>
+                对象活动时登记
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.OnObjectFailed(ZeroTeam.MessageMVC.Services.IService)">
+            <summary>
+                对象关闭时登记
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.OnObjectClose(ZeroTeam.MessageMVC.Services.IService)">
+            <summary>
+                对象关闭时登记
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.WaitAllObjectSafeClose">
+            <summary>
+                等待所有对象信号(全开或全关)
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.DiscoverAll">
+            <summary>
+                发现
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.InitializeAll">
+            <summary>
+                初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.OpenAll">
+            <summary>
+                系统启动时调用
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.StartFailed">
+            <summary>
+                重新启动未正常启动的项目
+            </summary>
+        </member>
         <member name="F:ZeroTeam.MessageMVC.ZeroFlowControl.Services">
             <summary>
             已注册的对象
@@ -460,26 +481,6 @@
                 取服务，内部使用
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.OnObjectActive(ZeroTeam.MessageMVC.Services.IService)">
-            <summary>
-                对象活动时登记
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.OnObjectFailed(ZeroTeam.MessageMVC.Services.IService)">
-            <summary>
-                对象关闭时登记
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.OnObjectClose(ZeroTeam.MessageMVC.Services.IService)">
-            <summary>
-                对象关闭时登记
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.WaitAllObjectSafeClose">
-            <summary>
-                等待所有对象信号(全开或全关)
-            </summary>
-        </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.TryGetZeroObject(System.String)">
             <summary>
                 取已注册对象
@@ -494,61 +495,6 @@
             <summary>
                 注册服务
             </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.DiscoverAll">
-            <summary>
-                发现
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.InitializeAll">
-            <summary>
-                初始化
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.OpenAll">
-            <summary>
-                系统启动时调用
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.StartFailed">
-            <summary>
-                重新启动未正常启动的项目
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.WaiteAll(System.Collections.Generic.List{System.Threading.Tasks.Task})">
-            <summary>
-            等所有Task完成
-            </summary>
-            <param name="tasks"></param>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.Shutdown">
-            <summary>
-                关闭
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.CloseAll">
-            <summary>
-                关闭
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.DestoryAll">
-            <summary>
-                注销
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.RegistStartAction(System.String,System.Func{System.Threading.CancellationToken,System.Threading.Tasks.Task})">
-            <summary>
-            注册后台方法
-            </summary>
-            <param name="name"></param>
-            <param name="action"></param>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.RegistStopAction(System.String,System.Func{System.Threading.Tasks.Task})">
-            <summary>
-            注册关机方法
-            </summary>
-            <param name="name"></param>
-            <param name="action"></param>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroHostedService">
             <summary>
@@ -572,7 +518,7 @@
             构造
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.EmptyReceiver.ZeroTeam#MessageMVC#Messages#IMessageWorker#Close">
+        <member name="M:ZeroTeam.MessageMVC.EmptyReceiver.ZeroTeam#MessageMVC#ILifeFlow#Closing">
             <summary>
             关闭
             </summary>
@@ -615,12 +561,7 @@
                 开始的处理
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Services.StateMachine.CloseStateMachine.ZeroTeam#MessageMVC#Services#StateMachine#IStationStateMachine#Close">
-            <summary>
-                关闭的处理
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Services.StateMachine.CloseStateMachine.ZeroTeam#MessageMVC#Services#StateMachine#IStationStateMachine#End">
+        <member name="M:ZeroTeam.MessageMVC.Services.StateMachine.CloseStateMachine.ZeroTeam#MessageMVC#Services#StateMachine#IStationStateMachine#Closing">
             <summary>
                 结束的处理
             </summary>
@@ -630,19 +571,14 @@
             监控状态机
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Services.StateMachine.EmptyStateMachine.ZeroTeam#MessageMVC#Services#StateMachine#IStationStateMachine#Start">
+        <member name="M:ZeroTeam.MessageMVC.Services.StateMachine.EmptyStateMachine.ZeroTeam#MessageMVC#Services#StateMachine#IStationStateMachine#Close">
             <summary>
-                开始的处理
+                结束的处理
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Services.StateMachine.EmptyStateMachine.ZeroTeam#MessageMVC#Services#StateMachine#IStationStateMachine#End">
             <summary>
                 结束的处理
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Services.StateMachine.EmptyStateMachine.ZeroTeam#MessageMVC#Services#StateMachine#IStationStateMachine#Close">
-            <summary>
-                关闭的处理
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Services.StateMachine.FailedStateMachine">
@@ -655,22 +591,17 @@
                 开始的处理
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Services.StateMachine.FailedStateMachine.ZeroTeam#MessageMVC#Services#StateMachine#IStationStateMachine#Close">
-            <summary>
-                关闭的处理
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Services.StateMachine.FailedStateMachine.ZeroTeam#MessageMVC#Services#StateMachine#IStationStateMachine#End">
-            <summary>
-                结束的处理
-            </summary>
-        </member>
         <member name="T:ZeroTeam.MessageMVC.Services.StateMachine.IStationStateMachine">
             <summary>
             站点状态机
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Services.StateMachine.IStationStateMachine.Service">
+            <summary>
+            站点
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Services.StateMachine.IStationStateMachine.Control">
             <summary>
             站点
             </summary>
@@ -683,6 +614,11 @@
         <member name="M:ZeroTeam.MessageMVC.Services.StateMachine.IStationStateMachine.Start">
             <summary>
                 开始的处理
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Services.StateMachine.IStationStateMachine.Closing">
+            <summary>
+                关闭的处理
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Services.StateMachine.IStationStateMachine.Close">
@@ -700,19 +636,9 @@
             监控状态机
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Services.StateMachine.RunStateMachine.ZeroTeam#MessageMVC#Services#StateMachine#IStationStateMachine#Start">
+        <member name="M:ZeroTeam.MessageMVC.Services.StateMachine.RunStateMachine.ZeroTeam#MessageMVC#Services#StateMachine#IStationStateMachine#Closing">
             <summary>
-                开始的处理
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Services.StateMachine.RunStateMachine.ZeroTeam#MessageMVC#Services#StateMachine#IStationStateMachine#Close">
-            <summary>
-                结束的处理
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Services.StateMachine.RunStateMachine.ZeroTeam#MessageMVC#Services#StateMachine#IStationStateMachine#End">
-            <summary>
-                结束的处理
+                关闭的处理
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Services.StateMachine.StartStateMachine">
@@ -723,16 +649,6 @@
         <member name="M:ZeroTeam.MessageMVC.Services.StateMachine.StartStateMachine.ZeroTeam#MessageMVC#Services#StateMachine#IStationStateMachine#Start">
             <summary>
                 开始的处理
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Services.StateMachine.StartStateMachine.ZeroTeam#MessageMVC#Services#StateMachine#IStationStateMachine#Close">
-            <summary>
-                关闭的处理
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Services.StateMachine.StartStateMachine.ZeroTeam#MessageMVC#Services#StateMachine#IStationStateMachine#End">
-            <summary>
-                结束的处理
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Services.StateMachine.StateMachineBase">
@@ -755,9 +671,89 @@
             是否已析构
             </summary>
         </member>
+        <member name="T:ZeroTeam.MessageMVC.Services.EmptyService">
+            <summary>
+            一个服务
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Services.EmptyService.CanRun">
+            <summary>
+                是否可以运行的判断方法
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Services.EmptyService.ZeroTeam#MessageMVC#IZeroMiddleware#Level">
+            <summary>
+            等级,用于确定中间件优先级
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Services.EmptyService.ServiceName">
+            <summary>
+            站点名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Services.EmptyService.Receiver">
+            <summary>
+            消息接收对象
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Services.EmptyService.IsAutoService">
+            <summary>
+            是否自动发现对象
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Services.EmptyService.RealState">
+            <summary>
+                运行状态
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Services.EmptyService.ConfigState">
+            <summary>
+                配置状态
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Services.EmptyService.Serialize">
+            <summary>
+            序列化对象
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Services.EmptyService.WildcardAction">
+            <summary>
+            通配事件
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Services.EmptyService.ApiActions">
+            <summary>
+            注册的方法
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Services.EmptyService.GetApiAction(System.String)">
+            <summary>
+             取得API信息
+            </summary>
+            <param name="api"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Services.EmptyService.ZeroTeam#MessageMVC#Services#IService#RegistWildcardAction(ZeroTeam.MessageMVC.Documents.ApiActionInfo)">
+            <summary>
+                注册通配方法
+            </summary>
+            <param name="info">反射信息</param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Services.EmptyService.ZeroTeam#MessageMVC#Services#IService#RegistAction(System.String,ZeroTeam.MessageMVC.Documents.ApiActionInfo)">
+            <summary>
+                注册方法
+            </summary>
+            <param name="route">方法外部方法名称，如 v1/auto/getdid </param>
+            <param name="info">反射信息</param>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.Services.ZeroService">
             <summary>
             一个服务
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Services.ZeroService.CanRun">
+            <summary>
+                是否可以运行的判断方法
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Services.ZeroService.ZeroTeam#MessageMVC#IZeroMiddleware#Level">
@@ -800,11 +796,6 @@
                 配置状态
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Services.ZeroService.ZeroTeam#MessageMVC#Services#IService#ResetStateMachine">
-            <summary>
-            重置状态机,请谨慎使用
-            </summary>
-        </member>
         <member name="M:ZeroTeam.MessageMVC.Services.ZeroService.ResetStateMachine">
             <summary>
             重置状态机,请谨慎使用
@@ -818,11 +809,6 @@
         <member name="F:ZeroTeam.MessageMVC.Services.ZeroService.eventSlim">
             <summary>
             Run与Start互斥执行的事件对象
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Services.ZeroService.Initialize">
-            <summary>
-            初始化
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Services.ZeroService.DoStart">
@@ -858,11 +844,6 @@
         <member name="M:ZeroTeam.MessageMVC.Services.ZeroService.DoEnd">
             <summary>
             析构
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Services.ZeroService.ZeroTeam#MessageMVC#ILifeFlow#Open">
-            <summary>
-            启动
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Services.ZeroService.ZeroTeam#MessageMVC#ILifeFlow#Destory">
@@ -916,6 +897,11 @@
         <member name="M:ZeroTeam.MessageMVC.IStateMachineControl.DoStart">
             <summary>
             系统启动时调用
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.IStateMachineControl.DoClosing">
+            <summary>
+            系统关闭时调用
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.IStateMachineControl.DoClose">
