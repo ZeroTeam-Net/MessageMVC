@@ -16,7 +16,7 @@ namespace Rabbit
                 .UseMessageMVC(true, services =>
                 {
                     services.AddMessageMvcKafka();
-                    services.AddMessageMvcHttp();
+                    services.AddMessageMvcHttpClient();
                     services.AddMessageMvcRedis();
                     services.AddMessageMvcRabbitMQ();
                 });

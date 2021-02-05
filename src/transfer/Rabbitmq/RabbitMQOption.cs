@@ -7,7 +7,7 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
     /// <summary>
     /// RabbitMQ配置
     /// </summary>
-    public class RabbitMQOption
+    public class RabbitMQOption : IZeroOption
     {
         /// <summary>
         ///  唯一实例 
@@ -167,16 +167,40 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
 
         const string sectionName = "MessageMVC:RabbitMQ";
 
-        static RabbitMQOption()
-        {
-            ConfigurationHelper.RegistOnChange(sectionName, Instance.Load, true);
-        }
 
-        void Load()
+        const string optionName = "RabbitMQ发布订阅配置";
+
+        const string supperUrl = "https://";
+
+        /// <summary>
+        /// 支持地址
+        /// </summary>
+        string IZeroOption.SupperUrl => supperUrl;
+
+        /// <summary>
+        /// 配置名称
+        /// </summary>
+        string IZeroOption.OptionName => optionName;
+
+
+        /// <summary>
+        /// 节点名称
+        /// </summary>
+        string IZeroOption.SectionName => sectionName;
+
+        /// <summary>
+        /// 是否动态配置
+        /// </summary>
+        bool IZeroOption.IsDynamic => false;
+
+        void IZeroOption.Load(bool first)
         {
             var option = ConfigurationHelper.Get<RabbitMQOption>(sectionName);
             if (option == null)
-                return;
+                throw new ZeroOptionException(optionName, sectionName);
+            if (option.HostName.IsBlank() || option.Port < 0 || option.Port > 65536)
+                throw new ZeroOptionException(optionName, sectionName, "HostName或Port不正确");
+
             HostName = option.HostName;
             Port = option.Port;
             UserName = option.UserName;

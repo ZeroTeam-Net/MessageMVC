@@ -15,9 +15,34 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <param name="services"></param>
         public static void AddMessageMvcKafka(this IServiceCollection services)
         {
-            services.AddSingleton<IHealthCheck>(KafkaFlow.Instance);
-            services.AddSingleton<IFlowMiddleware>(KafkaFlow.Instance);//Kafka环境
-            services.AddSingleton<IMessagePoster, KafkaPoster>();//采用Kafka生产端
+            KafkaOption.haseProducer = true;
+            KafkaOption.haseConsumer = true;
+            services.AddSingleton<IZeroOption>(pri => KafkaOption.Instance);
+            services.AddSingleton<IHealthCheck>(KafkaPoster.Instance);
+            services.AddSingleton<IMessagePoster>(KafkaPoster.Instance);//采用Kafka生产端
+            services.AddNameTransient<IMessageConsumer, KafkaConsumer>();//采用Kafka消费客户端
+        }
+
+        /// <summary>
+        /// 使用Kafka发送器
+        /// </summary>
+        /// <param name="services"></param>
+        public static void AddMessageMvcKafkaPoster(this IServiceCollection services)
+        {
+            KafkaOption.haseProducer = true;
+            services.AddSingleton<IZeroOption>(pri => KafkaOption.Instance);
+            services.AddSingleton<IHealthCheck>(KafkaPoster.Instance);
+            services.AddSingleton<IMessagePoster>(KafkaPoster.Instance);//采用Kafka生产端
+        }
+
+        /// <summary>
+        /// 使用Kafka订阅器
+        /// </summary>
+        /// <param name="services"></param>
+        public static void AddMessageMvcKafkaConsumer(this IServiceCollection services)
+        {
+            KafkaOption.haseConsumer = true;
+            services.AddSingleton<IZeroOption>(pri => KafkaOption.Instance);
             services.AddNameTransient<IMessageConsumer, KafkaConsumer>();//采用Kafka消费客户端
         }
     }

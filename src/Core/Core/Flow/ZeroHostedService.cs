@@ -33,12 +33,14 @@ namespace ZeroTeam.MessageMVC
             _tokenSource = new CancellationTokenSource();
             _appLifetime.ApplicationStarted.Register(() => ZeroFlowControl.OnStarted(_tokenSource));
             _appLifetime.ApplicationStopping.Register(() => ZeroFlowControl.OnStopping(_tokenSource));
-            ZeroFlowControl._logger = _logger;
 
-            await ZeroFlowControl.Check();
+            ZeroFlowControl.Logger = _logger;
+            await ZeroFlowControl.CheckConfig();
             if (ZeroAppOption.Instance.AutoDiscover)
                 ZeroFlowControl.Discove();
+            ZeroAppOption.Instance.Discovery?.Invoke();
 
+            ZeroFlowControl.Discove();
             await ZeroFlowControl.Initialize();
             await ZeroFlowControl.RunAsync();
         }

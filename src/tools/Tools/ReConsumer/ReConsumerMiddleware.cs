@@ -24,10 +24,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         int IZeroMiddleware.Level => MiddlewareLevel.Framework;
 
-        /// <summary>
-        ///     配置校验,作为第一步
-        /// </summary>
-        Task ILifeFlow.Check(ZeroAppOption config)
+        Task IZeroDiscover.Discovery()
         {
             path = IOHelper.CheckPath(ZeroAppOption.Instance.DataFolder, "message");
             return Task.CompletedTask;

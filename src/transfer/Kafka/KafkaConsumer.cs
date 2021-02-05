@@ -128,9 +128,10 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <returns></returns>
         Task<bool> IMessageReceiver.LoopBegin()
         {
-            KafkaOption.Instance.Consumer.Set(ConfigPropertyNames.Consumer.ConsumeResultFields, "all");
+            //KafkaOption.Instance.Consumer.Set(ConfigPropertyNames.Consumer.ConsumeResultFields, "all");
             builder = new ConsumerBuilder<byte[], string>(KafkaOption.Instance.Consumer);
-            var value = KafkaOption.Instance.Consumer.Get(ConfigPropertyNames.Consumer.ConsumeResultFields);
+
+            //var value = KafkaOption.Instance.Consumer.Get(ConfigPropertyNames.Consumer.ConsumeResultFields);
 
             builder.SetErrorHandler(OnError);
             builder.SetLogHandler(OnLog);

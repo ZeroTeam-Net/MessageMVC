@@ -23,7 +23,7 @@ namespace ZeroTeam.MessageMVC.Messages
     /// <summary>
     /// 表示一个消息接收对象
     /// </summary>
-    public interface IMessageReceiver : IMessagePoster, IMessageWriter
+    public interface IMessageReceiver : IMessagePoster, IMessageWriter, ILifeFlow
     {
         /// <summary>
         /// 对应发送器名称

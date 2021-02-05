@@ -1,4 +1,3 @@
-using Agebull.EntityModel.Common;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -9,7 +8,7 @@ namespace ZeroTeam.MessageMVC.Context
     /// <summary>
     /// 跟踪信息
     /// </summary>
-    [Category("跟踪信息"), JsonObject(MemberSerialization.OptIn,ItemNullValueHandling = NullValueHandling.Ignore)]
+    [Category("跟踪信息"), JsonObject(MemberSerialization.OptIn, ItemNullValueHandling = NullValueHandling.Ignore)]
     public class TraceInfo
     {
         /// <summary>

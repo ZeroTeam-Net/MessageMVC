@@ -97,7 +97,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Rabbitmq", "Rabbitmq", "{30
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.RabbitMQ", "src\transfer\Rabbitmq\ZeroTeam.MessageMVC.RabbitMQ.csproj", "{54DD9D96-2B9B-42C2-A3F0-F67FB704EB65}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.Rabbit.Sample", "src\sample\Rabbit\ZeroTeam.MessageMVC.Rabbit.Sample.csproj", "{05B0E307-BEE8-477C-A1E6-D75D3EE6AEF9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.RabbitMQ.Sample", "src\sample\Rabbit\ZeroTeam.MessageMVC.RabbitMQ.Sample.csproj", "{05B0E307-BEE8-477C-A1E6-D75D3EE6AEF9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Agebull.Common.Extend.Core", "src\Core\Extend\Agebull.Common.Extend.Core.csproj", "{550D3963-C1FD-4493-A66F-76DDCF0D07D6}"
 EndProject
@@ -109,7 +109,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.Tcp", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.Tcp.Sample", "src\sample\Tcp\ZeroTeam.MessageMVC.Tcp.Sample.csproj", "{D8C8CA86-5020-4A6D-8585-DD3F47E583A4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZeroTeam.MessageMVC.Logging", "src\tools\Logging\ZeroTeam.MessageMVC.Logging.csproj", "{66B97F20-C5B5-4035-9EBA-2B1286FF4876}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.Logging", "src\tools\Logging\ZeroTeam.MessageMVC.Logging.csproj", "{66B97F20-C5B5-4035-9EBA-2B1286FF4876}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

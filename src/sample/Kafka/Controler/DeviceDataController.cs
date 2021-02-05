@@ -9,13 +9,13 @@ namespace MicroZero.Kafka.QueueStation
     /// <summary>
     ///  监控记录
     /// </summary>
-    [Consumer("DeviceReport")]
+    [Consumer("Test2")]
     public class DeviceDataController : IApiController
     {
         /// <summary>
         /// 设备消息
         /// </summary>
-        [Route("Report")]
+        [Route("Test")]
         public Task DeviceData()
         {
             return Task.CompletedTask;

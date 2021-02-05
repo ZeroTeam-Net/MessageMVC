@@ -3,9 +3,9 @@
 namespace ZeroTeam.MessageMVC
 {
     /// <summary>
-    /// 表示一个生命周期流程
+    /// 表示应用检查器
     /// </summary>
-    public interface ILifeFlow
+    public interface IAppChecker
     {
         /// <summary>
         ///     预检
@@ -14,15 +14,26 @@ namespace ZeroTeam.MessageMVC
         {
             return Task.CompletedTask;
         }
+    }
 
+    /// <summary>
+    /// 表示一个起始流程
+    /// </summary>
+    public interface IZeroDiscover
+    {
         /// <summary>
         ///  发现
         /// </summary>
-        Task Discover()
+        Task Discovery()
         {
             return Task.CompletedTask;
         }
-
+    }
+    /// <summary>
+    /// 表示一个生命周期流程
+    /// </summary>
+    public interface ILifeFlow
+    {
         /// <summary>
         ///     初始化
         /// </summary>
@@ -55,11 +66,10 @@ namespace ZeroTeam.MessageMVC
             return Task.CompletedTask;
         }
 
-
         /// <summary>
         /// 注销
         /// </summary>
-        Task Destory()
+        Task Destroy()
         {
             return Task.CompletedTask;
         }

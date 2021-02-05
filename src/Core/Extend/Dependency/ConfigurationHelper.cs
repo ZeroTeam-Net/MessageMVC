@@ -4,6 +4,7 @@ using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Agebull.Common.Configuration
 {
@@ -24,6 +25,8 @@ namespace Agebull.Common.Configuration
         /// </summary>
         public static IConfiguration Root { get; private set; }
 
+        internal static Action<IConfiguration> OnConfigurationUpdate { get; set; }
+
         /// <summary>
         /// 绑定
         /// </summary>
@@ -33,6 +36,7 @@ namespace Agebull.Common.Configuration
             Builder = builder;
             SyncBuilder();
         }
+
         /// <summary>
         /// 建造生成器，使用前请调用
         /// </summary>
@@ -41,29 +45,26 @@ namespace Agebull.Common.Configuration
             if (Builder != null)
                 return;
             Builder = DependencyHelper.GetService<IConfigurationBuilder>() ?? new ConfigurationBuilder();
+            Builder.SetBasePath(Environment.CurrentDirectory);
             SyncBuilder();
         }
+
+        /// <summary>
+        /// 当前运行环境
+        /// </summary>
+        public static string RunEnvironment { get; set; }
 
         /// <summary>
         /// 建造生成器，使用前请调用
         /// </summary>
         static void SyncBuilder()
         {
-            Builder.SetBasePath(Environment.CurrentDirectory);
-
-            var files = new string[] { "appsettings.json", "appSettings.json", "AppSettings.json", "Appsettings.json" };
-            foreach (var fileName in files)
-            {
-                var file = Path.Combine(Environment.CurrentDirectory, fileName);
-                if (File.Exists(file))
-                {
-                    Builder.AddJsonFile(file, false, true);
-                    break;
-                }
-            }
+            Builder.AddJsonFile(Path.Combine(Environment.CurrentDirectory, "appsettings.json"), false, true);
+            Root = Builder.Build();
+            RunEnvironment = Root.GetValue<string>("ASPNETCORE_ENVIRONMENT_") ?? "Production";
+            Builder.AddJsonFile(Path.Combine(Environment.CurrentDirectory, $"appsettings.{RunEnvironment}.json"), true, true);
             Root = Builder.Build();
         }
-
 
         #endregion
 
@@ -97,11 +98,17 @@ namespace Agebull.Common.Configuration
             return changed;
         }*/
 
+        internal static bool IsLocked;
+
         /// <summary>
         /// 刷新
         /// </summary>
-        public static void Flush()
+        static void Flush()
         {
+            if (IsLocked)
+                throw new Exception("配置工具已锁定，请在初始化时调用");
+            Root = Builder.Build();
+            OnConfigurationUpdate?.Invoke(Root);
             foreach (var cfg in actions)
             {
                 cfg.Disposable?.Dispose();

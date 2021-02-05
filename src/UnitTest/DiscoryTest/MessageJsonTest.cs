@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
 using System;
 using ZeroTeam.MessageMVC.ApiContract;
-using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
 
@@ -39,7 +38,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
                     Argument = @"{""Value"": ""Content""}",
                     Result = @"{""Value"": ""Result""}"
                 };
-                
+
                 var json = SmartSerializer.SerializeMessage(message);
                 Console.WriteLine(json);
                 var message2 = SmartSerializer.ToMessage(json);
@@ -76,7 +75,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
                     Argument = @"{""Value"": ""Content""}",
                     Result = @"{""Value"": ""Result""}"
                 };
-                
+
                 SmartSerializer.SerializeMessage(message);
 
                 DateTime start = DateTime.Now;
@@ -108,7 +107,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
                 Argument = @"{""Value"": ""Content""}",
                 Result = @"{""Value"": ""Result""}"
             };
-            
+
             message.CheckState();
             Assert.IsTrue(message.DataState == (MessageDataState.ArgumentOffline | MessageDataState.ResultOffline), message.DataState.ToString());
 
@@ -137,7 +136,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
                 Argument = @"{""Value"": ""Content""}",
                 Result = @"{""Value"": ""Result""}"
             };
-            
+
             message.ResetToRequest();
             //message.PrepareResult(null, ApiResultHelper.State);
             message.RestoryContent(DependencyHelper.GetService<IJsonSerializeProxy>(), typeof(Argument)); ;
@@ -192,7 +191,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
                 Service = "Topic",
                 Method = "Title",
                 Argument = @"{""Value"": ""Content""}",
-                
+
                 ResultData = new Argument<int>
                 {
                     Value = 1
@@ -234,7 +233,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
                 Service = "Topic",
                 Method = "Title",
                 Argument = @"{""Value"": ""Content""}",
-                
+
                 Result = @"{""Value"": ""Result""}"
             };
             message.CheckState();
@@ -253,7 +252,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
                 Service = "Topic",
                 Method = "Title",
                 Argument = @"{""Value"": ""Content""}",
-                
+
                 Result = @"{""Value"": ""Result""}"
             };
             message.ResetToRequest();

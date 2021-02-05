@@ -13,25 +13,31 @@ namespace ZeroTeam.MessageMVC
     /// <summary>
     ///     并行生产者
     /// </summary>
-    public class ParallelPoster : MessagePostBase, IMessagePoster, IFlowMiddleware
+    public class ParallelPoster : MessagePostBase, IMessagePoster
     {
 
-        int IZeroMiddleware.Level => MiddlewareLevel.General;
+
+        ILifeFlow IMessagePoster.GetLife() => null;
 
         /// <summary>
         /// 调用的内容
         /// </summary>
         internal ILogger logger;
 
+        /// <summary>
+        /// 名称
+        /// </summary>
+        string IZeroDependency.Name => nameof(ParallelPoster);
+
+
 
         /// <summary>
         ///     初始化
         /// </summary>
-        Task ILifeFlow.Initialize()
+        public ParallelPoster()
         {
             logger = DependencyHelper.LoggerFactory.CreateLogger<ParallelPoster>();
             ConfigurationHelper.RegistOnChange("MessageMVC:ParallelService", ReloadOption, true);
-            return Task.CompletedTask;
         }
 
         readonly Dictionary<string, string[]> ServiceMap = new Dictionary<string, string[]>();
@@ -63,12 +69,6 @@ namespace ZeroTeam.MessageMVC
                 }
             }
         }
-
-        /// <summary>
-        /// 名称
-        /// </summary>
-        string IZeroDependency.Name => nameof(ParallelPoster);
-
 
         /// <summary>
         /// 生产消息

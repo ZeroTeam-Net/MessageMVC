@@ -70,7 +70,7 @@ namespace ZeroTeam.MessageMVC.Context
             }
             ScopeRuner.ScopeContext = ctx;
             ScopeRuner.ScopeUser = DependencyHelper.GetService<IUser>();
-            ScopeRuner.ScopeUser.Reset(message.User);
+            ScopeRuner.ScopeUser?.Reset(message.User);
             return ctx;
         }
 

@@ -53,6 +53,9 @@ namespace ZeroTeam.MessageMVC.Messages
         public Dictionary<string, byte[]> Binary { get; set; }*/
 
 
+        [JsonIgnore]
+        private string result;
+
         /// <summary>
         /// 处理结果,对应状态的解释信息
         /// </summary>
@@ -66,7 +69,21 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 处理成功 : 结果信息或无
         /// </remarks>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public string Result { get; set; }
+        public string Result
+        {
+            get => result;
+            set
+            {
+                result = value;
+                DataState |= MessageDataState.ResultOffline;
+            }
+        }
+
+        /// <summary>
+        /// 数据状态
+        /// </summary>
+        [JsonIgnore]
+        public MessageDataState DataState { get; set; }
 
 
         /// <summary>

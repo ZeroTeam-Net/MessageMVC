@@ -1,5 +1,6 @@
 ﻿using Agebull.Common.Configuration;
 using Agebull.Common.Ioc;
+using Agebull.Common.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace ZeroTeam.MessageMVC.Http
     /// <summary>
     /// HttpClient预定义服务映射配置
     /// </summary>
-    internal class HttpClientOption
+    internal class HttpClientOption : IZeroOption
     {
         /// <summary>
         /// 默认地址
@@ -35,15 +36,6 @@ namespace ZeroTeam.MessageMVC.Http
         public List<HttpClientItem> Services { get; set; }
 
 
-        /// <summary>
-        /// 所有节点
-        /// </summary>
-        public static HttpClientOption Instance = new HttpClientOption
-        {
-            DefaultTimeOut = 30
-        };
-
-
         internal static Dictionary<string, HttpClientItem> Options = new Dictionary<string, HttpClientItem>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
@@ -51,82 +43,121 @@ namespace ZeroTeam.MessageMVC.Http
         /// </summary>
         internal static readonly Dictionary<string, string> ServiceMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        internal static IHttpClientFactory HttpClientFactory;
+        static IHttpClientFactory httpClientFactory;
+
+        internal static IHttpClientFactory HttpClientFactory => httpClientFactory ??= DependencyHelper.GetService<IHttpClientFactory>();
 
         public const string DefaultName = "_default_";
 
-        static HttpClientOption()
+        #region IZeroOption
+
+        /// <summary>
+        /// 实例
+        /// </summary>
+        public static HttpClientOption Instance = new HttpClientOption();
+
+
+        const string sectionName = "HttpClient";
+
+        const string optionName = "HttpClient配置";
+
+        const string supperUrl = "https://";
+
+        /// <summary>
+        /// 支持地址
+        /// </summary>
+        string IZeroOption.SupperUrl => supperUrl;
+
+        /// <summary>
+        /// 配置名称
+        /// </summary>
+        string IZeroOption.OptionName => optionName;
+
+
+        /// <summary>
+        /// 节点名称
+        /// </summary>
+        string IZeroOption.SectionName => sectionName;
+
+        /// <summary>
+        /// 是否动态配置
+        /// </summary>
+        bool IZeroOption.IsDynamic => false;
+
+        void IZeroOption.Load(bool first)
         {
+            var option = ConfigurationHelper.Get<HttpClientOption>(sectionName);
+            if (option == null)
+                option = ConfigurationHelper.Get<HttpClientOption>("Http:Client");
+            if (option == null)
+                return;
+
+            if (option.DefaultUrl.IsBlank())
+                throw new ZeroOptionException(optionName, sectionName, "DefaultUrl不能为空");
+
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls;
-            ConfigurationHelper.RegistOnChange<HttpClientOption>("Http:Client", Instance.LoadOption, true);
-        }
-        bool isLoaded;
-        void LoadOption(HttpClientOption option)
-        {
+
             DefaultUrl = option.DefaultUrl;
             if (option.DefaultTimeOut >= 1)
                 DefaultTimeOut = option.DefaultTimeOut;
-
-            if (!isLoaded && !Options.ContainsKey(DefaultName))
+            else
+                DefaultTimeOut = 30;
+            Options.TryAdd(DefaultName, new HttpClientItem
             {
-                Options.TryAdd(DefaultName, new HttpClientItem
-                {
-                    Name = DefaultName,
-                    Url = DefaultUrl,
-                    TimeOut = DefaultTimeOut
-                });
-                DependencyHelper.ServiceCollection.AddHttpClient(DefaultName, client =>
-                {
-                    client.BaseAddress = new Uri(DefaultUrl);
-                    client.Timeout = TimeSpan.FromSeconds(DefaultTimeOut);
-                    client.DefaultRequestHeaders.Add("User-Agent", MessageRouteOption.AgentName);
-                });
+                Name = DefaultName,
+                Url = DefaultUrl,
+                TimeOut = DefaultTimeOut
+            });
+            DependencyHelper.ServiceCollection.AddHttpClient(DefaultName, client =>
+            {
+                client.BaseAddress = new Uri(DefaultUrl);
+                client.Timeout = TimeSpan.FromSeconds(DefaultTimeOut);
+                client.DefaultRequestHeaders.Add("User-Agent", MessageRouteOption.AgentName);
+            });
+            if (option.Services == null)
+            {
+                return;
             }
-            if (option.Services != null)
+            foreach (var item in option.Services)
             {
-                foreach (var item in option.Services)
+                foreach (var service in ServiceMap.Where(p => p.Value == item.Name).Select(p => p.Key).ToArray())
+                    ServiceMap.Remove(service);
+
+                if (item.TimeOut <= 0)
+                    item.TimeOut = DefaultTimeOut;
+
+                if (Options.ContainsKey(item.Name))
                 {
-                    foreach (var service in ServiceMap.Where(p => p.Value == item.Name).Select(p => p.Key).ToArray())
-                        ServiceMap.Remove(service);
+                    Options[item.Name] = item;
+                }
+                else
+                {
+                    Options.TryAdd(item.Name, item);
 
-                    if (item.TimeOut <= 0)
-                        item.TimeOut = DefaultTimeOut;
-
-                    if (Options.ContainsKey(item.Name))
+                    DependencyHelper.ServiceCollection.AddHttpClient(item.Name, client =>
                     {
-                        Options[item.Name] = item;
-                    }
-                    else
-                    {
-                        Options.TryAdd(item.Name, item);
-
-                        DependencyHelper.ServiceCollection.AddHttpClient(item.Name, client =>
-                        {
-                            client.BaseAddress = new Uri(item.Url);
-                            client.Timeout = TimeSpan.FromSeconds(item.TimeOut);
+                        client.BaseAddress = new Uri(item.Url);
+                        client.Timeout = TimeSpan.FromSeconds(item.TimeOut);
                             //client.DefaultRequestHeaders.Add("Content-Type", item.ContentType ?? "application/json;charset=utf-8");
                             client.DefaultRequestHeaders.Add("User-Agent", item.UserAgent ?? MessageRouteOption.AgentName);
-                        });
-                    }
+                    });
+                }
 
-                    ServiceMap.Add(item.Name, item.Name);
-                    if (string.IsNullOrEmpty(item.Alias))
-                    {
-                        continue;
-                    }
-                    foreach (var service in item.Alias.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-                    {
-                        if (ServiceMap.ContainsKey(service))
-                            ServiceMap[service] = item.Name;
-                        else
-                            ServiceMap.Add(service, item.Name);
-                    }
+                ServiceMap.Add(item.Name, item.Name);
+                if (string.IsNullOrEmpty(item.Alias))
+                {
+                    continue;
+                }
+                foreach (var service in item.Alias.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    if (ServiceMap.ContainsKey(service))
+                        ServiceMap[service] = item.Name;
+                    else
+                        ServiceMap.Add(service, item.Name);
                 }
             }
-            if (!isLoaded)
-                DependencyHelper.Flush();
-            isLoaded = true;
-            HttpClientFactory = DependencyHelper.GetService<IHttpClientFactory>();
+            DependencyHelper.Logger.Information("HttpPost已开启");
         }
+        #endregion
     }
 }

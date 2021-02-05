@@ -6,7 +6,7 @@ namespace ZeroTeam.MessageMVC.Messages
     /// <summary>
     ///   空的数据接收类
     /// </summary>
-    public sealed class EmptyReceiver : MessageReceiverBase, IServiceReceiver
+    public sealed class EmptyReceiver : MessageReceiverBase, IMessageReceiver
     {
         /// <summary>
         /// 构造

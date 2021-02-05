@@ -7,7 +7,7 @@ namespace ZeroTeam.MessageMVC.Tools
     /// <summary>
     /// 扩展工具配置
     /// </summary>
-    public class ToolsOption
+    public class ToolsOption : IZeroOption
     {
         /// <summary>
         ///     启用反向代理
@@ -23,7 +23,7 @@ namespace ZeroTeam.MessageMVC.Tools
         ///     启用健康检查
         /// </summary>
         public bool EnableHealthCheck { get; set; }
-        
+
         /// <summary>
         ///     启用第三方回执
         /// </summary>
@@ -70,34 +70,60 @@ namespace ZeroTeam.MessageMVC.Tools
 
         #endregion
 
+        #region IZeroOption
+
         /// <summary>
         /// 实例
         /// </summary>
         public static readonly ToolsOption Instance = new ToolsOption();
 
-        static ToolsOption()
-        {
-            ConfigurationHelper.RegistOnChange<ToolsOption>("MessageMVC:Tools", Instance.Update, true);
-        }
+        const string sectionName = "MessageMVC:Tools";
+
+        const string optionName = "扩展工具配置";
+
+        const string supperUrl = "https://";
 
         /// <summary>
-        /// 重新载入并更新
+        /// 支持地址
         /// </summary>
-        private void Update(ToolsOption option)
+        string IZeroOption.SupperUrl => supperUrl;
+
+        /// <summary>
+        /// 配置名称
+        /// </summary>
+        string IZeroOption.OptionName => optionName;
+
+
+        /// <summary>
+        /// 节点名称
+        /// </summary>
+        string IZeroOption.SectionName => sectionName;
+
+        /// <summary>
+        /// 是否动态配置
+        /// </summary>
+        bool IZeroOption.IsDynamic => false;
+
+        void IZeroOption.Load(bool first)
         {
+            ToolsOption option = ConfigurationHelper.Get<ToolsOption>(sectionName);
+            if (option == null)
+                return;
+
             EnableMessageReConsumer = option.EnableMessageReConsumer;
             EnableHealthCheck = option.EnableHealthCheck;
-            
+
             EnableReverseProxy = option.EnableReverseProxy;
             ReverseProxyMap = option.ReverseProxyMap;
 
             ReceiptService = option.ReceiptService;
             ReceiptApi = option.ReceiptApi;
-            EnableReceipt = option.EnableReceipt && !string.IsNullOrWhiteSpace(ReceiptService) && !string.IsNullOrWhiteSpace(ReceiptApi);
+            EnableReceipt = option.EnableReceipt && ReceiptService.IsNotBlank() && ReceiptApi.IsNotBlank();
 
             JwtIssue = option.JwtIssue;
             JwtAppSecretByte = option.JwtAppSecret?.ToUtf8Bytes();
-            EnableJwtToken = option.EnableJwtToken && !string.IsNullOrWhiteSpace(JwtIssue) && JwtAppSecretByte != null;
+            EnableJwtToken = option.EnableJwtToken && JwtIssue.IsNotBlank() && JwtAppSecretByte != null;
         }
+        #endregion
     }
 }

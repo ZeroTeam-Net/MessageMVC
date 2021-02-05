@@ -1,12 +1,8 @@
-﻿using Agebull.Common.Configuration;
-using Agebull.Common.Ioc;
+﻿using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
@@ -21,94 +17,67 @@ namespace ZeroTeam.MessageMVC
     {
         #region IFlowMiddleware
 
+        /// <summary>
+        /// 日志对象
+        /// </summary>
+        private static ILogger logger;
+
         string IZeroDependency.Name => nameof(MessagePoster);
 
         int IZeroMiddleware.Level => MiddlewareLevel.Last;
 
-        /// <summary>
-        ///     初始化
-        /// </summary>
-        Task ILifeFlow.Check(ZeroAppOption config)
+        Task IZeroDiscover.Discovery()
         {
             logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(MessagePoster));
-
-            var option = ConfigurationHelper.Get<Dictionary<string, string>>("MessageMVC:MessagePoster");
-            if (option == null)
-            {
-                return Task.CompletedTask;
-            }
-            foreach (var kv in option)
-            {
-                if (kv.Value.IsNullOrEmpty())
-                    continue;
-
-                if ("localTunnel".IsMe(kv.Key))
-                    LocalTunnel = bool.TryParse(kv.Value, out var bl) && bl;
-                else if ("default".IsMe(kv.Key))
-                    DefaultPosterName = kv.Value;
-                else
-                    PosterServices.Add(kv.Key, kv.Value.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
-            }
-
-            return Task.CompletedTask;
+            return WaitAll<IZeroDiscover>(p => p.Discovery());
         }
-
         /// <summary>
         ///     初始化
         /// </summary>
-        async Task ILifeFlow.Initialize()
+        Task ILifeFlow.Initialize()
         {
-            posters = new Dictionary<string, IMessagePoster>();
-            foreach (var poster in DependencyHelper.RootProvider.GetServices<IMessagePoster>())
-            {
-                posters.TryAdd(poster.GetTypeName(), poster);
-            }
-
-            if (!DefaultPosterName.IsNullOrEmpty() && posters.TryGetValue(DefaultPosterName, out DefaultPoster))
-            {
-                logger.Information(() => $"缺省发布器为{DefaultPosterName}.");
-            }
-
-            foreach (var poster in posters)
-            {
-                await poster.Value.Initialize();
-                if (!PosterServices.TryGetValue(poster.Key, out var services) || services == null || services.Length == 0)
-                    continue;
-                BindingPoster(poster.Key, poster.Value, services);
-            }
+            return WaitAll(p => p.Initialize());
         }
 
         /// <summary>
         /// 开启
         /// </summary>
-        async Task ILifeFlow.Open()
+        Task ILifeFlow.Open()
         {
-            logger.Debug(() =>
-            {
-                var builder = new StringBuilder();
-                builder.AppendLine("Service & Poster");
-                foreach (var service in ServiceMap)
-                {
-                    builder.AppendLine($"{service.Key} <> {service.Value.Keys.LinkToString(',')}");
-                }
-                return builder.ToString();
-            });
-            foreach (var poster in posters.Values.Where(p => !p.IsLocalReceiver))
-            {
-                await poster.Open();
-            }
+            return WaitAll(p => p.Open());
         }
 
         /// <summary>
         /// 关闭
         /// </summary>
-        async Task ILifeFlow.Closing()
+        Task ILifeFlow.Closing()
+        {
+            return WaitAll(p => p.Closing());
+        }
+
+        /// <summary>
+        /// 关闭
+        /// </summary>
+        Task ILifeFlow.Close()
+        {
+            return WaitAll(p => p.Close());
+        }
+        /// <summary>
+        /// 关闭
+        /// </summary>
+        Task ILifeFlow.Destroy()
+        {
+            return WaitAll(p => p.Destroy());
+        }
+        async Task WaitAll<TFlow>(Func<TFlow, Task> func) where TFlow : class
         {
             var tasks = new List<Task>();
-            foreach (var poster in posters.Values.Where(p => !p.IsLocalReceiver))
+            foreach (var poster in MessagePostOption.Instance.posters.Values)
             {
-                tasks.Add(poster.Closing());
+                if (poster is TFlow flow)
+                    tasks.Add(func(flow));
             }
+
             foreach (var task in tasks)
             {
                 try
@@ -121,17 +90,16 @@ namespace ZeroTeam.MessageMVC
                 }
             }
         }
-
-        /// <summary>
-        /// 关闭
-        /// </summary>
-        async Task ILifeFlow.Close()
+        async Task WaitAll(Func<ILifeFlow, Task> func)
         {
             var tasks = new List<Task>();
-            foreach (var poster in posters.Values.Where(p => !p.IsLocalReceiver))
+            foreach (var poster in MessagePostOption.Instance.posters.Values)
             {
-                tasks.Add(poster.Close());
+                var life = poster.GetLife();
+                if (life != null)
+                    tasks.Add(func(life));
             }
+
             foreach (var task in tasks)
             {
                 try
@@ -144,29 +112,6 @@ namespace ZeroTeam.MessageMVC
                 }
             }
         }
-        /// <summary>
-        /// 关闭
-        /// </summary>
-        async Task ILifeFlow.Destory()
-        {
-            var tasks = new List<Task>();
-            foreach (var poster in posters.Values.Where(p => !p.IsLocalReceiver))
-            {
-                tasks.Add(poster.Destory());
-            }
-            foreach (var task in tasks)
-            {
-                try
-                {
-                    await task;
-                }
-                catch (Exception ex)
-                {
-                    logger.Exception(ex);
-                }
-            }
-        }
-
         #endregion
 
         #region 配置
@@ -174,66 +119,27 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 启用本地隧道（即本地接收器存在的话，本地处理）
         /// </summary>
-        public static bool LocalTunnel { get; private set; }
+        public static bool LocalTunnel => MessagePostOption.Instance.LocalTunnel;
 
         /// <summary>
         /// 默认的生产者
         /// </summary>
-        public static string DefaultPosterName { get; private set; }
+        public static string DefaultPosterName => MessagePostOption.Instance.DefaultPosterName;
+
 
         /// <summary>
-        /// 生产者与服务关联
+        ///     手动注册
         /// </summary>
-        public static Dictionary<string, string[]> PosterServices = new Dictionary<string, string[]>(StringComparer.CurrentCultureIgnoreCase);
-
-        /// <summary>
-        /// 默认的生产者
-        /// </summary>
-        private static IMessagePoster DefaultPoster;
-
-        /// <summary>
-        /// 服务查找表
-        /// </summary>
-        private static readonly Dictionary<string, Dictionary<string, IMessagePoster>> ServiceMap = new Dictionary<string, Dictionary<string, IMessagePoster>>(StringComparer.OrdinalIgnoreCase);
-
-        /// <summary>
-        /// 服务查找表
-        /// </summary>
-        private static Dictionary<string, IMessagePoster> posters = new Dictionary<string, IMessagePoster>();
-
-
-        #endregion
-
-        #region 消息生产者
-
-        /// <summary>
-        /// 日志对象
-        /// </summary>
-        private static ILogger logger;
-
-        /// <summary>
-        ///     手动注销
-        /// </summary>
-        static void BindingPoster(string posterName, IMessagePoster poster, params string[] services)
+        public static void RegistPoster(IMessagePoster poster, params string[] services)
         {
-            foreach (var service in services)
-            {
-                if (!ServiceMap.TryGetValue(service, out var items))
-                {
-                    ServiceMap.Add(service, items = new Dictionary<string, IMessagePoster>());
-                }
-                items[posterName] = poster;
-            }
+            MessagePostOption.Instance.RegistPoster(poster, services);
         }
-
         /// <summary>
         ///     手动注销
         /// </summary>
         public static void UnRegistPoster(string poster)
         {
-            posters.Remove(poster);
-            foreach (var items in ServiceMap.Values)
-                items.Remove(poster);
+            MessagePostOption.Instance.UnRegistPoster(poster);
         }
 
         /// <summary>
@@ -242,46 +148,13 @@ namespace ZeroTeam.MessageMVC
         public static void RegistPoster<TMessagePoster>(params string[] services)
             where TMessagePoster : IMessagePoster, new()
         {
-            var name = typeof(TMessagePoster).GetTypeName();
-            var poster = new TMessagePoster();
-            poster.Initialize();
-
-            posters[name] = poster;
-            BindingPoster(name, poster, services);
-            logger ??= DependencyHelper.LoggerFactory.CreateLogger(nameof(MessagePoster));
-            logger.Information(() => $"服务[{string.Join(',', services)}]注册为使用发布器{name}");
+            MessagePostOption.Instance.RegistPoster<TMessagePoster>(services);
         }
 
-        /// <summary>
-        ///     手动注册
-        /// </summary>
-        public static void RegistPoster(IMessagePoster poster, params string[] services)
-        {
-            var name = poster.GetTypeName();
-            posters[name] = poster;
-            BindingPoster(name, poster, services);
-            logger ??= DependencyHelper.LoggerFactory.CreateLogger(nameof(MessagePoster));
-            logger.Information(() => $"服务[{string.Join(',', services)}]注册为使用发布器{poster.GetTypeName()}");
-        }
+        #endregion
 
-        /// <summary>
-        /// 发现传输对象
-        /// </summary>
-        /// <param name="service">服务名称</param>
-        /// <param name="def">是否使用默认投递器</param>
-        /// <returns>传输对象构造器</returns>
-        static IMessagePoster GetService(string service, bool def)
-        {
-            if (!ServiceMap.TryGetValue(service, out var items))
-                return def ? DefaultPoster : null;
-            foreach (var item in items.Values)
-            {
-                if (item.IsLocalReceiver && !LocalTunnel)
-                    continue;
-                return item;
-            }
-            return def ? DefaultPoster : null;
-        }
+        #region 消息生产者
+
 
         /// <summary>
         /// 投递消息
@@ -324,7 +197,7 @@ namespace ZeroTeam.MessageMVC
                 }
             }
 
-            var producer = GetService(message.Service, defPoster);
+            var producer = MessagePostOption.Instance.GetService(message.Service, defPoster);
             if (producer == null)
             {
                 FlowTracer.MonitorError($"服务({message.Service})不存在");
@@ -348,9 +221,9 @@ namespace ZeroTeam.MessageMVC
                 }
             }
             FlowTracer.MonitorDetails(() => $"[Poster] {producer.GetTypeName()}");
-            
 
-            var inline = CheckMessage(producer,message);
+
+            var inline = CheckMessage(producer, message);
 
             try
             {

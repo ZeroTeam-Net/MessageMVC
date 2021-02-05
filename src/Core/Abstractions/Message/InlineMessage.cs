@@ -23,12 +23,6 @@ namespace ZeroTeam.MessageMVC.Messages
         public bool IsOutAccess => false;
 
         /// <summary>
-        /// 数据状态
-        /// </summary>
-        [JsonIgnore]
-        public MessageDataState DataState { get; set; }
-
-        /// <summary>
         /// 字典参数
         /// </summary>
         private Dictionary<string, string> dictionary;

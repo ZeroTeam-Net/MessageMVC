@@ -15,10 +15,20 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
         /// <param name="services"></param>
         public static void AddMessageMvcRabbitMQ(this IServiceCollection services)
         {
-            services.AddSingleton<IHealthCheck>(RabbitMQFlow.Instance);
-            services.AddSingleton<IFlowMiddleware>(RabbitMQFlow.Instance);//RabbitMQ环境
-            services.AddSingleton<IMessagePoster, RabbitMQPoster>();//采用RabbitMQ生产端
+            services.AddSingleton<IZeroOption>(pri => RabbitMQOption.Instance);
+            services.AddSingleton<IHealthCheck>(RabbitMQPoster.Instance);
+            services.AddSingleton<IMessagePoster>(RabbitMQPoster.Instance);//采用RabbitMQ生产端
             services.AddNameTransient<IMessageConsumer, RabbitMQConsumer>();//采用RabbitMQ消费客户端
+        }
+        /// <summary>
+        /// 使用RabbitMQ
+        /// </summary>
+        /// <param name="services"></param>
+        public static void AddMessageMvcRabbitMQClient(this IServiceCollection services)
+        {
+            services.AddSingleton<IZeroOption>(pri => RabbitMQOption.Instance);
+            services.AddSingleton<IHealthCheck>(RabbitMQPoster.Instance);
+            services.AddSingleton<IMessagePoster>(RabbitMQPoster.Instance);//采用RabbitMQ生产端
         }
     }
 }

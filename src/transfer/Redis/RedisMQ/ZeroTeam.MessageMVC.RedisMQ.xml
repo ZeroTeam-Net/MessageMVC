@@ -67,64 +67,24 @@
                 Redis生产者
             </summary>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.RedisMQ.RedisFlow">
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.LifeFlow">
             <summary>
-                Redis流程
+            征集周期管理器
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.RedisMQ.RedisFlow.Instance">
+        <member name="F:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.Instance">
             <summary>
             单例
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisFlow.ZeroTeam#MessageMVC#IZeroDependency#Name">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.ZeroTeam#MessageMVC#IZeroDiscover#Discovery">
             <summary>
-            实例名称
+            发现期间开启任务
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisFlow.ZeroTeam#MessageMVC#IZeroMiddleware#Level">
-            <summary>
-            等级
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisFlow.Logger">
-            <summary>
-            日志器
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisFlow.ZeroTeam#MessageMVC#ILifeFlow#Initialize">
-            <summary>
-                初始化
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisFlow.ZeroTeam#MessageMVC#ILifeFlow#Open">
+        <member name="M:ZeroTeam.MessageMVC.RedisMQ.CsRedisPoster.ZeroTeam#MessageMVC#ILifeFlow#Destroy">
             <summary>
             关闭
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisFlow.ZeroTeam#MessageMVC#ILifeFlow#Destory">
-            <summary>
-            关闭
-            </summary>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.RedisMQ.RedisQueueItem">
-            <summary>
-            Redis队列
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisQueueItem.IsEvent">
-            <summary>
-            是否事件
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisQueueItem.Channel">
-            <summary>
-            主题
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisQueueItem.Step">
-            <summary>
-            发送步骤
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.RedisMQ.RedisApp">
@@ -135,16 +95,6 @@
         <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisApp.AddMessageMvcRedis(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             使用RedisMQ
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisApp.AddMessageMvcRedisPoster(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
-            <summary>
-            使用RedisMQ
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisApp.AddMessageMvcRedisEvent(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
-            <summary>
-            使用Redis事件
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisApp.AddMessageMvcRedisEventClient(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
@@ -195,9 +145,24 @@
             实例
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RedisMQ.RedisOption.Update(ZeroTeam.MessageMVC.RedisMQ.RedisOption)">
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisOption.ZeroTeam#MessageMVC#IZeroOption#SupperUrl">
             <summary>
-            重新载入并更新
+            支持地址
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisOption.ZeroTeam#MessageMVC#IZeroOption#OptionName">
+            <summary>
+            配置名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisOption.ZeroTeam#MessageMVC#IZeroOption#SectionName">
+            <summary>
+            节点名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RedisMQ.RedisOption.ZeroTeam#MessageMVC#IZeroOption#IsDynamic">
+            <summary>
+            是否动态配置
             </summary>
         </member>
     </members>

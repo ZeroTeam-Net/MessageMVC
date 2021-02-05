@@ -98,7 +98,7 @@ namespace Agebull.Common.Ioc
             //    _rootProvider = ServiceCollection.BuildServiceProvider(true);
             //    _serviceScopeFactory = _rootProvider.GetService<IServiceScopeFactory>();
             //}
-            ConfigurationHelper.Flush();
+            //ConfigurationHelper.Flush();
         }
 
         private static IServiceProvider _rootProvider;
@@ -147,7 +147,7 @@ namespace Agebull.Common.Ioc
             builder.Services.AddTransient(provider => ConfigurationHelper.Root);
             var config = ConfigurationHelper.Root.GetSection("Logging");
             builder.AddConfiguration(config);
-            if (config.GetValue("console", true))
+            if (config.GetValue("Console", true))
                 builder.AddConsole();
             builder.AddConsole();
         }
@@ -168,14 +168,13 @@ namespace Agebull.Common.Ioc
 
         static void CheckLog()
         {
-            if (_loggerFactory == null)
+            if (_loggerFactory != null)
             {
-                _loggerFactory = Microsoft.Extensions.Logging.LoggerFactory.Create(LoggingConfig);
-                logger = _loggerFactory.CreateLogger("Agebull.Common.Ioc");
+                return;
             }
-            ServiceCollection.RemoveAll<ILoggerFactory>();
-            ServiceCollection.AddSingleton(pri => LoggerFactory);
+            ResetLoggerFactory(LoggingConfig);
         }
+
         /// <summary>
         /// ÖØÖÃ
         /// </summary>

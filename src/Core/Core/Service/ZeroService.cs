@@ -233,8 +233,20 @@ namespace ZeroTeam.MessageMVC.Services
                 ResetStateMachine();
                 return false;
             }
-            if (!await Receiver.LoopBegin())
+            try
             {
+                if (!await Receiver.LoopBegin())
+                {
+                    ZeroFlowControl.OnObjectFailed(this);
+                    RealState = StationState.Failed;
+                    ConfigState = StationStateType.Failed;
+                    ResetStateMachine();
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Exception(ex, "LoopBegin");
                 ZeroFlowControl.OnObjectFailed(this);
                 RealState = StationState.Failed;
                 ConfigState = StationStateType.Failed;
@@ -251,7 +263,14 @@ namespace ZeroTeam.MessageMVC.Services
         /// <returns></returns>
         private async Task LoopComplete()
         {
-            await Receiver.LoopComplete();
+            try
+            {
+                await Receiver.LoopComplete();
+            }
+            catch (Exception ex)
+            {
+                logger.Exception(ex, "LoopComplete");
+            }
             CancelToken.Dispose();
             CancelToken = null;
             if (ConfigState == StationStateType.Failed)
@@ -279,8 +298,15 @@ namespace ZeroTeam.MessageMVC.Services
         /// </summary>
         private void DoEnd()
         {
-            Receiver.Discover();
-            eventSlim.Dispose();
+            try
+            {
+                Receiver.Destroy();
+                eventSlim.Dispose();
+            }
+            catch (Exception ex)
+            {
+                logger.Exception(ex, "DoEnd");
+            }
         }
         #endregion
 
@@ -308,14 +334,14 @@ namespace ZeroTeam.MessageMVC.Services
 
         private bool _isDisposed;
         /// <inheritdoc/>
-        Task ILifeFlow.Destory()
+        Task ILifeFlow.Destroy()
         {
             if (!_isDisposed)
             {
                 _isDisposed = true;
             }
             logger.Information("Destory");
-            Receiver.Destory();
+            Receiver.Destroy();
             return Task.CompletedTask;
         }
 

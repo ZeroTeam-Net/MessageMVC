@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
@@ -17,6 +18,17 @@ namespace ZeroTeam.MessageMVC.MessageQueue
         where TQueueItem : QueueItem, new()
     {
         #region IMessagePoster 
+
+        /// <summary>
+        /// 取得生命周期对象
+        /// </summary>
+        /// <returns></returns>
+        ILifeFlow IMessagePoster.GetLife() => LifeFlow;
+
+        /// <summary>
+        /// 征集周期管理器
+        /// </summary>
+        protected abstract ILifeFlow LifeFlow { get; }//AsyncPost ? this as ILifeFlow : null;
 
         /// <summary>
         /// 实例名称
@@ -55,31 +67,31 @@ namespace ZeroTeam.MessageMVC.MessageQueue
                 Logger.Log(level, log());
         }
 
+        #endregion
+
+        #region 流程支持
+
+        TaskCompletionSource<bool> AsyncPostQueueTask;
+
         /// <summary>
         /// 开启
         /// </summary>
-        Task ILifeFlow.Open()
+        protected void DoStart()
         {
             if (AsyncPost)
                 AsyncPostQueue();
-            return Task.CompletedTask;
+            CheckTimeOut();
         }
 
         /// <summary>
         /// 关闭
         /// </summary>
-        Task ILifeFlow.Destory()
+        protected async Task Destroy()
         {
             cancellation?.Cancel();
-            return Task.CompletedTask;
+            if (AsyncPostQueueTask != null)
+                await AsyncPostQueueTask.Task;
         }
-
-        /// <summary>
-        /// 投递消息
-        /// </summary>
-        /// <param name="item"></param>
-        /// <returns></returns>
-        protected abstract Task<bool> DoPost(TQueueItem item);
 
         #endregion
 
@@ -120,19 +132,13 @@ namespace ZeroTeam.MessageMVC.MessageQueue
             }
             try
             {
-                ZeroAppOption.Instance.BeginRequest();
-                var success = await DoPost(new TQueueItem
+                return await PostMessage(new TQueueItem
                 {
                     ID = message.ID,
                     Topic = message.Service,
                     Time = DateTime.Now,
                     Message = message
                 });
-                return new MessageResult
-                {
-                    ID = message.ID,
-                    State = success ? MessageState.Accept : MessageState.NetworkError
-                };
             }
             finally
             {
@@ -148,9 +154,9 @@ namespace ZeroTeam.MessageMVC.MessageQueue
 
         private static readonly SemaphoreSlim semaphore = new SemaphoreSlim(0);
 
-
         private async void AsyncPostQueue()
         {
+            AsyncPostQueueTask = new TaskCompletionSource<bool>();
             try
             {
                 await Task.Yield();
@@ -195,8 +201,12 @@ namespace ZeroTeam.MessageMVC.MessageQueue
                         isFailed = ZeroAppOption.Instance.IsDestroy;
                         try
                         {
-                            if (!isFailed && !await DoPost(item))
-                                isFailed = true;
+                            if (!isFailed)
+                            {
+                                var result = await PostMessage(item);
+                                if (!result.State.IsSuccess())
+                                    isFailed = true;
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -210,6 +220,7 @@ namespace ZeroTeam.MessageMVC.MessageQueue
                         else
                         {
                             await Backup(item);
+                            break;
                         }
                     }
                 }
@@ -217,6 +228,7 @@ namespace ZeroTeam.MessageMVC.MessageQueue
                 State = StationStateType.Closed;
                 await Backup(queues.ToArray());
                 RecordLog(LogLevel.Information, "备份未发送内容完成");
+                AsyncPostQueueTask.SetResult(true);
             }
             catch (Exception ex)
             {
@@ -267,7 +279,7 @@ namespace ZeroTeam.MessageMVC.MessageQueue
             {
                 try
                 {
-                    Logger.Trace(() => $"[异步消息投递] {item.ID} 发送成功,删除备份文件,{item.FileName}");
+                    RecordLog(LogLevel.Trace, () => $"[异步消息投递] {item.ID} 发送成功,删除备份文件,{item.FileName}");
                     File.Delete(item.FileName);
                 }
                 catch
@@ -277,7 +289,7 @@ namespace ZeroTeam.MessageMVC.MessageQueue
             }
             else
             {
-                Logger.Trace(() => $"[异步消息投递] {item.ID} 发送成功");
+                RecordLog(LogLevel.Trace, () => $"[异步消息投递] {item.ID} 发送成功");
             }
         }
 
@@ -290,7 +302,7 @@ namespace ZeroTeam.MessageMVC.MessageQueue
         {
             try
             {
-                Directory.Delete(BackupFolder);
+                Directory.Delete(BackupFolder, true);
                 BackupFolder = IOHelper.CheckPath(ZeroAppOption.Instance.DataFolder, Name);
             }
             catch (Exception ex)
@@ -307,6 +319,7 @@ namespace ZeroTeam.MessageMVC.MessageQueue
                 RecordLog(LogLevel.Error, () => $"[异步消息投递] 记录异常备份文件失败.错误:{ex.Message}.文件名:{file}");
             }
         }
+
         /// <summary>
         /// 备份消息
         /// </summary>
@@ -332,6 +345,141 @@ namespace ZeroTeam.MessageMVC.MessageQueue
             }
             if (!ZeroAppOption.Instance.IsClosed)
                 queues.Enqueue(item);
+        }
+
+        #endregion
+
+        #region 发送可靠性
+
+        /// <summary>
+        /// 发送中的队列
+        /// </summary>
+        public class PostTask
+        {
+            /// <summary>
+            /// 开始时间
+            /// </summary>
+            internal int Start { get; set; }
+
+            /// <summary>
+            /// 原始内容
+            /// </summary>
+            public MessageResult Result { get; set; }
+
+            /// <summary>
+            /// 原始内容
+            /// </summary>
+            public IMessageItem Message { get; set; }
+
+            /// <summary>
+            /// 当前任务
+            /// </summary>
+            public TaskCompletionSource<IMessageResult> WaitingTask { get; set; }
+        }
+
+        /// <summary>
+        /// 投递消息
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        protected abstract TaskCompletionSource<IMessageResult> DoPost(TQueueItem item);
+
+        /// <summary>
+        /// 当前任务
+        /// </summary>
+        protected PostTask CurrentTask { get; set; }
+
+        /// <summary>
+        /// 投递消息
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        async Task<IMessageResult> PostMessage(TQueueItem item)
+        {
+            var task = new PostTask
+            {
+                Start = DateTime.Now.ToTimestamp(),
+                Message = item.Message,
+                Result = new MessageResult
+                {
+                    ID = item.ID,
+                    Trace = item.Message.TraceInfo,
+                    State = MessageState.None
+                }
+            };
+            PostTasks[item.Message.ID] = task;
+            task.WaitingTask = DoPost(item);
+            CurrentTask = task;
+            try
+            {
+                var resut = await task.WaitingTask.Task;
+                PostTasks.TryRemove(item.ID, out _);
+                return resut;
+            }
+            catch
+            {
+                task.Result.State = MessageState.NetworkError;
+                return task.Result;
+            }
+            finally
+            {
+                CurrentTask = null;
+            }
+        }
+
+        /// <summary>
+        /// 当前等待队列
+        /// </summary>
+        protected static readonly ConcurrentDictionary<string, PostTask> PostTasks = new ConcurrentDictionary<string, PostTask>();
+
+        static int CheckTimeOutRun;
+        /// <summary>
+        /// 检查超时
+        /// </summary>
+        async void CheckTimeOut()
+        {
+            if (Interlocked.Increment(ref CheckTimeOutRun) > 1)
+                return;
+            await Task.Yield();
+            while (!ZeroAppOption.Instance.IsDestroy)
+            {
+                if (PostTasks.Count == 0)
+                {
+                    await Task.Delay(1000);
+                    continue;
+                }
+                var items = PostTasks.Values.ToArray();
+                var now = DateTime.Now.ToTimestamp();
+                foreach (var item in items)
+                {
+                    if (now - item.Start > 3)
+                    {
+                        try
+                        {
+                            item.Result.State = MessageState.NetworkError;
+                            var task = item.WaitingTask;
+                            item.WaitingTask = null;
+                            task.TrySetResult(item.Result);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex);
+                        }
+                    }
+                    if (now - item.Start > 180)
+                    {
+                        try
+                        {
+                            PostTasks.TryRemove(item.Result.ID, out _);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex);
+                        }
+                    }
+                }
+                await Task.Delay(1000);
+            }
         }
 
         #endregion

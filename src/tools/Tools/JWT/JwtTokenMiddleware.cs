@@ -12,7 +12,7 @@ namespace ZeroTeam.MessageMVC.Context
     /// <summary>
     /// 上下文对象
     /// </summary>
-    public class GlobalContextMiddleware : IMessageMiddleware
+    public class JwtTokenMiddleware : IMessageMiddleware
     {
         /// <summary>
         /// 层级
@@ -25,6 +25,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// </summary>
         MessageHandleScope IMessageMiddleware.Scope => MessageHandleScope.Prepare;
 
+
         /// <summary>
         /// 准备
         /// </summary>
@@ -34,10 +35,9 @@ namespace ZeroTeam.MessageMVC.Context
         /// <returns></returns>
         Task<bool> IMessageMiddleware.Prepare(IService service, IInlineMessage message, object tag)
         {
-            var context = GlobalContext.Reset(message);
             try
             {
-                if (!CheckToken(message, context))
+                if (!CheckToken(message, GlobalContext.Current))
                     return Task.FromResult(false);
             }
             catch (Exception ex)
@@ -45,16 +45,17 @@ namespace ZeroTeam.MessageMVC.Context
                 FlowTracer.MonitorInfomation(() => $"令牌还原失败 => {message.TraceInfo.Token}\n{ex}");
                 return Task.FromResult(false);
             }
-            FlowTracer.MonitorDetails(() => $"User => {context.User?.ToJson()}");
+            FlowTracer.MonitorDetails(() => $"User => {GlobalContext.User?.ToJson()}");
             return Task.FromResult(true);
         }
 
         private static bool CheckToken(IInlineMessage message, IZeroContext context)
         {
-            if (message.TraceInfo.Token.IsNullOrEmpty() || !message.IsOutAccess)
+            if (message.TraceInfo.Token.IsBlank() || !message.IsOutAccess)
             {
                 return true;
             }
+
             var resolver = DependencyHelper.GetService<ITokenResolver>();
             if (resolver == null)
             {
@@ -66,13 +67,6 @@ namespace ZeroTeam.MessageMVC.Context
                 FlowTracer.MonitorInfomation(() => $"非法令牌颁发机构 => {context.User[ZeroTeamJwtClaim.Iss]}");
                 message.State = MessageState.Deny;
                 message.Result = ApiResultHelper.DenyAccessJson;
-                return false;
-            }
-            if (!int.TryParse(context.User[ZeroTeamJwtClaim.Exp], out int last) || DateTime.Now.ToTimestamp() > last)
-            {
-                FlowTracer.MonitorInfomation(() => $"令牌已过期 => {new DateTime(1970, 1, 1).AddSeconds(last)}");
-                message.State = MessageState.Deny;
-                message.Result = ApiResultHelper.TokenTimeOutJson;
                 return false;
             }
             return true;

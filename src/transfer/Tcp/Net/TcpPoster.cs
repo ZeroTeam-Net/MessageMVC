@@ -1,13 +1,12 @@
-using Agebull.Common.Logging;
+using Agebull.Common.Ioc;
 using BeetleX;
 using BeetleX.Clients;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Concurrent;
-using System.Linq;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.MessageQueue;
 using ZeroTeam.MessageMVC.Messages;
+using ZeroTeam.MessageMVC.Services;
 
 namespace ZeroTeam.MessageMVC.Tcp
 {
@@ -15,16 +14,21 @@ namespace ZeroTeam.MessageMVC.Tcp
     /// <summary>
     ///     Http进站出站的处理类
     /// </summary>
-    public sealed class TcpPoster : BackgroundPoster<QueueItem>, IMessagePoster, IFlowMiddleware
+    public sealed class TcpPoster : BackgroundPoster<QueueItem>, ILifeFlow, IZeroDiscover
     {
         #region 基本
+
+        /// <summary>
+        /// 征集周期管理器
+        /// </summary>
+        protected override ILifeFlow LifeFlow => this;
 
         /// <summary>
         /// 构造
         /// </summary>
         public TcpPoster()
         {
-            Name = nameof(Name);
+            Name = nameof(TcpPoster);
             AsyncPost = true;
         }
 
@@ -33,33 +37,36 @@ namespace ZeroTeam.MessageMVC.Tcp
         /// </summary>
         public static TcpPoster Instance = new TcpPoster();
 
-
-        int IZeroMiddleware.Level => MiddlewareLevel.General;
-
-        string IZeroDependency.Name => nameof(TcpPoster);
-
-        bool isConnect;
+        // bool isConnect;
 
         AsyncTcpClient client;
         /// <summary>
-        /// 初始化
+        /// 检查期间就开启服务
         /// </summary>
-        Task ILifeFlow.Initialize()
+        Task IZeroDiscover.Discovery()
         {
-            if (TcpOption.Instance.Client == null || TcpOption.Instance.Client.Address.IsNullOrEmpty() || TcpOption.Instance.Client.Port <= 1024 || TcpOption.Instance.Client.Port >= short.MaxValue)
+            if (TcpOption.Instance.Client == null || TcpOption.Instance.Client.Address.IsBlank() || 
+                TcpOption.Instance.Client.Port <= 1024 || TcpOption.Instance.Client.Port >= short.MaxValue)
                 return Task.CompletedTask;
             client = SocketFactory.CreateClient<AsyncTcpClient>(TcpOption.Instance.Client.Address, TcpOption.Instance.Client.Port);
             client.DataReceive = EventClientReceive;
-            isConnect = client.Connect(out _);
-            _ = CheckTimeOut();
+            client.ClientError = EventClientError;
+            client.Disconnected = Disconnected;
+            client.Connected = Connected;
+            client.Connect(out _);
+            DoStart();
+            RecordLog(LogLevel.Information, $"{Name}已开启");
             return Task.CompletedTask;
         }
 
-        Task ILifeFlow.Destory()
+        async Task ILifeFlow.Destroy()
         {
-            client?.DisConnect();
+            await Destroy();
+            //client?.DisConnect();
+            //client.Socket.Disconnect(false);
+            //client.Socket.Dispose();
             client?.Dispose();
-            return Task.CompletedTask;
+            RecordLog(LogLevel.Information, $"{Name}已关闭");
         }
         #endregion
 
@@ -72,7 +79,16 @@ namespace ZeroTeam.MessageMVC.Tcp
         /// <param name="log"></param>
         protected override void RecordLog(LogLevel level, string log)
         {
-            Console.WriteLine(log);
+            if (!TcpOption.Instance.Client.IsLog)
+            {
+                base.RecordLog(level, log);
+                return;
+            }
+            if (!Logger.IsEnabled(level))
+                return;
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine($"[{level}] {Name} {DateTime.Now} \n\t{log}");
+            Console.ResetColor();
         }
 
         /// <summary>
@@ -82,104 +98,153 @@ namespace ZeroTeam.MessageMVC.Tcp
         /// <param name="log"></param>
         protected override void RecordLog(LogLevel level, Func<string> log)
         {
-            Console.WriteLine(log());
-        }
-        #endregion
-
-        #region 等待队列
-
-        class PostTask
-        {
-            public DateTime Start { get; set; }
-            public TaskCompletionSource<IMessageResult> Task { get; set; }
-        }
-        readonly ConcurrentDictionary<string, PostTask> waiting = new ConcurrentDictionary<string, PostTask>();
-
-        /// <summary>
-        /// 初始化
-        /// </summary>
-        async Task CheckTimeOut()
-        {
-            while (State <= StationStateType.Stop)
+            if (!TcpOption.Instance.Client.IsLog)
             {
-                try
-                {
-                    if (waiting.Count == 0)
-                    {
-                        await Task.Delay(3000);
-                        continue;
-                    }
-                    else
-                        await Task.Delay(1000);
-                    var items = waiting.ToArray();
-                    foreach (var item in items)
-                    {
-                        var len = (DateTime.Now - item.Value.Start).TotalSeconds;
-                        if (len > 3)
-                            item.Value.Task.TrySetException(new TimeoutException());
-                        if (len > 10)
-                            waiting.TryRemove(item.Key, out _);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                }
+                base.RecordLog(level, log);
+                return;
             }
+            if (!Logger.IsEnabled(level))
+                return;
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine($"[{level}] {Name} {DateTime.Now} \n\t{log()}");
+            Console.ResetColor();
         }
-
         #endregion
 
         #region 接收与发送
-
+        void Connected(IClient c)
+        {
+            RecordLog(LogLevel.Information, "链接成功");
+        }
+        void Disconnected(IClient c)
+        {
+            RecordLog(LogLevel.Information, "链接关闭");
+        }
+        void EventClientError(IClient c, ClientErrorArgs e)
+        {
+            if (CurrentTask == null)
+            {
+                RecordLog(LogLevel.Error, $"[NoMessage]{e.Message}\n{e.Error}");
+                return;
+            }
+            var task = CurrentTask;
+            RecordLog(LogLevel.Error, $"[{task.Message.ID}]{e.Message}\n{e.Error}");
+            task.Message.State = MessageState.NetworkError;
+            task.Result.State = MessageState.NetworkError;
+            var wait = task.WaitingTask;
+            if (wait != null)
+                wait.TrySetResult(task.Result);
+        }
         void EventClientReceive(IClient client, ClientReceiveArgs reader)
         {
             try
             {
-                var pipestream = reader.Stream.ToPipeStream();
-                if (pipestream.TryReadLine(out string msg) && SmartSerializer.TryToResult(msg, out var message) && waiting.TryRemove(message.ID, out var item))
+                var pipeStream = reader.Stream.ToPipeStream();
+                if (!pipeStream.TryReadLine(out var msg) || msg == null)
                 {
-                    item.Task.TrySetResult(message);
+                    return;
+                }
+                msg = msg.Trim('\0').Trim();
+                if (msg.IsBlank())
+                {
+                    return;
+                }
+                IInlineMessage message;
+                if (msg[0] == '#')
+                {
+                    message = new InlineMessage
+                    {
+                        ID = msg[1..],
+                        State = MessageState.Success
+                    };
+                }
+                else if (msg[0] == '@')
+                {
+                    var words = msg[1..].Split(new char[] { '@', '#' }, 2, StringSplitOptions.RemoveEmptyEntries);
+                    message = new InlineMessage
+                    {
+                        ID = msg,
+                        Service = TcpApp.ClientOptionService,
+                        Method = words[0],
+                        Argument = words[1],
+                        State = MessageState.ServerMessage
+                    };
+                }
+                else if (!SmartSerializer.TryToMessage(msg, out message))
+                    return;
+                if (message.State == MessageState.ServerMessage)
+                {
+                    if (ZeroAppOption.Instance.IsRuning)
+                    {
+                        var service = ZeroFlowControl.GetService(message.Service) ?? new ZeroService
+                        {
+                            ServiceName = message.Service,
+                            Receiver = new EmptyReceiver(),
+                            Serialize = DependencyHelper.GetService<ISerializeProxy>()
+                        };
+
+                        MessageProcessor.RunOnMessagePush(service, message, false, new TcpWriter());
+                    }
+                    return;
+                }
+                else if (PostTasks.TryRemove(message.ID, out var item))
+                {
+                    item.Result.State = message.State;
+                    item.Result.Trace = message.TraceInfo;
+                    item.Result.Result = message.Result;
+                    item.Result.ResultData = message.ResultData;
+                    if (item.WaitingTask != null)
+                        item.WaitingTask.TrySetResult(item.Result);
+                    else
+                        item.Message.State = message.State;
                 }
             }
             catch (Exception ex)
             {
-                Logger.Exception(ex);
+                RecordLog(LogLevel.Error, ex.ToString());
             }
         }
-        /// <inheritdoc/>
-        protected override async Task<bool> DoPost(QueueItem item)
+
+        /// <summary>
+        /// 执行发送
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        protected override TaskCompletionSource<IMessageResult> DoPost(QueueItem item)
         {
+            RecordLog(LogLevel.Trace, () => $"[异步消息投递] {item.ID} 正在投递消息({TcpOption.Instance.Client.Address}:{TcpOption.Instance.Client.Port})");
+            var res = new TaskCompletionSource<IMessageResult>();
             if (client == null)
             {
-                return false;
+                RecordLog(LogLevel.Error, () => $"[异步消息投递] 服务未连接");
+
+                res.TrySetResult(new MessageResult
+                {
+                    ID = item.Message.ID,
+                    Trace = item.Message.TraceInfo,
+                    State = MessageState.Cancel
+                });
+                return res;
             }
-            if (!isConnect || !client.IsConnected)
-                isConnect = client.Connect(out _);
-            if (!isConnect || !client.IsConnected)
-                return false;
+            //if (!isConnect || !client.IsConnected)
+            //    isConnect = client.Connect(out _);
+            //if (!isConnect || !client.IsConnected)
+            //{
+            //    Logger.Error(() => $"[异步消息投递] 服务未连接");
+
+            //    res.TrySetResult(new MessageResult
+            //    {
+            //        ID = item.Message.ID,
+            //        Trace = item.Message.TraceInfo,
+            //        State = MessageState.Cancel
+            //    });
+            //    return res;
+            //}
             client.Send(p => p.WriteLine(SmartSerializer.ToInnerString(item.Message)));
-            if (!client.IsConnected)
-            {
-                return false;
-            }
-            var task = new TaskCompletionSource<IMessageResult>();
-            waiting.TryAdd(item.ID, new PostTask
-            {
-                Task = task,
-                Start = DateTime.Now
-            });
-            try
-            {
-                var resut = await task.Task;
-                return resut.State.IsEnd();
-            }
-            catch (Exception ex)
-            {
-                RecordLog(LogLevel.Error, ex.ToString());
-                return false;
-            }
+
+            return res;
         }
+
         #endregion
     }
 }

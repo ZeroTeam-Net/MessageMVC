@@ -5,14 +5,17 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ZeroTeam.MessageMVC.MessageQueue;
+using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC.RedisMQ
 {
     /// <summary>
     ///     Redis流程
     /// </summary>
-    internal class RedisFlow : IFlowMiddleware, IHealthCheck
+    internal class RedisFlow : BackgroundPoster<QueueItem>, , ILifeFlow , IHealthCheck
     {
+        
         #region IHealthCheck
 
         async Task<HealthInfo> IHealthCheck.Check()

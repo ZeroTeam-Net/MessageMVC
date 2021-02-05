@@ -14,8 +14,15 @@ namespace ZeroTeam.MessageMVC.Consul
         /// <summary>
         /// 注册
         /// </summary>
-        void IAutoRegister.AutoRegist(IServiceCollection services, Microsoft.Extensions.Logging.ILogger logger)
+        void IAutoRegister.AutoRegist(IServiceCollection services, Microsoft.Extensions.Logging.ILogger logger) =>
+            services.AddSingleton<IZeroOption>(pri => ConsulOption.Instance);
+
+        /// <summary>
+        /// 注册
+        /// </summary>
+        void IAutoRegister.LateConfigRegist(IServiceCollection services, Microsoft.Extensions.Logging.ILogger logger)
         {
+
             services.AddSingleton<IFlowMiddleware, ServiceAutoRegister>();
             //services.AddSingleton<IFlowMiddleware>(ConsulEventPoster.Instance);
             //services.AddSingleton<IMessagePoster>(ConsulEventPoster.Instance);

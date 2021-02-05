@@ -1,5 +1,6 @@
 ﻿using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
+using System;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
@@ -19,13 +20,21 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <returns></returns>
         public bool Check(IApiAction action, IInlineMessage message)
         {
+            var user = GlobalContext.User;
             //1 确定调用方法及对应权限
             if (ZeroAppOption.Instance.IsOpenAccess || action.Option.HasFlag(ApiOption.Anymouse))
             {
                 return true;
             }
+            if (!int.TryParse(user[ZeroTeamJwtClaim.Exp], out int last) || DateTime.Now.ToTimestamp() > last)
+            {
+                FlowTracer.MonitorInfomation(() => $"令牌已过期 => {new DateTime(1970, 1, 1).AddSeconds(last)}");
+                message.State = MessageState.Deny;
+                message.Result = ApiResultHelper.TokenTimeOutJson;
+                return false;
+            }
             //1 确定调用方法及对应权限
-            if (UserInfo.IsLoginUser(GlobalContext.Current.User))
+            if (UserInfo.IsLoginUser(user))
             {
                 return true;
             }

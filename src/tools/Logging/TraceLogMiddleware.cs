@@ -29,7 +29,7 @@ namespace Agebull.Common.Logging
         {
             return MessagePoster.PublishAsync(LogOption.Instance.Service, LogOption.Instance.MonitorApi, new TraceLinkMessage
             {
-                Monitor = FlowTracer.EndMonitor(),
+                Monitor = FlowTracer.EndMonitor(false),
                 Trace = message.TraceInfo,
                 Message = new MessageItem
                 {

@@ -7,7 +7,6 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
-using System.Threading;
 
 #endregion
 
@@ -19,6 +18,7 @@ namespace Agebull.Common.Logging
     public static class LoggerExtension
     {
         #region 记录
+        static int idx = 0;
 
         ///<summary>
         ///  记录日志
@@ -26,10 +26,10 @@ namespace Agebull.Common.Logging
         /// <param name="logger">日志记录器</param>
         ///<param name="level"> 日志详细信息 </param>
         ///<param name="func"> 格式化的参数 </param>
-        public static void Log(this ILogger logger, LogLevel level,Func<string> func)
+        public static void Log(this ILogger logger, LogLevel level, Func<string> func)
         {
             if (logger != null && logger.IsEnabled(level))
-                logger.Log(level, func());
+                logger.Log(level, new EventId(++idx), func());
         }
 
 
@@ -42,7 +42,7 @@ namespace Agebull.Common.Logging
         public static void Warning(this ILogger logger, string message, params object[] formatArgs)
         {
             if (logger != null && logger.IsEnabled(LogLevel.Warning))
-                logger.Log(LogLevel.Warning, message, formatArgs);
+                logger.Log(LogLevel.Warning, new EventId(++idx), message, formatArgs);
         }
 
         ///<summary>
@@ -53,7 +53,7 @@ namespace Agebull.Common.Logging
         public static void Warning(this ILogger logger, string message)
         {
             if (logger != null && logger.IsEnabled(LogLevel.Warning))
-                logger.Log(LogLevel.Warning, message);
+                logger.Log(LogLevel.Warning, new EventId(++idx), message);
         }
 
         ///<summary>
@@ -65,7 +65,7 @@ namespace Agebull.Common.Logging
         public static void Error(this ILogger logger, string message, params object[] formatArgs)
         {
             if (logger != null && logger.IsEnabled(LogLevel.Error))
-                logger.Log(LogLevel.Error,  message, formatArgs);
+                logger.Log(LogLevel.Error, new EventId(++idx), message, formatArgs);
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace Agebull.Common.Logging
         public static string Exception(this ILogger logger, Exception exception, string message = null)
         {
             if (logger != null && logger.IsEnabled(LogLevel.Error))
-                logger.Log(LogLevel.Error,  exception, message);
+                logger.Log(LogLevel.Error, new EventId(++idx), exception, message);
             return exception.Message;
         }
 
@@ -91,7 +91,7 @@ namespace Agebull.Common.Logging
         public static string Exception(this ILogger logger, Exception ex, string message, params object[] formatArgs)
         {
             if (logger != null && logger.IsEnabled(LogLevel.Error))
-                logger.Log(LogLevel.Error,  ex, message, formatArgs);
+                logger.Log(LogLevel.Error, new EventId(++idx), ex, message, formatArgs);
             return ex.Message;
         }
 
@@ -109,7 +109,7 @@ namespace Agebull.Common.Logging
         public static void Trace(this ILogger logger, string message, params object[] formatArgs)
         {
             if (logger != null && logger.IsEnabled(LogLevel.Trace))
-                logger.Log(LogLevel.Trace, message, formatArgs);
+                logger.Log(LogLevel.Trace, new EventId(++idx), message, formatArgs);
         }
         #endregion
 
@@ -142,7 +142,7 @@ namespace Agebull.Common.Logging
         public static void DebugByStackTrace(this ILogger logger, string message, params object[] formatArgs)
         {
             if (logger != null && logger.IsEnabled(LogLevel.Debug))
-                logger.Log(LogLevel.Debug, StackTraceInfomation(message, formatArgs));
+                logger.Log(LogLevel.Debug, new EventId(++idx), StackTraceInfomation(message, formatArgs));
         }
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace Agebull.Common.Logging
         public static void Debug(this ILogger logger, string message, params object[] formatArgs)
         {
             if (logger != null && logger.IsEnabled(LogLevel.Debug))
-                logger.Log(LogLevel.Debug, message, formatArgs);
+                logger.Log(LogLevel.Debug, new EventId(++idx), message, formatArgs);
         }
 
         /// <summary>
@@ -166,7 +166,7 @@ namespace Agebull.Common.Logging
         public static void Debug(this ILogger logger, object obj)
         {
             if (logger != null && logger.IsEnabled(LogLevel.Debug))
-                logger.Log(LogLevel.Debug, obj?.ToString());
+                logger.Log(LogLevel.Debug, new EventId(++idx), obj?.ToString());
         }
 
         #endregion
@@ -182,7 +182,7 @@ namespace Agebull.Common.Logging
         public static void Trace(this ILogger logger, Func<string> func)
         {
             if (logger != null && logger.IsEnabled(LogLevel.Trace))
-                logger.Log(LogLevel.Trace, func());
+                logger.Log(LogLevel.Trace, new EventId(++idx), func());
         }
 
         /// <summary>
@@ -194,7 +194,7 @@ namespace Agebull.Common.Logging
         public static void Debug(this ILogger logger, Func<string> func)
         {
             if (logger != null && logger.IsEnabled(LogLevel.Debug))
-                logger.Log(LogLevel.Debug, func());
+                logger.Log(LogLevel.Debug, new EventId(++idx), func());
         }
 
         /// <summary>
@@ -206,7 +206,7 @@ namespace Agebull.Common.Logging
         public static void Information(this ILogger logger, Func<string> func)
         {
             if (logger != null && logger.IsEnabled(LogLevel.Information))
-                logger.Log(LogLevel.Information, func());
+                logger.Log(LogLevel.Information, new EventId(++idx), func());
         }
 
         ///<summary>
@@ -219,7 +219,7 @@ namespace Agebull.Common.Logging
         public static void Information(this ILogger logger, string message, params object[] formatArgs)
         {
             if (logger != null && logger.IsEnabled(LogLevel.Information))
-                logger.Log(LogLevel.Information, message, formatArgs);
+                logger.Log(LogLevel.Information, new EventId(++idx), message, formatArgs);
         }
 
         /// <summary>
@@ -231,7 +231,7 @@ namespace Agebull.Common.Logging
         public static void Information(this ILogger logger, string msg)
         {
             if (logger != null && logger.IsEnabled(LogLevel.Information))
-                logger.Log(LogLevel.Information, msg);
+                logger.Log(LogLevel.Information, new EventId(++idx), msg);
         }
 
         /// <summary>
@@ -243,7 +243,7 @@ namespace Agebull.Common.Logging
         public static void Warning(this ILogger logger, Func<string> func)
         {
             if (logger != null && logger.IsEnabled(LogLevel.Warning))
-                logger.Log(LogLevel.Warning, func());
+                logger.Log(LogLevel.Warning, new EventId(++idx), func());
         }
 
         /// <summary>
@@ -255,7 +255,7 @@ namespace Agebull.Common.Logging
         public static void Error(this ILogger logger, Func<string> func)
         {
             if (logger != null && logger.IsEnabled(LogLevel.Error))
-                logger.Log(LogLevel.Error, func());
+                logger.Log(LogLevel.Error, new EventId(++idx), func());
         }
         #endregion
     }

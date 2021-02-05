@@ -1,5 +1,7 @@
 ﻿using Agebull.Common.Configuration;
 using Confluent.Kafka;
+using System;
+using System.Collections.Generic;
 
 namespace ZeroTeam.MessageMVC.Kafka
 {
@@ -28,7 +30,7 @@ namespace ZeroTeam.MessageMVC.Kafka
     /// <summary>
     /// Kafka配置
     /// </summary>
-    public class KafkaOption
+    public class KafkaOption : IZeroOption
     {
         /// <summary>
         /// 服务地址
@@ -38,28 +40,31 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <summary>
         /// 消费配置
         /// </summary>
-        public ConsumerConfig Consumer = new ConsumerConfig();
+        public ConsumerConfig Consumer { get; set; }
 
         /// <summary>
         /// 服务地址
         /// </summary>
-        public ProducerConfig Producer = new ProducerConfig();
+        public ProducerConfig Producer { get; set; }
 
         /// <summary>
         /// 消息配置
         /// </summary>
         public MessageOption Message { get; set; }
 
+        #region IZeroOption
+
+
         /// <summary>
         ///  唯一实例 
         /// </summary>
         public readonly static KafkaOption Instance = new KafkaOption();
 
-        #region 配置自动更新
+        internal static bool haseConsumer, haseProducer;
 
         const string sectionName = "MessageMVC:Kafka";
 
-        const string ConfigName = "MessageMVC:Kafka:Client";
+        const string ClientName = "MessageMVC:Kafka:Client";
 
         const string ConsumerName = "MessageMVC:Kafka:Consumer";
 
@@ -67,55 +72,76 @@ namespace ZeroTeam.MessageMVC.Kafka
 
         const string MessageName = "MessageMVC:Kafka:Message";
 
-        static KafkaOption()
-        {
-            ConfigurationHelper.RegistOnChange(sectionName, Instance.Load, true);
-        }
+        const string optionName = "Kafka发布订阅配置";
 
-        void Load()
+        const string supperUrl = "https://";
+
+        /// <summary>
+        /// 支持地址
+        /// </summary>
+        string IZeroOption.SupperUrl => supperUrl;
+
+        /// <summary>
+        /// 配置名称
+        /// </summary>
+        string IZeroOption.OptionName => optionName;
+
+
+        /// <summary>
+        /// 节点名称
+        /// </summary>
+        string IZeroOption.SectionName => sectionName;
+
+        /// <summary>
+        /// 是否动态配置
+        /// </summary>
+        bool IZeroOption.IsDynamic => false;
+
+        void IZeroOption.Load(bool first)
         {
             BootstrapServers = ConfigurationHelper.Get(sectionName).GetStr("BootstrapServers", BootstrapServers);
-            CopyMessage();
 
-            ConsumerLoad(Consumer);
-            Consumer.ConsumeResultFields = "all";
-            Consumer.BootstrapServers = BootstrapServers;
-            ProducerLoad(Producer);
-            Producer.BootstrapServers = BootstrapServers;
+            LoadMessage();
+            if (haseConsumer)
+            {
+                LoadConsumer();
+                if (Consumer.BootstrapServers.IsBlank() || Consumer.GroupId.IsBlank())
+                    throw new ZeroOptionException(optionName, sectionName, "Consumer.BootstrapServers与Consumer.GroupId不能为空");
+            }
+            if (haseProducer)
+            {
+                LoadProducer();
+                if (Producer.BootstrapServers.IsBlank())
+                    throw new ZeroOptionException(optionName, sectionName, "Producer.BootstrapServers不能为空");
+            }
         }
-        internal void CopyMessage()
+        internal void LoadMessage()
         {
+            Message = new MessageOption
+            {
+                TestTopic = "HealthCheck",
+                Concurrency = 128
+            };
             var config = ConfigurationHelper.Get<MessageOption>(MessageName);
             if (config == null)
             {
-                if (Message == null)
-                {
-                    Message = new MessageOption
-                    {
-                        TestTopic = "HealthCheck"
-                    };
-                }
                 return;
             }
-
+            Message.TestTopic = config.TestTopic;
             Message.Concurrency = config.Concurrency;
             Message.AsyncPost = config.AsyncPost;
         }
-        internal ConsumerConfig CopyConsumer()
+        bool LoadProducer()
         {
-            var cfg = new ConsumerConfig
-            {
-                BootstrapServers = BootstrapServers
-            };
-            ConsumerLoad(cfg);
-            return cfg;
-        }
-        static void ProducerLoad(ProducerConfig producer)
-        {
-            ConfigLoad(producer);
+            var producer = Producer = new ProducerConfig();
             var config = ConfigurationHelper.Get<ProducerConfig>(ProducerName);
             if (config == null)
-                return;
+            {
+                return false;
+            }
+
+            LoadClient(producer);
+            producer.BootstrapServers = config.BootstrapServers ?? BootstrapServers;
             producer.QueueBufferingBackpressureThreshold = config.QueueBufferingBackpressureThreshold;
             producer.RetryBackoffMs = config.RetryBackoffMs;
             producer.MessageSendMaxRetries = config.MessageSendMaxRetries;
@@ -134,37 +160,39 @@ namespace ZeroTeam.MessageMVC.Kafka
             producer.EnableBackgroundPoll = config.EnableBackgroundPoll;
             producer.EnableIdempotence = config.EnableIdempotence;
             producer.BatchNumMessages = config.BatchNumMessages;
+            return true;
         }
 
-        static void ConsumerLoad(ConsumerConfig con)
+        bool LoadConsumer()
         {
-            ConfigLoad(con);
+            var consumer = Consumer = new ConsumerConfig();
             var config = ConfigurationHelper.Get<ConsumerConfig>(ConsumerName);
             if (config == null)
-                return;
-            con.ConsumeResultFields = "all";
-            con.IsolationLevel = config.IsolationLevel;
-            con.FetchErrorBackoffMs = config.FetchErrorBackoffMs;
-            con.FetchMinBytes = config.FetchMinBytes;
-            con.FetchMaxBytes = config.FetchMaxBytes;
-            con.FetchWaitMaxMs = config.FetchWaitMaxMs;
-            con.QueuedMaxMessagesKbytes = config.QueuedMaxMessagesKbytes;
-            con.QueuedMinMessages = config.QueuedMinMessages;
-            con.EnableAutoOffsetStore = config.EnableAutoOffsetStore;
-            con.AutoCommitIntervalMs = config.AutoCommitIntervalMs;
-            con.EnableAutoCommit = config.EnableAutoCommit;
-            con.MaxPollIntervalMs = config.MaxPollIntervalMs;
-            con.GroupProtocolType = config.GroupProtocolType;
-            con.SessionTimeoutMs = config.SessionTimeoutMs;
-            con.GroupId = config.GroupId;
-            con.AutoOffsetReset = config.AutoOffsetReset;
-            con.CheckCrcs = config.CheckCrcs;
+                return false;
+            LoadClient(consumer);
+            consumer.BootstrapServers = config.BootstrapServers ?? BootstrapServers;
+            consumer.IsolationLevel = config.IsolationLevel;
+            consumer.FetchErrorBackoffMs = config.FetchErrorBackoffMs;
+            consumer.FetchMinBytes = config.FetchMinBytes;
+            consumer.FetchMaxBytes = config.FetchMaxBytes;
+            consumer.FetchWaitMaxMs = config.FetchWaitMaxMs;
+            consumer.QueuedMaxMessagesKbytes = config.QueuedMaxMessagesKbytes;
+            consumer.QueuedMinMessages = config.QueuedMinMessages;
+            consumer.EnableAutoOffsetStore = config.EnableAutoOffsetStore;
+            consumer.AutoCommitIntervalMs = config.AutoCommitIntervalMs;
+            consumer.EnableAutoCommit = config.EnableAutoCommit;
+            consumer.MaxPollIntervalMs = config.MaxPollIntervalMs;
+            consumer.GroupProtocolType = config.GroupProtocolType;
+            consumer.SessionTimeoutMs = config.SessionTimeoutMs;
+            consumer.GroupId = config.GroupId;
+            consumer.AutoOffsetReset = config.AutoOffsetReset;
+            consumer.CheckCrcs = config.CheckCrcs;
+            return true;
         }
 
-        static void ConfigLoad(ClientConfig dest)
+        static void LoadClient(ClientConfig dest)
         {
-
-            var config = ConfigurationHelper.Get<ClientConfig>(ConfigName);
+            var config = ConfigurationHelper.Get<ClientConfig>(ClientName);
             if (config == null)
                 return;
 
@@ -227,6 +255,7 @@ namespace ZeroTeam.MessageMVC.Kafka
             dest.ClientRack = config.ClientRack;
 
         }
+
         #endregion
     }
 }

@@ -12,9 +12,20 @@ namespace ZeroTeam.MessageMVC.Http
     /// <summary>
     ///     Http生产者
     /// </summary>
-    public class HttpPoster : MessagePostBase, IMessagePoster
+    public class HttpPoster : MessagePostBase, IMessagePoster, IZeroDiscover
     {
         #region IMessagePoster
+
+        /// <summary>
+        ///  发现
+        /// </summary>
+        Task IZeroDiscover.Discovery()
+        {
+            Logger.Information($"{nameof(HttpPoster)}已开启");
+            return Task.CompletedTask;
+        }
+
+        ILifeFlow IMessagePoster.GetLife() => null;
 
         /// <summary>
         /// 名称
@@ -28,16 +39,12 @@ namespace ZeroTeam.MessageMVC.Http
         /// <returns></returns>
         async Task<IMessageResult> IMessagePoster.Post(IInlineMessage message)
         {
-            if (!ZeroAppOption.Instance.IsAlive)
-            {
-                message.State = MessageState.Cancel;
-                return null;
-            }
             if (!HttpClientOption.ServiceMap.TryGetValue(message.Service, out var name))
             {
                 name = HttpClientOption.DefaultName;
             }
-            FlowTracer.BeginDebugStepMonitor("[HttpPoster.Post]");
+            using var _ = FlowTracer.DebugStepScope("[HttpPoster.Post]");
+            StringContent content = null;
             try
             {
                 ZeroAppOption.Instance.BeginRequest();
@@ -45,23 +52,27 @@ namespace ZeroTeam.MessageMVC.Http
                 var client = HttpClientOption.HttpClientFactory.CreateClient(name);
                 if (client.BaseAddress == null)
                 {
-                    FlowTracer.MonitorError(() => $"[{message.Service}/{message.Method}]服务未注册");
-                    message.State = MessageState.Unhandled;
-                    return null;//直接使用状态
+                    client.BaseAddress = new Uri(HttpClientOption.Instance.DefaultUrl);
+                    client.Timeout = TimeSpan.FromSeconds(HttpClientOption.Instance.DefaultTimeOut);
+                    FlowTracer.MonitorError(() => $"[{message.Service}/{message.Method}]服务未注册,使用默认地址：{HttpClientOption.Instance.DefaultUrl}");
+                    //message.State = MessageState.Unhandled;
+                    //return null;//直接使用状态
                 }
                 var uri = new Uri($"{client.BaseAddress }{message.Service}/{message.Method}");
                 FlowTracer.MonitorDetails(() =>
                 {
                     return $"URL : {uri.OriginalString}";
                 });
-                using var content = new StringContent(message.Argument);
+
                 using var requestMessage = new HttpRequestMessage
                 {
                     RequestUri = uri,
-                    Content = content,
                     Method = HttpMethod.Post
                 };
-
+                if (message.Argument.IsNotBlank())
+                {
+                    requestMessage.Content = content = new StringContent(message.Argument);
+                }
                 requestMessage.Headers.Add("x-zmvc-ver", "v2");
                 requestMessage.Headers.Add("x-zmvc-id", message.ID);
                 if (message.TraceInfo != null)
@@ -105,8 +116,8 @@ namespace ZeroTeam.MessageMVC.Http
             }
             finally
             {
-                FlowTracer.EndDebugStepMonitor();
                 ZeroAppOption.Instance.EndRequest();
+                content?.Dispose();
             }
             return null;//直接使用状态
         }
@@ -150,6 +161,7 @@ namespace ZeroTeam.MessageMVC.Http
 
             }
         }
+
         #endregion
 
         #region 访问外部
@@ -162,14 +174,10 @@ namespace ZeroTeam.MessageMVC.Http
         /// <returns></returns>
         public static async Task<(MessageState state, string res)> OutGet(string service, string api)
         {
-            if (!HttpClientOption.ServiceMap.TryGetValue(service, out var name))
-            {
-                name = HttpClientOption.DefaultName;
-            }
-            FlowTracer.BeginStepMonitor("[HttpPoster.CallOut]");
+            using var _ = FlowTracer.DebugStepScope("[HttpPoster.OutGet]");
             try
             {
-                var client = HttpClientOption.HttpClientFactory.CreateClient(name);
+                var client = HttpClientOption.HttpClientFactory.CreateClient(service);
                 FlowTracer.MonitorDetails(() => $"URL : {client.BaseAddress}{api}");
 
                 using var response = await client.GetAsync(api);
@@ -192,10 +200,6 @@ namespace ZeroTeam.MessageMVC.Http
                 FlowTracer.MonitorError(() => $"发生异常.{ex.Message}");
                 return (MessageState.NetworkError, null);
             }
-            finally
-            {
-                FlowTracer.EndStepMonitor();
-            }
         }
 
 
@@ -204,29 +208,25 @@ namespace ZeroTeam.MessageMVC.Http
         /// </summary>
         /// <param name="service">服务名称，用于查找HttpClient，不会与api拼接</param>
         /// <param name="api">完整的接口名称</param>
-        /// <param name="content">内容</param>
+        /// <param name="argument">内容</param>
         /// <returns></returns>
-        public static async Task<(MessageState state, string res)> OutPost(string service, string api, string content)
+        public static async Task<(MessageState state, string res)> OutPost(string service, string api, string argument)
         {
-            if (!HttpClientOption.ServiceMap.TryGetValue(service, out var name))
-            {
-                name = HttpClientOption.DefaultName;
-            }
-            FlowTracer.BeginStepMonitor("[HttpPoster.CallOut]");
+            using var _ = FlowTracer.DebugStepScope("[HttpPoster.CallOut]");
+
+            HttpStatusCode httpStatusCode;
+            StringContent content = null;
             try
             {
-                var client = HttpClientOption.HttpClientFactory.CreateClient(name);
+                var client = HttpClientOption.HttpClientFactory.CreateClient(service);
                 FlowTracer.MonitorDetails(() => $"URL : {client.BaseAddress}{api}");
-
-                using var httpContent = new StringContent(content);
-                using var response = await client.PostAsync(api, httpContent);
-
-                var json = await response.Content.ReadAsStringAsync();
-
-                MessageState state = HttpCodeToMessageState(response.StatusCode);
-
-                FlowTracer.MonitorDetails(() => $"HttpStatus : {response.StatusCode} MessageState : {state} Result : {json}");
-
+                string json;
+                content = new StringContent(argument ?? "");
+                using var response = await client.PostAsync(api, content);
+                httpStatusCode = response.StatusCode;
+                json = await response.Content.ReadAsStringAsync();
+                var state = HttpCodeToMessageState(httpStatusCode);
+                FlowTracer.MonitorDetails(() => $"HttpStatus : {httpStatusCode} MessageState : {state} Result : {json}");
                 return (state, json);
             }
             catch (HttpRequestException ex)
@@ -241,7 +241,7 @@ namespace ZeroTeam.MessageMVC.Http
             }
             finally
             {
-                FlowTracer.EndStepMonitor();
+                content?.Dispose();
             }
         }
 
@@ -254,14 +254,10 @@ namespace ZeroTeam.MessageMVC.Http
         /// <returns></returns>
         public static async Task<(MessageState state, string res)> OutFormPost(string service, string api, Dictionary<string, string> forms)
         {
-            if (!HttpClientOption.ServiceMap.TryGetValue(service, out var name))
-            {
-                name = HttpClientOption.DefaultName;
-            }
-            FlowTracer.BeginStepMonitor("[HttpPoster.OutFormPost]");
+            using var  _ =FlowTracer.DebugStepScope("[HttpPoster.OutFormPost]");
             try
             {
-                var client = HttpClientOption.HttpClientFactory.CreateClient(name);
+                var client = HttpClientOption.HttpClientFactory.CreateClient(service);
                 FlowTracer.MonitorDetails(() => $"URL : {client.BaseAddress}{api}");
                 using var form = new FormUrlEncodedContent(forms);
                 using var response = await client.PostAsync(api, form);
@@ -282,10 +278,6 @@ namespace ZeroTeam.MessageMVC.Http
             {
                 FlowTracer.MonitorError(() => $"发生异常.{ex.Message}");
                 return (MessageState.NetworkError, null);
-            }
-            finally
-            {
-                FlowTracer.EndStepMonitor();
             }
         }
 

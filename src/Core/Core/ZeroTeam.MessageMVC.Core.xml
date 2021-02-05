@@ -14,7 +14,22 @@
             插件对象
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.AddIn.AddInImporter.LoadAddIn(ZeroTeam.MessageMVC.ZeroAppOption)">
+        <member name="F:ZeroTeam.MessageMVC.AddIn.AddInImporter.registers">
+            <summary>
+            所有自动注册对象
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.AddIn.AddInImporter.LoadAddIn(Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            载入插件
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.AddIn.AddInImporter.AutoRegist(Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            载入插件
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.AddIn.AddInImporter.LateConfigRegist(Microsoft.Extensions.Logging.ILogger)">
             <summary>
             载入插件
             </summary>
@@ -292,32 +307,17 @@
             <param name="action"></param>
             <returns></returns>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.ConfigMiddleware">
+        <member name="T:ZeroTeam.MessageMVC.ConfigChecker">
             <summary>
             配置的全局对象
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.ConfigMiddleware.logger">
-            <summary>
-            调用的内容
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ConfigMiddleware.ZeroTeam#MessageMVC#IZeroDependency#Name">
-            <summary>
-            实例名称
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ConfigMiddleware.ZeroTeam#MessageMVC#IZeroMiddleware#Level">
-            <summary>
-            等级
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ConfigMiddleware.ZeroTeam#MessageMVC#ILifeFlow#Check(ZeroTeam.MessageMVC.ZeroAppOption)">
+        <member name="M:ZeroTeam.MessageMVC.ConfigChecker.CheckLast(ZeroTeam.MessageMVC.ZeroAppOption,Microsoft.Extensions.Logging.ILogger)">
             <summary>
                 配置校验,作为第一步
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ConfigMiddleware.CheckConfig(ZeroTeam.MessageMVC.ZeroAppOption)">
+        <member name="M:ZeroTeam.MessageMVC.ConfigChecker.CheckBaseConfig">
             <summary>
                 配置校验
             </summary>
@@ -332,7 +332,7 @@
                 配置使用MessageMVC
             </summary>
             <param name="builder">主机生成器</param>
-            <param name="action">配置注册方法</param>
+            <param name="registAction">配置注册方法</param>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseMessageMVC(Microsoft.Extensions.Hosting.IHostBuilder,System.Boolean,System.Action{Microsoft.Extensions.DependencyInjection.IServiceCollection})">
             <summary>
@@ -340,19 +340,35 @@
             </summary>
             <param name="builder">主机生成器</param>
             <param name="autoDiscove">是否自动发现API方法</param>
-            <param name="action">配置注册方法</param>
+            <param name="registAction">配置注册方法</param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApp.AddDependency(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Boolean)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseMessageMVC(Microsoft.Extensions.Hosting.IHostBuilder,System.Action{Microsoft.Extensions.DependencyInjection.IServiceCollection},System.Action)">
+            <summary>
+                配置使用MessageMVC
+            </summary>
+            <param name="builder">主机生成器</param>
+            <param name="registAction">配置注册方法</param>
+            <param name="discovery">自定义API发现方法</param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseMessageMVC(Microsoft.Extensions.Hosting.IHostBuilder,System.Action{Microsoft.Extensions.DependencyInjection.IServiceCollection},System.Boolean,System.Action)">
+            <summary>
+                配置使用MessageMVC
+            </summary>
+            <param name="builder">主机生成器</param>
+            <param name="registAction">配置注册方法</param>
+            <param name="autoDiscovery">自动发现</param>
+            <param name="discovery">自定义API发现方法</param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.AddDependency(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             检查并注入配置
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseTest(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly,System.Boolean)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.UseTest(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly)">
             <summary>
             启动主流程控制器，发现指定程序集的Api，适用于测试的场景
             </summary>
             <param name="services">依赖服务</param>
-            <param name="msJson">true 使用System.Text.Json,false 使用NewtonsoftJson</param>
             <param name="assembly">需要发现服务的程序集</param>
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroFlowControl">
@@ -366,7 +382,17 @@
             </summary>
             <param name="tasks"></param>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.Check">
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.LoadAddIn">
+            <summary>
+                插件载入,作为第零步
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.LoadConfig">
+            <summary>
+                配置校验,作为第一步
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroFlowControl.CheckConfig">
             <summary>
                 配置校验,作为第一步
             </summary>
@@ -534,14 +560,14 @@
             调用的内容
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ParallelPoster.ZeroTeam#MessageMVC#ILifeFlow#Initialize">
-            <summary>
-                初始化
-            </summary>
-        </member>
         <member name="P:ZeroTeam.MessageMVC.ParallelPoster.ZeroTeam#MessageMVC#IZeroDependency#Name">
             <summary>
             名称
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ParallelPoster.#ctor">
+            <summary>
+                初始化
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ParallelPoster.ZeroTeam#MessageMVC#Messages#IMessagePoster#Post(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
@@ -550,6 +576,82 @@
             </summary>
             <param name="message">消息</param>
             <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Context.UserInfo">
+            <summary>
+             用户信息
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Context.UserInfo.IsLoginUser(ZeroTeam.MessageMVC.Context.IUser)">
+            <summary>
+            是否一个有效用户
+            </summary>
+            <param name="user"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Context.UserInfo.IsLogin">
+            <summary>
+            是否一个有效用户
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.UserInfo.UserId">
+            <summary>
+                应用用户数字标识
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.UserInfo.NickName">
+            <summary>
+                用户昵称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.UserInfo.OrganizationId">
+            <summary>
+                用户组织数字标识
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.UserInfo.CurrentPermission">
+            <summary>
+                确定后的当前权限信息
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.UserInfo.Permissions">
+            <summary>
+                所有权限信息
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Context.UserInfo.claims">
+            <summary>
+            JWT信息字典
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.UserInfo.Claims">
+            <summary>
+            快捷读写字典
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.UserInfo.Item(System.String)">
+            <summary>
+            快捷读写字典
+            </summary>
+            <param name="type"></param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Context.UserInfo.SetClaim(System.String,System.String)">
+            <summary>
+            设置节点名称
+            </summary>
+            <param name="type"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Context.UserInfo.ZeroTeam#MessageMVC#Context#IDictionaryTransfer#ToDictionary">
+            <summary>
+            转为可传输的对象
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Context.UserInfo.ZeroTeam#MessageMVC#Context#IDictionaryTransfer#Reset(System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            转为可传输的对象
+            </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Services.StateMachine.CloseStateMachine">
             <summary>
@@ -846,7 +948,7 @@
             析构
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Services.ZeroService.ZeroTeam#MessageMVC#ILifeFlow#Destory">
+        <member name="M:ZeroTeam.MessageMVC.Services.ZeroService.ZeroTeam#MessageMVC#ILifeFlow#Destroy">
             <inheritdoc/>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Services.ZeroService.ZeroTeam#MessageMVC#IStateMachineControl#DoEnd">

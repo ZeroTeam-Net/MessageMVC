@@ -1551,6 +1551,43 @@
             <param name="str"></param>
             <returns>是否为空</returns>
         </member>
+        <member name="M:System.ValueToStringHelper.IsNotNullOrEmpty(System.String)">
+            <summary>
+            是否为空
+            </summary>
+            <param name="str"></param>
+            <returns>是否为空</returns>
+        </member>
+        <member name="M:System.ValueToStringHelper.IsBlank(System.String)">
+            <summary>
+            是否为空
+            </summary>
+            <param name="str"></param>
+            <returns>是否为空</returns>
+        </member>
+        <member name="M:System.ValueToStringHelper.IsNotBlank(System.String)">
+            <summary>
+            是否非空
+            </summary>
+            <param name="str"></param>
+            <returns>是否为空</returns>
+        </member>
+        <member name="M:System.ValueToStringHelper.AnyBlank(System.Object,System.String[])">
+            <summary>
+            是否其中一或多个为空
+            </summary>
+            <param name="mark">着力点，随便用</param>
+            <param name="strs">检查用的字符串</param>
+            <returns>是否为空</returns>
+        </member>
+        <member name="M:System.ValueToStringHelper.AllBlank(System.Object,System.String[])">
+            <summary>
+            是否其中一或多个为空
+            </summary>
+            <param name="mark">着力点，随便用</param>
+            <param name="strs">检查用的字符串</param>
+            <returns>是否为空</returns>
+        </member>
         <member name="M:System.ValueToStringHelper.XmlTrim(System.String)">
             <summary>
             清理XML使之最短
@@ -1633,6 +1670,14 @@
             <returns> </returns>
         </member>
         <member name="M:System.ValueToStringHelper.IsMe(System.String,System.String)">
+            <summary>
+              文本是否大小写不敏感的相同
+            </summary>
+            <param name="a"> </param>
+            <param name="b"> </param>
+            <returns> </returns>
+        </member>
+        <member name="M:System.ValueToStringHelper.IsFirst(System.String,System.String)">
             <summary>
               文本是否大小写不敏感的相同
             </summary>
@@ -1841,6 +1886,11 @@
         <member name="M:Agebull.Common.Configuration.ConfigurationHelper.CreateBuilder">
             <summary>
             建造生成器，使用前请调用
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Configuration.ConfigurationHelper.RunEnvironment">
+            <summary>
+            当前运行环境
             </summary>
         </member>
         <member name="M:Agebull.Common.Configuration.ConfigurationHelper.SyncBuilder">
@@ -4138,7 +4188,7 @@
             加入监视跟踪
             </summary>
         </member>
-        <member name="M:Agebull.Common.Logging.FlowTracer.EndMonitor">
+        <member name="M:Agebull.Common.Logging.FlowTracer.EndMonitor(System.Boolean)">
             <summary>
             结束监视日志
             </summary>

@@ -10,14 +10,13 @@ namespace ZeroTeam.MessageMVC.Messages
     public class MessagePostBase
     {
         /// <summary>
-        /// 是否可用(框架使用)
+        /// 构造
         /// </summary>
-        public bool CanDo => true;
-
-        /// <summary>
-        /// 日志器
-        /// </summary>
-        protected ILogger Logger { get; private set; }
+        protected MessagePostBase()
+        {
+            Logger = DependencyHelper.LoggerFactory.CreateLogger(GetType().GetTypeName());
+            State = StationStateType.Run;
+        }
 
         /// <summary>
         /// 是否本地接收者
@@ -25,17 +24,14 @@ namespace ZeroTeam.MessageMVC.Messages
         public bool IsLocalReceiver => false;
 
         /// <summary>
+        /// 日志器
+        /// </summary>
+        protected ILogger Logger { get; private set; }
+
+        /// <summary>
         /// 运行状态
         /// </summary>
         public StationStateType State { get; set; }
 
-        /// <summary>
-        ///     初始化
-        /// </summary>
-        public void Initialize()
-        {
-            Logger = DependencyHelper.LoggerFactory.CreateLogger(GetType().GetTypeName());
-            State = StationStateType.Run;
-        }
     }
 }

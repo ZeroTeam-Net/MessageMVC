@@ -25,7 +25,7 @@
     <Company>ZeroTeam</Company>
     <PackageReleaseNotes></PackageReleaseNotes>
     <Product>MessageMVC</Product>
-    <Version>1.1.4.14</Version>
+    <Version>1.1.4.38</Version>
     <PackageTags>MessageMVC</PackageTags>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -48,6 +48,8 @@
     <Compile Remove="Consumer\CSRedisQueueReceiver.cs" />
     <Compile Remove="Consumer\RedisQueueAttribute.cs" />
     <Compile Remove="Producer\CsRedisQueuePoster.cs" />
+    <Compile Remove="Producer\RedisFlow.cs" />
+    <Compile Remove="Producer\RedisQueueItem.cs" />
   </ItemGroup>
 
   <ItemGroup>

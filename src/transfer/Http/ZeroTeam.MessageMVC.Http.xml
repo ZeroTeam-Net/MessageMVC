@@ -24,13 +24,37 @@
                 初始化
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Http.HttpApp.UseMessageMVC(Microsoft.AspNetCore.Hosting.IWebHostBuilder,System.Action{Microsoft.Extensions.DependencyInjection.IServiceCollection},System.Boolean)">
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpApp.UseMessageMVC(Microsoft.AspNetCore.Hosting.IWebHostBuilder,System.Action{Microsoft.Extensions.DependencyInjection.IServiceCollection})">
             <summary>
                 配置使用MessageMVC
             </summary>
-            <param name="host">主机生成器</param>
+            <param name="builder">主机生成器</param>
             <param name="registAction">配置注册方法</param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpApp.UseMessageMVC(Microsoft.AspNetCore.Hosting.IWebHostBuilder,System.Boolean,System.Action{Microsoft.Extensions.DependencyInjection.IServiceCollection})">
+            <summary>
+                配置使用MessageMVC
+            </summary>
+            <param name="builder">主机生成器</param>
             <param name="autoDiscove">是否自动发现API方法</param>
+            <param name="registAction">配置注册方法</param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpApp.UseMessageMVC(Microsoft.AspNetCore.Hosting.IWebHostBuilder,System.Action{Microsoft.Extensions.DependencyInjection.IServiceCollection},System.Action)">
+            <summary>
+                配置使用MessageMVC
+            </summary>
+            <param name="builder">主机生成器</param>
+            <param name="registAction">配置注册方法</param>
+            <param name="discovery">自定义API发现方法</param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpApp.UseMessageMVC(Microsoft.AspNetCore.Hosting.IWebHostBuilder,System.Action{Microsoft.Extensions.DependencyInjection.IServiceCollection},System.Boolean,System.Action)">
+            <summary>
+                配置使用MessageMVC
+            </summary>
+            <param name="builder">主机生成器</param>
+            <param name="registAction">配置注册方法</param>
+            <param name="autoDiscovery">自动发现</param>
+            <param name="discovery">自定义API发现方法</param>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Http.HttpApp.Call(Microsoft.AspNetCore.Http.HttpContext)">
             <summary>
@@ -67,11 +91,6 @@
         <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.BinaryDictionary">
             <summary>
             二进制字典参数
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.DataState">
-            <summary>
-            数据状态
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.ResultData">
@@ -295,14 +314,34 @@
             所有服务
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Http.HttpClientOption.Instance">
-            <summary>
-            所有节点
-            </summary>
-        </member>
         <member name="F:ZeroTeam.MessageMVC.Http.HttpClientOption.ServiceMap">
             <summary>
             服务到HttpClientName的查找表.
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Http.HttpClientOption.Instance">
+            <summary>
+            实例
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpClientOption.ZeroTeam#MessageMVC#IZeroOption#SupperUrl">
+            <summary>
+            支持地址
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpClientOption.ZeroTeam#MessageMVC#IZeroOption#OptionName">
+            <summary>
+            配置名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpClientOption.ZeroTeam#MessageMVC#IZeroOption#SectionName">
+            <summary>
+            节点名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpClientOption.ZeroTeam#MessageMVC#IZeroOption#IsDynamic">
+            <summary>
+            是否动态配置
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Http.MessageRouteOption">
@@ -333,6 +372,11 @@
                 Http生产者
             </summary>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.Http.HttpPoster.ZeroTeam#MessageMVC#IZeroDiscover#Discovery">
+            <summary>
+             发现
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.Http.HttpPoster.ZeroTeam#MessageMVC#IZeroDependency#Name">
             <summary>
             名称
@@ -359,7 +403,7 @@
             </summary>
             <param name="service">服务名称，用于查找HttpClient，不会与api拼接</param>
             <param name="api">完整的接口名称</param>
-            <param name="content">内容</param>
+            <param name="argument">内容</param>
             <returns></returns>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Http.HttpPoster.OutFormPost(System.String,System.String,System.Collections.Generic.Dictionary{System.String,System.String})">

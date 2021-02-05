@@ -24,7 +24,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// </summary>
         public static void AddMessageMvcHttpClient(this IServiceCollection services)
         {
-            HttpClientOption.Instance.DefaultUrl ??= "";
+            services.AddSingleton<IZeroOption>(pri => HttpClientOption.Instance);
             services.AddHttpClient();
             services.AddHttpContextAccessor();
             services.AddTransient<IMessagePoster, HttpPoster>();
@@ -33,9 +33,10 @@ namespace ZeroTeam.MessageMVC.Http
         /// <summary>
         ///     初始化
         /// </summary>
+        [Obsolete]
         public static void AddMessageMvcHttp(this IServiceCollection services)
         {
-            HttpClientOption.Instance.DefaultUrl ??= "";
+            services.AddSingleton<IZeroOption>(pri => HttpClientOption.Instance);
             services.AddHttpClient();
             services.AddHttpContextAccessor();
             services.AddTransient<IMessagePoster, HttpPoster>();
@@ -53,31 +54,75 @@ namespace ZeroTeam.MessageMVC.Http
         /// <summary>
         ///     配置使用MessageMVC
         /// </summary>
-        /// <param name="host">主机生成器</param>
+        /// <param name="builder">主机生成器</param>
         /// <param name="registAction">配置注册方法</param>
-        /// <param name="autoDiscove">是否自动发现API方法</param>
-        public static IWebHostBuilder UseMessageMVC(this IWebHostBuilder host, Action<IServiceCollection> registAction, bool autoDiscove = true)
+        public static IWebHostBuilder UseMessageMVC(this IWebHostBuilder builder, Action<IServiceCollection> registAction)
         {
-            host.ConfigureAppConfiguration((ctx, builder) =>
-                {
-                    DependencyHelper.ServiceCollection.AddSingleton(p => builder);
-                    ConfigurationHelper.BindBuilder(builder);
-                    ConfigurationHelper.Flush();
-                    ctx.Configuration = ConfigurationHelper.Root;
-                    ZeroAppOption.LoadConfig();
-                    ZeroAppOption.Instance.AutoDiscover = autoDiscove;
-                })
-                .ConfigureServices((ctx, services) =>
-                {
-                    DependencyHelper.Binding(services);
-                    services.AddHostedService<ZeroHostedService>();
-                    registAction(services);
-                    ZeroApp.AddDependency(services, false);
-                    DependencyHelper.Flush();
-                });
-            return host;
+            UseMessageMVC(builder, registAction, true, null);
+            return builder;
         }
 
+        /// <summary>
+        ///     配置使用MessageMVC
+        /// </summary>
+        /// <param name="builder">主机生成器</param>
+        /// <param name="autoDiscove">是否自动发现API方法</param>
+        /// <param name="registAction">配置注册方法</param>
+        public static IWebHostBuilder UseMessageMVC(this IWebHostBuilder builder, bool autoDiscove, Action<IServiceCollection> registAction)
+        {
+            UseMessageMVC(builder, registAction, autoDiscove, null);
+            return builder;
+        }
+
+        /// <summary>
+        ///     配置使用MessageMVC
+        /// </summary>
+        /// <param name="builder">主机生成器</param>
+        /// <param name="registAction">配置注册方法</param>
+        /// <param name="discovery">自定义API发现方法</param>
+        public static IWebHostBuilder UseMessageMVC(this IWebHostBuilder builder, Action<IServiceCollection> registAction, Action discovery)
+        {
+            UseMessageMVC(builder, registAction, false, discovery);
+            return builder;
+        }
+
+        /// <summary>
+        ///     配置使用MessageMVC
+        /// </summary>
+        /// <param name="builder">主机生成器</param>
+        /// <param name="registAction">配置注册方法</param>
+        /// <param name="autoDiscovery">自动发现</param>
+        /// <param name="discovery">自定义API发现方法</param>
+        internal static void UseMessageMVC(this IWebHostBuilder builder, Action<IServiceCollection> registAction, bool autoDiscovery, Action discovery)
+        {
+            Console.Write(@"-------------------------------------------------------------
+---------------> ");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(@"Wecome ZeroTeam MessageMVC");
+            Console.ResetColor();
+            Console.WriteLine(@" <----------------
+-------------------------------------------------------------");
+            builder.ConfigureAppConfiguration((ctx, builder) =>
+            {
+                DependencyHelper.ServiceCollection.AddSingleton(p => builder);
+                ConfigurationHelper.BindBuilder(builder);
+                ZeroFlowControl.LoadConfig();
+
+                ZeroAppOption.Instance.AutoDiscover = autoDiscovery;
+                ZeroAppOption.Instance.Discovery = discovery;
+                ConfigurationHelper.OnConfigurationUpdate = cfg => ctx.Configuration = cfg;
+                ctx.Configuration = ConfigurationHelper.Root;
+            })
+            .ConfigureServices((ctx, services) =>
+            {
+                DependencyHelper.Binding(services);
+                services.AddHostedService<ZeroHostedService>();
+                registAction(services);
+                ZeroApp.AddDependency(services);
+            });
+        }
+
+        #region AspNet截取
 
         /// <summary>
         ///     调用
@@ -140,5 +185,6 @@ namespace ZeroTeam.MessageMVC.Http
             }
         }
 
+        #endregion
     }
 }

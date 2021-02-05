@@ -15,6 +15,12 @@
             </summary>
             <param name="services"></param>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQApp.AddMessageMvcRabbitMQClient(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            使用RabbitMQ
+            </summary>
+            <param name="services"></param>
+        </member>
         <member name="T:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQConsumerAttribute">
             <summary>
                 表示RabbitMQ消费者
@@ -100,53 +106,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQFlow">
-            <summary>
-                RabbitMQ流程处理
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQFlow.Instance">
-            <summary>
-            单例
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQFlow.connection">
-            <summary>
-            连接对象
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQFlow.ZeroTeam#MessageMVC#IZeroDependency#Name">
-            <summary>
-            实例名称
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQFlow.ZeroTeam#MessageMVC#IZeroMiddleware#Level">
-            <summary>
-            等级
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQFlow.ZeroTeam#MessageMVC#ILifeFlow#Open">
-            <summary>
-            开启
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQFlow.ZeroTeam#MessageMVC#ILifeFlow#Destory">
-            <summary>
-            关闭
-            </summary>
-        </member>
-        <member name="F:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQFlow.channels">
-            <summary>
-            当前通道
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQFlow.GetChannel(System.String)">
-            <summary>
-            取得通道
-            </summary>
-            <param name="name">消息</param>
-            <returns></returns>
-        </member>
         <member name="T:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQOption">
             <summary>
             RabbitMQ配置
@@ -190,6 +149,26 @@
         <member name="P:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQOption.AsyncPost">
             <summary>
             是否异步发送
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQOption.ZeroTeam#MessageMVC#IZeroOption#SupperUrl">
+            <summary>
+            支持地址
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQOption.ZeroTeam#MessageMVC#IZeroOption#OptionName">
+            <summary>
+            配置名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQOption.ZeroTeam#MessageMVC#IZeroOption#SectionName">
+            <summary>
+            节点名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQOption.ZeroTeam#MessageMVC#IZeroOption#IsDynamic">
+            <summary>
+            是否动态配置
             </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQWrokType">
@@ -262,16 +241,46 @@
                 RabbitMQ消息发布
             </summary>
         </member>
+        <member name="F:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQPoster.Instance">
+            <summary>
+            单例
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQPoster.LifeFlow">
+            <summary>
+            征集周期管理器
+            </summary>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQPoster.#ctor">
             <summary>
             构造
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQPoster.DoPost(ZeroTeam.MessageMVC.MessageQueue.QueueItem)">
+        <member name="F:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQPoster.connection">
             <summary>
-            生产消息
+            连接对象
             </summary>
-            <param name="item">消息</param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQPoster.ZeroTeam#MessageMVC#IZeroDiscover#Discovery">
+            <summary>
+            发现期间开启任务
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQPoster.ZeroTeam#MessageMVC#ILifeFlow#Destroy">
+            <summary>
+            关闭
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQPoster.channels">
+            <summary>
+            当前通道
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQPoster.GetChannel(System.String)">
+            <summary>
+            取得通道
+            </summary>
+            <param name="name">消息</param>
             <returns></returns>
         </member>
     </members>

@@ -24,8 +24,8 @@ namespace ZeroTeam.MessageMVC.Context
                     Option = opt,
                     Start = DateTime.Now,
                     LocalId = message.ID,
-                    LocalApp = $"{ZeroAppOption.Instance.ShortName ?? ZeroAppOption.Instance.AppName}({ZeroAppOption.Instance.AppVersion})",
-                    LocalMachine = $"{ZeroAppOption.Instance.HostName}({ZeroAppOption.Instance.LocalIpAddress})"
+                    LocalApp = ZeroAppOption.Instance.LocalApp,
+                    LocalMachine = ZeroAppOption.Instance.LocalMachine
                 };
             return new TraceInfo
             {
@@ -39,10 +39,12 @@ namespace ZeroTeam.MessageMVC.Context
         /// </summary>
         public static void CheckRequestTraceInfo(this IMessageItem message)
         {
-            if (message.TraceInfo.Option.HasFlag(MessageTraceType.Request))
+            if (message.TraceInfo == null)
+                message.TraceInfo = CreateTraceInfo(message);
+            else if (message.TraceInfo.Option.HasFlag(MessageTraceType.Request))
             {
-                message.TraceInfo.LocalApp = $"{ZeroAppOption.Instance.ShortName ?? ZeroAppOption.Instance.AppName}({ZeroAppOption.Instance.AppVersion})";
-                message.TraceInfo.LocalMachine = $"{ZeroAppOption.Instance.HostName}({ZeroAppOption.Instance.LocalIpAddress})";
+                message.TraceInfo.LocalApp = ZeroAppOption.Instance.LocalApp;
+                message.TraceInfo.LocalMachine = ZeroAppOption.Instance.LocalMachine;
             }
         }
 
@@ -64,7 +66,7 @@ namespace ZeroTeam.MessageMVC.Context
                 message.TraceInfo = null;
                 return;
             }
-            var info= message.TraceInfo = new TraceInfo
+            var info = message.TraceInfo = new TraceInfo
             {
                 Option = opttion,
                 Start = DateTime.Now
@@ -72,9 +74,9 @@ namespace ZeroTeam.MessageMVC.Context
             var ctxTraceInfo = ctx?.TraceInfo;
             if (opttion.HasFlag(MessageTraceType.LinkTrace))
             {
-                if(ctxTraceInfo != null)
+                if (ctxTraceInfo != null)
                 {
-                    info.Level = ctxTraceInfo.Level+1;
+                    info.Level = ctxTraceInfo.Level + 1;
                     info.TraceId = ctxTraceInfo.TraceId;
                     info.LocalId = message.ID;
                     info.CallId = ctxTraceInfo.LocalId;
@@ -93,16 +95,16 @@ namespace ZeroTeam.MessageMVC.Context
                     info.RequestApp = ctxTraceInfo.RequestApp;
                     info.RequestPage = ctxTraceInfo.RequestPage;
                     info.CallApp = ctxTraceInfo.LocalApp;
-                    info.CallMachine = ctxTraceInfo.CallMachine;
+                    info.CallMachine = ctxTraceInfo.LocalMachine;
                 }
                 else
                 {
-                    info.RequestApp = $"{ZeroAppOption.Instance.ShortName ?? ZeroAppOption.Instance.AppName}({ZeroAppOption.Instance.AppVersion})";
-                    info.CallApp = $"{ZeroAppOption.Instance.ShortName ?? ZeroAppOption.Instance.AppName}({ZeroAppOption.Instance.AppVersion})";
-                    info.CallMachine = $"{ZeroAppOption.Instance.HostName}({ZeroAppOption.Instance.LocalIpAddress})";
+                    info.RequestApp = ZeroAppOption.Instance.LocalApp;
+                    info.CallApp = ZeroAppOption.Instance.LocalApp;
+                    info.CallMachine = ZeroAppOption.Instance.LocalMachine;
                 }
             }
-            if (opttion.HasFlag(MessageTraceType.Token)&& ctxTraceInfo != null)
+            if (opttion.HasFlag(MessageTraceType.Token) && ctxTraceInfo != null)
                 info.Token = ctxTraceInfo.Token;
             if (opttion.HasFlag(MessageTraceType.Headers) && ctxTraceInfo != null)
                 info.Headers = ctxTraceInfo.Headers;
@@ -139,8 +141,8 @@ namespace ZeroTeam.MessageMVC.Context
             }
 
             message.Trace.CallId = message.ID;
-            message.Trace.CallApp = $"{ZeroAppOption.Instance.ShortName ?? ZeroAppOption.Instance.AppName}({ZeroAppOption.Instance.AppVersion})";
-            message.Trace.CallMachine = $"{ZeroAppOption.Instance.HostName}({ZeroAppOption.Instance.LocalIpAddress})";
+            message.Trace.CallApp = ZeroAppOption.Instance.LocalApp;
+            message.Trace.CallMachine = ZeroAppOption.Instance.LocalMachine;
         }
 */
     }

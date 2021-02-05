@@ -15,8 +15,10 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
     public class HttpTest3Controler : IApiController
     {
         public ILogger Logger { get; set; }
-        void Debug(int step, object a, object b)
+        async Task Debug(int step, object a, object b)
         {
+            await MessagePoster.CallApiAsync("test3", "Hello2");
+
             var builder = new StringBuilder();
             builder.Append(step);
             builder.Append('.');
@@ -29,16 +31,25 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         /// <summary>
         /// 测试接口
         /// </summary>
+        [Route("Hello2")]
+        public IApiResult<string> Test2()
+        {
+            return ApiResultHelper.Succees("Hello2");
+        }
+
+        /// <summary>
+        /// 测试接口
+        /// </summary>
         [Route("arg")]
-        public IApiResult<string> Hello(string name, int count, Guid guid, byte[] file, long id = -1, Em em = Em.Test)
+        public async Task<IApiResult<string>> Hello(string name, int count, Guid guid, byte[] file, long id = -1, Em em = Em.Test)
         {
             var test3 = DependencyHelper.GetService<TestObject>();
             var test2 = DependencyHelper.GetService<ITest>(nameof(TestObject));
 
             var ctx = context = GlobalContext.Current;
-            Debug(1, context, context);
+          await  Debug(1, context, context);
             ScopeRuner.RunScope("Hello2", Hello2);
-            Debug(1, ctx, GlobalContext.Current);
+            await Debug(1, ctx, GlobalContext.Current);
             if (DateTime.Now.Ticks % 13 == 11)
                 Logger.Exception(new Exception("故意的"));
             if (DateTime.Now.Ticks % 23 == 19)
@@ -50,22 +61,22 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         object context;
         async Task Hello2()
         {
-            Debug(2, context, GlobalContext.Current);
+            await Debug(2, context, GlobalContext.Current);
             context = GlobalContext.Current;
             await Task.Yield();
             await Task.Delay(100);
-            Debug(2, context, GlobalContext.Current);
+            await Debug(2, context, GlobalContext.Current);
             await Hello3();
-            Debug(2, context, GlobalContext.Current);
+            await Debug(2, context, GlobalContext.Current);
             ScopeRuner.DisposeLocal();
         }
         async Task Hello3()
         {
-            Debug(3, context, GlobalContext.Current);
+            await Debug(3, context, GlobalContext.Current);
             await Task.Yield();
-            Debug(3, context, GlobalContext.Current);
+            await Debug(3, context, GlobalContext.Current);
             await Task.Delay(100);
-            Debug(3, context, GlobalContext.Current);
+            await Debug(3, context, GlobalContext.Current);
         }
     }
     public enum Em

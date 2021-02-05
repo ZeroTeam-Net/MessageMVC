@@ -1,16 +1,9 @@
-using Agebull.Common.Configuration;
-using Agebull.Common.Ioc;
-using Agebull.Common.Logging;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Configuration;
+using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Documents;
 using ZeroTeam.MessageMVC.Messages;
-using ZeroTeam.MessageMVC.RedisMQ;
 using ZeroTeam.MessageMVC.Services;
 using ZeroTeam.MessageMVC.Tcp;
 using ZeroTeam.MessageMVC.ZeroApis;
@@ -22,7 +15,14 @@ namespace ZeroTeam.MessageMVC.Http
 
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            try
+            {
+                CreateHostBuilder(args).Build().Run();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
 
         static IHostBuilder CreateHostBuilder(string[] args)
@@ -34,7 +34,7 @@ namespace ZeroTeam.MessageMVC.Http
                 .UseMessageMVC(services =>
                 {
                     services.AddMessageMvcTcpClient();
-                    services.AddMessageMvcHttp();
+                    services.AddMessageMvcHttpClient();
                 })
                 //.UseUrls(webBuilder.Configuration.GetSection("Http:Url").Value)
                 .UseKestrel((ctx, opt) =>

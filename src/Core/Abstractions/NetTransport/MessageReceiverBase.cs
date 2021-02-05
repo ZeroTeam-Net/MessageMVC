@@ -16,6 +16,17 @@ namespace ZeroTeam.MessageMVC.Messages
     public class MessageReceiverBase : IMessagePoster
     {
         /// <summary>
+        /// 取得生命周期对象
+        /// </summary>
+        /// <returns></returns>
+        ILifeFlow IMessagePoster.GetLife() => null;
+
+        /// <summary>
+        /// 是否本地接收者
+        /// </summary>
+        bool IMessagePoster.IsLocalReceiver => true;
+
+        /// <summary>
         /// 内部构造
         /// </summary>
         /// <param name="name"></param>
@@ -28,16 +39,6 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 是否可启动本地隧道
         /// </summary>
         protected bool CanLocalTunnel { get; set; }
-
-        /// <summary>
-        /// 是否本地接收者
-        /// </summary>
-        bool IMessageWorker.IsLocalReceiver => true;
-
-        /// <summary>
-        /// 是否可用
-        /// </summary>
-        bool IMessageWorker.CanDo => state == StationStateType.Run;
 
         /// <summary>
         /// 名称
@@ -67,7 +68,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 初始化
         /// </summary>
-        Task ILifeFlow.Initialize()
+        public Task Initialize()
         {
             if (state >= StationStateType.Initialized)
                 return Task.CompletedTask;

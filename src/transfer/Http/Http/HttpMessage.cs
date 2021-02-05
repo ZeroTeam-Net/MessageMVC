@@ -45,12 +45,6 @@ namespace ZeroTeam.MessageMVC.Http
         /// </summary>
         public Dictionary<string, byte[]> BinaryDictionary { get; set; }
 
-        /// <summary>
-        /// 数据状态
-        /// </summary>
-        [JsonIgnore]
-        public MessageDataState DataState { get; set; }
-
         private object resultData;
         /// <summary>
         /// 处理结果,对应状态的解释信息
@@ -175,9 +169,9 @@ namespace ZeroTeam.MessageMVC.Http
             switch (scope)
             {
                 case ArgumentScope.Dictionary:
-                    return ExtensionDictionary.Count > 0 ? serialize.ToString(ExtensionDictionary) : null;
+                    return ExtensionDictionary.Count > 0 ? serialize.ToString(ExtensionDictionary) : Argument;
                 default:
-                    return HttpContent;
+                    return HttpContent ?? Argument;
             }
         }
 
@@ -210,11 +204,12 @@ namespace ZeroTeam.MessageMVC.Http
                 case ArgumentScope.Dictionary:
                     if (ExtensionDictionary.TryGetValue(name, out var ha))
                         return ha;
-                    return null;
+                    break;
             }
-            ContentObject ??= string.IsNullOrWhiteSpace(HttpContent)
+            var content = HttpContent ?? Argument;
+            ContentObject ??= string.IsNullOrWhiteSpace(content)
                     ? new JObject()
-                    : (JObject)JsonConvert.DeserializeObject(HttpContent);
+                    : (JObject)JsonConvert.DeserializeObject(content);
 
             if (ContentObject.TryGetValue(name, out var vl))
                 return vl?.ToString();

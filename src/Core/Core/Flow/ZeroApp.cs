@@ -22,10 +22,11 @@ namespace ZeroTeam.MessageMVC
         ///     配置使用MessageMVC
         /// </summary>
         /// <param name="builder">主机生成器</param>
-        /// <param name="action">配置注册方法</param>
-        public static IHostBuilder UseMessageMVC(this IHostBuilder builder, Action<IServiceCollection> action)
+        /// <param name="registAction">配置注册方法</param>
+        public static IHostBuilder UseMessageMVC(this IHostBuilder builder, Action<IServiceCollection> registAction)
         {
-            return UseMessageMVC(builder, true, action);
+            UseMessageMVC(builder, registAction, true, null);
+            return builder;
         }
 
         /// <summary>
@@ -33,48 +34,79 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         /// <param name="builder">主机生成器</param>
         /// <param name="autoDiscove">是否自动发现API方法</param>
-        /// <param name="action">配置注册方法</param>
-        public static IHostBuilder UseMessageMVC(this IHostBuilder builder, bool autoDiscove, Action<IServiceCollection> action)
+        /// <param name="registAction">配置注册方法</param>
+        public static IHostBuilder UseMessageMVC(this IHostBuilder builder, bool autoDiscove, Action<IServiceCollection> registAction)
         {
-            builder.ConfigureAppConfiguration((ctx, builder) =>
-                {
-                    DependencyHelper.ServiceCollection.AddSingleton(p => builder);
-                    ConfigurationHelper.BindBuilder(builder);
-                    ConfigurationHelper.Flush();
-                    ctx.Configuration = ConfigurationHelper.Root;
-                    ZeroAppOption.LoadConfig();
-                    ZeroAppOption.Instance.AutoDiscover = autoDiscove;
-                })
-                .ConfigureServices((ctx, services) =>
-                {
-                    DependencyHelper.Binding(services);
-                    services.AddHostedService<ZeroHostedService>();
-                    action(services);
-                    AddDependency(services, false);
-                });
+            UseMessageMVC(builder, registAction, autoDiscove, null);
             return builder;
         }
 
         /// <summary>
+        ///     配置使用MessageMVC
+        /// </summary>
+        /// <param name="builder">主机生成器</param>
+        /// <param name="registAction">配置注册方法</param>
+        /// <param name="discovery">自定义API发现方法</param>
+        public static IHostBuilder UseMessageMVC(this IHostBuilder builder, Action<IServiceCollection> registAction, Action discovery)
+        {
+            UseMessageMVC(builder, registAction, false, discovery);
+            return builder;
+        }
+
+        /// <summary>
+        ///     配置使用MessageMVC
+        /// </summary>
+        /// <param name="builder">主机生成器</param>
+        /// <param name="registAction">配置注册方法</param>
+        /// <param name="autoDiscovery">自动发现</param>
+        /// <param name="discovery">自定义API发现方法</param>
+        internal static void UseMessageMVC(this IHostBuilder builder, Action<IServiceCollection> registAction, bool autoDiscovery, Action discovery)
+        {
+            Console.Write(@"-------------------------------------------------------------
+---------------> ");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(@"Wecome ZeroTeam MessageMVC");
+            Console.ResetColor();
+            Console.WriteLine(@" <----------------
+-------------------------------------------------------------");
+            builder.ConfigureAppConfiguration((ctx, builder) =>
+            {
+                DependencyHelper.ServiceCollection.AddSingleton(p => builder);
+                ConfigurationHelper.BindBuilder(builder);
+                ZeroFlowControl.LoadConfig();
+                ZeroAppOption.Instance.AutoDiscover = autoDiscovery;
+                ZeroAppOption.Instance.Discovery = discovery;
+                ConfigurationHelper.OnConfigurationUpdate = cfg => ctx.Configuration = cfg;
+                ctx.Configuration = ConfigurationHelper.Root;
+            })
+            .ConfigureServices((ctx, services) =>
+            {
+                DependencyHelper.Binding(services);
+                services.AddHostedService<ZeroHostedService>();
+                registAction(services);
+                AddDependency(services);
+            });
+        }
+        /// <summary>
         /// 检查并注入配置
         /// </summary>
-        internal static void AddDependency(IServiceCollection services, bool msJson)
+        internal static void AddDependency(IServiceCollection services)
         {
+            ZeroFlowControl.LoadAddIn();
             //IZeroContext构造
-            services.AddTransient<IZeroContext, ZeroContext>();
-            //配置\依赖对象初始化,系统配置获取
-            services.AddTransient<IFlowMiddleware, ConfigMiddleware>();
-            //消息选择器
+            services.AddSingleton<IZeroOption>(pri=> MessagePostOption.Instance);
+            services.TryAddTransient<IUser, UserInfo>();
+            services.TryAddTransient<IZeroContext, ZeroContext>();
+            //消息发送
             services.AddTransient<IFlowMiddleware, MessagePoster>();
             //API路由与执行
             services.AddTransient<IMessageMiddleware, ApiExecuter>();
-            //并行发送器
-            services.AddTransient<IFlowMiddleware, ParallelPoster>();
+            //消息格式
             services.AddTransient<IInlineMessage, InlineMessage>();
             services.AddTransient<IMessageResult, MessageResult>();
 
             //序列化工具
-            if (msJson)
+            if (ZeroAppOption.Instance.UsMsJson)
             {
                 services.TryAddTransient<ISerializeProxy, JsonSerializeProxy>();
                 services.TryAddTransient<IJsonSerializeProxy, JsonSerializeProxy>();
@@ -86,7 +118,7 @@ namespace ZeroTeam.MessageMVC
                 services.TryAddTransient<IJsonSerializeProxy, NewtonJsonSerializeProxy>();
                 services.TryAddTransient<IXmlSerializeProxy, XmlSerializeProxy>();
             }
-
+            DependencyHelper.Flush();
         }
 
         static int isInitialized;
@@ -94,9 +126,8 @@ namespace ZeroTeam.MessageMVC
         /// 启动主流程控制器，发现指定程序集的Api，适用于测试的场景
         /// </summary>
         /// <param name="services">依赖服务</param>
-        /// <param name="msJson">true 使用System.Text.Json,false 使用NewtonsoftJson</param>
         /// <param name="assembly">需要发现服务的程序集</param>
-        public static async Task UseTest(this IServiceCollection services, Assembly assembly = null, bool msJson = false)
+        public static async Task UseTest(this IServiceCollection services, Assembly assembly = null)
         {
             if (Interlocked.Increment(ref isInitialized) != 1)
             {
@@ -105,7 +136,7 @@ namespace ZeroTeam.MessageMVC
             services.TryAddTransient<IServiceReceiver, EmptyReceiver>();
             services.TryAddTransient<IMessageConsumer, EmptyReceiver>();
             services.TryAddTransient<INetEvent, EmptyReceiver>();
-            AddDependency(services, msJson);
+            AddDependency(services);
             //ZeroFlowControl.Check();
             //ZeroFlowControl.Discove(assembly);
             //ZeroFlowControl.Check();

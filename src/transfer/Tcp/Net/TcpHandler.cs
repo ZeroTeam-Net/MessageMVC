@@ -4,7 +4,7 @@ using BeetleX;
 using BeetleX.EventArgs;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Threading;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.Services;
@@ -38,7 +38,7 @@ namespace ZeroTeam.MessageMVC.Tcp
                 level = LogLevel.Debug;
             else level = LogLevel.Trace;
 
-            Logger.Log(level,e.Message);
+            Logger.Log(level, e.Message);
 
         }
         public override void Error(IServer server, ServerErrorEventArgs e)
@@ -47,10 +47,6 @@ namespace ZeroTeam.MessageMVC.Tcp
                 Logger.Exception(e.Error, e.Message);
             else
                 Logger.Error(e.Message);
-        }
-        protected override void OnReceiveMessage(IServer server, ISession session, object message)
-        {
-            base.OnReceiveMessage(server, session, message);
         }
 
         public override void SessionReceive(IServer server, SessionReceiveEventArgs e)
@@ -61,58 +57,60 @@ namespace ZeroTeam.MessageMVC.Tcp
 
         public override void Connecting(IServer server, ConnectingEventArgs e)
         {
-            Logger.Trace(()=>$"远程开始连接:{e.Socket.RemoteEndPoint}");
+            Logger.Trace(() => $"远程开始连接:{e.Socket.RemoteEndPoint}");
             base.Connecting(server, e);
         }
         public override void Connected(IServer server, ConnectedEventArgs e)
         {
-            Logger.Trace(()=>$"远程连接成功:{e.Session.RemoteEndPoint}");
+            Sessions.Add(e.Session.ID, e.Session);
+            Logger.Trace(() => $"远程连接成功:{e.Session.RemoteEndPoint}");
             base.Connected(server, e);
         }
+
         public override void Disconnect(IServer server, SessionEventArgs e)
         {
-            Logger.Trace(()=>$"远程连接关闭:{e.Session.RemoteEndPoint}");
+            Sessions.Remove(e.Session.ID);
+            Logger.Trace(() => $"远程连接关闭:{e.Session.RemoteEndPoint}");
             base.Disconnect(server, e);
         }
+        Dictionary<long, ISession> Sessions = new Dictionary<long, ISession>();
         private void OnReceive(SessionReceiveEventArgs e)
         {
             TcpOption.Instance.ConcurrencySemaphore.Wait();
             var pipeStream = e.Stream.ToPipeStream();
-            
-            if (pipeStream.TryReadLine(out var message))
+
+            if (!pipeStream.TryReadLine(out var message) || message == null)
             {
-                if (message == null || message.Trim('\0').IsNullOrEmpty())
-                {
-                    return;
-                }
-                if (!ZeroAppOption.Instance.IsRuning)
-                {
-                    try
-                    {
-                        pipeStream.WriteLine(ApiResultHelper.PauseJson);
-                        e.Session.Stream.Flush();
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Trace(()=>$"TcpHandler.OnReceive:{ex}");
-                    }
-                }
-                else
-                {
-                    ScopeRuner.RunScope("TcpHandler", OnMessage, (message, e.Session));
-                }
+                return;
             }
+            message = message.Trim('\0').Trim();
+            if (message.IsBlank())
+            {
+                return;
+            }
+            ScopeRuner.RunScope("TcpHandler", OnMessage, (message, e.Session));
         }
 
         async Task OnMessage((string text, ISession session) arg)
         {
             FlowTracer.BeginMonitor("TcpHandler");
             FlowTracer.MonitorTrace($"【原始消息】：{arg.session.RemoteEndPoint}\n{arg.text}");
+            var writer = new TcpWriter
+            {
+                Session = arg.session
+            };
             try
             {
                 var message = SmartSerializer.ToMessage(arg.text);
-                if(message == null)
+                if (message == null)
                 {
+                    return;
+                }
+                if (!ZeroAppOption.Instance.IsRuning)
+                {
+                    message.Result = ApiResultHelper.PauseJson;
+                    message.State = MessageState.Cancel;
+                    await writer.WriteResult(message);
                     return;
                 }
                 var service = ZeroFlowControl.GetService(message.Service) ?? new ZeroService
@@ -122,28 +120,30 @@ namespace ZeroTeam.MessageMVC.Tcp
                     Serialize = DependencyHelper.GetService<ISerializeProxy>()
                 };
 
-                await MessageProcessor.OnMessagePush(service, message, false, new TcpWriter
-                {
-                    Session = arg.session
-                });
-            }
-            catch (Exception ex)
-            {
-                FlowTracer.MonitorDetails($"【发生错误】\n{ex}");
-                try
-                {
-                    var pipeStream = arg.session.Stream.ToPipeStream();
-                    pipeStream.WriteLine(ApiResultHelper.UnknowErrorJson);
-                    arg.session.Stream.Flush();
-                }
-                catch (Exception exx)
-                {
-                    FlowTracer.MonitorDetails($"【又发生错误】\n{exx}");
-                }
+                await MessageProcessor.OnMessagePush(service, message, false, writer);
+                return;
             }
             finally
             {
                 TcpOption.Instance.ConcurrencySemaphore.Release();
+            }
+        }
+
+        internal async Task Publish(IInlineMessage message)
+        {
+            ReadOnlyMemory<byte> json = SmartSerializer.ToBytes(message);
+            foreach (var session in Sessions.Values)
+            {
+                try
+                {
+                    var pipeStream = session.Stream.ToPipeStream();
+                    await pipeStream.WriteAsync(json);
+                    session.Stream.Flush();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Exception(ex, "Publish");
+                }
             }
         }
     }

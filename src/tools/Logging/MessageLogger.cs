@@ -9,8 +9,6 @@ using Agebull.Common.Base;
 using Agebull.Common.Ioc;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Context;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
@@ -27,33 +25,47 @@ namespace Agebull.Common.Logging
 
         async void ILogger.Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            /*if (ScopeRuner.InScope)
+            if (ZeroAppOption.Instance.IsClosed || !LogOption.Instance.Enable || logLevel < LogOption.Instance.Level)
             {
-                var message = GlobalContext.Current?.Message;
-                if (message != null)
+                return;
+            }
+            try
+            {
+                var item = new LogItem
                 {
-                    item.MessageId = message.ID;
-                    item.ApiName = $"{message.Service}/{message.Method}"; 
-                    if (message.Trace != null)
+                    Time = DateTime.Now,
+                    LogLevel = logLevel,
+                    LogId = eventId.Id,
+                    LoggerName = LoggerName,
+                    Message = state?.ToString(),
+                    Exception = exception?.ToString(),
+                    Service = ZeroAppOption.Instance.LocalApp,
+                    Machine = ZeroAppOption.Instance.LocalMachine
+                };
+                if (ScopeRuner.InScope)
+                {
+                    item.UserId = GlobalContext.User?.UserId;
+                    var message = GlobalContext.Current?.Message;
+                    if (message != null)
                     {
-                        item.LocalId = message.Trace.LocalId;
-                        item.CallId = message.Trace.CallId;
-                        item.TraceId = message.Trace.TraceId;
+                        item.MessageId = message.ID;
+                        item.ApiName = $"{message.Service}/{message.Method}";
+                        if (message.TraceInfo != null)
+                        {
+                            item.TraceId = message.TraceInfo.TraceId;
+                            item.LocalId = message.TraceInfo.LocalId;
+                            item.CallId = message.TraceInfo.CallId;
+                        }
                     }
                 }
-                var user = GlobalContext.User;
-                if(user != null)
-                    item.UserId = user.UserId;
-            }*/
-            await MessagePoster.PublishAsync(LogOption.Instance.Service, "text", new LogItem
+                await MessagePoster.PublishAsync(LogOption.Instance.Service, "text", item);
+            }
+            catch(Exception ex)
             {
-                Time = DateTime.Now,
-                LogLevel = logLevel,
-                LogId = eventId.Id,
-                LoggerName = LoggerName,
-                Message = state?.ToString(),
-                Exception = exception?.ToString()
-            });
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(ex);
+                Console.ResetColor();
+            }
         }
 
         bool ILogger.IsEnabled(LogLevel logLevel)

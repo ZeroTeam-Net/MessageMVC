@@ -23,19 +23,9 @@ namespace ZeroTeam.MessageMVC
         public bool IsDevelopment { get; set; }
 
         /// <summary>
-        ///     当前应用版本号
-        /// </summary>
-        public string AppVersion { get; set; }
-
-        /// <summary>
         ///     机器器名称
         /// </summary>
         public string HostName { get; set; }
-
-        /// <summary>
-        ///     当前服务器的跟踪名称
-        /// </summary>
-        public string TraceName { get; set; }
 
         /// <summary>
         ///     应用所在的顶级目录
@@ -45,26 +35,57 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         ///     程序所在地址
         /// </summary>
-        [IgnoreDataMember]
         public string BinPath { get; set; }
 
         /// <summary>
         ///     本机IP地址
         /// </summary>
-        [IgnoreDataMember]
         public string LocalIpAddress { get; set; }
 
         /// <summary>
         ///     是否在Linux黑环境下
         /// </summary>
-        [IgnoreDataMember]
         public bool IsLinux { get; set; }
 
         /// <summary>
         /// 全部自动发现
         /// </summary>
-        [IgnoreDataMember]
         public bool AutoDiscover { get; set; }
+
+        /// <summary>
+        /// 自定义发现方法
+        /// </summary>
+        public Action Discovery { get; set; }
+
+        /// <summary>
+        /// 本地应用名称
+        /// </summary>
+        public string LocalApp { get; set; }
+
+        /// <summary>
+        /// 本地机器名称
+        /// </summary>
+        public string LocalMachine { get; set; }
+
+        /// <summary>
+        ///     本地数据文件夹
+        /// </summary>
+        public string DataFolder { get; set; }
+
+        /// <summary>
+        ///     本地配置文件夹
+        /// </summary>
+        public string ConfigFolder { get; set; }
+
+        /// <summary>
+        ///     插件地址,如为空则与运行目录相同
+        /// </summary>
+        public string AddInPath { get; set; }
+
+        /// <summary>
+        ///     使用System.Text.Json序列化，而不是使用默认的Newtonsoft.Json
+        /// </summary>
+        public bool UsMsJson { get; set; }
 
         #endregion
 
@@ -111,12 +132,22 @@ namespace ZeroTeam.MessageMVC
 
         #endregion
 
-        #region TraceOption
+        #region TraceOption & ServiceMap
+
+        /// <summary>
+        ///     服务映射，即将对应服务名称替换成另一个服务
+        /// </summary>
+        public Dictionary<string, string> ServiceMap { get; set; }
+
+        /// <summary>
+        /// 跟踪信息内容配置
+        /// </summary>
+        public Dictionary<string, MessageTraceType> TraceOption { get; set; }
 
         /// <summary>
         /// 默认跟踪信息内容配置
         /// </summary>
-        internal MessageTraceType defaultTraceOption = MessageTraceType.Simple;
+        public MessageTraceType DefaultTraceOption { get; set; } = MessageTraceType.Simple;
 
 
         /// <summary>
@@ -126,8 +157,8 @@ namespace ZeroTeam.MessageMVC
         /// <returns>正确的内容</returns>
         public MessageTraceType GetTraceOption(string service)
         {
-            if (TraceOption == null || TraceOption.Count == 0 || !TraceOption.TryGetValue(service,out var opt))
-                return defaultTraceOption;
+            if (TraceOption == null || TraceOption.Count == 0 || !TraceOption.TryGetValue(service, out var opt))
+                return DefaultTraceOption;
             return opt;
 
         }
@@ -154,37 +185,8 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 实例
         /// </summary>
-        public static ZeroAppOption Instance { get; }
+        public static ZeroAppOption Instance { get; internal set; }
 
-        static ZeroAppOption()
-        {
-            var asName = Assembly.GetEntryAssembly().GetName();
-            Instance = new ZeroAppOption
-            {
-                AppName = asName.Name,
-                AppVersion = asName.Version?.ToString(),
-                BinPath = Environment.CurrentDirectory,
-                MaxCloseSecond = 30,
-                defaultTraceOption = MessageTraceType.Simple,
-                TraceOption = new Dictionary<string, MessageTraceType>(StringComparer.OrdinalIgnoreCase),
-                IsLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
-            };
-        }
-        /// <summary>
-        /// 载入配置
-        /// </summary>
-        public static void LoadConfig()
-        {
-            Instance.CopyByHase(ConfigurationHelper.Get<ZeroAppConfig>("MessageMVC:Option"));
-        }
-
-        /// <summary>
-        /// 刷新
-        /// </summary>
-        public void Flush()
-        {
-
-        }
         #endregion
 
         #region State
@@ -245,6 +247,11 @@ namespace ZeroTeam.MessageMVC
         ///     运行状态（本地未关闭）
         /// </summary>
         public bool IsAlive => _appState < StationState.Closing;
+
+        /// <summary>
+        ///     可以运行状态（本地正在运行或未关闭）
+        /// </summary>
+        public bool CanPost => _appState > StationState.Check && _appState < StationState.Destroy;
 
         /// <summary>
         ///     可以运行状态（本地正在运行或未关闭）

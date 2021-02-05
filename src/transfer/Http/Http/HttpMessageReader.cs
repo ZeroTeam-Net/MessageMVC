@@ -69,6 +69,7 @@ namespace ZeroTeam.MessageMVC.Http
                 Uri = request.Path.Value,
                 HttpMethod = request.Method.ToUpper(),
                 Argument = content,
+                HttpContent = content,
                 ExtensionDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
                 DataState = MessageDataState.ArgumentOffline
             };
@@ -196,7 +197,7 @@ namespace ZeroTeam.MessageMVC.Http
             }
             GetHeaderAndSet(request, "Authorization", token =>
             {
-                if (token.IsNullOrEmpty())
+                if (token.IsBlank())
                 {
                     token = request.Cookies["access_token"];
                 }
@@ -204,7 +205,7 @@ namespace ZeroTeam.MessageMVC.Http
                 {
                     token = token.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries).Last();
                 }
-                Message.TraceInfo.Token = token.IsNullOrEmpty() || token.Length < 12 ? null : token;
+                Message.TraceInfo.Token = token.IsBlank() || token.Length < 12 ? null : token;
             });
 
             if (Message.TraceInfo.Option.HasFlag(MessageTraceType.Headers))

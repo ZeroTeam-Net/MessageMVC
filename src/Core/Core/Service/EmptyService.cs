@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Documents;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
@@ -44,9 +43,9 @@ namespace ZeroTeam.MessageMVC.Services
         public bool IsAutoService { get; set; }
 
         #endregion
-        
+
         #region 状态管理
-            
+
         /// <summary>
         ///     运行状态
         /// </summary>

@@ -1,11 +1,11 @@
 ﻿using Agebull.Common.Configuration;
 
-namespace ZeroTeam.MessageMVC.Tools
+namespace ZeroTeam.MessageMVC.PageInfoAutoSave
 {
     /// <summary>
     /// 扩展工具配置
     /// </summary>
-    public class ToolsOption
+    public class ToolsOption : IZeroOption
     {
         /// <summary>
         ///     启用页面信息记录
@@ -22,24 +22,52 @@ namespace ZeroTeam.MessageMVC.Tools
         /// </summary>
         public string PageInfoApi { get; set; }
 
+        #region IZeroOption
+
         /// <summary>
         /// 实例
         /// </summary>
         public static readonly ToolsOption Instance = new ToolsOption();
 
-        static ToolsOption()
-        {
-            ConfigurationHelper.RegistOnChange<ToolsOption>("MessageMVC:Tools", Instance.Update, true);
-        }
+        const string sectionName = "MessageMVC:Tools";
+
+        const string optionName = "HttpClient配置";
+
+        const string supperUrl = "https://";
 
         /// <summary>
-        /// 重新载入并更新
+        /// 支持地址
         /// </summary>
-        private void Update(ToolsOption option)
+        string IZeroOption.SupperUrl => supperUrl;
+
+        /// <summary>
+        /// 配置名称
+        /// </summary>
+        string IZeroOption.OptionName => optionName;
+
+
+        /// <summary>
+        /// 节点名称
+        /// </summary>
+        string IZeroOption.SectionName => sectionName;
+
+        /// <summary>
+        /// 是否动态配置
+        /// </summary>
+        bool IZeroOption.IsDynamic => true;
+
+        void IZeroOption.Load(bool first)
+        {
+            if (first)
+                ConfigurationHelper.RegistOnChange<ToolsOption>("MessageMVC:Tools", Update, true);
+        }
+
+        void Update(ToolsOption option)
         {
             PageInfoService = option.PageInfoService;
             PageInfoApi = option.PageInfoApi;
             EnablePageInfo = option.EnablePageInfo && !string.IsNullOrWhiteSpace(PageInfoService) && !string.IsNullOrWhiteSpace(PageInfoApi);
         }
+        #endregion
     }
 }

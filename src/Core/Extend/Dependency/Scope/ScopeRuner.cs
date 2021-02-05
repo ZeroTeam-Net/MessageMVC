@@ -181,8 +181,18 @@ namespace Agebull.Common.Ioc
             internal void Callback(object _)
             {
                 Begin();
-                action();
-                End();
+                try
+                {
+                    action();
+                }
+                catch (Exception ex)
+                {
+                    ScopeRuner.ScopeLogger.Exception(ex, Name);
+                }
+                finally
+                {
+                    End();
+                }
             }
         }
 
@@ -200,8 +210,19 @@ namespace Agebull.Common.Ioc
             internal async void Callback(object _)
             {
                 Begin();
-                await action();
-                End();
+                await Task.Yield();
+                try
+                {
+                    await action();
+                }
+                catch (Exception ex)
+                {
+                    ScopeRuner.ScopeLogger.Exception(ex, Name);
+                }
+                finally
+                {
+                    End();
+                }
             }
         }
         #endregion
@@ -245,8 +266,18 @@ namespace Agebull.Common.Ioc
             internal void Callback(object state)
             {
                 Begin();
-                action((T)state);
-                End();
+                try
+                {
+                    action((T)state);
+                }
+                catch (Exception ex)
+                {
+                    ScopeRuner.ScopeLogger.Exception(ex, Name);
+                }
+                finally
+                {
+                    End();
+                }
             }
         }
 
@@ -264,8 +295,19 @@ namespace Agebull.Common.Ioc
             internal async void Callback(object state)
             {
                 Begin();
-                await action((T)state);
-                End();
+                await Task.Yield();
+                try
+                {
+                    await action((T)state);
+                }
+                catch (Exception ex)
+                {
+                    ScopeRuner.ScopeLogger.Exception(ex, Name);
+                }
+                finally
+                {
+                    End();
+                }
             }
         }
         #endregion

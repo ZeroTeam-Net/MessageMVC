@@ -80,9 +80,72 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
         #endregion
 
-        #region 程序集发现
+        #region 程序集排除
 
-        private static readonly List<string> knowAssemblies = new List<string>();
+        private static readonly HashSet<string> knowAssemblies = new HashSet<string>();
+
+        static bool CheckAssembly(string file)
+        {
+            try
+            {
+                if (file.IsBlank())
+                {
+                    return false;
+                }
+                if (knowAssemblies.Contains(file))
+                {
+                    return false;
+                }
+                knowAssemblies.Add(file);
+
+                var name = Path.GetFileName(file);
+                if (knowAssemblies.Contains(name))
+                {
+                    return false;
+                }
+                knowAssemblies.Add(name);
+
+                switch (name.Split('.', 2)[0])
+                {
+                    case "System":
+                    case "Microsoft":
+                    case "NuGet":
+                    case "Newtonsoft":
+                        return false;
+                }
+
+                if (name.IsFirst("netstandard") ||
+                    name.IsFirst("BeetleX") ||
+                    name.IsFirst("Agebull.Common.") ||
+                    name.IsMe("CSRedis") ||
+                    name.IsMe("RabbitMQ.Client") ||
+                    name.IsMe("Confluent.Kafka") ||
+                    name.IsMe("ZeroTeam.MessageMVC.Core") ||
+                    name.IsMe("ZeroTeam.MessageMVC.Abstractions") ||
+                    name.IsMe("ZeroTeam.MessageMVC.Tools") ||
+                    name.IsMe("ZeroTeam.MessageMVC.Consul") ||
+                    name.IsMe("ZeroTeam.MessageMVC.ApiContract") ||
+                    name.IsMe("ZeroTeam.MessageMVC.Kafka") ||
+                    name.IsMe("ZeroTeam.MessageMVC.Tcp") ||
+                    name.IsMe("ZeroTeam.MessageMVC.Http") ||
+                    name.IsMe("ZeroTeam.MessageMVC.RabbitMQ") ||
+                    name.IsMe("ZeroTeam.MessageMVC.RedisMQ") ||
+                    name.IsMe("ZeroTeam.MessageMVC.PageInfoAutoSave")
+                    )
+                {
+                    return false;
+                }
+            }
+            catch(Exception ex)
+            {
+                
+                return false;
+            }
+            return true;
+        }
+        #endregion
+
+        #region 程序集发现
 
         /// <summary>
         ///     发现
@@ -95,22 +158,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             var files = Directory.GetFiles(path, "*.dll", SearchOption.TopDirectoryOnly);
             foreach (var file in files)
             {
-                var name = Path.GetFileName(file);
-                if (knowAssemblies.Contains(name))
+                if (!CheckAssembly(file))
                     continue;
-                knowAssemblies.Add(file);
-                var first = name.Split('.', 2)[0];
-                switch (first)
-                {
-                    case "System":
-                    case "Microsoft":
-                    case "NuGet":
-                    case "Newtonsoft":
-                        break;
-                    default:
-                        FindApies(Assembly.LoadFile(file));
-                        break;
-                }
+                FindApies(Assembly.LoadFile(file));
             }
         }
 
@@ -121,6 +171,10 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         {
             foreach (var assembly in assemblies)
             {
+                if (assembly.IsDynamic)
+                    continue;
+                if (!CheckAssembly( assembly.Location))
+                    continue;
                 FindApies(assembly);
             }
         }
@@ -130,32 +184,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         public static void FindApies(Assembly asm)
         {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(asm.Location))
-                    return;
-                var file = Path.GetFileName(asm.Location);
-                if (knowAssemblies.Contains(file))
-                {
-                    return;
-                }
-                knowAssemblies.Add(file);
-                if (asm.FullName == null ||
-                    asm.FullName.Contains("netstandard") ||
-                    asm.FullName.Contains("System.") ||
-                    asm.FullName.Contains("Microsoft.") ||
-                    asm.FullName.Contains("Newtonsoft.") ||
-                    asm.FullName.Contains("Agebull.Common.") ||
-                    asm.FullName.Contains("ZeroTeam.MessageMVC.Abstractions") ||
-                    asm.FullName.Contains("ZeroTeam.MessageMVC.Core"))
-                {
-                    return;
-                }
-            }
-            catch
-            {
-                return;
-            }
             var discover = new ApiDiscover
             {
                 Assembly = asm
@@ -169,22 +197,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 discover.logger.Debug(e2.ToString());
             }
-        }
-
-        /// <summary>
-        /// 查找API
-        /// </summary>
-        void FindApies()
-        {
-            var types = Assembly.GetTypes().Where(p => p.IsSupperInterface(typeof(IApiController))).ToArray();
-            if (types.Length == 0)
-                return;
-            logger.LogDebug("【解析程序集】{asm}", Assembly.FullName);
-            foreach (var type in types)
-            {
-                FindApi(type);
-            }
-            RegistToZero();
         }
 
         #endregion
@@ -205,7 +217,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 if (service == null)
                 {
                     var receiver = serviceInfo.NetBuilder(serviceInfo.Name);
-                    if (receiver == null || receiver is EmptyService )
+                    if (receiver == null || receiver is EmptyService)
                         service = new EmptyService
                         {
                             IsAutoService = true,
@@ -271,6 +283,22 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// 查找API
         /// </summary>
+        void FindApies()
+        {
+            var types = Assembly.GetTypes().Where(p => p.IsSupperInterface(typeof(IApiController))).ToArray();
+            if (types.Length == 0)
+                return;
+            logger.Information("【解析程序集】{asm}", Assembly.FullName);
+            foreach (var type in types)
+            {
+                FindApi(type);
+            }
+            RegistToZero();
+        }
+
+        /// <summary>
+        /// 查找API
+        /// </summary>
         /// <param name="type"></param>
         private void FindApi(Type type)
         {
@@ -279,7 +307,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 return;
             }
-            logger.LogDebug("【解析类型】 {asm}", type.FullName);
+            logger.Debug("【解析类型】 {asm}", type.FullName);
 
             #region 服务类型检测
 

@@ -406,7 +406,7 @@ namespace Agebull.Common.Logging
         [Conditional("monitor")]
         public static void MonitorDetails(Func<string> message)
         {
-            if (!LogMonitorTrace)
+            if (!LogMonitorDebug)
             {
                 return;
             }
@@ -502,14 +502,15 @@ namespace Agebull.Common.Logging
         /// <summary>
         /// 结束监视日志
         /// </summary>
-        public static TraceStep EndMonitor()
+        public static TraceStep EndMonitor(bool clear = true)
         {
             var item = MonitorItem;
             if (item == null || !item.InMonitor)
             {
                 return null;
             }
-            ScopeRuner.MonitorItem = null;
+            if (clear)
+                ScopeRuner.MonitorItem = null;
             item.End();
             return item.Stack.FixValue;
         }
@@ -525,7 +526,7 @@ namespace Agebull.Common.Logging
                 return;
             var texter = new StringBuilder();
             Message(texter, root.Start, root);
-            logger.LogInformation(texter.ToString());
+            logger.Information(texter.ToString());
         }
 
         /// <summary>
@@ -706,7 +707,7 @@ namespace Agebull.Common.Logging
             void IDisposable.Dispose()
             {
                 var item = EndMonitor();
-                _logger.LogInformation(item.Message);
+                _logger.Information(item.Message);
             }
 
         }

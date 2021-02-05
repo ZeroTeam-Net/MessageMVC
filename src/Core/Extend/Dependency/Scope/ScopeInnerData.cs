@@ -111,7 +111,7 @@ namespace Agebull.Common.Ioc
             var logger = Logger;
             if (--Referenct > 0)
             {
-                logger.Debug(() => $"{Name}:范围计数不为1，未析构");
+                logger.Trace(() => $"{Name}:范围计数不为1，未析构");
                 return;
             }
 
@@ -149,8 +149,8 @@ namespace Agebull.Common.Ioc
                 logger.Exception(e);
             }
             if (MonitorItem != null)
-                logger.TraceMonitor(MonitorItem.End());
-            logger.Debug(() => $"{Name}:范围已析构");
+                logger.TraceMonitor(MonitorItem.Stack.FixValue);
+            logger.Trace(() => $"{Name}:范围已析构");
         }
         #endregion
 

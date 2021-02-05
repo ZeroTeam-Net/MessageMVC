@@ -1,7 +1,6 @@
 ﻿using Agebull.Common.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using System;
 using System.ComponentModel.Composition;
 using ZeroTeam.MessageMVC.AddIn;
 using ZeroTeam.MessageMVC.Context;
@@ -22,11 +21,16 @@ namespace ZeroTeam.MessageMVC.Tools
         /// </summary>
         void IAutoRegister.AutoRegist(IServiceCollection services, Microsoft.Extensions.Logging.ILogger logger)
         {
-            services.TryAddTransient<IUser, UserInfo>();
+            services.AddSingleton<IZeroOption>(pri => ToolsOption.Instance);
+        }
+        /// <summary>
+        /// 注册
+        /// </summary>
+        void IAutoRegister.LateConfigRegist(IServiceCollection services, Microsoft.Extensions.Logging.ILogger logger)
+        {
             services.AddSingleton<IApiActionChecker, ApiActionChecker>();
-            //启用调用链跟踪(使用IZeroContext全局上下文)
-            services.AddTransient<IMessageMiddleware, GlobalContextMiddleware>();
-
+            //异常处理
+            services.AddTransient<IMessageMiddleware, ExceptionMiddleware>();
             //消息存储与异常消息重新消费
             if (ToolsOption.Instance.EnableMessageReConsumer)
             {
@@ -41,15 +45,17 @@ namespace ZeroTeam.MessageMVC.Tools
                 services.AddSingleton<IMessageMiddleware, ReverseProxyMiddleware>();
             //JWT解析
             if (ToolsOption.Instance.EnableJwtToken)
-                services.AddSingleton<ITokenResolver, JwtTokenResolver>();
+            {
+                services.TryAddTransient<ITokenResolver, JwtTokenResolver>();
+                services.AddTransient<IMessageMiddleware, JwtTokenMiddleware>();
+            }
 
             //健康检查
-            services.AddTransient<IMessageMiddleware, HealthCheckMiddleware>();
-            //异常处理
-            services.AddTransient<IMessageMiddleware, ExceptionMiddleware>();
+            if (ToolsOption.Instance.EnableHealthCheck)
+                services.AddTransient<IMessageMiddleware, HealthCheckMiddleware>();
 
             //显示
-            Console.WriteLine($@"-----[工具信息]-----
+            logger.Information($@"
      健康检查 : 启用
      异常处理 : 启用
 GlobalContext : 启用

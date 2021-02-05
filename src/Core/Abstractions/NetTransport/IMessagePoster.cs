@@ -9,6 +9,17 @@ namespace ZeroTeam.MessageMVC.Messages
     public interface IMessagePoster : IMessageWorker
     {
         /// <summary>
+        /// 取得生命周期对象
+        /// </summary>
+        /// <returns></returns>
+        ILifeFlow GetLife();
+
+        /// <summary>
+        /// 是否本地接收者
+        /// </summary>
+        bool IsLocalReceiver { get; }
+
+        /// <summary>
         /// 投递消息
         /// </summary>
         /// <param name="message">消息</param>

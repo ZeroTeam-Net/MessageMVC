@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using System.Web;
+using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.Services;
-using ZeroTeam.MessageMVC.Tools;
 
-namespace ZeroTeam.MessageMVC.Messages
+namespace ZeroTeam.MessageMVC.PageInfoAutoSave
 {
     /// <summary>
     /// 页面信息中间件
