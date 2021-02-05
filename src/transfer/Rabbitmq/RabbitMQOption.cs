@@ -7,7 +7,7 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
     /// <summary>
     /// RabbitMQ配置
     /// </summary>
-    public class RabbitMQOption
+    public class RabbitMQOption : IZeroOption
     {
         /// <summary>
         ///  唯一实例 
@@ -151,26 +151,64 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
         /// </summary>
         public Dictionary<string, RabbitMQItemOption> ItemOptions { get; set; }
 
+        /// <summary>
+        /// 同时处理数据最大并发数
+        /// </summary>
+        public int Concurrency { get; set; }
+
+        /// <summary>
+        /// 是否异步发送
+        /// </summary>
+        public bool AsyncPost { get; set; }
+
         #endregion
 
         #region 配置自动更新
 
         const string sectionName = "MessageMVC:RabbitMQ";
 
-        static RabbitMQOption()
-        {
-            ConfigurationHelper.RegistOnChange(sectionName, Instance.Load, true);
-        }
 
-        void Load()
+        const string optionName = "RabbitMQ发布订阅配置";
+
+        const string supperUrl = "https://";
+
+        /// <summary>
+        /// 支持地址
+        /// </summary>
+        string IZeroOption.SupperUrl => supperUrl;
+
+        /// <summary>
+        /// 配置名称
+        /// </summary>
+        string IZeroOption.OptionName => optionName;
+
+
+        /// <summary>
+        /// 节点名称
+        /// </summary>
+        string IZeroOption.SectionName => sectionName;
+
+        /// <summary>
+        /// 是否动态配置
+        /// </summary>
+        bool IZeroOption.IsDynamic => false;
+
+        void IZeroOption.Load(bool first)
         {
             var option = ConfigurationHelper.Get<RabbitMQOption>(sectionName);
             if (option == null)
-                return;
+                throw new ZeroOptionException(optionName, sectionName);
+            if (option.HostName.IsBlank() || option.Port < 0 || option.Port > 65536)
+                throw new ZeroOptionException(optionName, sectionName, "HostName或Port不正确");
+
             HostName = option.HostName;
             Port = option.Port;
             UserName = option.UserName;
             Password = option.Password;
+            AsyncPost = option.AsyncPost;
+            Concurrency = option.Concurrency;
+            if (Concurrency <= 0)
+                Concurrency = 1;
             if (ItemOptions == null)
                 ItemOptions = new Dictionary<string, RabbitMQItemOption>(StringComparer.OrdinalIgnoreCase);
             if (option.ItemOptions == null || option.ItemOptions.Count == 0)
@@ -234,7 +272,7 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
         /// </summary>
         public bool AckBySuccess { get; set; }
 
-        
+
         /// <summary>
         /// 自动删除
         /// </summary>

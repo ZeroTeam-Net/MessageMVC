@@ -5,14 +5,17 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ZeroTeam.MessageMVC.MessageQueue;
+using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC.RedisMQ
 {
     /// <summary>
     ///     Redis流程
     /// </summary>
-    internal class RedisFlow : IFlowMiddleware, IHealthCheck
+    internal class RedisFlow : BackgroundPoster<QueueItem>, , ILifeFlow , IHealthCheck
     {
+        
         #region IHealthCheck
 
         async Task<HealthInfo> IHealthCheck.Check()
@@ -178,16 +181,30 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         Task ILifeFlow.Open()
         {
             Logger.Information("RedisBackPoster >>> Start");
-            client = new CSRedisClient(RedisOption.Instance.ConnectionString);
+            try
+            {
+                client = new CSRedisClient(RedisOption.Instance.ConnectionString);
+            }
+            catch (Exception ex)
+            {
+                Logger.Exception(ex);
+            }
             return Task.CompletedTask;
         }
 
         /// <summary>
         /// 关闭
         /// </summary>
-        Task ILifeFlow.Close()
+        Task ILifeFlow.Destory()
         {
-            client.Dispose();
+            try
+            {
+                client?.Dispose();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
             return Task.CompletedTask;
         }
 

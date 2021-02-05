@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Agebull.Common;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Documents;
@@ -9,10 +11,49 @@ using ZeroTeam.MessageMVC.Documents;
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
     /// <summary>
-    /// API扩展功能
+    /// API扩展Markdown文档生成工具
     /// </summary>
     public class ApiMarkDown
     {
+        /// <summary>
+        /// 生成Markdown文档(在当前目录的md目录下)
+        /// </summary>
+        public static void CreateMarkdown(params Type[] types)
+        {
+            foreach (var type in types)
+            {
+                ApiDiscover discover = new ApiDiscover();
+                discover.Discover(type);
+
+                var path = IOHelper.CheckPath(Environment.CurrentDirectory, "md");
+
+                var extend = new ApiMarkDown
+                {
+                    ServiceInfos = discover.ServiceInfos
+                };
+                extend.MarkDown(path);
+            }
+        }
+        /// <summary>
+        /// 生成Markdown文档(在当前目录的md目录下)
+        /// </summary>
+        public static void CreateMarkdown(params Assembly[] assemblies)
+        {
+            foreach (var assembly in assemblies)
+            {
+                ApiDiscover discover = new ApiDiscover();
+                discover.Discover(assembly);
+
+                var path = IOHelper.CheckPath(Environment.CurrentDirectory, "md");
+
+                var extend = new ApiMarkDown
+                {
+                    ServiceInfos = discover.ServiceInfos
+                };
+                extend.MarkDown(path);
+            }
+        }
+
         /// <summary>
         /// 站点文档信息
         /// </summary>
@@ -32,76 +73,40 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 }
                 var file = Path.Combine(path, $"{serviceInfo.Name}.md");
                 var code = new StringBuilder();
-                HeadDoc(serviceInfo, code);
-                foreach (var api in serviceInfo.Aips.Values.Cast<ApiActionInfo>())
+
+                foreach (var apis in serviceInfo.Aips.Values.Cast<ApiActionInfo>().GroupBy(p => p.ControllerCaption ?? p.ControllerName))
                 {
-                    ApiDoc(serviceInfo, code, api);
+                    var first = apis.First();
+                    HeadDoc(serviceInfo, first, code);
+                    foreach (var api in apis)
+                        ApiDoc(serviceInfo, code, api);
                 }
                 File.WriteAllText(file, code.ToString());
             }
         }
 
-        private static void HeadDoc(ServiceInfo serviceInfo, StringBuilder code)
+        private static void HeadDoc(ServiceInfo serviceInfo, ApiActionInfo api, StringBuilder code)
         {
-            code.AppendLine($@"# {(serviceInfo.Caption ?? serviceInfo.Name)} 接口文档
-
-{serviceInfo.Description}
-
+            code.AppendLine($@"# {(api.ControllerCaption ?? api.ControllerName)} 
 ---
-
-## 注意：
-1. 所有接口均可使用GET/POST方式访问
-2. 如无参数，将不出现参数说明
-3. 参数建议使用Json方式传递
-
-## 返回值通用说明
-
-### 格式
-|名称|标题|类型|说明|
-|-|-|-|-|-|
-|success|成功标记|bool|操作成功返回true,否则根据code与msg判断结果|
-|code|错误码|number|见通用说明与API具体说明|
-|msg|消息|number|用户可见的文本消息，可用于用户提示|
-
-### 通用错误码
-
-|数值|名称|说明|HTTP状态码|
-|-|-|-|-|
-|1|Queue|正在排队|200|
-|0|Success|成功|200|
-|-1|ArgumentError|参数错误|200|
-|-2|BusinessError|发生处理业务错误|200|
-|-3|ArgumentError|发生未处理业务异常|200|
-|-4|ArgumentError|发生未处理系统异常|200|
-|-5|NetworkError|网络错误|200|
-|-6|TimeOut|执行超时|200|
-|-7|DenyAccess|拒绝访问|200|
-|-8|TokenUnknow|未知的令牌|200|
-|-9|TokenTimeOut|令牌过期|200|
-|-10|NoReady|系统未就绪|200|
-|-11|Ignore|异常中止|200|
-|-12|ReTry|重试|200|
-|-13|NoFind|方法不存在|200|
-|-14|Unavailable|服务不可用|200|
-|-15|Unknow|未知结果|200|
-
----");
+");
         }
 
         private void ApiDoc(ServiceInfo serviceInfo, StringBuilder code, ApiActionInfo api)
         {
             code.AppendLine($@"
-## {(api.Caption ?? api.Name)}
+## {api.ControllerCaption ?? api.ControllerName}-{(api.Caption ?? api.Name)}
+> {api.ControllerName}
 
 **简要描述：** 
 {(api.Description ?? api.Caption)}
+
 
 **请求URL：** 
 ` http://xx.com/{serviceInfo.Name}/{api.Route}`
 
 **请求方式：**
 - POST
-- GET
 ");
             MarkdownArgument(code, api);
             MarkdownResult(code, api);
@@ -117,7 +122,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 **参数：** 
 
 |参数名|必选|类型|示例|说明|
-|:----    |:---|:----- |:----- |-----   |");
+|:----|:---|:-----|:-----|-----|");
 
             if (!api.Arguments.Values.First().IsBaseType)
             {

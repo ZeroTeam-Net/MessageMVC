@@ -1,7 +1,6 @@
 ﻿using Agebull.Common.Configuration;
 using Agebull.Common.Ioc;
 using Agebull.EntityModel.Common;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -71,8 +70,115 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             return dynamicMethod.CreateDelegate(typeof(ApiFunc)) as ApiFunc;
         }
 
+        private bool? Parameter(ParameterInfo parameter)
+        {
+            if (parameter.ParameterType == typeof(string))
+            {
+                ReadString(ilGenerator, parameter.Name);
+                return true;
+            }
+            if (parameter.ParameterType == typeof(byte[]))
+            {
+                ReadBinary(ilGenerator, parameter.Name);
+                return true;
+            }
+            if (parameter.ParameterType.IsValueType)
+            {
+                ReadValueArgument(ilGenerator, parameter);
+                return true;
+            }
+            if (MakeTypeSet(parameter.ParameterType, false))
+            {
+                return null;
+            }
+            var ca = parameter.GetCustomAttribute<FromConfigAttribute>();
+            if (ca != null)
+            {
+                ConfigCreate(ilGenerator, ca.Name, parameter.ParameterType);
+                return null;
+            }
+            var fa = parameter.GetCustomAttribute<FromServicesAttribute>();
+            if (fa != null)
+            {
+                IocCreate(ilGenerator, parameter.ParameterType);
+                return null;
+            }
+
+            //第一个不特殊构造的
+            if (!ParameterClass)
+            {
+                ParameterClass = true;
+                ilGenerator.Emit(OpCodes.Ldarg, 2);
+                ilGenerator.Emit(OpCodes.Castclass, parameter.ParameterType);
+                return false;
+            }
+            IocCreate(ilGenerator, parameter.ParameterType);
+            return null;
+        }
+
+        void Ctor()
+        {
+            //new Controler;
+            var constructor = TypeInfo.GetConstructor(Type.EmptyTypes);
+            if (constructor != null)
+            {
+                ilGenerator.Emit(OpCodes.Newobj, constructor);
+            }
+            else
+            {
+                //构造参数
+                var info = TypeInfo.GetConstructors()[0];
+                List<LocalBuilder> locals = new List<LocalBuilder>();
+                foreach (var parameter in info.GetParameters())
+                {
+                    var ca = parameter.GetCustomAttribute<FromConfigAttribute>();
+                    if (ca != null)
+                    {
+                        ConfigCreate(ilGenerator, ca.Name, parameter.ParameterType);
+                    }
+                    else
+                    {
+                        MakeTypeSet(parameter.ParameterType, true);
+                    }
+                    var builder = ilGenerator.DeclareLocal(parameter.ParameterType);
+                    ilGenerator.Emit(OpCodes.Stloc, builder);
+                    locals.Add(builder);
+                }
+                foreach (var builder in locals)
+                {
+                    ilGenerator.Emit(OpCodes.Ldloc, builder);
+                }
+                ilGenerator.Emit(OpCodes.Newobj, info);
+            }
+            //从计算堆栈的顶部弹出当前值并将其存储到指定索引处的局部变量列表中。
+            controler = ilGenerator.DeclareLocal(TypeInfo);
+            ilGenerator.Emit(OpCodes.Stloc, controler);
+        }
+        private void Properties()
+        {
+            foreach (var pro in TypeInfo.GetProperties().Where(p => p.CanWrite))
+            {
+                var ca = pro.GetCustomAttribute<FromConfigAttribute>();
+                if (ca == null)
+                {
+                    MakeTypeSet(pro.PropertyType, true);
+                }
+                else
+                {
+                    ConfigCreate(ilGenerator, ca.Name, pro.PropertyType);
+                }
+                var b = ilGenerator.DeclareLocal(pro.PropertyType);
+                ilGenerator.Emit(OpCodes.Stloc, b);
+                ilGenerator.Emit(OpCodes.Ldloc, controler);
+                ilGenerator.Emit(OpCodes.Ldloc, b);
+                ilGenerator.Emit(OpCodes.Callvirt, pro.GetSetMethod());
+            }
+        }
+
+
         void Call()
         {
+            ActionInfo.IsDictionaryArgument = ActionInfo.AccessOption.HasFlag(ApiOption.DictionaryArgument);
             List<LocalBuilder> paras = new List<LocalBuilder>();
             foreach (var parameter in Method.GetParameters())
             {
@@ -82,6 +188,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 paras.Add(arg);
                 if (res == null)
                     continue;
+                if (res.Value)
+                    ActionInfo.IsDictionaryArgument = true;
                 ActionInfo.Arguments ??= new Dictionary<string, ApiArgument>();
                 ActionInfo.Arguments.Add(parameter.Name, new ApiArgument
                 {
@@ -98,52 +206,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             }
             ilGenerator.Emit(OpCodes.Callvirt, Method);
 
-        }
-
-        private bool? Parameter(ParameterInfo parameter)
-        {
-            if (parameter.ParameterType.IsSupperInterface(typeof(IZeroContext)))
-            {
-                Context(ilGenerator);
-                return null;
-            }
-            if (parameter.ParameterType.IsSupperInterface(typeof(IUser)))
-            {
-                User(ilGenerator);
-                return null;
-            }
-
-            var ca = parameter.GetCustomAttribute<FromConfigAttribute>();
-            if (ca != null)
-            {
-                ConfigCreate(ilGenerator, ca.Name, parameter.ParameterType);
-                return null;
-            }
-            var fa = parameter.GetCustomAttribute<FromServicesAttribute>();
-            if (fa != null)
-            {
-                IocCreate(ilGenerator, parameter.ParameterType);
-                return null;
-            }
-
-            var scope = (int)(parameter.GetCustomAttribute<ArgumentScopeAttribute>()?.Scope ?? ArgumentScope.Content);
-
-            if (parameter.ParameterType == typeof(string) || parameter.ParameterType.IsValueType)
-            {
-                ReadValueArgument(ilGenerator, parameter, scope, 0);//serializeType
-                return true;
-            }
-
-            //第一个不特殊构造的
-            if (!ParameterClass)
-            {
-                ParameterClass = true;
-                ilGenerator.Emit(OpCodes.Ldarg, 2);
-                ilGenerator.Emit(OpCodes.Castclass, parameter.ParameterType);
-                return false;
-            }
-            IocCreate(ilGenerator, parameter.ParameterType);
-            return null;
         }
 
         void Result()
@@ -171,106 +233,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             }
             ilGenerator.Emit(OpCodes.Ret);
         }
-        void Ctor()
-        {
-            //new Controler;
-            var constructor = TypeInfo.GetConstructor(Type.EmptyTypes);
-            if (constructor != null)
-            {
-                ilGenerator.Emit(OpCodes.Newobj, constructor);
-            }
-            else
-            {
-                //构造参数
-                var info = TypeInfo.GetConstructors()[0];
-                List<LocalBuilder> locals = new List<LocalBuilder>();
-                foreach (var parameter in info.GetParameters())
-                {
-                    var ca = parameter.GetCustomAttribute<FromConfigAttribute>();
-                    if (ca != null)
-                    {
-                        ConfigCreate(ilGenerator, ca.Name, parameter.ParameterType);
-                    }
-                    else
-                    {
-                        if (parameter.ParameterType == typeof(IServiceCollection))
-                        {
-                            ServiceCollection(ilGenerator);
-                        }
-                        else if (parameter.ParameterType == typeof(IServiceCollection))
-                        {
-                            Logger(ilGenerator);
-                        }
-                        else if (parameter.ParameterType == typeof(IServiceCollection))
-                        {
-                            User(ilGenerator);
-                        }
-                        else if (parameter.ParameterType == typeof(IServiceCollection))
-                        {
-                            Context(ilGenerator);
-                        }
-                        else
-                        {
-                            IocCreate(ilGenerator, parameter.ParameterType);
-                        }
-                    }
-                    var builder = ilGenerator.DeclareLocal(parameter.ParameterType);
-                    ilGenerator.Emit(OpCodes.Stloc, builder);
-                    locals.Add(builder);
-                }
-                foreach (var builder in locals)
-                {
-                    ilGenerator.Emit(OpCodes.Ldloc, builder);
-                }
-                ilGenerator.Emit(OpCodes.Newobj, info);
-            }
-            //从计算堆栈的顶部弹出当前值并将其存储到指定索引处的局部变量列表中。
-            controler = ilGenerator.DeclareLocal(TypeInfo);
-            ilGenerator.Emit(OpCodes.Stloc, controler);
-        }
-
-        private void Properties()
-        {
-            foreach (var pro in TypeInfo.GetProperties())
-            {
-                var ca = pro.GetCustomAttribute<FromConfigAttribute>();
-                if (ca != null)
-                {
-                    ConfigCreate(ilGenerator, ca.Name, pro.PropertyType);
-                }
-                else
-                {
-                    var sa = pro.GetCustomAttribute<FromServicesAttribute>();
-                    if (sa != null)
-                    {
-                        IocCreate(ilGenerator, pro.PropertyType);
-                    }
-                    else if (pro.PropertyType== typeof(IZeroContext))
-                    {
-                        Context(ilGenerator);
-                    }
-                    else if (pro.PropertyType== typeof(IUser))
-                    {
-                        User(ilGenerator);
-                    }
-                    else if (pro.PropertyType== typeof(ILogger))
-                    {
-                        Logger(ilGenerator);
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                }
-                var b = ilGenerator.DeclareLocal(pro.PropertyType);
-                ilGenerator.Emit(OpCodes.Stloc, b);
-                ilGenerator.Emit(OpCodes.Ldloc, controler);
-                ilGenerator.Emit(OpCodes.Ldloc, b);
-                ilGenerator.Emit(OpCodes.Callvirt, pro.GetSetMethod());
-            }
-        }
-
-
 
         #endregion
 
@@ -307,64 +269,82 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             ilGenerator.Emit(OpCodes.Castclass, parameter.ParameterType);
         }*/
 
-        private static void ReadValueArgument(ILGenerator ilGenerator, ParameterInfo parameter, int scope, int serializeType)
+        bool MakeTypeSet(Type type, bool toIoc)
         {
+            if (type.IsSupperInterface(typeof(ILogger)))
+            {
+                Logger(ilGenerator);
+            }
+            else if (type == typeof(IServiceProvider))
+            {
+                ServiceProvider(ilGenerator);
+            }
+            else if (type == typeof(IZeroContext))
+            {
+                Context(ilGenerator);
+            }
+            else if (type == typeof(IInlineMessage))
+            {
+                MessageCreate(ilGenerator);
+            }
+            else if (type == typeof(IUser))
+            {
+                User(ilGenerator);
+            }
+            else if (toIoc)
+            {
+                IocCreate(ilGenerator, type);
+            }
+            else
+            {
+                return false;
+            }
+            return true;
+        }
+
+        private static void ReadValueArgument(ILGenerator ilGenerator, ParameterInfo parameter)
+        {
+            var scope = (int)(parameter.GetCustomAttribute<ArgumentScopeAttribute>()?.Scope ?? ArgumentScope.Content);
+
             ilGenerator.Emit(OpCodes.Ldtoken, parameter.ParameterType);
             ilGenerator.Emit(OpCodes.Call, typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle)));
 
             var typ = ilGenerator.DeclareLocal(typeof(Type));
             ilGenerator.Emit(OpCodes.Stloc, typ);
-            //object arg = message.GetOnceArgument(ArgumentName, DeserializeType);
+            //string arg = message.GetOnceArgument(ArgumentName, DeserializeType);
             ilGenerator.Emit(OpCodes.Ldarg, 0);
             ilGenerator.Emit(OpCodes.Ldstr, parameter.Name);
             ilGenerator.Emit(OpCodes.Ldc_I4, scope);
-            ilGenerator.Emit(OpCodes.Ldc_I4, serializeType);
-            ilGenerator.Emit(OpCodes.Ldarg, 1);
-            ilGenerator.Emit(OpCodes.Ldloc, typ);
-            ilGenerator.Emit(OpCodes.Callvirt, typeof(IInlineMessage).GetMethod(nameof(IInlineMessage.FrameGetValueArgument)));
-            //object arg = 
-            var obj = ilGenerator.DeclareLocal(typeof(object));
-            ilGenerator.Emit(OpCodes.Stloc, obj);
-
-            ilGenerator.Emit(OpCodes.Ldloc, obj);
-            ilGenerator.Emit(OpCodes.Castclass, typeof(string));
-
-            if (parameter.ParameterType == typeof(string))
+            var def = parameter.RawDefaultValue.ToString();
+            if (!string.IsNullOrEmpty(def))
             {
-                return;
+                ilGenerator.Emit(OpCodes.Ldstr, def);
             }
+            else if (parameter.ParameterType == typeof(Guid))
+            {
+                ilGenerator.Emit(OpCodes.Ldstr, Guid.Empty.ToString());
+            }
+            else if (parameter.ParameterType == typeof(DateTime))
+            {
+                ilGenerator.Emit(OpCodes.Ldstr, DateTime.MinValue.ToString());
+            }
+            else
+            {
+
+                ilGenerator.Emit(OpCodes.Ldstr, "0");
+            }
+            ilGenerator.Emit(OpCodes.Callvirt, typeof(IInlineMessage).GetMethod(nameof(IInlineMessage.GetScopeArgument)));
             var str = ilGenerator.DeclareLocal(typeof(string));
             ilGenerator.Emit(OpCodes.Stloc, str);
-
-            //ilGenerator.Emit(OpCodes.Ldloc, str);
-            //ilGenerator.Emit(OpCodes.Call, typeof(Console).GetMethod(nameof(Console.WriteLine), new[] { typeof(string) }));
 
             if (parameter.ParameterType.IsEnum)
             {
                 ilGenerator.Emit(OpCodes.Ldloc, typ);
                 ilGenerator.Emit(OpCodes.Ldloc, str);
 
-
                 ilGenerator.Emit(OpCodes.Call, typeof(Enum).GetMethod(nameof(Enum.Parse), new[] { typeof(Type), typeof(string) }));
 
                 ilGenerator.Emit(OpCodes.Unbox_Any, parameter.ParameterType);
-                //ilGenerator.Emit(OpCodes.Castclass, parameter.ParameterType);
-                //var emobj = ilGenerator.DeclareLocal(typeof(object));
-                //ilGenerator.Emit(OpCodes.Stloc, emobj);
-
-                //ilGenerator.Emit(OpCodes.Ldloc, emobj);
-                //ilGenerator.Emit(OpCodes.Call, typeof(Console).GetMethod(nameof(Console.WriteLine), new[] { typeof(object) }));
-
-                //ilGenerator.Emit(OpCodes.Ldloc, emobj);
-                //ilGenerator.Emit(OpCodes.Castclass, parameter.ParameterType);
-
-                //var em = ilGenerator.DeclareLocal(parameter.ParameterType);
-                //ilGenerator.Emit(OpCodes.Stloc, em);
-
-                //ilGenerator.Emit(OpCodes.Ldloc, em);
-                //ilGenerator.Emit(OpCodes.Call, typeof(Console).GetMethod(nameof(Console.WriteLine), new[] { typeof(object) }));
-
-                //ilGenerator.Emit(OpCodes.Ldloc, em);
 
                 return;
             }
@@ -379,15 +359,15 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             }
         }
 
-        private static void ServiceCollection(ILGenerator ilGenerator)
-        {
-            var method = typeof(DependencyHelper).GetProperty($"ServiceCollection").GetGetMethod();
-            ilGenerator.Emit(OpCodes.Call, method);
-        }
-
         private static void User(ILGenerator ilGenerator)
         {
             var method = typeof(GlobalContext).GetProperty(nameof(GlobalContext.User)).GetGetMethod();
+            ilGenerator.Emit(OpCodes.Call, method);
+        }
+
+        private static void ServiceProvider(ILGenerator ilGenerator)
+        {
+            var method = typeof(DependencyHelper).GetProperty(nameof(DependencyHelper.ServiceProvider)).GetGetMethod();
             ilGenerator.Emit(OpCodes.Call, method);
         }
 
@@ -395,6 +375,21 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         {
             var method = typeof(GlobalContext).GetProperty(nameof(GlobalContext.Current)).GetGetMethod();
             ilGenerator.Emit(OpCodes.Call, method);
+        }
+
+        private void ReadBinary(ILGenerator ilGenerator, string name)
+        {
+            var method = typeof(IInlineMessage).GetMethod(nameof(IInlineMessage.GetBinaryArgument));
+            ilGenerator.Emit(OpCodes.Ldarg, 0);
+            ilGenerator.Emit(OpCodes.Ldstr, name);
+            ilGenerator.Emit(OpCodes.Callvirt, method);
+        }
+        private void ReadString(ILGenerator ilGenerator, string name)
+        {
+            var method = typeof(IInlineMessage).GetMethod(nameof(IInlineMessage.GetStringArgument));
+            ilGenerator.Emit(OpCodes.Ldarg, 0);
+            ilGenerator.Emit(OpCodes.Ldstr, name);
+            ilGenerator.Emit(OpCodes.Callvirt, method);
         }
 
         private void Logger(ILGenerator ilGenerator)
@@ -408,6 +403,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             method = methods.First(p => p.Name == "CreateLogger" && p.GetParameters().Length == 1);
             method = method.MakeGenericMethod(TypeInfo.AsType());
             ilGenerator.Emit(OpCodes.Call, method);
+        }
+
+        private static void MessageCreate(ILGenerator ilGenerator)
+        {
+            ilGenerator.Emit(OpCodes.Ldarg, 0);
         }
 
         private static void ConfigCreate(ILGenerator ilGenerator, string name, Type type)

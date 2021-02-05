@@ -15,7 +15,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         {
             DependencyHelper.ServiceCollection.AddMessageMvcRedis();
             DependencyHelper.ServiceCollection.AddMessageMvcKafka();
-            DependencyHelper.Reload();
+            DependencyHelper.Flush();
             DependencyHelper.ServiceCollection.UseTest(typeof(ApiContraceJsonTest).Assembly);
         }
 
@@ -33,8 +33,8 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
         {
             var msg = await MessagePoster.Post(new InlineMessage
             {
-                ServiceName = "UnitService",
-                ApiName = "_health_"
+                Service = "UnitService",
+                Method = "_health_"
             });
 
             Assert.IsTrue(msg.State == MessageState.Success, msg.Result);

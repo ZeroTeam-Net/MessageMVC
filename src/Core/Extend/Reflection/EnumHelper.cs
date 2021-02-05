@@ -75,11 +75,11 @@ namespace Agebull.Common.Reflection
                     let caption = t.GetFieldDescription(value.ToString())
                     where caption != null && (!keepNone || lv != 0)
                     select new EnumInfomation
-                               {
-                                   Value = value,
-                                   LValue = lv,
-                                   Caption = caption
-                               }).ToList();
+                    {
+                        Value = value,
+                        LValue = lv,
+                        Caption = caption
+                    }).ToList();
         }
 
         /// <summary>

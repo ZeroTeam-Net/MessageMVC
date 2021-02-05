@@ -129,7 +129,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 }
                 return;
             }
-            if(_lock.TryGetValue(type,out var doc2))
+            if (_lock.TryGetValue(type, out var doc2))
             {
                 typeDocument = doc2;
                 return;

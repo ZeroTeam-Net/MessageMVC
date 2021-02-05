@@ -1,21 +1,26 @@
-﻿using Agebull.Common.Ioc;
-using System;
+﻿using Microsoft.Extensions.Hosting;
+using System.Threading.Tasks;
 using ZeroTeam.MessageMVC;
+using ZeroTeam.MessageMVC.Http;
 using ZeroTeam.MessageMVC.Kafka;
-using ZeroTeam.ZeroMQ.ZeroRPC;
+using ZeroTeam.MessageMVC.RabbitMQ;
+using ZeroTeam.MessageMVC.RedisMQ;
 
-namespace MicroZero.Kafka.QueueStation
+namespace Rabbit
 {
     class Program
     {
-        static void Main()
+        static async Task Main()
         {
-            DependencyHelper.ServiceCollection.AddMessageMvcKafka();
-            DependencyHelper.ServiceCollection.AddMessageMvcZeroRpc();
-            DependencyHelper.ServiceCollection.AddMessageMvc(typeof(Program));
-
-            Console.ReadKey();
-            Console.WriteLine("Bye bye.");
+            var builder = new HostBuilder()
+                .UseMessageMVC(true, services =>
+                {
+                    services.AddMessageMvcKafka();
+                    services.AddMessageMvcHttpClient();
+                    services.AddMessageMvcRedis();
+                    services.AddMessageMvcRabbitMQ();
+                });
+            await builder.Build().RunAsync();
         }
     }
 }

@@ -113,7 +113,7 @@ namespace Agebull.Common
                 return path;
             }
             var root = Path.GetPathRoot(path);
-            var folders = path.Split(new char[] {'\\', '/'},StringSplitOptions.RemoveEmptyEntries).Skip(1);
+            var folders = path.Split(new char[] { '\\', '/' }, StringSplitOptions.RemoveEmptyEntries).Skip(1);
             foreach (var folder in folders)
             {
                 root = Path.Combine(root, folder);
@@ -279,7 +279,7 @@ namespace Agebull.Common
         /// <returns> </returns>
         public static string XMLSerializer<T>(T args)
         {
-            if (Equals(args,default(T)))
+            if (Equals(args, default(T)))
                 return null;
             using (var ms = new MemoryStream())
             {
@@ -703,13 +703,13 @@ namespace Agebull.Common
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static  DiskInfo FolderDiskInfo(string path)
+        public static DiskInfo FolderDiskInfo(string path)
         {
             if (string.IsNullOrEmpty(path))
             {
                 return new DiskInfo();
             }
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) )
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
                 return LinuxFolderDiskInfo(path);
             }
@@ -730,8 +730,8 @@ namespace Agebull.Common
 
             var str_HardDiskName = path[0] + ":\\";
 
-            var drive = System.IO.DriveInfo.GetDrives().FirstOrDefault(p=> path.IndexOf(p.Name,StringComparison.OrdinalIgnoreCase)==0);
-            if(drive != null)
+            var drive = DriveInfo.GetDrives().FirstOrDefault(p => path.IndexOf(p.Name, StringComparison.OrdinalIgnoreCase) == 0);
+            if (drive != null)
             {
                 info.TotalSize = drive.TotalSize / (1024 * 1024);
                 info.AvailableSize = drive.AvailableFreeSpace / (1024 * 1024);

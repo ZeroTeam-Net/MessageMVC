@@ -6,16 +6,21 @@ namespace ZeroTeam.MessageMVC
     ///     本地站点配置
     /// </summary>
     public class ZeroAppConfig
-    {
-        /// <summary>
-        ///     当前应用名称
-        /// </summary>
-        public string AppName { get; set; }
+        {
+            /// <summary>
+            ///     当前应用名称
+            /// </summary>
+            public string AppName { get; set; }
 
         /// <summary>
-        ///     当前接口服务名称（未明显设置Service属性的Controler使用）
+        ///     当前应用版本号
         /// </summary>
-        public string ApiServiceName { get; set; }
+        public string AppVersion { get; set; }
+
+        /// <summary>
+        /// 使用上级目录作为基础目录
+        /// </summary>
+        public bool IsolateFolder { get; set; }
 
         /// <summary>
         ///     当前应用简称
@@ -23,7 +28,7 @@ namespace ZeroTeam.MessageMVC
         public string ShortName { get; set; }
 
         /// <summary>
-        ///     开放式访问
+        ///     开放式访问(可动态修改)
         /// </summary>
         public bool IsOpenAccess { get; set; }
 
@@ -38,40 +43,14 @@ namespace ZeroTeam.MessageMVC
         public int MaxIOThreads { get; set; }
 
         /// <summary>
-        ///     站点数据使用AppName为文件夹
+        ///   关闭最大等待时长
         /// </summary>
-        public bool IsolateFolder { get; set; }
+        public int MaxCloseSecond { get; set; }
 
         /// <summary>
-        ///     本地数据文件夹
+        ///     当前接口服务名称（未明显设置Service属性的Controler使用）
         /// </summary>
-        public string DataFolder { get; set; }
-
-        /// <summary>
-        ///     本地配置文件夹
-        /// </summary>
-        public string ConfigFolder { get; set; }
-
-        /// <summary>
-        ///     插件地址,如为空则与运行目录相同
-        /// </summary>
-        public string AddInPath { get; set; }
-
-        /*// <summary>
-        ///     启用插件自动加载
-        /// </summary>
-        public bool EnableAddIn { get; set; }*/
-
-        /// <summary>
-        ///     服务映射，即将对应服务名称替换成另一个服务
-        /// </summary>
-        public Dictionary<string, string> ServiceMap { get; set; }
-
-        /// <summary>
-        /// 跟踪信息内容
-        /// </summary>
-        public TraceInfoType TraceInfo { get; set; }
-
+        public string ApiServiceName { get; set; }
 
         #region 复制
 
@@ -85,16 +64,7 @@ namespace ZeroTeam.MessageMVC
             {
                 return;
             }
-            TraceInfo |= option.TraceInfo;
-            if (ServiceMap == null)
-            {
-                ServiceMap = option.ServiceMap;
-            }
-            else if (option.ServiceMap != null)
-            {
-                foreach (var kv in option.ServiceMap)
-                    ServiceMap[kv.Key] = kv.Value;
-            }
+
             if (!string.IsNullOrWhiteSpace(option.AppName))
             {
                 AppName = option.AppName;
@@ -107,33 +77,32 @@ namespace ZeroTeam.MessageMVC
             {
                 ShortName = option.ShortName;
             }
-            if (option.IsolateFolder)
-            {
-                IsolateFolder = option.IsolateFolder;
-            }
 
-            if (!string.IsNullOrWhiteSpace(option.ConfigFolder))
+            if (option.MaxIOThreads > 0)
             {
-                ConfigFolder = option.ConfigFolder;
+                MaxIOThreads = option.MaxIOThreads;
             }
-
-            if (!string.IsNullOrWhiteSpace(option.DataFolder))
+            if (option.MaxWorkThreads > 0)
             {
-                DataFolder = option.DataFolder;
+                MaxWorkThreads = option.MaxWorkThreads;
             }
-
-            //if (option.EnableAddIn)
-            //{
-            //    EnableAddIn = option.EnableAddIn;
-            //}
+            if (option.MaxCloseSecond > 0)
+            {
+                MaxCloseSecond = option.MaxCloseSecond;
+            }
             if (option.IsOpenAccess)
             {
                 IsOpenAccess = option.IsOpenAccess;
             }
 
-            if (!string.IsNullOrWhiteSpace(option.AddInPath))
+            if (!string.IsNullOrWhiteSpace(option.AppVersion))
             {
-                AddInPath = option.AddInPath;
+                AppVersion = option.AppVersion;
+            }
+
+            if (option.IsolateFolder)
+            {
+                IsolateFolder = option.IsolateFolder;
             }
         }
 
@@ -147,16 +116,7 @@ namespace ZeroTeam.MessageMVC
             {
                 return;
             }
-            TraceInfo |= option.TraceInfo;
-            if (ServiceMap == null)
-            {
-                ServiceMap = option.ServiceMap;
-            }
-            else if (option.ServiceMap != null)
-            {
-                foreach (var kv in option.ServiceMap)
-                    ServiceMap[kv.Key] = kv.Value;
-            }
+
             if (string.IsNullOrWhiteSpace(ShortName))
             {
                 ShortName = option.ShortName;
@@ -169,35 +129,33 @@ namespace ZeroTeam.MessageMVC
             {
                 AppName = option.AppName;
             }
+            if (string.IsNullOrWhiteSpace(AppVersion))
+            {
+                AppVersion = option.AppVersion;
+            }
+            
             if (!IsolateFolder)
             {
                 IsolateFolder = option.IsolateFolder;
             }
-
-            if (string.IsNullOrWhiteSpace(ConfigFolder))
-            {
-                ConfigFolder = option.ConfigFolder;
-            }
-
-            if (string.IsNullOrWhiteSpace(DataFolder))
-            {
-                DataFolder = option.DataFolder;
-            }
-
-            //if (!EnableAddIn)
-            //{
-            //    EnableAddIn = option.EnableAddIn;
-            //}
             if (!IsOpenAccess)
             {
                 IsOpenAccess = option.IsOpenAccess;
             }
-
-            if (string.IsNullOrWhiteSpace(AddInPath))
+            if (MaxIOThreads <= 0)
             {
-                AddInPath = option.AddInPath;
+                MaxIOThreads = option.MaxIOThreads;
+            }
+            if (MaxWorkThreads <= 0)
+            {
+                MaxWorkThreads = option.MaxWorkThreads;
+            }
+            if (MaxCloseSecond <= 0)
+            {
+                MaxCloseSecond = option.MaxCloseSecond;
             }
         }
+
         #endregion
     }
 }

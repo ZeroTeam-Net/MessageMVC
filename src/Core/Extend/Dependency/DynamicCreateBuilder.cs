@@ -1,5 +1,4 @@
 ﻿using Agebull.Common.Configuration;
-using Agebull.Common.Ioc;
 using Agebull.EntityModel.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -21,11 +20,11 @@ namespace Agebull.Common.Ioc
         ILGenerator ilGenerator;
 
         /// <summary>生成动态匿名调用内部方法（参数由TArg转为实际类型后调用，并将调用返回值转为TRes）</summary>
-        public Func<IServiceProvider,T> AutoCreate<T>()
+        public Func<IServiceProvider, T> AutoCreate<T>()
         {
             var type = typeof(T);
-            var dynamicMethod = new DynamicMethod($"{typeof(T).Name}_{RandomCode.Generate(6)}", type, 
-                new Type[] { typeof(IServiceProvider)});
+            var dynamicMethod = new DynamicMethod($"{typeof(T).Name}_{RandomCode.Generate(6)}", type,
+                new Type[] { typeof(IServiceProvider) });
             ilGenerator = dynamicMethod.GetILGenerator();
 
             //如果修补操作码，则填充空间。 尽管可能消耗处理周期，但未执行任何有意义的操作。
@@ -33,7 +32,7 @@ namespace Agebull.Common.Ioc
             //构造
             var res = Ctor(type);
             //构造属性
-            Properties(type,res);
+            Properties(type, res);
 
             //返回值入栈
             ilGenerator.Emit(OpCodes.Stloc, res);
@@ -92,7 +91,7 @@ namespace Agebull.Common.Ioc
             return obj;
         }
 
-        protected void Properties(Type type,LocalBuilder obj)
+        protected void Properties(Type type, LocalBuilder obj)
         {
             foreach (var pro in type.GetProperties())
             {

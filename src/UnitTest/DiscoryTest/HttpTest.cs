@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using Agebull.Common.Ioc;
+using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Http;
@@ -16,9 +17,9 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             if (poster != null)
                 return;
             poster = new HttpPoster();
-            poster.Initialize();
+            HttpApp.AddMessageMvcHttpClient(DependencyHelper.ServiceCollection);
+            DependencyHelper.Flush();
         }
-
 
         /// <summary>
         /// 测试接口
@@ -29,9 +30,9 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             IInlineMessage message = new InlineMessage
             {
                 ID = Guid.NewGuid().ToString("N").ToUpper(),
-                Topic = "Topic",
-                Title = "Title",
-                Content = @"{""Value"": ""Content""}"
+                Service = "Topic",
+                Method = "Title",
+                Argument = @"{""Value"": ""Content""}"
             };
 
             var res = await poster.Post(message);

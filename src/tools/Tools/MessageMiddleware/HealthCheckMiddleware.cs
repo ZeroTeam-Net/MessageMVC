@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.Services;
 using ZeroTeam.MessageMVC.ZeroApis;
@@ -24,7 +23,9 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <summary>
         /// 消息中间件的处理范围
         /// </summary>
-        MessageHandleScope IMessageMiddleware.Scope => MessageHandleScope.Prepare | MessageHandleScope.End;
+        MessageHandleScope IMessageMiddleware.Scope => ToolsOption.Instance.EnableHealthCheck
+            ? MessageHandleScope.Prepare | MessageHandleScope.End
+            : MessageHandleScope.None;
 
 
 
@@ -37,8 +38,7 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <returns></returns>
         async Task<bool> IMessageMiddleware.Prepare(IService service, IInlineMessage message, object tag)
         {
-            message.Trace ??= TraceInfo.New(message.ID);
-            if (message.ServiceName != "_health_")
+            if (message.Service != "_health_")
             {
                 return true;
             }
@@ -52,8 +52,8 @@ namespace ZeroTeam.MessageMVC.Tools
             var checkers = DependencyHelper.GetServices<IHealthCheck>();
             var res = new NameValue<Dictionary<string, HealthInfo>>
             {
-                Name = ZeroAppOption.Instance.ServiceName,
-                Value = new Dictionary<string, HealthInfo>()
+                Name = ZeroAppOption.Instance.HostName,
+                Value = new Dictionary<string, HealthInfo>(StringComparer.OrdinalIgnoreCase)
             };
             res.Value.Add("ApiCollection", new HealthInfo
             {
@@ -113,7 +113,7 @@ namespace ZeroTeam.MessageMVC.Tools
             col.End = DateTime.Now;
 
             Interlocked.Increment(ref col.Count);
-            var time = (message.Trace.Start.Value - message.Trace.End.Value).TotalMilliseconds;
+            var time = (message.TraceInfo.Start.Value - message.TraceInfo.End.Value).TotalMilliseconds;
             int level;
             if (time < 100)
                 level = 5;
@@ -150,7 +150,7 @@ namespace ZeroTeam.MessageMVC.Tools
                 }
                 if (level < 3)
                 {
-                    var name = $"{message.ServiceName}/{message.ApiName}";
+                    var name = $"{message.Service}/{message.Method}";
                     if (item.Apis.ContainsKey(name))
                         item.Apis[name] += 1;
                     else

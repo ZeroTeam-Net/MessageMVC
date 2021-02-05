@@ -23,5 +23,4 @@ namespace ZeroTeam.MessageMVC.MessageTraceLink.WebApi
             Console.WriteLine(linkMessage.Trace.TraceId);
         }
     }
-
 }

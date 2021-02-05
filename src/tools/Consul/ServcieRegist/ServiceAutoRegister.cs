@@ -73,12 +73,19 @@ namespace ZeroTeam.MessageMVC.Consul
 
         async Task ILifeFlow.Close()
         {
-            foreach (var ser in services)
+            try
             {
-                var res = await consulClient.Agent.ServiceDeregister(ser.ID);//服务停止时取消注册
-                logger.Information(() => $"服务[{ser.Name}]反注册到Consul：{res.StatusCode}");
+                foreach (var ser in services)
+                {
+                    var res = await consulClient.Agent.ServiceDeregister(ser.ID);//服务停止时取消注册
+                    logger.Information(() => $"服务[{ser.Name}]反注册到Consul：{res.StatusCode}");
+                }
+                consulClient?.Dispose();
             }
-            consulClient.Dispose();
+            catch (Exception ex)
+            {
+                logger.Exception(ex);
+            }
         }
     }
 }

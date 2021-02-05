@@ -6,6 +6,7 @@ using ZeroTeam.MessageMVC.Services;
 
 namespace ZeroTeam.MessageMVC.Messages
 {
+
     /// <summary>
     /// 消息接收对象基类
     /// </summary>
@@ -14,6 +15,17 @@ namespace ZeroTeam.MessageMVC.Messages
     /// </remarks>
     public class MessageReceiverBase : IMessagePoster
     {
+        /// <summary>
+        /// 取得生命周期对象
+        /// </summary>
+        /// <returns></returns>
+        ILifeFlow IMessagePoster.GetLife() => null;
+
+        /// <summary>
+        /// 是否本地接收者
+        /// </summary>
+        bool IMessagePoster.IsLocalReceiver => true;
+
         /// <summary>
         /// 内部构造
         /// </summary>
@@ -24,14 +36,9 @@ namespace ZeroTeam.MessageMVC.Messages
         }
 
         /// <summary>
-        /// 是否本地接收者
+        /// 是否可启动本地隧道
         /// </summary>
-        bool IMessagePoster.IsLocalReceiver => true;
-
-        /// <summary>
-        /// 是否可用
-        /// </summary>
-        bool IMessagePoster.CanDo => state == StationStateType.Run;
+        protected bool CanLocalTunnel { get; set; }
 
         /// <summary>
         /// 名称
@@ -41,7 +48,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 日志记录器
         /// </summary>
-        public ILogger Logger { protected get; set; }
+        public ILogger Logger { get; set; }
 
         /// <summary>
         /// 服务
@@ -56,18 +63,22 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 运行状态
         /// </summary>
-        StationStateType IMessagePoster.State { get => state; set => state = value; }
+        StationStateType IMessageWorker.State { get => state; set => state = value; }
 
         /// <summary>
         /// 初始化
         /// </summary>
-        void IMessagePoster.Initialize()
+        public Task Initialize()
         {
             if (state >= StationStateType.Initialized)
-                return;
+                return Task.CompletedTask;
+
             state = StationStateType.Initialized;
             Logger.Information(() => $"服务[{Service.ServiceName}] 使用接收器{Name}");
-            MessagePoster.RegistPoster(this, Service.ServiceName);
+            if (CanLocalTunnel && MessagePoster.LocalTunnel)
+                MessagePoster.RegistPoster(this, Service.ServiceName);
+
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -77,12 +88,16 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <returns></returns>
         async Task<IMessageResult> IMessagePoster.Post(IInlineMessage message)
         {
-            FlowTracer.MonitorDetails(() => $"[{GetType().GetTypeName()}.Post] 进入本地隧道处理模式");
-            //如此做法,避免上下文混乱
-            var task = new TaskCompletionSource<IMessageResult>();
-            _ = MessageProcessor.OnMessagePush(Service, message, message.Content != null, task);
-            await task.Task;
-
+            if (!ZeroAppOption.Instance.IsAlive)
+            {
+                message.State = MessageState.Cancel;
+                return null;
+            }
+            if (CanLocalTunnel && MessagePoster.LocalTunnel)
+            {
+                FlowTracer.MonitorDetails(() => $"[{GetType().GetTypeName()}.Post] 进入本地隧道处理模式");
+                await MessageProcessor.OnMessagePush(Service, message, message.Argument != null, null);
+            }
             return null;//直接使用原始消息
         }
     }

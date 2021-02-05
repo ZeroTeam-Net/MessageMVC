@@ -24,10 +24,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         int IZeroMiddleware.Level => MiddlewareLevel.Framework;
 
-        /// <summary>
-        ///     配置校验,作为第一步
-        /// </summary>
-        Task ILifeFlow.Check(ZeroAppOption config)
+        Task IZeroDiscover.Discovery()
         {
             path = IOHelper.CheckPath(ZeroAppOption.Instance.DataFolder, "message");
             return Task.CompletedTask;
@@ -45,7 +42,7 @@ namespace ZeroTeam.MessageMVC.Messages
             {
                 return;
             }
-            ILogger logger = DependencyHelper.LoggerFactory.CreateLogger< ReConsumerMiddleware>();
+            ILogger logger = DependencyHelper.LoggerFactory.CreateLogger<ReConsumerMiddleware>();
             logger.Information($"重新消费错误消息.共{files.Count}个");
             var service = new ZeroService
             {
@@ -65,7 +62,7 @@ namespace ZeroTeam.MessageMVC.Messages
                     var json = File.ReadAllText(file);
                     if (SmartSerializer.TryToMessage(json, out var message))
                     {
-                        service.ServiceName = message.ServiceName;
+                        service.ServiceName = message.Service;
                         await MessageProcessor.OnMessagePush(service, message, true, null);
                     }
                 }

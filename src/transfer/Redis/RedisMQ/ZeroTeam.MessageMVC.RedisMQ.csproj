@@ -24,8 +24,9 @@
     <Authors>Agebull</Authors>
     <Company>ZeroTeam</Company>
     <PackageReleaseNotes></PackageReleaseNotes>
-    <Product>ZeroTeam.MessageMVC</Product>
-    <Version>1.0.1.17</Version>
+    <Product>MessageMVC</Product>
+    <Version>1.1.4.38</Version>
+    <PackageTags>MessageMVC</PackageTags>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>ZeroTeam.MessageMVC.RedisMQ.xml</DocumentationFile>
@@ -44,7 +45,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CSRedisCore" Version="3.6.5" />
+    <Compile Remove="Consumer\CSRedisQueueReceiver.cs" />
+    <Compile Remove="Consumer\RedisQueueAttribute.cs" />
+    <Compile Remove="Producer\CsRedisQueuePoster.cs" />
+    <Compile Remove="Producer\RedisFlow.cs" />
+    <Compile Remove="Producer\RedisQueueItem.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CSRedisCore" Version="3.6.6" />
   </ItemGroup>
 
   <ItemGroup>

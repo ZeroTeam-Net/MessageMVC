@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Agebull.Common.Logging;
+using Microsoft.Extensions.Logging;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
@@ -51,7 +52,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
         [Route("v1/void"), ArgumentScope(ArgumentScope.Dictionary)]
         public void Task()
         {
-            Logger.LogInformation("Call Void");
+            Logger.Information("Call Void");
         }
     }
 }

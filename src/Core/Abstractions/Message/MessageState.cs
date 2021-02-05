@@ -92,6 +92,11 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         FrameworkError = 0x2F,
 
+        /// <summary>
+        /// 服务器下发的消息
+        /// </summary>
+        ServerMessage = 0xFFFF,
+
     }
     /// <summary>
     /// 扩展

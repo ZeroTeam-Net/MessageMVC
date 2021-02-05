@@ -17,7 +17,8 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <summary>
         /// 消息中间件的处理范围
         /// </summary>
-        MessageHandleScope IMessageMiddleware.Scope => MessageHandleScope.End;
+        MessageHandleScope IMessageMiddleware.Scope =>
+            ToolsOption.Instance.EnableReceipt ? MessageHandleScope.End : MessageHandleScope.None;
 
         /// <summary>
         /// 准备

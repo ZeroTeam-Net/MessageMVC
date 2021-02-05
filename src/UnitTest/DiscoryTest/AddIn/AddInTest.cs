@@ -16,7 +16,7 @@ namespace ZeroTeam.MessageMVC.UnitTest
         [SetUp]
         public void SetUp()
         {
-            ZeroTeam.MessageMVC.ZeroApp.UseTest(DependencyHelper.ServiceCollection).Wait();
+            ZeroApp.UseTest(DependencyHelper.ServiceCollection).Wait();
         }
 
         /// <summary>

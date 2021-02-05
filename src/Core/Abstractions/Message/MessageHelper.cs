@@ -21,9 +21,9 @@ namespace ZeroTeam.MessageMVC.Messages
             return new InlineMessage
             {
                 ID = id,
-                Topic = topic,
-                Title = title,
-                Content = content
+                Service = topic,
+                Method = title,
+                Argument = content
             };
         }
 
@@ -39,8 +39,8 @@ namespace ZeroTeam.MessageMVC.Messages
             var msg = new InlineMessage
             {
                 ID = Guid.NewGuid().ToString("N").ToUpper(),
-                Topic = topic,
-                Title = title,
+                Service = topic,
+                Method = title,
                 ArgumentData = content
             };
             return msg;
@@ -58,9 +58,9 @@ namespace ZeroTeam.MessageMVC.Messages
             var msg = new InlineMessage
             {
                 ID = Guid.NewGuid().ToString("N").ToUpper(),
-                Topic = topic,
-                Title = title,
-                Content = content
+                Service = topic,
+                Method = title,
+                Argument = content
             };
             return msg;
         }

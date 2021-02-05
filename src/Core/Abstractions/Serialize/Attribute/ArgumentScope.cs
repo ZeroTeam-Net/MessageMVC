@@ -10,16 +10,8 @@
         /// </summary>
         Content,
         /// <summary>
-        /// HTTP的URL的参数
-        /// </summary>
-        HttpArgument,
-        /// <summary>
-        /// HTTP的Form
-        /// </summary>
-        HttpForm,
-        /// <summary>
         /// 取字典内容
         /// </summary>
-        Dictionary = HttpForm
+        Dictionary
     }
 }

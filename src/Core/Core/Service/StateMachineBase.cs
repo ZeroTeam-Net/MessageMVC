@@ -21,7 +21,7 @@ namespace ZeroTeam.MessageMVC.Services.StateMachine
         /// <summary>
         /// 是否已析构
         /// </summary>
-        public bool IsDisposed { get; protected set; }
+        public bool IsDisposed { get; set; }
 
         void IDisposable.Dispose()
         {

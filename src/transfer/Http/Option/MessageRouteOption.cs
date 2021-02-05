@@ -1,4 +1,5 @@
 using Agebull.Common.Configuration;
+using System;
 using System.Collections.Generic;
 
 namespace ZeroTeam.MessageMVC.Http
@@ -14,21 +15,6 @@ namespace ZeroTeam.MessageMVC.Http
         public const string AgentName = "MessageMVC";
 
         /// <summary>
-        /// 启用文件上传
-        /// </summary>
-        public bool EnableFormFile { get; set; }
-
-        /// <summary>
-        /// 启用身份令牌
-        /// </summary>
-        public bool EnableAuthToken { get; set; }
-
-        /// <summary>
-        /// 启用Header跟踪(如HTTP请求头)
-        /// </summary>
-        public bool EnableHeader { get; set; }
-
-        /// <summary>
         /// 特殊URL取第几个路径作为服务名称的映射表
         /// </summary>
         /// <remarks>
@@ -41,8 +27,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// </summary>
         public static MessageRouteOption Instance = new MessageRouteOption
         {
-            EnableAuthToken = true,
-            HostPaths = new Dictionary<string, int>(),
+            HostPaths = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase),
         };
 
 
@@ -55,9 +40,6 @@ namespace ZeroTeam.MessageMVC.Http
         {
             if (option.HostPaths != null)
                 Instance.HostPaths = option.HostPaths;
-            Instance.EnableHeader = option.EnableHeader;
-            Instance.EnableAuthToken = option.EnableAuthToken;
-            Instance.EnableFormFile = option.EnableFormFile;
         }
     }
 }

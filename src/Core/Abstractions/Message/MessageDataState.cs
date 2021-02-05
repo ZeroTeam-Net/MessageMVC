@@ -33,5 +33,15 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         ResultOffline = 0x8,
 
+        /// <summary>
+        /// 扩展参数已在线
+        /// </summary>
+        ExtensionInline = 0x10,
+
+        /// <summary>
+        /// 扩展参数已离线
+        /// </summary>
+        ExtensionOffline = 0x20,
+
     }
 }

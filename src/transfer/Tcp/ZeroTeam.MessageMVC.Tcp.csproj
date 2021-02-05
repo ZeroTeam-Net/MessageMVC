@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <DebugType>portable</DebugType>
+    <ApplicationIcon />
+    <OutputType>Library</OutputType>
+    <StartupObject />
+
+    <Description>以MVC方式进行消息处理,此包为基于BeetleX的Tcp实现</Description>
+    <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/ZeroTeam-Net/MessageMVC</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ZeroTeam-Net/MessageMVC.git</RepositoryUrl>
+    <Version>1.1.4.38</Version>
+    <Authors>Agebull.Hu</Authors>
+    <Company>ZeroTeam</Company>
+    <Product>MessageMVC</Product>
+    <PackageTags>MessageMVC</PackageTags>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>ZeroTeam.MessageMVC.Tcp.xml</DocumentationFile>
+    <DefineConstants>monitor</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>ZeroTeam.MessageMVC.Tcp.xml</DocumentationFile>
+    <DefineConstants>DEBUG;TRACE;monitor</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="BeetleX" Version="1.6.3.8" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\Core\ZeroTeam.MessageMVC.Core.csproj" />
+  </ItemGroup>
+</Project>

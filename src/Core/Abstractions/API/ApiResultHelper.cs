@@ -55,7 +55,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
         /// <summary>网络超时的Json字符串</summary>
         /// <remarks>调用其它Api时时抛出未处理异常</remarks>
-        public static string TimeOutJson => Helper.Serialize(Helper.NetTimeOut);
+        public static string NetTimeOutJson => Helper.Serialize(Helper.NetTimeOut);
+
+        /// <summary>令牌超时的Json字符串</summary>
+        /// <remarks>令牌超时</remarks>
+        public static string TokenTimeOutJson => Helper.Serialize(Helper.TokenTimeOut);
 
         /// <summary>执行超时</summary>
         /// <remarks>Api执行超时</remarks>

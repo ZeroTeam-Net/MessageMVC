@@ -24,6 +24,11 @@ namespace ZeroTeam.MessageMVC.Services
         string IZeroDependency.Name => ServiceName;
 
         /// <summary>
+        ///     是否可以运行的判断方法
+        /// </summary>
+        public Func<bool> CanRun { get; set; }
+
+        /// <summary>
         /// 等级,用于确定中间件优先级
         /// </summary>
         int IZeroMiddleware.Level => MiddlewareLevel.General;
@@ -85,22 +90,12 @@ namespace ZeroTeam.MessageMVC.Services
         /// <summary>
         /// 重置状态机,请谨慎使用
         /// </summary>
-        void IService.ResetStateMachine()
-        {
-            ResetStateMachine();
-        }
-
-        /// <summary>
-        /// 重置状态机,请谨慎使用
-        /// </summary>
         void ResetStateMachine()
         {
             switch (ConfigState)
             {
-                case StationStateType.None:
-                case StationStateType.Stop:
-                case StationStateType.Remove:
-                    StateMachine = new EmptyStateMachine { Service = this };
+                case StationStateType.Initialized:
+                    StateMachine = new StartStateMachine { Service = this };
                     break;
                 case StationStateType.Run:
                     StateMachine = new RunStateMachine { Service = this };
@@ -109,7 +104,7 @@ namespace ZeroTeam.MessageMVC.Services
                     StateMachine = new CloseStateMachine { Service = this };
                     break;
                 default:
-                    StateMachine = new StartStateMachine { Service = this };
+                    StateMachine = new EmptyStateMachine { Service = this };
                     break;
             }
             logger.Information(() => $"[ConfigState] {ConfigState} [StateMachine] {StateMachine.GetTypeName()}");
@@ -129,32 +124,6 @@ namespace ZeroTeam.MessageMVC.Services
         private ManualResetEventSlim eventSlim;
 
         /// <summary>
-        /// 初始化
-        /// </summary>
-        void Initialize()
-        {
-
-            eventSlim = new ManualResetEventSlim(true);
-            if (ServiceName == null)
-            {
-                throw new SystemException("名称为空的服务是非法的");
-            }
-            RealState = StationState.Initialized;
-            Receiver.Service = this;
-            Receiver.Logger = logger;
-            Receiver.Initialize();
-            if (!Receiver.Prepare())
-            {
-                ConfigState = StationStateType.ConfigError;
-            }
-            else
-            {
-                ConfigState = StationStateType.Initialized;
-            }
-            ((IService)this).ResetStateMachine();
-        }
-
-        /// <summary>
         /// 开始
         /// </summary>
         /// <returns></returns>
@@ -169,11 +138,11 @@ namespace ZeroTeam.MessageMVC.Services
                     return false;
                 }
                 RealState = StationState.Start;
-                ConfigState = StationStateType.Run;
                 //可执行
                 //Hearter.HeartJoin(Config.StationName, RealName);
                 //执行主任务
-                _ = Task.Factory.StartNew(Run, TaskCreationOptions.DenyChildAttach | TaskCreationOptions.LongRunning);
+                ConfigState = StationStateType.Run;
+                _ = Task.Run(Run);
                 return true;
             }
             catch (Exception e)
@@ -187,17 +156,16 @@ namespace ZeroTeam.MessageMVC.Services
         /// 命令轮询
         /// </summary>
         /// <returns></returns>
-        private async void Run()
+        private async Task Run()
         {
             bool success;
             RealState = StationState.BeginRun;
             if (!await LoopBegin())
             {
-                ((IService)this).ResetStateMachine();
                 return;
             }
             RealState = StationState.Run;
-            ((IService)this).ResetStateMachine();
+            ResetStateMachine();
             logger.Information("[Run]");
             CancelToken = new CancellationTokenSource();
             using (ManualResetEventSlimScope.Scope(eventSlim))
@@ -235,13 +203,13 @@ namespace ZeroTeam.MessageMVC.Services
                     else
                     {
                         ConfigState = StationStateType.Failed;
-                        ((IService)this).ResetStateMachine();
+                        ResetStateMachine();
                         await Task.Delay(100);
                         _ = Task.Factory.StartNew(StateMachine.Start);
                         return;
                     }
                 }
-                ((IService)this).ResetStateMachine();
+                ResetStateMachine();
             }
             GC.Collect();
         }
@@ -260,13 +228,29 @@ namespace ZeroTeam.MessageMVC.Services
             if (ConfigState != StationStateType.Run)
             {
                 ZeroFlowControl.OnObjectFailed(this);
+                RealState = StationState.Failed;
+                ConfigState = StationStateType.ConfigError;
+                ResetStateMachine();
                 return false;
             }
-            if (!await Receiver.LoopBegin())
+            try
             {
+                if (!await Receiver.LoopBegin())
+                {
+                    ZeroFlowControl.OnObjectFailed(this);
+                    RealState = StationState.Failed;
+                    ConfigState = StationStateType.Failed;
+                    ResetStateMachine();
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Exception(ex, "LoopBegin");
+                ZeroFlowControl.OnObjectFailed(this);
                 RealState = StationState.Failed;
                 ConfigState = StationStateType.Failed;
-                ZeroFlowControl.OnObjectFailed(this);
+                ResetStateMachine();
                 return false;
             }
             ZeroFlowControl.OnObjectActive(this);
@@ -279,7 +263,14 @@ namespace ZeroTeam.MessageMVC.Services
         /// <returns></returns>
         private async Task LoopComplete()
         {
-            await Receiver.LoopComplete();
+            try
+            {
+                await Receiver.LoopComplete();
+            }
+            catch (Exception ex)
+            {
+                logger.Exception(ex, "LoopComplete");
+            }
             CancelToken.Dispose();
             CancelToken = null;
             if (ConfigState == StationStateType.Failed)
@@ -307,8 +298,15 @@ namespace ZeroTeam.MessageMVC.Services
         /// </summary>
         private void DoEnd()
         {
-            Receiver.End();
-            eventSlim.Dispose();
+            try
+            {
+                Receiver.Destroy();
+                eventSlim.Dispose();
+            }
+            catch (Exception ex)
+            {
+                logger.Exception(ex, "DoEnd");
+            }
         }
         #endregion
 
@@ -318,41 +316,53 @@ namespace ZeroTeam.MessageMVC.Services
         Task ILifeFlow.Initialize()
         {
             logger = DependencyHelper.LoggerFactory.CreateLogger($"ZeroService({ServiceName})");
-            logger.Information("ZeroService >>> Initialize");
-            Initialize();
+            eventSlim = new ManualResetEventSlim(true);
+            if (ServiceName == null)
+            {
+                throw new SystemException("名称为空的服务是非法的");
+            }
+            RealState = StationState.Initialized;
+            ConfigState = StationStateType.Initialized;
+            Receiver.Service = this;
+            Receiver.Logger = logger;
+            Receiver.Initialize();
+            ResetStateMachine();
+
+            logger.Information("Initialized");
             return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// 启动
-        /// </summary>
-        Task ILifeFlow.Open()
-        {
-            logger.Information($"ZeroService({ServiceName}) >>> 启动");
-            return StateMachine.Start();
-        }
-
-        Task ILifeFlow.Close()
-        {
-            logger.Information($"ZeroService({ServiceName}) >>> 关闭");
-            return StateMachine.Close();
         }
 
         private bool _isDisposed;
         /// <inheritdoc/>
-        Task ILifeFlow.Destory()
+        Task ILifeFlow.Destroy()
         {
-            logger.Information($"ZeroService({ServiceName}) >>> 注销");
-            if (_isDisposed)
+            if (!_isDisposed)
             {
-                return Task.CompletedTask;
+                _isDisposed = true;
             }
+            logger.Information("Destory");
+            Receiver.Destroy();
+            return Task.CompletedTask;
+        }
 
-            _isDisposed = true;
-            return StateMachine.End();
+        Task ILifeFlow.Open()
+        {
+            logger.Information("Open");
+            return StateMachine.Start();
+        }
+
+        Task ILifeFlow.Closing()
+        {
+            logger.Information("Closing");
+            return StateMachine.Closing();
+        }
+
+        Task ILifeFlow.Close()
+        {
+            logger.Information("Close");
+            return StateMachine.Close();
         }
         #endregion
-
 
         #region 状态机接口
 
@@ -377,24 +387,39 @@ namespace ZeroTeam.MessageMVC.Services
 
                 RealState = StationState.Failed;
 
-                ((IService)this).ResetStateMachine();
+                ResetStateMachine();
                 ZeroFlowControl.OnObjectFailed(this);
                 return Task.FromResult(false);
             }
         }
 
-        async Task<bool> IStateMachineControl.DoClose()
+        async Task<bool> IStateMachineControl.DoClosing()
         {
-            logger.Information("DoClose  》》》 {0}", ServiceName);
+            logger.Information("Closing  {0}", ServiceName);
             if (RealState >= StationState.Closing || CancelToken == null || CancelToken.IsCancellationRequested)
             {
-                logger.Warning("[Close] service is closed");
+                logger.Warning("[Closing] service is closed");
                 return false;
             }
             RealState = StationState.Closing;
             CancelToken.Cancel();
+            await Receiver.Closing();
+            logger.Information("[Closing] cancel,waiting loop end... ");
+            return true;
+        }
+
+        async Task<bool> IStateMachineControl.DoClose()
+        {
+            logger.Information("[Close] {0}", ServiceName);
+            if (RealState >= StationState.Closed)
+            {
+                logger.Warning("[Close] service is closed");
+                return false;
+            }
+            RealState = StationState.Closed;
+
             await Receiver.Close();
-            logger.Information("[Close] cancel,waiting loop end... ");
+            logger.Information("[Closed]");
             return true;
         }
 
@@ -408,7 +433,6 @@ namespace ZeroTeam.MessageMVC.Services
         }
 
         #endregion
-
 
         #region 方法注册
 
@@ -448,12 +472,10 @@ namespace ZeroTeam.MessageMVC.Services
         /// <param name="info">反射信息</param>
         void IService.RegistWildcardAction(ApiActionInfo info)
         {
-            logger ??= DependencyHelper.LoggerFactory.CreateLogger($"ZeroService({ServiceName})");
-
             WildcardAction = new ApiAction
             {
+                Info = info,
                 Function = info.Action,
-                Option = info.AccessOption,
                 ResultType = info.ResultType,
                 IsAsync = info.IsAsync,
                 ResultSerializeType = info.ResultSerializeType,
@@ -461,9 +483,6 @@ namespace ZeroTeam.MessageMVC.Services
             };
 
             WildcardAction.Initialize();
-
-            logger.Information(() => $"[注册接口] {ServiceName}/* => {info.Caption} {info.ControllerName}.{info.Name}");
-
         }
 
         /// <summary>
@@ -471,35 +490,35 @@ namespace ZeroTeam.MessageMVC.Services
         /// </summary>
         /// <param name="route">方法外部方法名称，如 v1/auto/getdid </param>
         /// <param name="info">反射信息</param>
-        void IService.RegistAction(string route, ApiActionInfo info)
+        bool IService.RegistAction(string route, ApiActionInfo info)
         {
-            logger ??= DependencyHelper.LoggerFactory.CreateLogger($"ZeroService({ServiceName})");
-            
-            var action = new ApiAction
+            var apis = route.Split('|', StringSplitOptions.RemoveEmptyEntries);
+            foreach (var api in apis)
             {
-                RouteName = route,
-                Function = info.Action,
-                Option = info.AccessOption,
-                ResultType = info.ResultType,
-                IsAsync = info.IsAsync,
-                ResultSerializeType = info.ResultSerializeType,
-                ArgumentSerializeType = info.ArgumentSerializeType
-            };
-            if (info.HaseArgument)
-            {
-                var arg = info.Arguments.Values.First();
-                if(!arg.IsBaseType)
+                var action = new ApiAction
                 {
-                    action.ArgumentName = arg.Name;
-                    action.ArgumentType = arg.ParameterInfo.ParameterType;
+                    Info = info,
+                    IsAsync = info.IsAsync,
+                    RouteName = api,
+                    Function = info.Action,
+                    ResultType = info.ResultType,
+                    ResultSerializeType = info.ResultSerializeType,
+                    ArgumentSerializeType = info.ArgumentSerializeType
+                };
+                if (!ApiActions.TryAdd(api, action))
+                    return false;
+                if (info.HaseArgument)
+                {
+                    var arg = info.Arguments.Values.First();
+                    if (!arg.IsBaseType)
+                    {
+                        action.ArgumentName = arg.Name;
+                        action.ArgumentType = arg.ParameterInfo.ParameterType;
+                    }
                 }
+                action.Initialize();
             }
-            action.Initialize();
-            if (!ApiActions.TryAdd(route, action))
-            {
-                logger.Error($"[注册接口]失败，因为路由名称已存在 {ServiceName}/{route} => {info.Caption} {info.ControllerName}.{info.Name}");
-            }
-            logger.Information(() => $"[注册接口] {ServiceName}/{route} => {info.Caption} {info.ControllerName}.{info.Name}");
+            return true;
         }
 
         #endregion

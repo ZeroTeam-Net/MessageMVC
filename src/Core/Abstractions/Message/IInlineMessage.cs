@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Messages
 {
@@ -10,6 +10,11 @@ namespace ZeroTeam.MessageMVC.Messages
     /// </summary>
     public interface IInlineMessage : IMessageItem
     {
+        /// <summary>
+        /// 消息类型
+        /// </summary>
+        string MessageType { get; }
+
         #region 数据
 
         /// <summary>
@@ -20,7 +25,12 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 字典参数
         /// </summary>
-        Dictionary<string, string> Dictionary { get; set; }
+        Dictionary<string, string> ExtensionDictionary { get; set; }
+
+        /// <summary>
+        /// 二进制字典参数
+        /// </summary>
+        Dictionary<string, byte[]> BinaryDictionary { get; set; }
 
         /// <summary>
         /// 返回值
@@ -30,6 +40,11 @@ namespace ZeroTeam.MessageMVC.Messages
         #endregion
 
         #region 状态
+
+        /// <summary>
+        /// 是否外部访问
+        /// </summary>
+        bool IsOutAccess { get; }
 
         /// <summary>
         /// 过程状态
@@ -49,48 +64,75 @@ namespace ZeroTeam.MessageMVC.Messages
         MessageDataState DataState { get; set; }
 
         /// <summary>
-        /// 重置
+        /// 重置为请求状态
         /// </summary>
-        void Reset()
+        void ResetToRequest()
         {
+            State = MessageState.None;
             Result = null;
             ResultData = null;
-
-            DataState = MessageDataState.None;
-            if (Content != null)
-            {
-                DataState |= MessageDataState.ArgumentOffline;
-            }
-            if (ArgumentData != null || Dictionary != null)
-            {
-                DataState |= MessageDataState.ArgumentInline;
-            }
+            CheckState();
         }
 
         /// <summary>
-        /// 准备在线(框架内调用)
+        /// 复制一个请求
+        /// </summary>
+        IInlineMessage CopyToRequest()
+        {
+            var req = new InlineMessage
+            {
+                Argument = Argument,
+                ArgumentData = ArgumentData
+            } as IInlineMessage;
+            req.CheckState();
+            return req;
+        }
+
+        /// <summary>
+        /// 在线(框架内调用)
         /// </summary>
         /// <returns></returns>
-        Task PrepareInline()
+        void CheckState()
         {
             DataState = MessageDataState.None;
-            if (Content != null)
+
+            if (Argument != null)
             {
                 DataState |= MessageDataState.ArgumentOffline;
             }
-            if (ArgumentData != null || Dictionary != null)
+            if (ArgumentData != null)
             {
                 DataState |= MessageDataState.ArgumentInline;
+            }
+
+            if (Extension != null)
+            {
+                DataState |= MessageDataState.ExtensionOffline;
+            }
+            if (ExtensionDictionary != null)
+            {
+                DataState |= MessageDataState.ExtensionInline;
+            }
+            else
+            {
+                ExtensionDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                if (Extension != null)
+                {
+                    var dir = SmartSerializer.FromInnerString<Dictionary<string, string>>(Extension);
+                    foreach (var kv in dir)
+                        ExtensionDictionary.TryAdd(kv.Key, kv.Value);
+                }
+                DataState |= MessageDataState.ExtensionInline;
+            }
+
+            if (Result != null)
+            {
+                DataState |= MessageDataState.ResultOffline;
             }
             if (ResultData != null)
             {
                 DataState |= MessageDataState.ResultInline;
             }
-            if (Result != null)
-            {
-                DataState |= MessageDataState.ResultOffline;
-            }
-            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -117,10 +159,18 @@ namespace ZeroTeam.MessageMVC.Messages
             if (!DataState.HasFlag(MessageDataState.ArgumentOffline))
             {
                 if (DataState.HasFlag(MessageDataState.ArgumentInline))
-                    Content = SmartSerializer.ToString(ArgumentData ?? Dictionary, serialize);
-                else if (Dictionary != null)
-                    Content = SmartSerializer.ToString(Dictionary, serialize);
+                {
+                    Argument = SmartSerializer.ToString(ArgumentData, serialize);
+                }
                 DataState |= MessageDataState.ArgumentOffline;
+            }
+            if (!DataState.HasFlag(MessageDataState.ExtensionOffline))
+            {
+                if (DataState.HasFlag(MessageDataState.ExtensionInline))
+                {
+                    Extension = SmartSerializer.ToString(ExtensionDictionary, serialize);
+                }
+                DataState |= MessageDataState.ExtensionOffline;
             }
         }
 
@@ -129,32 +179,28 @@ namespace ZeroTeam.MessageMVC.Messages
         /// </summary>
         void RestoryContentToDictionary(ISerializeProxy serializer, bool merge)
         {
+            if (!merge)
+            {
+                ExtensionDictionary.Clear();
+            }
+
             Dictionary<string, string> contentDictionary;
 
             if (serializer != null)
             {
-                contentDictionary = serializer.ToObject<Dictionary<string, string>>(Content);
+                contentDictionary = serializer.ToObject<Dictionary<string, string>>(Argument);
             }
             else
             {
-                contentDictionary = SmartSerializer.ToObject<Dictionary<string, string>>(Content);
+                contentDictionary = SmartSerializer.ToObject<Dictionary<string, string>>(Argument);
             }
 
             if (contentDictionary != null && contentDictionary.Count >= 0)
             {
-                var dict2 = Dictionary;
-                Dictionary = contentDictionary;
-                if (dict2 != null && merge)
+                foreach (var kv in contentDictionary)
                 {
-                    foreach (var kv in dict2)
-                    {
-                        Dictionary.TryAdd(kv.Key, kv.Value);
-                    }
+                    ExtensionDictionary.TryAdd(kv.Key, kv.Value);
                 }
-            }
-            else
-            {
-                Dictionary ??= new Dictionary<string, string>();
             }
             DataState |= MessageDataState.ArgumentInline | MessageDataState.ArgumentOffline;
         }
@@ -166,11 +212,11 @@ namespace ZeroTeam.MessageMVC.Messages
         {
             if (serializer != null)
             {
-                ArgumentData = serializer.ToObject(Content, argumentType);
+                ArgumentData = serializer.ToObject(Argument, argumentType);
             }
             else
             {
-                ArgumentData = SmartSerializer.ToObject(Content, argumentType);
+                ArgumentData = SmartSerializer.ToObject(Argument, argumentType);
             }
             DataState |= MessageDataState.ArgumentInline | MessageDataState.ArgumentOffline;
         }
@@ -189,36 +235,13 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 取参数值
         /// </summary>
         /// <param name="name">名称</param>
-        /// <returns>值</returns>
-        string GetStringArgument(string name)
-        {
-            if (Dictionary == null || !Dictionary.TryGetValue(name, out var value) || !(value is string str))
-                return null;
-            return str;
-        }
-
-        /*// <summary>
-        /// 取参数值
-        /// </summary>
-        /// <param name="name">名称</param>
-        /// <returns>值</returns>
-        byte[] GetBinaryArgument(string name)
-        {
-            if (Binary == null || !Binary.TryGetValue(name, out var bytes))
-                return null;
-            return bytes;
-        }*/
-
-        /// <summary>
-        /// 取参数值
-        /// </summary>
-        /// <param name="name">名称</param>
         /// <param name="scope">参数范围</param>
+        /// <param name="def">缺省值</param>
         /// <returns>值</returns>
-        string GetScopeArgument(string name, ArgumentScope scope = ArgumentScope.HttpArgument)
+        string GetScopeArgument(string name, ArgumentScope scope, string def)
         {
-            if (Dictionary == null || !Dictionary.TryGetValue(name, out var value))
-                return null;
+            if (ExtensionDictionary == null || !ExtensionDictionary.TryGetValue(name, out var value))
+                return def;
             return value;
         }
 
@@ -233,29 +256,65 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <returns>值</returns>
         object GetValueArgument(string name, int scope, int serializeType, ISerializeProxy serialize, Type type)
         {
-            if (Dictionary == null || !Dictionary.TryGetValue(name, out var value))
+            if (ExtensionDictionary == null || !ExtensionDictionary.TryGetValue(name, out var value))
                 return null;
             return value;
         }
 
         /// <summary>
-        /// 取参数值(动态IL代码调用)
+        /// 取基本参数值
         /// </summary>
         /// <param name="name">名称</param>
-        /// <param name="scope">参数范围</param>
-        /// <param name="serializeType">序列化类型</param>
-        /// <param name="serialize">序列化器</param>
-        /// <param name="type">序列化对象</param>
+        /// <param name="parse">转化方法</param>
         /// <returns>值</returns>
-        object FrameGetValueArgument(string name, int scope, int serializeType, ISerializeProxy serialize, Type type)
+        public T? GetNullableArgument<T>(string name, Func<string, T> parse) where T : struct
         {
-            if (Dictionary == null || !Dictionary.TryGetValue(name, out var value))
-            {
-                if (type != typeof(string))
-                    throw new MessageArgumentNullException(name);
+            if (ExtensionDictionary == null)
                 return null;
-            }
-            return value;
+            if (!ExtensionDictionary.TryGetValue(name, out var str) || string.IsNullOrWhiteSpace(str))
+                return null;
+            return parse(str);
+        }
+
+        /// <summary>
+        /// 取基本参数值
+        /// </summary>
+        /// <param name="name">名称</param>
+        /// <param name="parse">转化方法</param>
+        /// <returns>值</returns>
+        T GetBaseArgument<T>(string name, Func<string, T> parse) where T : struct
+        {
+            if (ExtensionDictionary == null)
+                return default;
+            if (!ExtensionDictionary.TryGetValue(name, out var str) || string.IsNullOrWhiteSpace(str))
+                return default;
+            return parse(str);
+        }
+
+        /// <summary>
+        /// 取基本参数值
+        /// </summary>
+        /// <param name="name">名称</param>
+        /// <returns>值</returns>
+        string GetStringArgument(string name)
+        {
+            if (ExtensionDictionary == null)
+                return null;
+            ExtensionDictionary.TryGetValue(name, out var str);
+            return str;
+        }
+
+        /// <summary>
+        /// 取二进制参数值
+        /// </summary>
+        /// <param name="name">名称</param>
+        /// <returns>值</returns>
+        byte[] GetBinaryArgument(string name)
+        {
+            if (BinaryDictionary == null)
+                return null;
+            BinaryDictionary.TryGetValue(name, out var str);
+            return str;
         }
         #endregion
 
@@ -290,7 +349,7 @@ namespace ZeroTeam.MessageMVC.Messages
             }
             if (ResultCreater == null)
             {
-                DataState |= MessageDataState.ResultOffline;
+                ResultCreater = ApiResultHelper.State;
                 return this;
             }
             ResultData = ResultCreater(State.ToErrorCode(), Result);
@@ -338,7 +397,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 复制构造一个返回值对象
         /// </summary>
         /// <returns></returns>
-        IMessageResult ToMessageResult(bool offline, ISerializeProxy serialize = null)
+        MessageResult ToMessageResult(bool offline, ISerializeProxy serialize = null)
         {
             if (offline)
                 OfflineResult(serialize);
@@ -347,7 +406,7 @@ namespace ZeroTeam.MessageMVC.Messages
                 {
                     ID = ID,
                     State = State,
-                    Trace = Trace,
+                    Trace = TraceInfo,
                     Result = Result,
                     DataState = MessageDataState.ResultOffline
                 }
@@ -355,7 +414,7 @@ namespace ZeroTeam.MessageMVC.Messages
                 {
                     ID = ID,
                     State = State,
-                    Trace = Trace,
+                    Trace = TraceInfo,
                     Result = Result,
                     ResultData = ResultData,
                     DataState = DataState & (MessageDataState.ResultInline | MessageDataState.ResultOffline)
@@ -382,18 +441,17 @@ namespace ZeroTeam.MessageMVC.Messages
         {
             return new InlineMessage
             {
-                Title = Title,
-                Topic = Topic,
-                Argument = Argument,
+                Method = Method,
+                Service = Service,
                 ArgumentData = ArgumentData,
-                Content = Content,
-                Dictionary = Dictionary,
+                Argument = Argument,
+                ExtensionDictionary = ExtensionDictionary,
                 ID = ID,
                 Result = Result,
                 ResultData = ResultData,
                 DataState = DataState,
                 State = State,
-                Trace = Trace
+                TraceInfo = TraceInfo
             };
         }
 
@@ -404,7 +462,7 @@ namespace ZeroTeam.MessageMVC.Messages
         {
             State = message.State;
             if (message.Trace != null)
-                Trace = message.Trace;
+                TraceInfo = message.Trace;
 
             ResultData = message.ResultData;
             if (message.DataState.HasFlag(MessageDataState.ResultInline))
@@ -428,37 +486,12 @@ namespace ZeroTeam.MessageMVC.Messages
 
         #endregion
 
-        #region 扩展名称
-
-        /// <summary>
-        /// 是否外部访问
-        /// </summary>
-        bool IsOutAccess { get; }
-
-        /// <summary>
-        /// 服务名称,即Topic
-        /// </summary>
-        string ServiceName => Topic;
-
-        /// <summary>
-        /// 接口名称,即Title
-        /// </summary>
-        string ApiName => Title;
-
-
-        /// <summary>
-        /// 接口参数,即Content
-        /// </summary>
-        string Argument => Content;
-
-        #endregion
-
         #region 快捷方法
         /// <summary>
-        /// 跟踪消息
+        /// 查看
         /// </summary>
         /// <returns></returns>
-        string TraceInfo()
+        string Look()
         {
             return JsonConvert.SerializeObject(this, Formatting.Indented);
         }

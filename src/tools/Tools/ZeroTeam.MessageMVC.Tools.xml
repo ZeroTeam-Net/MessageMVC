@@ -4,105 +4,49 @@
         <name>ZeroTeam.MessageMVC.Tools</name>
     </assembly>
     <members>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiJson">
+        <member name="T:ZeroTeam.MessageMVC.Tools.ApiActionChecker">
             <summary>
-            API扩展功能
+            扩展行为检查功能
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiJson.JsonExample(ZeroTeam.MessageMVC.Documents.TypeDocument,System.Boolean)">
+        <member name="M:ZeroTeam.MessageMVC.Tools.ApiActionChecker.Check(ZeroTeam.MessageMVC.ZeroApis.IApiAction,ZeroTeam.MessageMVC.Messages.IInlineMessage)">
             <summary>
-            转为Json内容
+            检查接口是否可执行
             </summary>
-            <param name="type">类型</param>
-            <param name="isRoot">是否顶级</param>
+            <param name="action"></param>
+            <param name="message"></param>
             <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiJson.ArgumentJson(ZeroTeam.MessageMVC.Documents.ApiDocument)">
-            <summary>
-            参数的Json
-            </summary>
-            <param name="type"></param>
-            <returns></returns>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiMarkDown">
-            <summary>
-            API扩展功能
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiMarkDown.ServiceInfos">
-            <summary>
-            站点文档信息
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiMarkDown.MarkDown(System.String)">
-            <summary>
-            生成单元测试代码
-            </summary>
-            <param name="path"></param>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiSqlCode">
-            <summary>
-            API扩展功能
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiSqlCode.ServiceInfos">
-            <summary>
-            站点文档信息
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiSqlCode.ApiSql(System.String)">
-            <summary>
-            生成单元测试代码
-            </summary>
-            <param name="path"></param>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiTAPDMarkDown">
-            <summary>
-            API扩展功能
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiTAPDMarkDown.ServiceInfos">
-            <summary>
-            站点文档信息
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiTAPDMarkDown.MarkDown(System.String)">
-            <summary>
-            生成单元测试代码
-            </summary>
-            <param name="path"></param>
-        </member>
-        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiUnitTestCode">
-            <summary>
-            API扩展功能
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiUnitTestCode.ServiceInfos">
-            <summary>
-            站点文档信息
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiUnitTestCode.NUnitCode(System.String)">
-            <summary>
-            生成单元测试代码
-            </summary>
-            <param name="path"></param>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiUnitTestCode.XUnitCode(System.String)">
-            <summary>
-            生成单元测试代码
-            </summary>
-            <param name="path"></param>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Tools.AutoRegister">
             <summary>
               组件注册
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Tools.AutoRegister.ZeroTeam#MessageMVC#AddIn#IAutoRegister#AutoRegist(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:ZeroTeam.MessageMVC.Tools.AutoRegister.ZeroTeam#MessageMVC#AddIn#IAutoRegister#AutoRegist(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Logging.ILogger)">
             <summary>
             注册
             </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Tools.AutoRegister.ZeroTeam#MessageMVC#AddIn#IAutoRegister#LateConfigRegist(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            注册
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Tools.JwtTokenResolver">
+            <summary>
+            API扩展功能
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Tools.JwtTokenResolver.tokenValidationParameters">
+            <summary>
+            校验参数
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Tools.JwtTokenResolver.CheckJwt(System.String)">
+            <summary>
+            JWT校验
+            </summary>
+            <param name="jwt"></param>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Tools.ExceptionMiddleware">
             <summary>
@@ -215,37 +159,6 @@
             相关接口
             </summary>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.Tools.MarkPointMiddleware">
-            <summary>
-            埋点发出中间件
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Tools.MarkPointMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Level">
-            <summary>
-            层级
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.Tools.MarkPointMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Scope">
-            <summary>
-            消息中间件的处理范围
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Tools.MarkPointMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Prepare(ZeroTeam.MessageMVC.Services.IService,ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
-            <summary>
-            准备
-            </summary>
-            <param name="service">当前服务</param>
-            <param name="message">当前消息</param>
-            <param name="tag">扩展信息</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Tools.MarkPointMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#OnEnd(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
-            <summary>
-            结果处理
-            </summary>
-            <param name="message">当前消息</param>
-            <returns></returns>
-        </member>
         <member name="T:ZeroTeam.MessageMVC.Tools.ReceiptMiddleware">
             <summary>
             回执服务中间件
@@ -298,24 +211,24 @@
             扩展工具配置
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.EnableLinkTrace">
+        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.EnableReverseProxy">
             <summary>
-                启用调用链跟踪
+                启用反向代理
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.EnableMonitorLog">
+        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.ReverseProxyMap">
             <summary>
-                启用Monitor模式日志记录
+                反向代理服务名称映射
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.EnableMarkPoint">
+        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.EnableHealthCheck">
             <summary>
-                启用埋点
+                启用健康检查
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.MarkPointName">
+        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.EnableReceipt">
             <summary>
-                埋点服务名称
+                启用第三方回执
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.EnableMessageReConsumer">
@@ -333,32 +246,179 @@
                 回执接口方法
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.EnableJwtToken">
+            <summary>
+                启用JWT令牌解析
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.JwtAppSecret">
+            <summary>
+            Secret
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.JwtAppSecretByte">
+            <summary>
+            Secret
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.JwtIssue">
+            <summary>
+            JWT颁发
+            </summary>
+        </member>
         <member name="F:ZeroTeam.MessageMVC.Tools.ToolsOption.Instance">
             <summary>
             实例
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Tools.ToolsOption.Update(ZeroTeam.MessageMVC.Tools.ToolsOption)">
+        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.ZeroTeam#MessageMVC#IZeroOption#SupperUrl">
             <summary>
-            重新载入并更新
+            支持地址
             </summary>
         </member>
-        <member name="T:ZeroTeam.MessageMVC.Context.GlobalContextMiddleware">
+        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.ZeroTeam#MessageMVC#IZeroOption#OptionName">
+            <summary>
+            配置名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.ZeroTeam#MessageMVC#IZeroOption#SectionName">
+            <summary>
+            节点名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tools.ToolsOption.ZeroTeam#MessageMVC#IZeroOption#IsDynamic">
+            <summary>
+            是否动态配置
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiJson">
+            <summary>
+            API扩展功能
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiJson.JsonExample(ZeroTeam.MessageMVC.Documents.TypeDocument,System.Boolean)">
+            <summary>
+            转为Json内容
+            </summary>
+            <param name="type">类型</param>
+            <param name="isRoot">是否顶级</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiJson.ArgumentJson(ZeroTeam.MessageMVC.Documents.ApiDocument)">
+            <summary>
+            参数的Json
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiMarkDown">
+            <summary>
+            API扩展Markdown文档生成工具
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiMarkDown.CreateMarkdown(System.Type[])">
+            <summary>
+            生成Markdown文档(在当前目录的md目录下)
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiMarkDown.CreateMarkdown(System.Reflection.Assembly[])">
+            <summary>
+            生成Markdown文档(在当前目录的md目录下)
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiMarkDown.ServiceInfos">
+            <summary>
+            站点文档信息
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiMarkDown.MarkDown(System.String)">
+            <summary>
+            生成单元测试代码
+            </summary>
+            <param name="path"></param>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiSqlCode">
+            <summary>
+            API扩展功能
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiSqlCode.ServiceInfos">
+            <summary>
+            站点文档信息
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiSqlCode.ApiSql(System.String)">
+            <summary>
+            生成单元测试代码
+            </summary>
+            <param name="path"></param>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiTAPDMarkDown">
+            <summary>
+            API扩展功能
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiTAPDMarkDown.ServiceInfos">
+            <summary>
+            站点文档信息
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiTAPDMarkDown.MarkDown(System.String)">
+            <summary>
+            生成单元测试代码
+            </summary>
+            <param name="path"></param>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ZeroApis.ApiUnitTestCode">
+            <summary>
+            API扩展功能
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ApiUnitTestCode.ServiceInfos">
+            <summary>
+            站点文档信息
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiUnitTestCode.NUnitCode(System.String)">
+            <summary>
+            生成单元测试代码
+            </summary>
+            <param name="path"></param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ApiUnitTestCode.XUnitCode(System.String)">
+            <summary>
+            生成单元测试代码
+            </summary>
+            <param name="path"></param>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Context.ITokenResolver">
+            <summary>
+            令牌解析器
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Context.ITokenResolver.TokenToUser(System.String)">
+            <summary>
+            令牌解析为用户
+            </summary>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Context.JwtTokenMiddleware">
             <summary>
             上下文对象
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Context.GlobalContextMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Level">
+        <member name="P:ZeroTeam.MessageMVC.Context.JwtTokenMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Level">
             <summary>
             层级
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.Context.GlobalContextMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Scope">
+        <member name="P:ZeroTeam.MessageMVC.Context.JwtTokenMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Scope">
             <summary>
             消息中间件的处理范围
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Context.GlobalContextMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Prepare(ZeroTeam.MessageMVC.Services.IService,ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
+        <member name="M:ZeroTeam.MessageMVC.Context.JwtTokenMiddleware.ZeroTeam#MessageMVC#Messages#IMessageMiddleware#Prepare(ZeroTeam.MessageMVC.Services.IService,ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
             <summary>
             准备
             </summary>
@@ -380,11 +440,6 @@
         <member name="P:ZeroTeam.MessageMVC.Messages.ReConsumerMiddleware.ZeroTeam#MessageMVC#IZeroMiddleware#Level">
             <summary>
             等级
-            </summary>
-        </member>
-        <member name="M:ZeroTeam.MessageMVC.Messages.ReConsumerMiddleware.ZeroTeam#MessageMVC#ILifeFlow#Check(ZeroTeam.MessageMVC.ZeroAppOption)">
-            <summary>
-                配置校验,作为第一步
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.ReConsumerMiddleware.ZeroTeam#MessageMVC#ILifeFlow#Open">

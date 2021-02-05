@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Reflection;
 using ZeroTeam.MessageMVC.Messages;
@@ -56,8 +55,6 @@ namespace ZeroTeam.MessageMVC.Documents
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public bool IsAsync { get; set; }
 
-
-
         /// <summary>
         ///     返回值说明
         /// </summary>
@@ -70,11 +67,15 @@ namespace ZeroTeam.MessageMVC.Documents
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public SerializeType ResultSerializeType { get; set; }
 
-
         /// <summary>
         ///     是否有调用参数
         /// </summary>
         public bool HaseArgument => Arguments != null && Arguments.Count > 0;
+
+        /// <summary>
+        ///     是否字典参数
+        /// </summary>
+        public bool IsDictionaryArgument { get; set; }
 
         /// <summary>
         ///     参数说明

@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using Agebull.Common.Ioc;
+﻿using Agebull.Common.Ioc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace Agebull.Common.Configuration
 {
@@ -22,101 +23,92 @@ namespace Agebull.Common.Configuration
         /// <summary>
         /// 全局配置
         /// </summary>
-        public static IConfigurationRoot Root { get; internal set; }
+        public static IConfiguration Root { get; private set; }
+
+        internal static Action<IConfiguration> OnConfigurationUpdate { get; set; }
 
         /// <summary>
-        /// 基本目录
+        /// 绑定
         /// </summary>
-        public static string BasePath { get; set; }
-
-
-        static ConfigurationHelper()
+        /// <param name="builder"></param>
+        public static void BindBuilder(IConfigurationBuilder builder)
         {
-            BasePath = Environment.CurrentDirectory;
-            Builder = DependencyHelper.GetService<IConfigurationBuilder>() ?? new ConfigurationBuilder();
-            Builder.SetBasePath(Environment.CurrentDirectory);
-
-            var files = new string[] { "appsettings.json", "appSettings.json", "AppSettings.json", "Appsettings.json" };
-            foreach (var fileName in files)
-            {
-                var file = Path.Combine(Environment.CurrentDirectory, fileName);
-                if (File.Exists(file))
-                {
-                    Builder.AddJsonFile(file, false, true);
-                    break;
-                }
-            }
-            Root = Builder.Build();
+            Builder = builder;
+            SyncBuilder();
         }
 
         /// <summary>
-        /// 修改根
+        /// 建造生成器，使用前请调用
         /// </summary>
-        /// <param name="builder"></param>
-        public static void ChangeBuilder(IConfigurationBuilder builder)
+        public static void CreateBuilder()
         {
-            Builder = builder;
-            Flush();
+            if (Builder != null)
+                return;
+            Builder = DependencyHelper.GetService<IConfigurationBuilder>() ?? new ConfigurationBuilder();
+            Builder.SetBasePath(Environment.CurrentDirectory);
+            SyncBuilder();
+        }
+
+        /// <summary>
+        /// 当前运行环境
+        /// </summary>
+        public static string RunEnvironment { get; set; }
+
+        /// <summary>
+        /// 建造生成器，使用前请调用
+        /// </summary>
+        static void SyncBuilder()
+        {
+            Builder.AddJsonFile(Path.Combine(Environment.CurrentDirectory, "appsettings.json"), false, true);
+            Root = Builder.Build();
+            RunEnvironment = Root.GetValue<string>("ASPNETCORE_ENVIRONMENT_") ?? "Production";
+            Builder.AddJsonFile(Path.Combine(Environment.CurrentDirectory, $"appsettings.{RunEnvironment}.json"), true, true);
+            Root = Builder.Build();
         }
 
         #endregion
 
         #region 配置文件组合
 
-        /// <summary>
-        /// 指定配置是否启用
-        /// </summary>
-        /// <param name="key">配置的键名称，应已约定为bool类型</param>
-        /// <param name="def">不存在时默认值</param>
-        public static bool IsEnable(string key, bool def = false)
-        {
-            var sec = Root.GetSection(key);
-            return sec == null
-                ? def
-                : string.Equals(sec.Value, "true", StringComparison.OrdinalIgnoreCase);
-        }
 
-        /// <summary>
+        /*// <summary>
         /// 刷新
         /// </summary>
-        /// <param name="key">配置的键名称，应已约定为bool类型</param>
-        /// <param name="def">不存在时默认值</param>
-        public static bool IsDisable(string key, bool def = false)
+        internal static bool UpdateDependency()
         {
-            var sec = Root.GetSection(key);
-            return sec == null
-                ? def
-                : string.Equals(sec.Value, "false", StringComparison.OrdinalIgnoreCase);
-        }
-
-        /// <summary>
-        /// 刷新
-        /// </summary>
-        internal static void UpdateDependency()
-        {
+            bool changed = false;
             var cb = DependencyHelper.GetService<IConfigurationBuilder>();
             if (cb == null)
             {
-                DependencyHelper.AddSingleton(p => Builder);
+                DependencyHelper.ServiceCollection.AddSingleton(p => Builder);
+                changed = true;
             }
             else if (cb != Builder)
             {
                 Builder = cb;
             }
 
-            Root = DependencyHelper.GetService<IConfigurationRoot>();
+            Root = DependencyHelper.GetService<IConfiguration>();
             if (Root == null)
             {
                 Root = Builder.Build();
-                DependencyHelper.AddSingleton(p => Root);
+                DependencyHelper.ServiceCollection.AddSingleton(p => Root);
+                changed = true;
             }
-        }
+            return changed;
+        }*/
+
+        internal static bool IsLocked;
 
         /// <summary>
         /// 刷新
         /// </summary>
-        public static void Flush()
+        static void Flush()
         {
+            if (IsLocked)
+                throw new Exception("配置工具已锁定，请在初始化时调用");
+            Root = Builder.Build();
+            OnConfigurationUpdate?.Invoke(Root);
             foreach (var cfg in actions)
             {
                 cfg.Disposable?.Dispose();
@@ -148,46 +140,56 @@ namespace Agebull.Common.Configuration
                 Builder.AddJsonFile(jsonFile, true, true);
             Flush();
         }
+
         internal class ChangeAction
         {
-            internal bool IsLoading { get; set; }
             internal string Section { get; set; }
             internal Action Action { get; set; }
 
             internal IDisposable Disposable { get; set; }
 
+            bool first = true;
+
+            bool loading;
+
             internal void SetAction(Action action)
             {
                 Action = () =>
                 {
-                    if (IsLoading)
+                    if (loading)
                         return;
-                    IsLoading = true;
+                    loading = true;
                     try
                     {
                         action();
                     }
-                    catch (Exception ex)//防止异常出错,中断应用
+                    catch (Exception e)//防止异常出错,中断应用
                     {
-                        Console.WriteLine(ex);
+                        Console.WriteLine(e);
                     }
                     finally
                     {
-                        IsLoading = false;
+                        loading = false;
                     }
                 };
             }
             internal void SetAction<TConfig>(Action<TConfig> action)
-            where TConfig : class
+            where TConfig : class, new()
             {
                 Action = () =>
                 {
-                    if (IsLoading)
+                    if (loading)
                         return;
-                    IsLoading = true;
+                    loading = true;
                     try
                     {
-                        var opt = ConfigurationHelper.Option<TConfig>(Section);
+                        var opt = Option<TConfig>(Section);
+                        if (first)
+                        {
+                            first = false;
+                            if (opt == null)
+                                opt = new TConfig();
+                        }
                         if (opt != null)
                             action(opt);
                     }
@@ -197,7 +199,7 @@ namespace Agebull.Common.Configuration
                     }
                     finally
                     {
-                        IsLoading = false;
+                        loading = false;
                     }
                 };
             }
@@ -230,7 +232,7 @@ namespace Agebull.Common.Configuration
         /// <param name="reload">更新处理方法</param>
         /// <param name="runNow">是否现在执行一次</param>
         public static void RegistOnChange<TConfig>(string section, Action<TConfig> reload, bool runNow = true)
-            where TConfig : class
+            where TConfig : class, new()
         {
             var cfg = new ChangeAction
             {
@@ -356,11 +358,11 @@ namespace Agebull.Common.Configuration
         }
 
         /// <summary>
-        ///   得到双精数值
+        ///   得到布尔值
         /// </summary>
         /// <param name="key"> 键 </param>
         /// <param name="def"> 缺省值（不存在或不合理时使用） </param>
-        /// <returns> 双精数值 </returns>
+        /// <returns> 布尔值 </returns>
         public bool GetBool(string key, bool def = false)
         {
             if (key == null)
@@ -398,11 +400,11 @@ namespace Agebull.Common.Configuration
         }
 
         /// <summary>
-        ///   得到双精数值
+        ///   得到实数值
         /// </summary>
         /// <param name="key"> 键 </param>
         /// <param name="def"> 缺省值（不存在或不合理时使用） </param>
-        /// <returns> 双精数值 </returns>
+        /// <returns> 实数值 </returns>
         public decimal GetDecimal(string key, decimal def = 0M)
         {
             if (key == null)
@@ -419,10 +421,10 @@ namespace Agebull.Common.Configuration
         }
 
         /// <summary>
-        ///   得到双精数值
+        ///   得到日期
         /// </summary>
         /// <param name="key"> 键 </param>
-        /// <returns> 双精数值 </returns>
+        /// <returns> 日期 </returns>
         public DateTime? GetDateTime(string key)
         {
             if (key == null)
@@ -441,10 +443,10 @@ namespace Agebull.Common.Configuration
         }
 
         /// <summary>
-        ///   得到双精数值
+        ///   得到GUID
         /// </summary>
         /// <param name="key"> 键 </param>
-        /// <returns> 双精数值 </returns>
+        /// <returns> GUID </returns>
         public Guid? GetGuid(string key)
         {
             if (key == null)
@@ -514,6 +516,14 @@ namespace Agebull.Common.Configuration
             Configuration = Root.GetSection("ConnectionStrings")
         };
 
+        /// <summary>
+        /// 显示式设置配置对象(依赖)
+        /// </summary>
+        public static IConfigurationSection GetSection(string section)
+        {
+            return Root.GetSection(section);
+        }
+
 
         /// <summary>
         /// 显示式设置配置对象(依赖)
@@ -525,7 +535,6 @@ namespace Agebull.Common.Configuration
                 Configuration = Root.GetSection(section)
             };
         }
-
 
         /// <summary>
         /// 强类型取根节点
@@ -560,6 +569,59 @@ namespace Agebull.Common.Configuration
 
         #region 内容获取
 
+        /// <summary>
+        /// 指定配置是否启用
+        /// </summary>
+        /// <param name="key">配置的键名称，应已约定为bool类型</param>
+        /// <param name="def">不存在时默认值</param>
+        public static bool IsEnable(string key, bool def = false)
+        {
+            var sec = Root.GetSection(key);
+            return sec == null || string.IsNullOrWhiteSpace(sec.Value)
+                ? def
+                : string.Equals(sec.Value, "true", StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// 指定配置是否相同
+        /// </summary>
+        /// <param name="key">配置的键名称，应已约定为bool类型</param>
+        /// <param name="value">对比的内容</param>
+        /// <param name="def">不存在配置时的返回值</param>
+        public static bool IsEquals(string key, string value, bool def = false)
+        {
+            var sec = Root.GetSection(key);
+            return sec == null || string.IsNullOrWhiteSpace(sec.Value)
+                ? def
+                : string.Equals(sec.Value, value, StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// 指定配置是否不相同
+        /// </summary>
+        /// <param name="key">配置的键名称，应已约定为bool类型</param>
+        /// <param name="value">对比的内容</param>
+        /// <param name="def">不存在配置时的返回值</param>
+        public static bool IsNotEquals(string key, string value, bool def = false)
+        {
+            var sec = Root.GetSection(key);
+            return sec == null
+                ? def
+                : string.Equals(sec.Value, value, StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// 刷新
+        /// </summary>
+        /// <param name="key">配置的键名称，应已约定为bool类型</param>
+        /// <param name="def">不存在时默认值</param>
+        public static bool IsDisable(string key, bool def = false)
+        {
+            var sec = Root.GetSection(key);
+            return sec == null || string.IsNullOrWhiteSpace(sec.Value)
+                ? def
+                : string.Equals(sec.Value, "false", StringComparison.OrdinalIgnoreCase);
+        }
 
         /// <summary>
         ///   得到文本值

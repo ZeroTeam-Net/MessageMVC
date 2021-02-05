@@ -43,7 +43,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <summary>
         /// 初始化
         /// </summary>
-        void IMessagePoster.Initialize()
+        void IMessageWorker.Initialize()
         {
             logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(CSRedisQueueReceiver));
 
@@ -87,7 +87,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// 关闭
         /// </summary>
         /// <returns></returns>
-        async Task IMessageReceiver.Close()
+        async Task IMessageWorker.Close()
         {
             //try
             //{
@@ -278,7 +278,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                 return true;
             }
             //item.Trace ??= TraceInfo.New(item.ID);
-            item.Topic = Service.ServiceName;
+            item.Service = Service.ServiceName;
 
             _ = MessageProcessor.OnMessagePush(Service, item, true, null);
 
@@ -329,8 +329,8 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <returns>是否需要发送回执</returns>
         async Task<bool> IMessageReceiver.OnResult(IInlineMessage item, object tag)
         {
-            if (item.Trace.Context != null)
-                item.Trace.Context.Option["Receipt"] = "false";
+            if (item.Context != null)
+                item.Context["Receipt"] = "false";
             var key = $"msg:{Service.ServiceName}:{item.ID}";
             var guard = $"guard:{Service.ServiceName}:{item.ID}";
             while (!await CheckState(item.State, key, item.ID, guard))

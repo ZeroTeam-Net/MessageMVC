@@ -145,7 +145,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             if (hashSet.Contains(type))
                 return;
             hashSet.Add(type);
-            if (type.Fields == null ||type.IsEnum)
+            if (type.Fields == null || type.IsEnum)
             {
                 return;
             }
@@ -161,7 +161,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         private void MarkdownResult(StringBuilder code, ApiActionInfo api)
         {
 
-            if (api.ResultInfo == null ||api.ResultType == typeof(Task) ||api.ResultType == typeof(void))
+            if (api.ResultInfo == null || api.ResultType == typeof(Task) || api.ResultType == typeof(void))
             {
                 code.AppendLine($@"
 无返回");
@@ -311,7 +311,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             if (hashSet.Contains(type))
                 return;
             hashSet.Add(type);
-            if (type.Fields == null ||type.IsEnum)
+            if (type.Fields == null || type.IsEnum)
             {
                 return;
             }

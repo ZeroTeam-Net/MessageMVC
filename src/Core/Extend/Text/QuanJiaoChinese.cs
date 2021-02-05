@@ -16,8 +16,8 @@ namespace System.Text
         ///<returns> </returns>
         public static bool IsBjChar(char c)
         {
-            int i = c ;
-            return i >= 32 && i <= 126 ;
+            int i = c;
+            return i >= 32 && i <= 126;
         }
 
         /// <summary>
@@ -27,12 +27,12 @@ namespace System.Text
         /// <returns> </returns>
         public static bool IsQjChar(char c)
         {
-            if(c == '\u3000')
+            if (c == '\u3000')
             {
-                return true ;
+                return true;
             }
-            var i = c - 65248 ;
-            return i >= 32 && IsBjChar((char) i) ;
+            var i = c - 65248;
+            return i >= 32 && IsBjChar((char)i);
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace System.Text
         /// <returns> </returns>
         public static string ConverToAscii(this string s)
         {
-            return ToBj(s) ;
+            return ToBj(s);
         }
 
 
@@ -53,32 +53,32 @@ namespace System.Text
         /// <returns> </returns>
         public static string ToBj(string s)
         {
-            if(string.IsNullOrWhiteSpace(s))
+            if (string.IsNullOrWhiteSpace(s))
             {
-                return s ;
+                return s;
             }
             s = s.Trim();
-            var sb = new StringBuilder(s.Length) ;
-            foreach(var t in s)
+            var sb = new StringBuilder(s.Length);
+            foreach (var t in s)
             {
-                switch(t)
+                switch (t)
                 {
-                case '\u3000' :
-                    sb.Append('\u0020') ;
-                    break ;
-                default :
-                    if(IsQjChar(t))
-                    {
-                        sb.Append((char) (t - 65248)) ;
-                    }
-                    else
-                    {
-                        sb.Append(t) ;
-                    }
-                    break ;
+                    case '\u3000':
+                        sb.Append('\u0020');
+                        break;
+                    default:
+                        if (IsQjChar(t))
+                        {
+                            sb.Append((char)(t - 65248));
+                        }
+                        else
+                        {
+                            sb.Append(t);
+                        }
+                        break;
                 }
             }
-            return sb.ToString().Trim(' ', '\r', '\n', '\t') ;
+            return sb.ToString().Trim(' ', '\r', '\n', '\t');
         }
     }
 }

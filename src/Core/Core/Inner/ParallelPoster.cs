@@ -13,25 +13,31 @@ namespace ZeroTeam.MessageMVC
     /// <summary>
     ///     并行生产者
     /// </summary>
-    public class ParallelPoster : MessagePostBase, IMessagePoster, IFlowMiddleware
+    public class ParallelPoster : MessagePostBase, IMessagePoster
     {
 
-        int IZeroMiddleware.Level => MiddlewareLevel.General;
+
+        ILifeFlow IMessagePoster.GetLife() => null;
 
         /// <summary>
         /// 调用的内容
         /// </summary>
         internal ILogger logger;
 
+        /// <summary>
+        /// 名称
+        /// </summary>
+        string IZeroDependency.Name => nameof(ParallelPoster);
+
+
 
         /// <summary>
         ///     初始化
         /// </summary>
-        Task ILifeFlow.Initialize()
+        public ParallelPoster()
         {
             logger = DependencyHelper.LoggerFactory.CreateLogger<ParallelPoster>();
             ConfigurationHelper.RegistOnChange("MessageMVC:ParallelService", ReloadOption, true);
-            return Task.CompletedTask;
         }
 
         readonly Dictionary<string, string[]> ServiceMap = new Dictionary<string, string[]>();
@@ -65,59 +71,66 @@ namespace ZeroTeam.MessageMVC
         }
 
         /// <summary>
-        /// 名称
-        /// </summary>
-        string IZeroDependency.Name => nameof(ParallelPoster);
-
-
-        /// <summary>
         /// 生产消息
         /// </summary>
         /// <param name="message">消息</param>
         /// <returns></returns>
         async Task<IMessageResult> IMessagePoster.Post(IInlineMessage message)
         {
-            if (!ServiceMap.TryGetValue(message.ServiceName, out var map) || map == null || map.Length == 0)
+            if (!ZeroAppOption.Instance.IsAlive)
+            {
+                message.State = MessageState.Cancel;
+                return null;
+            }
+            if (!ServiceMap.TryGetValue(message.Service, out var map) || map == null || map.Length == 0)
             {
                 return new MessageResult
                 {
                     ID = message.ID,
-                    Trace = message.Trace,
+                    Trace = message.TraceInfo,
                     State = MessageState.Cancel
                 };
             }
-            var tasks = new Task<IInlineMessage>[map.Length];
-            for (int i = 0; i < map.Length; i++)
+            try
             {
-                string service = map[i];
-                var clone = message.Clone();
-                clone.Topic = service;
-                tasks[i] = MessagePoster.Post(clone);
+                ZeroAppOption.Instance.BeginRequest();
+                var tasks = new Task<IInlineMessage>[map.Length];
+                for (int i = 0; i < map.Length; i++)
+                {
+                    string service = map[i];
+                    var clone = message.Clone();
+                    clone.Service = service;
+                    tasks[i] = MessagePoster.Post(clone);
+                }
+                await Task.WhenAll(tasks);
+
+                var results = new List<IMessageResult>();
+
+                foreach (var task in tasks)
+                {
+                    if (task.Result.State == MessageState.Success)
+                        results.Add(task.Result.ToMessageResult(true));
+                    else
+                        results.Add(new MessageResult
+                        {
+                            ID = message.ID,
+                            Trace = message.TraceInfo,
+                            State = task.Result.State
+                        });
+                }
+
+                return new MessageResult
+                {
+                    ID = message.ID,
+                    Trace = message.TraceInfo,
+                    State = MessageState.Success,
+                    ResultData = results
+                };
             }
-            await Task.WhenAll(tasks);
-
-            var results = new List<IMessageResult>();
-
-            foreach (var task in tasks)
+            finally
             {
-                if (task.Result.State == MessageState.Success)
-                    results.Add(task.Result.ToMessageResult(true));
-                else
-                    results.Add(new MessageResult
-                    {
-                        ID = message.ID,
-                        Trace = message.Trace,
-                        State = task.Result.State
-                    });
+                ZeroAppOption.Instance.EndRequest();
             }
-
-            return new MessageResult
-            {
-                ID = message.ID,
-                Trace = message.Trace,
-                State = MessageState.Success,
-                ResultData = results
-            };
         }
 
     }

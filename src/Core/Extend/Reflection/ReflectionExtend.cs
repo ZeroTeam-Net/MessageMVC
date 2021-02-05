@@ -1,9 +1,8 @@
+using Agebull.Common.Reflection;
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Linq;
-
-using Agebull.Common.Reflection;
 
 namespace System
 {
@@ -52,9 +51,9 @@ namespace System
         /// <param name="type"> 类型 </param>
         /// <param name="fun"></param>
         /// <returns> 类型的实例 </returns>
-        public static bool  HaseFun(this Type type, string fun)
+        public static bool HaseFun(this Type type, string fun)
         {
-            var m =type.GetMethod(fun,
+            var m = type.GetMethod(fun,
                 BindingFlags.DeclaredOnly |
                 BindingFlags.Instance | //指定实例成员将包括在搜索中。
                 BindingFlags.Public | //指定公共成员将包括在搜索中。
@@ -208,7 +207,7 @@ namespace System
         /// <returns>true表达实现了这个接口</returns>
         public static T GetAttribute2<T>(this MemberInfo field) where T : Attribute
         {
-            return field.GetCustomAttributes(true).LastOrDefault(p=>p is T) as T;
+            return field.GetCustomAttributes(true).LastOrDefault(p => p is T) as T;
         }
     }
 }

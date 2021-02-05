@@ -8,13 +8,11 @@ namespace ZeroTeam.MessageMVC.Services.StateMachine
     internal class EmptyStateMachine : StateMachineBase, IStationStateMachine
     {
         /// <summary>
-        ///     开始的处理
+        ///     结束的处理
         /// </summary>
-        Task<bool> IStationStateMachine.Start()
+        Task<bool> IStationStateMachine.Close()
         {
-            ZeroFlowControl.OnObjectFailed(Service);
-
-            return Task.FromResult(false);
+            return Task.FromResult(true);
         }
 
         /// <summary>
@@ -22,16 +20,7 @@ namespace ZeroTeam.MessageMVC.Services.StateMachine
         /// </summary>
         Task<bool> IStationStateMachine.End()
         {
-            Control.DoEnd();
             return Task.FromResult(true);
-        }
-
-        /// <summary>
-        ///     关闭的处理
-        /// </summary>
-        Task<bool> IStationStateMachine.Close()
-        {
-            return Task.FromResult(false);
         }
     }
 }

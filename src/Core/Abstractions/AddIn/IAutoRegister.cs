@@ -1,18 +1,22 @@
 using Microsoft.Extensions.DependencyInjection;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace ZeroTeam.MessageMVC.AddIn
 {
     /// <summary>
     /// 生自注册对象
     /// </summary>
-    public interface IAutoRegister : ILifeFlow
+    public interface IAutoRegister
     {
         /// <summary>
-        /// 执行自动注册
+        /// 执行自动注册(配置载入前)
         /// </summary>
         /// <returns>返回false表示后续无操作</returns>
-        Task<bool> AutoRegist(IServiceCollection service) { return Task.FromResult(false); }
+        void AutoRegist(IServiceCollection service, ILogger logger) { }
 
+        /// <summary>
+        /// 执行自动注册(配置载入后)
+        /// </summary>
+        void LateConfigRegist(IServiceCollection services, ILogger logger) { }
     }
 }

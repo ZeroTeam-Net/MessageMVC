@@ -6,11 +6,14 @@
     <StartupObject />
     <Description>ZeroTeam.MessageMVC抽象定义
 以MVC方式进行消息处理,支持常用消息队列以及其它RPC方式的消息处理</Description>
-    <Version>1.0.1.17</Version>
+    <Version>1.1.4.38</Version>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/ZeroTeam-Net/MessageMVC</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ZeroTeam-Net/MessageMVC.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <Product>MessageMVC</Product>
+    <Company>ZeroTeam</Company>
+    <Authors>Agebull</Authors>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>ZeroTeam.MessageMVC.Abstractions.xml</DocumentationFile>
@@ -21,36 +24,9 @@
     <DocumentationFile>ZeroTeam.MessageMVC.Abstractions.xml</DocumentationFile>
     <DefineConstants>monitor</DefineConstants>
   </PropertyGroup>
-
   <ItemGroup>
-    <Compile Remove="Auth\**" />
-    <Compile Remove="WebApi\**" />
-    <EmbeddedResource Remove="Auth\**" />
-    <EmbeddedResource Remove="WebApi\**" />
-    <None Remove="Auth\**" />
-    <None Remove="WebApi\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="API\ActionArgumentConvert.cs" />
-    <Compile Remove="API\MessageArgumentConvert.cs" />
-    <Compile Remove="Config\SpeedLimitType.cs" />
-    <Compile Remove="Config\UserOperatorStateType.cs" />
-    <Compile Remove="Config\ZeroOperatorStateType.cs" />
-    <Compile Remove="Context\ArgumentType.cs" />
-    <Compile Remove="Context\ContextOption.cs" />
-    <Compile Remove="Context\RequestType.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="._.vs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+    <PackageReference Include="System.ComponentModel.Composition" Version="5.0.0" />
     <ProjectReference Include="..\Extend\Agebull.Common.Extend.Core.csproj" />
   </ItemGroup>
 

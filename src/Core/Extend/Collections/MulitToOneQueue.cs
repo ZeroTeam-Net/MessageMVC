@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Threading;
-using Newtonsoft.Json;
 
 namespace Agebull.Common
 {

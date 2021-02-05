@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using ZeroTeam.MessageMVC.Documents;
 
@@ -66,19 +67,28 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             if (!type.HaseArgument)
                 return string.Empty;
             var code = new StringBuilder();
-            code.AppendLine("{");
-            bool first = true;
-            foreach (var arg in type.Arguments.Values)
+            if (type.Arguments.Count == 1 && !type.Arguments.Values.First().IsBaseType)
             {
-                if (first)
-                    first = false;
-                else
-                    code.AppendLine(",");
+                var arg = type.Arguments.Values.First();
 
-                code.Append($"    '{ arg.Name }' : {JsonExample(arg, new HashSet<TypeDocument>(), false)}");
+                code.Append(JsonExample(arg, new HashSet<TypeDocument>(), false));
             }
-            code.AppendLine();
-            code.Append('}');
+            else
+            {
+                code.AppendLine("{");
+                bool first = true;
+                foreach (var arg in type.Arguments.Values)
+                {
+                    if (first)
+                        first = false;
+                    else
+                        code.AppendLine(",");
+
+                    code.Append($"    '{ arg.Name }' : {JsonExample(arg, new HashSet<TypeDocument>(), false)}");
+                }
+                code.AppendLine();
+                code.Append('}');
+            }
             return code.ToString();
         }
 

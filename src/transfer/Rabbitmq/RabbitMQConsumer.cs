@@ -3,7 +3,7 @@ using Agebull.EntityModel.Common;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
-using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
@@ -44,13 +44,15 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
         /// </summary>
         TaskCompletionSource<bool> completionSource;
 
+        CancellationTokenSource cancellationToken;
+
+        SemaphoreSlim ConcurrencySemaphore;
+
         Task<bool> IMessageReceiver.Loop(CancellationToken token)
         {
             consumer = new EventingBasicConsumer(channel);
-            consumer.Received += (model, ea) =>
-            {
-                OnMessagePush(ea);
-            };
+
+            consumer.Received += OnMessagePush;
             //消费者开启监听
             channel.BasicConsume(queue: Service.ServiceName, autoAck: !Option.AckBySuccess, consumer: consumer);
             completionSource = new TaskCompletionSource<bool>();
@@ -60,25 +62,20 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
         /// <summary>
         /// 消息处理
         /// </summary>
-        /// <param name="arg"></param>
-        private void OnMessagePush(BasicDeliverEventArgs arg)
+        private void OnMessagePush(object sender, BasicDeliverEventArgs arg)
         {
-            var json = Encoding.UTF8.GetString(arg.Body.ToArray());
-
-            if (SmartSerializer.TryToMessage(json, out var message))
-            {
-                var task = MessageProcessor.OnMessagePush(Service, message, true, arg);//BUG:应该配置化同步或异步
-                task.Wait();
-            }
+            ConcurrencySemaphore.Wait(cancellationToken.Token);
+            var message = JsonSerializer.Deserialize<IInlineMessage>(arg.Body.Span);
+            MessageProcessor.RunOnMessagePush(Service, message, true, arg);//BUG:应该配置化同步或异步
         }
 
         /// <summary>
         /// 标明调用结束
         /// </summary>
         /// <returns>是否发送成功</returns>
-        Task<bool> IMessageReceiver.OnResult(IInlineMessage item, object tag)
+        Task<bool> IMessageWriter.OnResult(IInlineMessage item, object tag)
         {
-            if(!Option.AckBySuccess)
+            if (!Option.AckBySuccess)
                 return Task.FromResult(false);
             var ea = (BasicDeliverEventArgs)tag;
             try
@@ -97,7 +94,7 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
         /// 同步关闭状态
         /// </summary>
         /// <returns></returns>
-        Task IMessageReceiver.Close()
+        Task ILifeFlow.Closing()
         {
             completionSource.SetResult(true);
             return Task.CompletedTask;
@@ -114,6 +111,8 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
         /// <returns></returns>
         Task<bool> IMessageReceiver.LoopBegin()
         {
+            ConcurrencySemaphore = new SemaphoreSlim(RabbitMQOption.Instance.Concurrency, RabbitMQOption.Instance.Concurrency);
+            cancellationToken = new CancellationTokenSource();
             if (!RabbitMQOption.Instance.ItemOptions.TryGetValue(Service.ServiceName, out Option))
             {
                 Option = new RabbitMQItemOption();
@@ -208,14 +207,17 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
         /// 同步关闭状态
         /// </summary>
         /// <returns></returns>
-        Task IMessageReceiver.LoopComplete()
+        Task ILifeFlow.Close()
         {
+            cancellationToken?.Dispose();
             channel?.Close();
             channel?.Dispose();
             channel = null;
+
             connection?.Close();
             connection?.Dispose();
             connection = null;
+            ConcurrencySemaphore?.Dispose();
             return Task.CompletedTask;
         }
     }

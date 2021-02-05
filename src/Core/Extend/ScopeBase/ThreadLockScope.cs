@@ -1,6 +1,5 @@
-﻿using System.Threading;
-
-using Agebull.Common.Base;
+﻿using Agebull.Common.Base;
+using System.Threading;
 
 namespace Agebull.Common.Frame
 {

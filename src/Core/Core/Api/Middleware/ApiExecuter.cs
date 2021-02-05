@@ -1,6 +1,5 @@
 using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
@@ -22,20 +21,17 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         int IMessageMiddleware.Level => MiddlewareLevel.General;
 
+        MessageHandleScope scope = MessageHandleScope.Handle | MessageHandleScope.Prepare;
+
         /// <summary>
         /// 消息中间件的处理范围
         /// </summary>
-        MessageHandleScope IMessageMiddleware.Scope => MessageHandleScope.Handle;
+        MessageHandleScope IMessageMiddleware.Scope => scope;
 
         /// <summary>
         /// 当前站点
         /// </summary>
         internal IService Service;
-
-        /// <summary>
-        /// 调用的内容
-        /// </summary>
-        internal ILogger logger;
 
         /// <summary>
         /// 调用的内容
@@ -50,6 +46,39 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         #endregion
 
         #region IMessageMiddleware
+        IApiAction action;
+
+        /// <summary>
+        /// 准备
+        /// </summary>
+        /// <param name="service">当前服务</param>
+        /// <param name="message">当前消息</param>
+        /// <param name="tag">扩展信息</param>
+        /// <returns></returns>
+        Task<bool> IMessageMiddleware.Prepare(IService service, IInlineMessage message, object tag)
+        {
+            if (!string.Equals(service.ServiceName, message.Service, StringComparison.OrdinalIgnoreCase))
+                return Task.FromResult(true);
+
+            Service = service;
+            Message = message;
+            Tag = tag;
+
+            action = Service.GetApiAction(Message.Method);
+            //1 查找调用方法
+            if (action == null)
+            {
+                FlowTracer.MonitorDetails(() => $"错误: 接口({Message.Method})不存在");
+                Message.State = MessageState.Unhandled;
+                Message.ResultCreater = ApiResultHelper.State;
+                scope = MessageHandleScope.None;
+            }
+            else
+            {
+                FlowTracer.MonitorTrace($"[Action] {action.Info.ControllerName}.{action.Info.Name}");
+            }
+            return Task.FromResult(true);
+        }
 
         /// <summary>
         /// 处理
@@ -59,66 +88,47 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <param name="tag"></param>
         /// <param name="next">下一个处理方法</param>
         /// <returns></returns>
-        async Task IMessageMiddleware.Handle(IService service, IInlineMessage message, object tag, Func<Task> next)
+        Task IMessageMiddleware.Handle(IService service, IInlineMessage message, object tag, Func<Task> next)
         {
-            logger = DependencyHelper.LoggerFactory.CreateLogger($"{message.Topic}/{message.Title}");
-            Service = service;
-            Message = message;
-            Tag = tag;
-            Message.RealState = MessageState.Processing;
-            if (await Handle() || next == null)
-                return;
-            await next();
+            if (string.Equals(service.ServiceName, message.Service, StringComparison.OrdinalIgnoreCase))
+            {
+                return Handle();
+            }
+            else
+            {
+                return next();
+            }
         }
 
         /// <summary>
         /// 处理
         /// </summary>
         /// <returns></returns>
-        async Task<bool> Handle()
+        async Task Handle()
         {
-            var action = Service.GetApiAction(Message.Title);
-            //1 查找调用方法
-            if (action == null)
-            {
-                FlowTracer.MonitorInfomation("错误: 接口({0})不存在", Message.Title);
-                Message.RealState = MessageState.Unhandled;
-                return false;
-            }
-            //2 确定调用方法及对应权限
-            if (!ZeroAppOption.Instance.IsOpenAccess
-                && (!action.Option.HasFlag(ApiOption.Anymouse))
-                && (GlobalContext.User == null
-                || GlobalContext.User.UserId == UserInfo.SystemUserId
-                || GlobalContext.User.UserId == UserInfo.UnknownUserId))
-            {
-                FlowTracer.MonitorInfomation("错误: 需要用户登录信息");
-                Message.RealState = MessageState.Deny;
-                var status = DependencyHelper.GetService<IOperatorStatus>();
-                status.Code = OperatorStatusCode.BusinessException;
-                status.Message = "拒绝访问";
-                Message.ResultData = status;
-                return true;
-            }
-            Message.ResultSerializer = action.ResultSerializer;
-            Message.ResultCreater = action.ResultCreater;
-
+            Message.RealState = MessageState.Processing;
             //参数处理
             if (!ArgumentPrepare(action))
             {
-                return false;
+                return;
             }
-            GlobalContext.Current.IsDelay = true;
-            //方法执行
-            GlobalContext.Current.Task = new ActionTask();
+            Message.ResultSerializer = action.ResultSerializer;
+            Message.ResultCreater = action.ResultCreater;
+            //扩展检查
+            var checkers = DependencyHelper.GetServices<IApiActionChecker>();
+            foreach (var checker in checkers)
+            {
+                if (!checker.Check(action, Message))
+                    return;
+            }
+            GlobalContext.Current.RequestTask = new ActionTask();
+            GlobalContext.Current.ActionTask = new TaskCompletionSource<bool>();
             try
             {
-                _ = action.Execute(GlobalContext.Current.Task, Message, Service.Serialize);
-                await GlobalContext.Current.Task.Task;
-                var (state, result) = GlobalContext.Current.Task.Task.Result;
+                action.Execute(Message, Service.Serialize);
+                var (state, result) = await GlobalContext.Current.RequestTask.Task;
                 Message.State = state;
                 Message.ResultData = result;
-                return false;
             }
             //catch (TaskCanceledException)
             //{
@@ -130,7 +140,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             //}
             catch (FormatException fe)
             {
-                FlowTracer.MonitorDetails(() => $"参数转换出错误, 请检查调用参数是否合适:{fe.Message}");
+                FlowTracer.MonitorError(() => $"参数转换出错误, 请检查调用参数是否合适:{fe.Message}");
                 Message.RealState = MessageState.FormalError;
 
                 var status = DependencyHelper.GetService<IOperatorStatus>();
@@ -148,7 +158,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 status.Message = msg;
                 Message.ResultData = status;
             }
-            return false;
         }
 
         #endregion
@@ -164,13 +173,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         {
             try
             {
-                if (!action.RestoreArgument(Message))
-                {
-                    FlowTracer.MonitorInfomation("错误 : 无法还原参数");
-                    Message.Result = "错误 : 无法还原参数";
-                    Message.RealState = MessageState.FormalError;
-                    return false;
-                }
+                action.RestoreArgument(Message);
             }
             catch (Exception ex)
             {
@@ -184,10 +187,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 return false;
             }
 
-            if (action.Option.HasFlag(ApiOption.DictionaryArgument))
-            {
-                return true;
-            }
             try
             {
                 if (action.ValidateArgument(Message, out var status))

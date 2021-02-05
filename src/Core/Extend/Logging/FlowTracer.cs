@@ -6,34 +6,114 @@ using System.Diagnostics;
 using System.Text;
 namespace Agebull.Common.Logging
 {
+
     /// <summary>
     ///   流程跟踪器
     /// </summary>
     public static class FlowTracer
     {
+        #region Option
+
         /// <summary>
-        /// 启动监视
+        ///   静态构造
         /// </summary>
-        public static bool LogMonitor => LoggerExtend.monitor;
+        static FlowTracer()
+        {
+            ConfigurationHelper.RegistOnChange("Logging", ReadConfig, true);
+        }
+
+        /// <summary>
+        /// 读取配置
+        /// </summary>
+        private static void ReadConfig()
+        {
+            var sec = ConfigurationHelper.GetSection("Logging:LogLevel:MessageMVC");
+            if (sec != null && Enum.TryParse<LogLevel>(sec.Value, out var l))
+            {
+                Level = l;
+            }
+            else
+            {
+                Level = LogLevel.Error;
+            }
+        }
+
+        /// <summary>
+        /// 当前日志级别
+        /// </summary>
+        public static LogLevel Level { get; set; }
+
+        /// <summary>
+        /// 是否启动跟踪日志
+        /// </summary>
+        public static bool LogMonitor => Level <= LogLevel.Information && ScopeRuner.InScope;
+
+        /// <summary>
+        /// 是否启动跟踪日志
+        /// </summary>
+        public static bool LogMonitorInformation => Level <= LogLevel.Information && ScopeRuner.InScope;
+
+        /// <summary>
+        /// 跟踪日志是否包含详细信息
+        /// </summary>
+        public static bool LogMonitorDebug => Level <= LogLevel.Debug && ScopeRuner.InScope;
+
+        /// <summary>
+        /// 跟踪日志是否包含详细信息
+        /// </summary>
+        public static bool LogMonitorTrace => Level <= LogLevel.Trace && ScopeRuner.InScope;
 
         /// <summary>
         /// 当前范围数据
         /// </summary>
-        static Local MonitorItem => DependencyScope.Dependency.Dependency<Local>();
+        static MonitorStack MonitorItem => ScopeRuner.MonitorItem;
+
+        #endregion
+
+        #region 跟踪输出
 
         /// <summary>
-        /// 开始检测资源
+        /// 开始监视日志
         /// </summary>
         [Conditional("monitor")]
         public static void BeginMonitor(string title)
         {
-            if (!LoggerExtend.monitor)
+            if (!LogMonitor)
             {
                 return;
             }
-            var item = new Local();
-            item.BeginMonitor(title);
-            DependencyScope.Dependency.Annex(item);
+            var item = new MonitorStack();
+            item.BeginMonitor(title ?? ScopeRuner.Name);
+            ScopeRuner.MonitorItem = item;
+        }
+        /// <summary>
+        /// 开始监视日志
+        /// </summary>
+        [Conditional("monitor")]
+        public static void BeginMonitor(Func<string> title)
+        {
+            if (!LogMonitor)
+            {
+                return;
+            }
+            var item = new MonitorStack();
+            item.BeginMonitor(title() ?? ScopeRuner.Name);
+            ScopeRuner.MonitorItem = item;
+        }
+
+        /// <summary>
+        /// 开始监视日志
+        /// </summary>
+        [Conditional("monitor")]
+        public static void BeginMonitor(TraceStep fix)
+        {
+            if (!LogMonitor)
+            {
+                return;
+            }
+            var item = new MonitorStack();
+            item.BeginMonitor(fix);
+            ScopeRuner.MonitorItem = item;
         }
 
         /// <summary>
@@ -42,7 +122,105 @@ namespace Agebull.Common.Logging
         [Conditional("monitor")]
         public static void BeginStepMonitor(string title)
         {
-            if (!LoggerExtend.monitor)
+            if (!LogMonitorInformation)
+            {
+                return;
+            }
+
+            var item = MonitorItem;
+            if (item == null || !item.InMonitor)
+            {
+                return;
+            }
+            MonitorItem.BeginStep(title);
+        }
+
+        /// <summary>
+        /// 开始监视日志步骤
+        /// </summary>
+        [Conditional("monitor")]
+        public static void BeginStepMonitor(Func<string> title)
+        {
+            if (!LogMonitorInformation)
+            {
+                return;
+            }
+
+            var item = MonitorItem;
+            if (item == null || !item.InMonitor)
+            {
+                return;
+            }
+
+            MonitorItem.BeginStep(title());
+        }
+
+        /// <summary>
+        /// 开始监视日志步骤
+        /// </summary>
+        [Conditional("monitor")]
+        public static void BeginTraceStepMonitor(string title)
+        {
+            if (!LogMonitorTrace)
+            {
+                return;
+            }
+
+            var item = MonitorItem;
+            if (item == null || !item.InMonitor)
+            {
+                return;
+            }
+
+            MonitorItem.BeginStep(title);
+        }
+
+        /// <summary>
+        /// 开始监视日志步骤
+        /// </summary>
+        [Conditional("monitor")]
+        public static void BeginTraceStepMonitor(Func<string> func)
+        {
+            if (!LogMonitorTrace)
+            {
+                return;
+            }
+
+            var item = MonitorItem;
+            if (item == null || !item.InMonitor)
+            {
+                return;
+            }
+
+            MonitorItem.BeginStep(func());
+        }
+        /// <summary>
+        /// 开始监视日志步骤
+        /// </summary>
+        [Conditional("monitor")]
+        public static void BeginDebugStepMonitor(Func<string> func)
+        {
+            if (!LogMonitorDebug)
+            {
+                return;
+            }
+
+            var item = MonitorItem;
+            if (item == null || !item.InMonitor)
+            {
+                return;
+            }
+
+            MonitorItem.BeginStep(func());
+        }
+
+        /// <summary>
+        /// 开始监视日志步骤
+        /// </summary>
+        [Conditional("monitor")]
+        public static void BeginDebugStepMonitor(string title)
+        {
+            if (!LogMonitorDebug)
             {
                 return;
             }
@@ -60,9 +238,29 @@ namespace Agebull.Common.Logging
         /// 结束监视日志步骤
         /// </summary>
         [Conditional("monitor")]
+        public static void EndDebugStepMonitor()
+        {
+            if (!LogMonitorDebug)
+            {
+                return;
+            }
+
+            var item = MonitorItem;
+            if (item == null || !item.InMonitor)
+            {
+                return;
+            }
+
+            item.EndStep();
+        }
+
+        /// <summary>
+        /// 结束监视日志步骤
+        /// </summary>
+        [Conditional("monitor")]
         public static void EndStepMonitor()
         {
-            if (!LoggerExtend.monitor)
+            if (!LogMonitorInformation)
             {
                 return;
             }
@@ -82,7 +280,7 @@ namespace Agebull.Common.Logging
         [Conditional("monitor")]
         public static void MonitorInfomation(string message)
         {
-            if (!LoggerExtend.monitor)
+            if (!LogMonitorInformation || message == null)
             {
                 return;
             }
@@ -103,7 +301,7 @@ namespace Agebull.Common.Logging
         [Conditional("monitor")]
         public static void MonitorInfomation(string message, params object[] args)
         {
-            if (!LoggerExtend.monitor || message == null)
+            if (!LogMonitorInformation || message == null)
             {
                 return;
             }
@@ -124,7 +322,7 @@ namespace Agebull.Common.Logging
         [Conditional("monitor")]
         public static void MonitorInfomation(Func<string> message)
         {
-            if (!LoggerExtend.monitor)
+            if (!LogMonitorInformation)
             {
                 return;
             }
@@ -138,7 +336,69 @@ namespace Agebull.Common.Logging
             item.Trace(message());
             return;
         }
+        /// <summary>
+        /// 加入监视跟踪
+        /// </summary>
+        [Conditional("monitor")]
+        public static void MonitorDebug(string message)
+        {
+            if (!LogMonitorDebug)
+            {
+                return;
+            }
 
+            var item = MonitorItem;
+            if (item == null || !item.InMonitor)
+            {
+                return;
+            }
+
+            item.Trace(message);
+            return;
+        }
+
+        /// <summary>
+        /// 加入监视跟踪
+        /// </summary>
+        [Conditional("monitor")]
+        public static void MonitorTrace(string message)
+        {
+            if (!LogMonitorTrace)
+            {
+                return;
+            }
+
+            var item = MonitorItem;
+            if (item == null || !item.InMonitor)
+            {
+                return;
+            }
+
+            item.Trace(message);
+            return;
+        }
+
+
+        /// <summary>
+        /// 加入监视跟踪
+        /// </summary>
+        [Conditional("monitor")]
+        public static void MonitorTrace(Func<string> message)
+        {
+            if (!LogMonitorTrace)
+            {
+                return;
+            }
+
+            var item = MonitorItem;
+            if (item == null || !item.InMonitor)
+            {
+                return;
+            }
+
+            item.Trace(message());
+            return;
+        }
 
         /// <summary>
         /// 加入监视跟踪
@@ -146,7 +406,7 @@ namespace Agebull.Common.Logging
         [Conditional("monitor")]
         public static void MonitorDetails(Func<string> message)
         {
-            if (!LoggerExtend.details || !LoggerExtend.monitor)
+            if (!LogMonitorDebug)
             {
                 return;
             }
@@ -161,15 +421,72 @@ namespace Agebull.Common.Logging
             return;
         }
 
-
-
         /// <summary>
         /// 加入监视跟踪
         /// </summary>
         [Conditional("monitor")]
         public static void MonitorDetails(string message)
         {
-            if (!LoggerExtend.details || !LoggerExtend.monitor)
+            if (!LogMonitorDebug)
+            {
+                return;
+            }
+
+            var item = MonitorItem;
+            if (item == null || !item.InMonitor)
+            {
+                return;
+            }
+
+            item.Trace(message);
+            return;
+        }
+
+        /// <summary>
+        /// 加入监视跟踪
+        /// </summary>
+        [Conditional("monitor")]
+        public static void MonitorError(Func<string> message)
+        {
+            if (!LogMonitor)
+            {
+                return;
+            }
+            var item = MonitorItem;
+            if (item == null || !item.InMonitor)
+            {
+                return;
+            }
+            item.Trace(message());
+            return;
+        }
+
+        /// <summary>
+        /// 加入监视跟踪
+        /// </summary>
+        [Conditional("monitor")]
+        public static void MonitorError(Exception ex, string message)
+        {
+            if (!LogMonitor)
+            {
+                return;
+            }
+            var item = MonitorItem;
+            if (item == null || !item.InMonitor)
+            {
+                return;
+            }
+            item.Trace($"{message ?? "Exception"}\r\n{ex.Message}");
+            return;
+        }
+
+        /// <summary>
+        /// 加入监视跟踪
+        /// </summary>
+        [Conditional("monitor")]
+        public static void MonitorError(string message)
+        {
+            if (!LogMonitor || message == null)
             {
                 return;
             }
@@ -185,82 +502,18 @@ namespace Agebull.Common.Logging
         /// <summary>
         /// 结束监视日志
         /// </summary>
-        public static TraceStep EndMonitor()
+        public static TraceStep EndMonitor(bool clear = true)
         {
             var item = MonitorItem;
             if (item == null || !item.InMonitor)
             {
                 return null;
             }
-            DependencyScope.Dependency.Remove<Local>();
+            if (clear)
+                ScopeRuner.MonitorItem = null;
             item.End();
             return item.Stack.FixValue;
         }
-        #region 兼容
-
-        /// <summary>
-        /// 加入监视跟踪
-        /// </summary>
-        [Obsolete,Conditional("monitor")]
-        public static void MonitorTrace(string message)
-        {
-            if (!LoggerExtend.monitor)
-            {
-                return;
-            }
-
-            var item = MonitorItem;
-            if (item == null || !item.InMonitor)
-            {
-                return;
-            }
-
-            item.Trace(message);
-            return;
-        }
-
-        /// <summary>
-        /// 加入监视跟踪
-        /// </summary>
-        [Obsolete, Conditional("monitor")]
-        public static void MonitorTrace(string message, params object[] args)
-        {
-            if (!LoggerExtend.monitor || message == null)
-            {
-                return;
-            }
-
-            var item = MonitorItem;
-            if (item == null || !item.InMonitor)
-            {
-                return;
-            }
-
-            item.Trace(string.Format(message, args));
-            return;
-        }
-
-        /// <summary>
-        /// 加入监视跟踪
-        /// </summary>
-        [Obsolete, Conditional("monitor")]
-        public static void MonitorTrace(Func<string> message)
-        {
-            if (!LoggerExtend.monitor)
-            {
-                return;
-            }
-
-            var item = MonitorItem;
-            if (item == null || !item.InMonitor)
-            {
-                return;
-            }
-
-            item.Trace(message());
-            return;
-        }
-
         #endregion
         #region 表格输出
 
@@ -269,10 +522,25 @@ namespace Agebull.Common.Logging
         /// </summary>
         public static void TraceMonitor(this ILogger logger, TraceStep root)
         {
+            if (root == null || !logger.IsEnabled(LogLevel.Information))
+                return;
             var texter = new StringBuilder();
             Message(texter, root.Start, root);
-            logger.LogInformation(LoggerExtend.NewEventId("Monitor"), texter.ToString());
+            logger.Information(texter.ToString());
         }
+
+        /// <summary>
+        /// 结束监视日志
+        /// </summary>
+        public static string TraceMonitor(TraceStep root)
+        {
+            if (root == null)
+                return null;
+            var texter = new StringBuilder();
+            Message(texter, root.Start, root);
+            return texter.ToString();
+        }
+
 
         /// <summary>
         ///     刷新资源检测
@@ -358,84 +626,134 @@ namespace Agebull.Common.Logging
         }
         #endregion
 
-        #region SUB
+        #region Scope
 
         /// <summary>
-        ///     跟踪信息
+        /// 步骤范围
         /// </summary>
-        class Local
+        /// <param name="title"></param>
+        /// <param name="logger"></param>
+        /// <returns></returns>
+        public static IDisposable MonitorScope(string title = null, ILogger logger = null) => new MonitorInnerScope(title, logger);
+
+        /// <summary>
+        /// 步骤范围
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="logger"></param>
+        /// <returns></returns>
+        public static IDisposable MonitorScope(Func<string> title, ILogger logger = null) => new MonitorInnerScope(title, logger);
+
+        /// <summary>
+        /// 步骤范围
+        /// </summary>
+        /// <param name="title"></param>
+        /// <returns></returns>
+        public static IDisposable StepScope(string title) => new FlowStepScope(title);
+
+        /// <summary>
+        /// 步骤范围
+        /// </summary>
+        /// <param name="title"></param>
+        /// <returns></returns>
+        public static IDisposable TraceStepScope(string title) => new FlowTracerStepScope(title);
+
+        /// <summary>
+        /// 步骤范围
+        /// </summary>
+        /// <param name="title"></param>
+        /// <returns></returns>
+        public static IDisposable DebugStepScope(string title) => new FlowTracerDebugStepScope(title);
+
+        /// <summary>
+        /// 步骤范围
+        /// </summary>
+        /// <param name="title"></param>
+        /// <returns></returns>
+        public static IDisposable StepScope(Func<string> title) => new FlowStepScope(title);
+
+        /// <summary>
+        /// 步骤范围
+        /// </summary>
+        /// <param name="title"></param>
+        /// <returns></returns>
+        public static IDisposable TraceStepScope(Func<string> title) => new FlowTracerStepScope(title);
+
+        /// <summary>
+        /// 步骤范围
+        /// </summary>
+        /// <param name="title"></param>
+        /// <returns></returns>
+        public static IDisposable DebugStepScope(Func<string> title) => new FlowTracerDebugStepScope(title);
+
+        /// <summary>
+        /// 流程跟踪步骤范围
+        /// </summary>
+        internal class MonitorInnerScope : IDisposable
         {
-            /// <summary>
-            ///     记录堆栈
-            /// </summary>
-            internal LocalTraceStack Stack = new LocalTraceStack();
-
-            /// <summary>
-            ///     侦测开关
-            /// </summary>
-            internal bool InMonitor;
-
-            /// <summary>
-            ///     开始检测资源
-            /// </summary>
-            public void BeginMonitor(string title)
+            readonly ILogger _logger;
+            internal MonitorInnerScope(string title, ILogger logger)
             {
-                InMonitor = true;
-                Stack.SetFix(new TraceStep
-                {
-                    Message = title
-                });
+                _logger = logger ?? ScopeRuner.ScopeLogger;
+                BeginMonitor(title);
+            }
+            internal MonitorInnerScope(Func<string> title, ILogger logger)
+            {
+                _logger = logger ?? ScopeRuner.ScopeLogger;
+                BeginMonitor(title);
             }
 
-            /// <summary>
-            ///     刷新资源检测
-            /// </summary>
-            public void BeginStep(string title)
+            /// <inheritdoc/>
+            void IDisposable.Dispose()
             {
-                if (InMonitor)
-                    Stack.Push(new TraceStep
-                    {
-                        Message = title
-                    });
-            }
-
-            /// <summary>
-            ///     刷新资源检测
-            /// </summary>
-            public void EndStep()
-            {
-                if (InMonitor)
-                    Stack.Pop();
-            }
-
-            /// <summary>
-            ///     刷新资源检测
-            /// </summary>
-            public TraceStep End()
-            {
-                if (!InMonitor)
-                    return null;
-                InMonitor = false;
-                while (!Stack.IsEmpty)
-                {
-                    Stack.Pop();
-                }
-                Stack.FixValue.End = DateTime.Now;
-                return Stack.FixValue;
-            }
-            /// <summary>
-            /// 设置跟踪消息
-            /// </summary>
-            /// <param name="msg"></param>
-            public void Trace(string msg)
-            {
-                Stack.Current.Children.Add(new TraceItem
-                {
-                    Message = msg
-                });
+                var item = EndMonitor();
+                _logger.Information(item.Message);
             }
 
         }
+
+        /// <summary>
+        /// 流程跟踪步骤范围
+        /// </summary>
+        internal class FlowStepScope : IDisposable
+        {
+            internal FlowStepScope(string title) => BeginStepMonitor(title);
+
+            internal FlowStepScope(Func<string> title) => BeginStepMonitor(title);
+
+            /// <inheritdoc/>
+            void IDisposable.Dispose() => EndStepMonitor();
+
+        }
+
+        /// <summary>
+        /// 流程跟踪步骤范围
+        /// </summary>
+        internal class FlowTracerStepScope : IDisposable
+        {
+            internal FlowTracerStepScope(string title) => BeginTraceStepMonitor(title);
+
+            internal FlowTracerStepScope(Func<string> title) => BeginTraceStepMonitor(title);
+
+            /// <inheritdoc/>
+            void IDisposable.Dispose() => EndStepMonitor();
+
+        }
+
+
+        /// <summary>
+        /// 流程跟踪调试步骤范围
+        /// </summary>
+        internal class FlowTracerDebugStepScope : IDisposable
+        {
+            internal FlowTracerDebugStepScope(string title) => BeginDebugStepMonitor(title);
+            internal FlowTracerDebugStepScope(Func<string> title) => BeginDebugStepMonitor(title);
+
+            /// <inheritdoc/>
+            void IDisposable.Dispose() => EndDebugStepMonitor();
+
+        }
+
         #endregion
     }
 }

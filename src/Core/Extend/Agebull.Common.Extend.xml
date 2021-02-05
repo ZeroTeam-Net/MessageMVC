@@ -1544,6 +1544,50 @@
             值格式化扩展
             </summary>
         </member>
+        <member name="M:System.ValueToStringHelper.IsNullOrEmpty(System.String)">
+            <summary>
+            是否为空
+            </summary>
+            <param name="str"></param>
+            <returns>是否为空</returns>
+        </member>
+        <member name="M:System.ValueToStringHelper.IsNotNullOrEmpty(System.String)">
+            <summary>
+            是否为空
+            </summary>
+            <param name="str"></param>
+            <returns>是否为空</returns>
+        </member>
+        <member name="M:System.ValueToStringHelper.IsBlank(System.String)">
+            <summary>
+            是否为空
+            </summary>
+            <param name="str"></param>
+            <returns>是否为空</returns>
+        </member>
+        <member name="M:System.ValueToStringHelper.IsNotBlank(System.String)">
+            <summary>
+            是否非空
+            </summary>
+            <param name="str"></param>
+            <returns>是否为空</returns>
+        </member>
+        <member name="M:System.ValueToStringHelper.AnyBlank(System.Object,System.String[])">
+            <summary>
+            是否其中一或多个为空
+            </summary>
+            <param name="mark">着力点，随便用</param>
+            <param name="strs">检查用的字符串</param>
+            <returns>是否为空</returns>
+        </member>
+        <member name="M:System.ValueToStringHelper.AllBlank(System.Object,System.String[])">
+            <summary>
+            是否其中一或多个为空
+            </summary>
+            <param name="mark">着力点，随便用</param>
+            <param name="strs">检查用的字符串</param>
+            <returns>是否为空</returns>
+        </member>
         <member name="M:System.ValueToStringHelper.XmlTrim(System.String)">
             <summary>
             清理XML使之最短
@@ -1620,6 +1664,22 @@
         <member name="M:System.ValueToStringHelper.IsEquals(System.String,System.String)">
             <summary>
               数据是不是相等
+            </summary>
+            <param name="a"> </param>
+            <param name="b"> </param>
+            <returns> </returns>
+        </member>
+        <member name="M:System.ValueToStringHelper.IsMe(System.String,System.String)">
+            <summary>
+              文本是否大小写不敏感的相同
+            </summary>
+            <param name="a"> </param>
+            <param name="b"> </param>
+            <returns> </returns>
+        </member>
+        <member name="M:System.ValueToStringHelper.IsFirst(System.String,System.String)">
+            <summary>
+              文本是否大小写不敏感的相同
             </summary>
             <param name="a"> </param>
             <param name="b"> </param>
@@ -1817,34 +1877,25 @@
             全局配置
             </summary>
         </member>
-        <member name="P:Agebull.Common.Configuration.ConfigurationHelper.BasePath">
+        <member name="M:Agebull.Common.Configuration.ConfigurationHelper.BindBuilder(Microsoft.Extensions.Configuration.IConfigurationBuilder)">
             <summary>
-            基本目录
-            </summary>
-        </member>
-        <member name="M:Agebull.Common.Configuration.ConfigurationHelper.ChangeBuilder(Microsoft.Extensions.Configuration.IConfigurationBuilder)">
-            <summary>
-            修改根
+            绑定
             </summary>
             <param name="builder"></param>
         </member>
-        <member name="M:Agebull.Common.Configuration.ConfigurationHelper.IsEnable(System.String,System.Boolean)">
+        <member name="M:Agebull.Common.Configuration.ConfigurationHelper.CreateBuilder">
             <summary>
-            指定配置是否启用
+            建造生成器，使用前请调用
             </summary>
-            <param name="key">配置的键名称，应已约定为bool类型</param>
-            <param name="def">不存在时默认值</param>
         </member>
-        <member name="M:Agebull.Common.Configuration.ConfigurationHelper.IsDisable(System.String,System.Boolean)">
+        <member name="P:Agebull.Common.Configuration.ConfigurationHelper.RunEnvironment">
             <summary>
-            刷新
+            当前运行环境
             </summary>
-            <param name="key">配置的键名称，应已约定为bool类型</param>
-            <param name="def">不存在时默认值</param>
         </member>
-        <member name="M:Agebull.Common.Configuration.ConfigurationHelper.UpdateDependency">
+        <member name="M:Agebull.Common.Configuration.ConfigurationHelper.SyncBuilder">
             <summary>
-            刷新
+            建造生成器，使用前请调用
             </summary>
         </member>
         <member name="M:Agebull.Common.Configuration.ConfigurationHelper.Flush">
@@ -1937,11 +1988,11 @@
         </member>
         <member name="M:Agebull.Common.Configuration.ConfigurationHelper.GetBool(System.String,System.Boolean)">
             <summary>
-              得到双精数值
+              得到布尔值
             </summary>
             <param name="key"> 键 </param>
             <param name="def"> 缺省值（不存在或不合理时使用） </param>
-            <returns> 双精数值 </returns>
+            <returns> 布尔值 </returns>
         </member>
         <member name="M:Agebull.Common.Configuration.ConfigurationHelper.GetDouble(System.String,System.Double)">
             <summary>
@@ -1953,25 +2004,25 @@
         </member>
         <member name="M:Agebull.Common.Configuration.ConfigurationHelper.GetDecimal(System.String,System.Decimal)">
             <summary>
-              得到双精数值
+              得到实数值
             </summary>
             <param name="key"> 键 </param>
             <param name="def"> 缺省值（不存在或不合理时使用） </param>
-            <returns> 双精数值 </returns>
+            <returns> 实数值 </returns>
         </member>
         <member name="M:Agebull.Common.Configuration.ConfigurationHelper.GetDateTime(System.String)">
             <summary>
-              得到双精数值
+              得到日期
             </summary>
             <param name="key"> 键 </param>
-            <returns> 双精数值 </returns>
+            <returns> 日期 </returns>
         </member>
         <member name="M:Agebull.Common.Configuration.ConfigurationHelper.GetGuid(System.String)">
             <summary>
-              得到双精数值
+              得到GUID
             </summary>
             <param name="key"> 键 </param>
-            <returns> 双精数值 </returns>
+            <returns> GUID </returns>
         </member>
         <member name="M:Agebull.Common.Configuration.ConfigurationHelper.SetValue``1(System.String,``0)">
             <summary>
@@ -2001,6 +2052,11 @@
             显示式设置配置对象(依赖)
             </summary>
         </member>
+        <member name="M:Agebull.Common.Configuration.ConfigurationHelper.GetSection(System.String)">
+            <summary>
+            显示式设置配置对象(依赖)
+            </summary>
+        </member>
         <member name="M:Agebull.Common.Configuration.ConfigurationHelper.Get(System.String)">
             <summary>
             显示式设置配置对象(依赖)
@@ -2020,6 +2076,36 @@
             <summary>
             强类型取根节点
             </summary>
+        </member>
+        <member name="M:Agebull.Common.Configuration.ConfigurationHelper.IsEnable(System.String,System.Boolean)">
+            <summary>
+            指定配置是否启用
+            </summary>
+            <param name="key">配置的键名称，应已约定为bool类型</param>
+            <param name="def">不存在时默认值</param>
+        </member>
+        <member name="M:Agebull.Common.Configuration.ConfigurationHelper.IsEquals(System.String,System.String,System.Boolean)">
+            <summary>
+            指定配置是否相同
+            </summary>
+            <param name="key">配置的键名称，应已约定为bool类型</param>
+            <param name="value">对比的内容</param>
+            <param name="def">不存在配置时的返回值</param>
+        </member>
+        <member name="M:Agebull.Common.Configuration.ConfigurationHelper.IsNotEquals(System.String,System.String,System.Boolean)">
+            <summary>
+            指定配置是否不相同
+            </summary>
+            <param name="key">配置的键名称，应已约定为bool类型</param>
+            <param name="value">对比的内容</param>
+            <param name="def">不存在配置时的返回值</param>
+        </member>
+        <member name="M:Agebull.Common.Configuration.ConfigurationHelper.IsDisable(System.String,System.Boolean)">
+            <summary>
+            刷新
+            </summary>
+            <param name="key">配置的键名称，应已约定为bool类型</param>
+            <param name="def">不存在时默认值</param>
         </member>
         <member name="M:Agebull.Common.Configuration.ConfigurationHelper.GetAppSetting(System.String,System.String)">
             <summary>
@@ -2112,19 +2198,19 @@
                 全局依赖
             </summary>
         </member>
-        <member name="M:Agebull.Common.Ioc.DependencyHelper.BindingMessageMvc(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:Agebull.Common.Ioc.DependencyHelper.Binding(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
                 显示式设置配置对象(依赖)
             </summary>
             <param name="service"></param>
         </member>
-        <member name="M:Agebull.Common.Ioc.DependencyHelper.BindingMessageMvc(System.IServiceProvider)">
+        <member name="M:Agebull.Common.Ioc.DependencyHelper.SetRootProvider(System.IServiceProvider)">
             <summary>
                 更新构造提供器
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Agebull.Common.Ioc.DependencyHelper.Reload">
+        <member name="M:Agebull.Common.Ioc.DependencyHelper.Flush">
             <summary>
                 更新(构架内使用)
             </summary>
@@ -2145,10 +2231,33 @@
                 依赖注入构造器
             </summary>
         </member>
+        <member name="P:Agebull.Common.Ioc.DependencyHelper.Logger">
+            <summary>
+            默认日志记录器
+            </summary>
+        </member>
         <member name="P:Agebull.Common.Ioc.DependencyHelper.LoggerFactory">
             <summary>
-                全局依赖
+                日志工厂
             </summary>
+        </member>
+        <member name="M:Agebull.Common.Ioc.DependencyHelper.LoggingConfig(Microsoft.Extensions.Logging.ILoggingBuilder)">
+            <summary>
+            日志配置
+            </summary>
+            <param name="builder"></param>
+        </member>
+        <member name="M:Agebull.Common.Ioc.DependencyHelper.BindingLoggerFactory(Microsoft.Extensions.Logging.ILoggerFactory)">
+            <summary>
+            绑定其它的日志工厂
+            </summary>
+            <param name="factory">日志工厂</param>
+        </member>
+        <member name="M:Agebull.Common.Ioc.DependencyHelper.ResetLoggerFactory(System.Action{Microsoft.Extensions.Logging.ILoggingBuilder})">
+            <summary>
+            重置
+            </summary>
+            <param name="action"></param>
         </member>
         <member name="M:Agebull.Common.Ioc.DependencyHelper.Create``1">
             <summary>
@@ -2275,6 +2384,73 @@
             2. FromConfigAttribute特性标识的构造成从配置文件读取的对象
             3. FromServicesAttribute通过依赖构造（如果无法依赖构造或未注册的，后果未知）
             </remarks>
+        </member>
+        <member name="M:Agebull.Common.Ioc.DependencyHelper.AddTransient``2(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.String)">
+            <summary>
+                注册瞬时命名类型
+            </summary>
+            <typeparam name="TService">服务类型</typeparam>
+            <typeparam name="TImplementation">目标类型</typeparam>
+            <paramref name="name">命名</paramref>
+            <returns>IServiceCollection实例</returns>
+        </member>
+        <member name="M:Agebull.Common.Ioc.DependencyHelper.AddScope``2(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.String)">
+            <summary>
+                注册范围命名类型
+            </summary>
+            <typeparam name="TService">服务类型</typeparam>
+            <typeparam name="TImplementation">目标类型</typeparam>
+            <paramref name="name">命名</paramref>
+            <returns>IServiceCollection实例</returns>
+        </member>
+        <member name="M:Agebull.Common.Ioc.DependencyHelper.AddSingleton``2(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.String)">
+            <summary>
+                注册单例命名类型
+            </summary>
+            <typeparam name="TService">服务类型</typeparam>
+            <typeparam name="TImplementation">目标类型</typeparam>
+            <paramref name="name">命名</paramref>
+            <returns>IServiceCollection实例</returns>
+        </member>
+        <member name="M:Agebull.Common.Ioc.DependencyHelper.AddNameTransient``2(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+                注册瞬时命名类型,名称为TImplementation的类型短名称
+            </summary>
+            <typeparam name="TService">服务类型</typeparam>
+            <typeparam name="TImplementation">目标类型</typeparam>
+            <returns>IServiceCollection实例</returns>
+        </member>
+        <member name="M:Agebull.Common.Ioc.DependencyHelper.AddNameScope``2(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+                注册范围命名类型,名称为TImplementation的类型短名称
+            </summary>
+            <typeparam name="TService">服务类型</typeparam>
+            <typeparam name="TImplementation">目标类型</typeparam>
+            <returns>IServiceCollection实例</returns>
+        </member>
+        <member name="M:Agebull.Common.Ioc.DependencyHelper.AddNameSingleton``2(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Func{System.IServiceProvider,``1})">
+            <summary>
+                注册单例命名类型,名称为TImplementation的类型短名称
+            </summary>
+            <typeparam name="TService">服务类型</typeparam>
+            <typeparam name="TImplementation">目标类型</typeparam>
+            <returns>IServiceCollection实例</returns>
+        </member>
+        <member name="M:Agebull.Common.Ioc.DependencyHelper.AddNameSingleton``2(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+                注册单例命名类型,名称为TImplementation的类型短名称
+            </summary>
+            <typeparam name="TService">服务类型</typeparam>
+            <typeparam name="TImplementation">目标类型</typeparam>
+            <returns>IServiceCollection实例</returns>
+        </member>
+        <member name="M:Agebull.Common.Ioc.DependencyHelper.GetService``1(System.String)">
+            <summary>
+                生成接口实例
+            </summary>
+            <typeparam name="TInterface"></typeparam>
+            <paramref name="name">命名</paramref>
+            <returns>对象</returns>
         </member>
         <member name="M:Agebull.Common.Ioc.DependencyHelper.AddTransient(System.Type,System.Type)">
             <summary>
@@ -2528,63 +2704,6 @@
             </summary>
             <typeparam name="TService"></typeparam>
         </member>
-        <member name="T:Agebull.Common.Ioc.DependencyScope">
-            <summary>
-            IOC范围对象,内部框架使用
-            </summary>
-        </member>
-        <member name="M:Agebull.Common.Ioc.DependencyScope.#ctor(System.String)">
-            <summary>
-            生成一个范围
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Agebull.Common.Ioc.DependencyScope.CreateScope(System.String)">
-            <summary>
-            生成一个范围
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="F:Agebull.Common.Ioc.DependencyScope.Local">
-            <summary>
-            活动实例
-            </summary>
-        </member>
-        <member name="P:Agebull.Common.Ioc.DependencyScope.LocalValue">
-            <summary>
-            析构方法
-            </summary>
-        </member>
-        <member name="P:Agebull.Common.Ioc.DependencyScope.Name">
-            <summary>
-            范围名称
-            </summary>
-        </member>
-        <member name="P:Agebull.Common.Ioc.DependencyScope.Logger">
-            <summary>
-            日志记录器
-            </summary>
-        </member>
-        <member name="P:Agebull.Common.Ioc.DependencyScope.ServiceScope">
-            <summary>
-            依赖服务范围
-            </summary>
-        </member>
-        <member name="P:Agebull.Common.Ioc.DependencyScope.InnerModel">
-            <summary>
-            内部模式,框架使用
-            </summary>
-        </member>
-        <member name="P:Agebull.Common.Ioc.DependencyScope.DisposeFunc">
-            <summary>
-            析构方法
-            </summary>
-        </member>
-        <member name="P:Agebull.Common.Ioc.DependencyScope.Dependency">
-            <summary>
-            附件内容
-            </summary>
-        </member>
         <member name="T:Agebull.Common.Ioc.DynamicCreateBuilder">
             <summary>
             接口方法生成器
@@ -2598,44 +2717,253 @@
             表示来自依赖构造的对象
             </summary>
         </member>
-        <member name="T:Agebull.Common.Ioc.ScopeData">
+        <member name="T:Agebull.Common.Ioc.ContextInheritType">
             <summary>
-            范围数据
+            上下文继承类型
             </summary>
         </member>
-        <member name="P:Agebull.Common.Ioc.ScopeData.ServiceScope">
+        <member name="F:Agebull.Common.Ioc.ContextInheritType.None">
+            <summary>
+            不继承：上下文是独立的
+            </summary>
+        </member>
+        <member name="F:Agebull.Common.Ioc.ContextInheritType.Clone">
+            <summary>
+            复制：初始内容与当前线程相同，但修改仅在范围内，上一层收不到
+            </summary>
+        </member>
+        <member name="F:Agebull.Common.Ioc.ContextInheritType.Sharp">
+            <summary>
+            共享：与当前线程共享上下文
+            </summary>
+        </member>
+        <member name="T:Agebull.Common.Ioc.ScopeAttachData">
+            <summary>
+                范围内容
+            </summary>
+        </member>
+        <member name="F:Agebull.Common.Ioc.ScopeAttachData.dictionary">
+            <summary>
+            字典
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Ioc.ScopeAttachData.Clone">
+            <summary>
+            克隆新副本
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Agebull.Common.Ioc.ScopeAttachData.Detach``1">
+            <summary>
+                分离
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Ioc.ScopeAttachData.Attach``1(``0)">
+            <summary>
+                附加一种类型对象
+            </summary>
+            <remarks>
+                这种方法只存在一个,即多次附加,只存最后一个对象
+            </remarks>
+        </member>
+        <member name="M:Agebull.Common.Ioc.ScopeAttachData.TryAttach``1(``0)">
+            <summary>
+                附加一种类型对象
+            </summary>
+            <remarks>
+                这种方法只存在一个,即多次附加,只存最后一个对象
+            </remarks>
+        </member>
+        <member name="M:Agebull.Common.Ioc.ScopeAttachData.AutoDependency``1">
+            <summary>
+                取得一种类型的扩展属性(可以自动构造或提前附加)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Agebull.Common.Ioc.ScopeAttachData.TryGetDependency``1(System.Func{``0})">
+            <summary>
+                取得一种类型的扩展属性(需要附加)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Agebull.Common.Ioc.ScopeAttachData.Get``1">
+            <summary>
+                取得一种类型的扩展属性(需要附加)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Agebull.Common.Ioc.ScopeAttachData.Dependency``1(System.Func{``0})">
+            <summary>
+                取得一种类型的扩展属性(需要附加)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Agebull.Common.Ioc.ScopeInnerData">
+            <summary>
+            依赖范围框架数据
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Ioc.ScopeInnerData.Referenct">
+            <summary>
+            引用计数，归0时析构
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Ioc.ScopeInnerData.ServiceScope">
             <summary>
             依赖服务范围
             </summary>
         </member>
-        <member name="P:Agebull.Common.Ioc.ScopeData.Scope">
+        <member name="P:Agebull.Common.Ioc.ScopeInnerData.Id">
             <summary>
-            当前范围
+            唯一标准
             </summary>
         </member>
-        <member name="P:Agebull.Common.Ioc.ScopeData.Name">
+        <member name="P:Agebull.Common.Ioc.ScopeInnerData.Name">
             <summary>
             范围名称
             </summary>
         </member>
-        <member name="P:Agebull.Common.Ioc.ScopeData.Logger">
+        <member name="P:Agebull.Common.Ioc.ScopeInnerData.Logger">
             <summary>
             日志记录器
             </summary>
         </member>
-        <member name="P:Agebull.Common.Ioc.ScopeData.InnerModel">
+        <member name="P:Agebull.Common.Ioc.ScopeInnerData.MonitorItem">
             <summary>
-            内部模式,框架使用
+            日志监控节点
             </summary>
         </member>
-        <member name="F:Agebull.Common.Ioc.ScopeData.DisposeFunc">
+        <member name="P:Agebull.Common.Ioc.ScopeInnerData.Context">
+            <summary>
+            存储上下文对象,框架使用
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Ioc.ScopeInnerData.User">
+            <summary>
+            存储上下文对象,框架使用
+            </summary>
+        </member>
+        <member name="F:Agebull.Common.Ioc.ScopeInnerData.DisposeFunc">
             <summary>
             析构方法
             </summary>
         </member>
-        <member name="F:Agebull.Common.Ioc.ScopeData.Dependency">
+        <member name="F:Agebull.Common.Ioc.ScopeInnerData.ScopeData">
             <summary>
             附件内容
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Ioc.ScopeInnerData.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Agebull.Common.Ioc.ScopeRuner">
+            <summary>
+            IOC范围执行器,内部框架使用
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Ioc.ScopeRuner.AddReferenct">
+            <summary>
+            增加引用计数
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Agebull.Common.Ioc.ScopeRuner.DisposeLocal">
+            <summary>
+            析构本地
+            </summary>
+        </member>
+        <member name="F:Agebull.Common.Ioc.ScopeRuner.scopeLocal">
+            <summary>
+            活动实例
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Ioc.ScopeRuner.Name">
+            <summary>
+            范围名称
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Ioc.ScopeRuner.ScopeLogger">
+            <summary>
+            日志记录器
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Ioc.ScopeRuner.ScopeContext">
+            <summary>
+            上下文
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Ioc.ScopeRuner.ScopeUser">
+            <summary>
+            用户
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Ioc.ScopeRuner.InScope">
+            <summary>
+            是否在一个范围内
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Ioc.ScopeRuner.MonitorItem">
+            <summary>
+            日志监控节点
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Ioc.ScopeRuner.ScopeDependency">
+            <summary>
+            附件内容
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Ioc.ScopeRuner.ServiceScope">
+            <summary>
+            依赖服务范围
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Ioc.ScopeRuner.ScopeDisposeFunc">
+            <summary>
+            析构方法
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Ioc.ScopeRuner.RunScope(System.String,System.Action,Agebull.Common.Ioc.ContextInheritType)">
+            <summary>
+            在一个依赖范围中运行
+            </summary>
+            <param name="name">依赖命名</param>
+            <param name="action">执行方法</param>
+            <param name="contextInherit">上下文继承方式</param>
+        </member>
+        <member name="M:Agebull.Common.Ioc.ScopeRuner.RunScope(System.String,System.Func{System.Threading.Tasks.Task},Agebull.Common.Ioc.ContextInheritType)">
+            <summary>
+            在一个依赖范围中运行
+            </summary>
+            <param name="name">依赖命名</param>
+            <param name="action">执行方法</param>
+            <param name="contextInherit">上下文继承方式</param>
+        </member>
+        <member name="T:Agebull.Common.Ioc.ScopeRuner.TaskScope">
+            <summary>
+            异步范围
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Ioc.ScopeRuner.RunScope``1(System.String,System.Action{``0},``0,Agebull.Common.Ioc.ContextInheritType)">
+            <summary>
+            在一个依赖范围中运行
+            </summary>
+            <param name="name">依赖命名</param>
+            <param name="action">执行方法</param>
+            <param name="arg">执行参数</param>
+            <param name="contextInherit">上下文继承方式</param>
+        </member>
+        <member name="M:Agebull.Common.Ioc.ScopeRuner.RunScope``1(System.String,System.Func{``0,System.Threading.Tasks.Task},``0,Agebull.Common.Ioc.ContextInheritType)">
+            <summary>
+            在一个依赖范围中运行
+            </summary>
+            <param name="name">依赖命名</param>
+            <param name="arg">执行参数</param>
+            <param name="action">执行方法</param>
+            <param name="contextInherit">上下文继承方式</param>
+        </member>
+        <member name="T:Agebull.Common.Ioc.ScopeRuner.TaskScope`1">
+            <summary>
+            异步范围
             </summary>
         </member>
         <member name="T:Agebull.Common.ByteHelper">
@@ -3710,9 +4038,39 @@
               流程跟踪器
             </summary>
         </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.#cctor">
+            <summary>
+              静态构造
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.ReadConfig">
+            <summary>
+            读取配置
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Logging.FlowTracer.Level">
+            <summary>
+            当前日志级别
+            </summary>
+        </member>
         <member name="P:Agebull.Common.Logging.FlowTracer.LogMonitor">
             <summary>
-            启动监视
+            是否启动跟踪日志
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Logging.FlowTracer.LogMonitorInformation">
+            <summary>
+            是否启动跟踪日志
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Logging.FlowTracer.LogMonitorDebug">
+            <summary>
+            跟踪日志是否包含详细信息
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Logging.FlowTracer.LogMonitorTrace">
+            <summary>
+            跟踪日志是否包含详细信息
             </summary>
         </member>
         <member name="P:Agebull.Common.Logging.FlowTracer.MonitorItem">
@@ -3722,12 +4080,52 @@
         </member>
         <member name="M:Agebull.Common.Logging.FlowTracer.BeginMonitor(System.String)">
             <summary>
-            开始检测资源
+            开始监视日志
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.BeginMonitor(System.Func{System.String})">
+            <summary>
+            开始监视日志
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.BeginMonitor(Agebull.Common.Logging.TraceStep)">
+            <summary>
+            开始监视日志
             </summary>
         </member>
         <member name="M:Agebull.Common.Logging.FlowTracer.BeginStepMonitor(System.String)">
             <summary>
             开始监视日志步骤
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.BeginStepMonitor(System.Func{System.String})">
+            <summary>
+            开始监视日志步骤
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.BeginTraceStepMonitor(System.String)">
+            <summary>
+            开始监视日志步骤
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.BeginTraceStepMonitor(System.Func{System.String})">
+            <summary>
+            开始监视日志步骤
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.BeginDebugStepMonitor(System.Func{System.String})">
+            <summary>
+            开始监视日志步骤
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.BeginDebugStepMonitor(System.String)">
+            <summary>
+            开始监视日志步骤
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.EndDebugStepMonitor">
+            <summary>
+            结束监视日志步骤
             </summary>
         </member>
         <member name="M:Agebull.Common.Logging.FlowTracer.EndStepMonitor">
@@ -3750,6 +4148,21 @@
             加入监视跟踪
             </summary>
         </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.MonitorDebug(System.String)">
+            <summary>
+            加入监视跟踪
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.MonitorTrace(System.String)">
+            <summary>
+            加入监视跟踪
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.MonitorTrace(System.Func{System.String})">
+            <summary>
+            加入监视跟踪
+            </summary>
+        </member>
         <member name="M:Agebull.Common.Logging.FlowTracer.MonitorDetails(System.Func{System.String})">
             <summary>
             加入监视跟踪
@@ -3760,27 +4173,32 @@
             加入监视跟踪
             </summary>
         </member>
-        <member name="M:Agebull.Common.Logging.FlowTracer.EndMonitor">
+        <member name="M:Agebull.Common.Logging.FlowTracer.MonitorError(System.Func{System.String})">
+            <summary>
+            加入监视跟踪
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.MonitorError(System.Exception,System.String)">
+            <summary>
+            加入监视跟踪
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.MonitorError(System.String)">
+            <summary>
+            加入监视跟踪
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.EndMonitor(System.Boolean)">
             <summary>
             结束监视日志
             </summary>
         </member>
-        <member name="M:Agebull.Common.Logging.FlowTracer.MonitorTrace(System.String)">
-            <summary>
-            加入监视跟踪
-            </summary>
-        </member>
-        <member name="M:Agebull.Common.Logging.FlowTracer.MonitorTrace(System.String,System.Object[])">
-            <summary>
-            加入监视跟踪
-            </summary>
-        </member>
-        <member name="M:Agebull.Common.Logging.FlowTracer.MonitorTrace(System.Func{System.String})">
-            <summary>
-            加入监视跟踪
-            </summary>
-        </member>
         <member name="M:Agebull.Common.Logging.FlowTracer.TraceMonitor(Microsoft.Extensions.Logging.ILogger,Agebull.Common.Logging.TraceStep)">
+            <summary>
+            结束监视日志
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.TraceMonitor(Agebull.Common.Logging.TraceStep)">
             <summary>
             结束监视日志
             </summary>
@@ -3790,46 +4208,95 @@
                 刷新资源检测
             </summary>
         </member>
-        <member name="T:Agebull.Common.Logging.FlowTracer.Local">
+        <member name="M:Agebull.Common.Logging.FlowTracer.MonitorScope(System.String,Microsoft.Extensions.Logging.ILogger)">
             <summary>
-                跟踪信息
+            步骤范围
+            </summary>
+            <param name="title"></param>
+            <param name="logger"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.MonitorScope(System.Func{System.String},Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            步骤范围
+            </summary>
+            <param name="title"></param>
+            <param name="logger"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.StepScope(System.String)">
+            <summary>
+            步骤范围
+            </summary>
+            <param name="title"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.TraceStepScope(System.String)">
+            <summary>
+            步骤范围
+            </summary>
+            <param name="title"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.DebugStepScope(System.String)">
+            <summary>
+            步骤范围
+            </summary>
+            <param name="title"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.StepScope(System.Func{System.String})">
+            <summary>
+            步骤范围
+            </summary>
+            <param name="title"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.TraceStepScope(System.Func{System.String})">
+            <summary>
+            步骤范围
+            </summary>
+            <param name="title"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Agebull.Common.Logging.FlowTracer.DebugStepScope(System.Func{System.String})">
+            <summary>
+            步骤范围
+            </summary>
+            <param name="title"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Agebull.Common.Logging.FlowTracer.MonitorInnerScope">
+            <summary>
+            流程跟踪步骤范围
             </summary>
         </member>
-        <member name="F:Agebull.Common.Logging.FlowTracer.Local.Stack">
+        <member name="M:Agebull.Common.Logging.FlowTracer.MonitorInnerScope.System#IDisposable#Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Agebull.Common.Logging.FlowTracer.FlowStepScope">
             <summary>
-                记录堆栈
+            流程跟踪步骤范围
             </summary>
         </member>
-        <member name="F:Agebull.Common.Logging.FlowTracer.Local.InMonitor">
+        <member name="M:Agebull.Common.Logging.FlowTracer.FlowStepScope.System#IDisposable#Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Agebull.Common.Logging.FlowTracer.FlowTracerStepScope">
             <summary>
-                侦测开关
+            流程跟踪步骤范围
             </summary>
         </member>
-        <member name="M:Agebull.Common.Logging.FlowTracer.Local.BeginMonitor(System.String)">
+        <member name="M:Agebull.Common.Logging.FlowTracer.FlowTracerStepScope.System#IDisposable#Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Agebull.Common.Logging.FlowTracer.FlowTracerDebugStepScope">
             <summary>
-                开始检测资源
+            流程跟踪调试步骤范围
             </summary>
         </member>
-        <member name="M:Agebull.Common.Logging.FlowTracer.Local.BeginStep(System.String)">
-            <summary>
-                刷新资源检测
-            </summary>
-        </member>
-        <member name="M:Agebull.Common.Logging.FlowTracer.Local.EndStep">
-            <summary>
-                刷新资源检测
-            </summary>
-        </member>
-        <member name="M:Agebull.Common.Logging.FlowTracer.Local.End">
-            <summary>
-                刷新资源检测
-            </summary>
-        </member>
-        <member name="M:Agebull.Common.Logging.FlowTracer.Local.Trace(System.String)">
-            <summary>
-            设置跟踪消息
-            </summary>
-            <param name="msg"></param>
+        <member name="M:Agebull.Common.Logging.FlowTracer.FlowTracerDebugStepScope.System#IDisposable#Dispose">
+            <inheritdoc/>
         </member>
         <member name="T:Agebull.Common.Logging.LocalTraceStack">
             <summary>
@@ -3873,56 +4340,20 @@
               出栈
             </summary>
         </member>
-        <member name="T:Agebull.Common.Logging.LoggerExtend">
+        <member name="T:Agebull.Common.Logging.LoggerExtension">
             <summary>
               日志记录器
             </summary>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.#cctor">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Log(Microsoft.Extensions.Logging.ILogger,Microsoft.Extensions.Logging.LogLevel,System.Func{System.String})">
             <summary>
-              静态构造
-            </summary>
-        </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.ReadConfig">
-            <summary>
-            读取配置
-            </summary>
-        </member>
-        <member name="P:Agebull.Common.Logging.LoggerExtend.LogDataSql">
-            <summary>
-            是否启动SQL日志
-            </summary>
-        </member>
-        <member name="P:Agebull.Common.Logging.LoggerExtend.monitor">
-            <summary>
-            是否启动跟踪日志
-            </summary>
-        </member>
-        <member name="P:Agebull.Common.Logging.LoggerExtend.details">
-            <summary>
-            跟踪日志是否包含详细信息
-            </summary>
-        </member>
-        <member name="F:Agebull.Common.Logging.LoggerExtend.lastId">
-            <summary>
-            日志序号
-            </summary>
-        </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.NewEventId(System.String)">
-            <summary>
-            新的事件ID
-            </summary>
-            <param name="name"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.RecordDataLog(Microsoft.Extensions.Logging.ILogger,System.String)">
-            <summary>
-              记录数据日志
+              记录日志
             </summary>
              <param name="logger">日志记录器</param>
-            <param name="message"> 日志详细信息 </param>
+            <param name="level"> 日志详细信息 </param>
+            <param name="func"> 格式化的参数 </param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Warning(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Warning(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
             <summary>
               记录警告消息
             </summary>
@@ -3930,14 +4361,14 @@
             <param name="message"> 日志详细信息 </param>
             <param name="formatArgs"> 格式化的参数 </param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Warning(Microsoft.Extensions.Logging.ILogger,System.String)">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Warning(Microsoft.Extensions.Logging.ILogger,System.String)">
             <summary>
               记录警告消息
             </summary>
              <param name="logger">日志记录器</param>
             <param name="message"> 日志详细信息 </param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Error(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Error(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
             <summary>
               记录错误消息
             </summary>
@@ -3945,7 +4376,7 @@
             <param name="message"> 日志详细信息 </param>
             <param name="formatArgs"> 格式化的参数 </param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Exception(Microsoft.Extensions.Logging.ILogger,System.Exception,System.String)">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Exception(Microsoft.Extensions.Logging.ILogger,System.Exception,System.String)">
             <summary>
               记录异常日志
             </summary>
@@ -3953,7 +4384,7 @@
             <param name="exception"> 异常 </param>
             <param name="message"> 日志详细信息 </param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Exception(Microsoft.Extensions.Logging.ILogger,System.Exception,System.String,System.Object[])">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Exception(Microsoft.Extensions.Logging.ILogger,System.Exception,System.String,System.Object[])">
             <summary>
               记录异常日志
             </summary>
@@ -3962,7 +4393,7 @@
             <param name="message"> 日志详细信息 </param>
             <param name="formatArgs">格式化参数</param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Trace(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Trace(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
             <summary>
               写入调试日志
             </summary>
@@ -3970,14 +4401,14 @@
             <param name="message"> 日志详细信息 </param>
             <param name="formatArgs">格式化参数</param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.StackTraceInfomation(System.String,System.Object[])">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.StackTraceInfomation(System.String,System.Object[])">
              <summary>
                堆栈信息
              </summary>
             <param name="message"> 日志详细信息 </param>
             <param name="formatArgs"> 格式化的参数 </param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.DebugByStackTrace(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.DebugByStackTrace(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
             <summary>
               写入调试日志同时记录堆栈信息
             </summary>
@@ -3985,7 +4416,7 @@
             <param name="message"> 日志详细信息 </param>
             <param name="formatArgs"> 格式化的参数 </param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Debug(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Debug(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
             <summary>
               写入调试日志.
             </summary>
@@ -3993,44 +4424,35 @@
             <param name="message"> 日志详细信息 </param>
             <param name="formatArgs">格式化参数</param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Debug(Microsoft.Extensions.Logging.ILogger,System.Object)">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Debug(Microsoft.Extensions.Logging.ILogger,System.Object)">
             <summary>
               写入调试日志
             </summary>
             <param name="logger">日志记录器</param>
             <param name="obj"> 记录对象 </param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Debug(Microsoft.Extensions.Logging.ILogger,System.String,System.String,System.Object[])">
-            <summary>
-              记录一般日志
-            </summary>
-             <param name="logger">日志记录器</param>
-            <param name="name"> </param>
-            <param name="message"> 消息 </param>
-            <param name="formatArgs"> 格式化的参数 </param>
-        </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Trace(Microsoft.Extensions.Logging.ILogger,System.Func{System.String})">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Trace(Microsoft.Extensions.Logging.ILogger,System.Func{System.String})">
             <summary>
               写入调试日志
             </summary>
             <param name="logger">日志记录器</param>
             <param name="func"> 消息方法</param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Debug(Microsoft.Extensions.Logging.ILogger,System.Func{System.String})">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Debug(Microsoft.Extensions.Logging.ILogger,System.Func{System.String})">
             <summary>
               写入调试日志
             </summary>
             <param name="logger">日志记录器</param>
             <param name="func"> 消息方法</param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Information(Microsoft.Extensions.Logging.ILogger,System.Func{System.String})">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Information(Microsoft.Extensions.Logging.ILogger,System.Func{System.String})">
             <summary>
               写入调试日志
             </summary>
             <param name="logger">日志记录器</param>
             <param name="func"> 消息方法</param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Information(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Information(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
             <summary>
               记录一般日志
             </summary>
@@ -4038,26 +4460,147 @@
             <param name="message"> 消息 </param>
             <param name="formatArgs"> 格式化的参数 </param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Information(Microsoft.Extensions.Logging.ILogger,System.String)">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Information(Microsoft.Extensions.Logging.ILogger,System.String)">
             <summary>
               写入调试日志
             </summary>
             <param name="logger">日志记录器</param>
             <param name="msg"> 消息</param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Warning(Microsoft.Extensions.Logging.ILogger,System.Func{System.String})">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Warning(Microsoft.Extensions.Logging.ILogger,System.Func{System.String})">
             <summary>
               写入调试日志
             </summary>
             <param name="logger">日志记录器</param>
             <param name="func"> 消息方法</param>
         </member>
-        <member name="M:Agebull.Common.Logging.LoggerExtend.Error(Microsoft.Extensions.Logging.ILogger,System.Func{System.String})">
+        <member name="M:Agebull.Common.Logging.LoggerExtension.Error(Microsoft.Extensions.Logging.ILogger,System.Func{System.String})">
             <summary>
               写入调试日志
             </summary>
             <param name="logger">日志记录器</param>
             <param name="func"> 消息方法</param>
+        </member>
+        <member name="T:Agebull.Common.Logging.LogItem">
+            <summary>
+            日志内容
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Logging.LogItem.LogId">
+            <summary>
+            日志标识
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Logging.LogItem.Time">
+            <summary>
+            记录时间
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Logging.LogItem.LogLevel">
+            <summary>
+            日志等级
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Logging.LogItem.LoggerName">
+            <summary>
+            记录器名称
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Logging.LogItem.Message">
+            <summary>
+            日志消息
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Logging.LogItem.Exception">
+            <summary>
+            当前异常
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Logging.LogItem.Service">
+            <summary>
+            当前服务
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Logging.LogItem.Machine">
+            <summary>
+            当前机器
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Logging.LogItem.UserId">
+            <summary>
+            当前用户ID
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Logging.LogItem.MessageId">
+            <summary>
+            消息ID
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Logging.LogItem.ApiName">
+            <summary>
+            接口名称
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Logging.LogItem.TraceId">
+            <summary>
+            消息跟踪ID
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Logging.LogItem.CallId">
+            <summary>
+            调用消息ID
+            </summary>
+        </member>
+        <member name="P:Agebull.Common.Logging.LogItem.LocalId">
+            <summary>
+            本地消息ID
+            </summary>
+        </member>
+        <member name="T:Agebull.Common.Logging.MonitorStack">
+            <summary>
+                跟踪信息
+            </summary>
+        </member>
+        <member name="F:Agebull.Common.Logging.MonitorStack.Stack">
+            <summary>
+                记录堆栈
+            </summary>
+        </member>
+        <member name="F:Agebull.Common.Logging.MonitorStack.InMonitor">
+            <summary>
+                侦测开关
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.MonitorStack.BeginMonitor(System.String)">
+            <summary>
+                开始检测资源
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.MonitorStack.BeginMonitor(Agebull.Common.Logging.TraceStep)">
+            <summary>
+                开始检测资源
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.MonitorStack.BeginStep(System.String)">
+            <summary>
+                刷新资源检测
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.MonitorStack.EndStep">
+            <summary>
+                刷新资源检测
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.MonitorStack.End">
+            <summary>
+                刷新资源检测
+            </summary>
+        </member>
+        <member name="M:Agebull.Common.Logging.MonitorStack.Trace(System.String)">
+            <summary>
+            设置跟踪消息
+            </summary>
+            <param name="msg"></param>
         </member>
         <member name="T:Agebull.Common.Logging.TraceItem">
             <summary>
@@ -4963,61 +5506,6 @@
             </summary>
             <returns> </returns>
         </member>
-        <member name="T:Agebull.EntityModel.Common.DependencyObjects">
-            <summary>
-                对象依赖字典
-            </summary>
-        </member>
-        <member name="F:Agebull.EntityModel.Common.DependencyObjects.Dictionary">
-            <summary>
-            字典
-            </summary>
-        </member>
-        <member name="M:Agebull.EntityModel.Common.DependencyObjects.Remove``1">
-            <summary>
-                删除一种类型对象
-            </summary>
-        </member>
-        <member name="M:Agebull.EntityModel.Common.DependencyObjects.Annex``1(``0)">
-            <summary>
-                附加一种类型对象
-            </summary>
-            <remarks>
-                这种方法只存在一个,即多次附加,只存最后一个对象
-            </remarks>
-        </member>
-        <member name="M:Agebull.EntityModel.Common.DependencyObjects.TryAnnex``1(``0)">
-            <summary>
-                附加一种类型对象
-            </summary>
-            <remarks>
-                这种方法只存在一个,即多次附加,只存最后一个对象
-            </remarks>
-        </member>
-        <member name="M:Agebull.EntityModel.Common.DependencyObjects.AutoDependency``1">
-            <summary>
-                取得一种类型的扩展属性(可以自动构造或提前附加)
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Agebull.EntityModel.Common.DependencyObjects.TryGetDependency``1(System.Func{``0})">
-            <summary>
-                取得一种类型的扩展属性(需要附加)
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Agebull.EntityModel.Common.DependencyObjects.Dependency``1">
-            <summary>
-                取得一种类型的扩展属性(需要附加)
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Agebull.EntityModel.Common.DependencyObjects.Dependency``1(System.Func{``0})">
-            <summary>
-                取得一种类型的扩展属性(需要附加)
-            </summary>
-            <returns></returns>
-        </member>
         <member name="T:Agebull.EntityModel.Common.NameValue`2">
             <summary>
                 名称内容对象
@@ -5120,6 +5608,80 @@
             <param name="val">枚举值</param>
             <returns>枚举值的描述</returns>
         </member>
+        <member name="T:Agebull.EntityModel.Common.MemoryCacheData`1">
+            <summary>
+            内存数据
+            </summary>
+            <typeparam name="TData"></typeparam>
+        </member>
+        <member name="P:Agebull.EntityModel.Common.MemoryCacheData`1.Logger">
+            <summary>
+            日志对象
+            </summary>
+        </member>
+        <member name="P:Agebull.EntityModel.Common.MemoryCacheData`1.ExpirationSecond">
+            <summary>
+            过期时长
+            </summary>
+        </member>
+        <member name="P:Agebull.EntityModel.Common.MemoryCacheData`1.TimeoutSecond">
+            <summary>
+            过期时长
+            </summary>
+        </member>
+        <member name="P:Agebull.EntityModel.Common.MemoryCacheData`1.RetryWaitSecond">
+            <summary>
+            重试等待时长
+            </summary>
+        </member>
+        <member name="P:Agebull.EntityModel.Common.MemoryCacheData`1.MaxTryCount">
+            <summary>
+            最大重试次数
+            </summary>
+        </member>
+        <member name="P:Agebull.EntityModel.Common.MemoryCacheData`1.Data">
+            <summary>
+            内存数据
+            </summary>
+        </member>
+        <member name="F:Agebull.EntityModel.Common.MemoryCacheData`1.waitTasks">
+            <summary>
+            载入过程的等待任务
+            </summary>
+        </member>
+        <member name="F:Agebull.EntityModel.Common.MemoryCacheData`1.expiration">
+            <summary>
+            过期时间
+            </summary>
+        </member>
+        <member name="M:Agebull.EntityModel.Common.MemoryCacheData`1.Reset">
+            <summary>
+            重置数据
+            </summary>
+        </member>
+        <member name="M:Agebull.EntityModel.Common.MemoryCacheData`1.LoadData">
+            <summary>
+            载入数据
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="F:Agebull.EntityModel.Common.MemoryCacheData`1.tryCount">
+            <summary>
+            异常重试次数
+            </summary>
+        </member>
+        <member name="M:Agebull.EntityModel.Common.MemoryCacheData`1.LoadInner">
+            <summary>
+            读取策略
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Agebull.EntityModel.Common.MemoryCacheData`1.DoLoad">
+            <summary>
+            读取
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:Agebull.EntityModel.Common.Number46">
             <summary>
             46位数字
@@ -5182,6 +5744,78 @@
             </summary>
             <param name="codeCount"></param>
             <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Context.IDictionaryTransfer">
+            <summary>
+            可通过字典传输的对象
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Context.IDictionaryTransfer.ToDictionary">
+            <summary>
+            转为可传输的对象
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Context.IDictionaryTransfer.Reset(System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            转为可传输的对象
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Context.IScopeContext">
+            <summary>
+                范围上下文
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.IScopeContext.ScopeData">
+            <summary>
+            范围数据
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.IScopeContext.Scope">
+            <summary>
+            依赖范围内数据
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Context.IScopeContext.Clone">
+            <summary>
+            克隆
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Context.IUser">
+            <summary>
+             用户信息
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.IUser.UserId">
+            <summary>
+               用户数字标识
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.IUser.NickName">
+            <summary>
+                用户昵称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.IUser.OrganizationId">
+            <summary>
+                用户组织数字标识
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.IUser.CurrentPermission">
+            <summary>
+                确定后的当前权限信息
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.IUser.Permissions">
+            <summary>
+                角色集合
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.IUser.Item(System.String)">
+            <summary>
+            快捷读写字典
+            </summary>
+            <param name="type"></param>
         </member>
     </members>
 </doc>

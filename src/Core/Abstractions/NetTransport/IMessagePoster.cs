@@ -2,40 +2,22 @@
 
 namespace ZeroTeam.MessageMVC.Messages
 {
+
     /// <summary>
     /// 消息投递对象
     /// </summary>
-    public interface IMessagePoster : IZeroDependency
+    public interface IMessagePoster : IMessageWorker
     {
         /// <summary>
-        /// 是否可用
+        /// 取得生命周期对象
         /// </summary>
-        bool CanDo { get; }
+        /// <returns></returns>
+        ILifeFlow GetLife();
 
         /// <summary>
         /// 是否本地接收者
         /// </summary>
         bool IsLocalReceiver { get; }
-
-        /// <summary>
-        /// 运行状态
-        /// </summary>
-        StationStateType State { get; set; }
-
-        /// <summary>
-        ///     初始化
-        /// </summary>
-        void Initialize() { }
-
-        /// <summary>
-        /// 开启
-        /// </summary>
-        Task Open() => Task.CompletedTask;
-
-        /// <summary>
-        /// 关闭
-        /// </summary>
-        Task Close() => Task.CompletedTask;
 
         /// <summary>
         /// 投递消息
@@ -44,5 +26,11 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <returns></returns>
         Task<IMessageResult> Post(IInlineMessage message);
 
+        /// <summary>
+        /// 消息检查
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        IInlineMessage CheckMessage(IMessageItem message) => null;
     }
 }

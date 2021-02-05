@@ -12,35 +12,15 @@ namespace ZeroTeam.MessageMVC.Messages
     public class InlineMessage : MessageItem, IInlineMessage
     {
         /// <summary>
-        /// 服务名称,即Topic
+        /// 消息类型
         /// </summary>
-        [JsonIgnore]
-        public string ServiceName { get => Topic; set => Topic = value; }
-
-        /// <summary>
-        /// 接口名称,即Title
-        /// </summary>
-        [JsonIgnore]
-        public string ApiName { get => Title; set => Title = value; }
-
-        /// <summary>
-        /// 接口参数,即Content
-        /// </summary>
-        [JsonIgnore]
-        public string Argument { get => Content; set => Content = value; }
-
+        string IInlineMessage.MessageType => "InlineMessage";
 
         /// <summary>
         /// 是否外部访问
         /// </summary>
         [JsonIgnore]
         public bool IsOutAccess => false;
-
-        /// <summary>
-        /// 数据状态
-        /// </summary>
-        [JsonIgnore]
-        public MessageDataState DataState { get; set; }
 
         /// <summary>
         /// 字典参数
@@ -51,21 +31,26 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 字典参数
         /// </summary>
         [JsonIgnore]
-        public Dictionary<string, string> Dictionary
+        public Dictionary<string, string> ExtensionDictionary
         {
             get => dictionary;
             set
             {
                 dictionary = value;
-                DataState |= MessageDataState.ArgumentInline;
-                if (Content == null && value == null && argumentData == null)
-                    DataState |= MessageDataState.ArgumentOffline;
+                DataState |= MessageDataState.ExtensionInline;
+                if (Extension == null && value == null)
+                    DataState |= MessageDataState.ExtensionOffline;
                 else
-                    DataState &= ~MessageDataState.ArgumentOffline;
+                    DataState &= ~MessageDataState.ExtensionOffline;
             }
         }
 
         private object argumentData;
+
+        /// <summary>
+        /// 二进制字典参数
+        /// </summary>
+        public Dictionary<string, byte[]> BinaryDictionary { get; set; }
 
         /// <summary>
         /// 实体参数
@@ -78,7 +63,7 @@ namespace ZeroTeam.MessageMVC.Messages
             {
                 argumentData = value;
                 DataState |= MessageDataState.ArgumentInline;
-                if (Content == null && value == null && dictionary == null)
+                if (base.Argument == null && value == null)
                     DataState |= MessageDataState.ArgumentOffline;
                 else
                     DataState &= ~MessageDataState.ArgumentOffline;
@@ -146,6 +131,7 @@ namespace ZeroTeam.MessageMVC.Messages
                 ((IInlineMessage)this).RestoryContent(serialize, type);
             return ArgumentData;
         }
+
     }
 }
 

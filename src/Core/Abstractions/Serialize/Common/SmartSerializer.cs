@@ -1,4 +1,5 @@
 ﻿using Agebull.Common.Ioc;
+using Agebull.Common.Logging;
 using System;
 using System.Text.Json;
 
@@ -9,6 +10,8 @@ namespace ZeroTeam.MessageMVC.Messages
     /// </summary>
     public static class SmartSerializer
     {
+        #region 支持对象
+
         /// <summary>
         /// 内置序列化器
         /// </summary>
@@ -18,125 +21,11 @@ namespace ZeroTeam.MessageMVC.Messages
         static readonly IJsonSerializeProxy Json = DependencyHelper.GetService<IJsonSerializeProxy>();
         static readonly IXmlSerializeProxy Xml = DependencyHelper.GetService<IXmlSerializeProxy>();
         static readonly Type MessageType = DependencyHelper.GetService<IInlineMessage>().GetType();
+        static readonly Type ResultType = DependencyHelper.GetService<IMessageResult>().GetType();
 
-        /// <summary>
-        /// 自动序列化()
-        /// </summary>
-        /// <param name="message">消息</param>
-        /// <returns>字符</returns>
-        /// <remarks>
-        /// 基于内部全部使用JSON传输的规则,如序列化器不存在,则为JSON
-        /// </remarks>
-        public static string SerializeMessage(IMessageItem message)
-        {
-            if (message == null)
-                return null;
-            return JsonSerializer.Serialize(new MessageItem
-            {
-                ID = message.ID,
-                State = message.State,
-                Topic = message.Topic,
-                Title = message.Title,
-                Content = message.Content,
-                Result = message.Result,
-                Trace = message.Trace
-            });
-        }
+        #endregion
+        #region 普通
 
-        /// <summary>
-        /// 自动序列化()
-        /// </summary>
-        /// <param name="result">消息</param>
-        /// <returns>字符</returns>
-        /// <remarks>
-        /// 基于内部全部使用JSON传输的规则,如序列化器不存在,则为JSON
-        /// </remarks>
-        public static string SerializeResult(IMessageResult result)
-        {
-            if (result == null)
-                return null;
-            return JsonSerializer.Serialize(new MessageResult
-            {
-                ID = result.ID,
-                State = result.State,
-                Trace = result.Trace,
-                Result = result.Result,
-                DataState = result.Result != null ? MessageDataState.ResultOffline : MessageDataState.None
-            });
-        }
-
-        /// <summary>
-        /// 自动序列化为MessageResult
-        /// </summary>
-        /// <param name="message">消息</param>
-        /// <returns>字符</returns>
-        /// <remarks>
-        /// 基于内部全部使用JSON传输的规则,如序列化器不存在,则为JSON
-        /// </remarks>
-        public static string SerializeResult(IInlineMessage message)
-        {
-            return JsonSerializer.Serialize(message.ToMessageResult(true));
-        }
-
-        /// <summary>
-        /// 自动根据字符特点反序列化
-        /// </summary>
-        /// <param name="str">文本</param>
-        /// <param name="trim">执行Trim,以消除空白字符</param>
-        /// <returns>对象</returns>
-        /// <remarks>
-        /// xml以&lt;为第一个字符
-        /// json以[或{为第一个字符
-        /// </remarks>
-        public static IInlineMessage ToMessage(string str, bool trim = true)
-        {
-            if (string.IsNullOrWhiteSpace(str))
-            {
-                return null;
-            }
-            if (trim)
-                str = str.Trim();
-            IInlineMessage message;
-            switch (str[0])
-            {
-                case '{':
-                case '[':
-                    message = MsJson.ToObject(str, MessageType) as IInlineMessage;
-                    break;
-                case '<':
-                    message = Xml.ToObject(str, MessageType) as IInlineMessage;
-                    break;
-                default:
-                    return null;
-            }
-            message.DataState = MessageDataState.ArgumentOffline;
-            return message;
-        }
-
-        /// <summary>
-        /// 自动根据字符特点反序列化
-        /// </summary>
-        /// <param name="str">文本</param>
-        /// <param name="message">返回的消息</param>
-        /// <param name="trim">执行Trim,以消除空白字符</param>
-        /// <returns>是否成功</returns>
-        /// <remarks>
-        /// xml以&lt;为第一个字符
-        /// json以[或{为第一个字符
-        /// </remarks>
-        public static bool TryToMessage(string str, out IInlineMessage message, bool trim = true)
-        {
-            try
-            {
-                message = ToMessage(str, trim);
-                return message != null;
-            }
-            catch
-            {
-                message = null;
-                return false;
-            }
-        }
         /// <summary>
         /// 使用MsJson序列化
         /// </summary>
@@ -366,11 +255,248 @@ namespace ZeroTeam.MessageMVC.Messages
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine(ex);
+                ScopeRuner.ScopeLogger.Exception(ex);
                 dest = default;
                 return false;
             }
         }
+        #endregion
+
+        #region MessageItem
+
+        /// <summary>
+        /// 自动序列化()
+        /// </summary>
+        /// <param name="message">消息</param>
+        /// <returns>字符</returns>
+        /// <remarks>
+        /// 基于内部全部使用JSON传输的规则,如序列化器不存在,则为JSON
+        /// </remarks>
+        public static string SerializeRequest(IMessageItem message)
+        {
+            if (message == null)
+                return null;
+            return JsonSerializer.Serialize(new MessageItem
+            {
+                ID = message.ID,
+                Service = message.Service,
+                Method = message.Method,
+                Argument = message.Argument,
+                Result = message.Result,
+                Extension = message.Extension,
+                TraceInfo = message.TraceInfo,
+                Context = message.Context
+            });
+        }
+
+        /// <summary>
+        /// 自动序列化()
+        /// </summary>
+        /// <param name="message">消息</param>
+        /// <returns>字符</returns>
+        /// <remarks>
+        /// 基于内部全部使用JSON传输的规则,如序列化器不存在,则为JSON
+        /// </remarks>
+        public static string SerializeMessage(IMessageItem message)
+        {
+            if (message == null)
+                return null;
+            return JsonSerializer.Serialize(new MessageItem
+            {
+                ID = message.ID,
+                State = message.State,
+                Service = message.Service,
+                Method = message.Method,
+                Argument = message.Argument,
+                Extension = message.Extension,
+                Result = message.Result,
+                TraceInfo = message.TraceInfo,
+                Context = message.Context
+            });
+        }
+
+        /// <summary>
+        /// 自动序列化()
+        /// </summary>
+        /// <param name="result">消息</param>
+        /// <returns>字符</returns>
+        /// <remarks>
+        /// 基于内部全部使用JSON传输的规则,如序列化器不存在,则为JSON
+        /// </remarks>
+        public static string SerializeResult(IMessageResult result)
+        {
+            if (result == null)
+                return null;
+            return JsonSerializer.Serialize(new MessageResult
+            {
+                ID = result.ID,
+                State = result.State,
+                Trace = result.Trace,
+                Result = result.Result,
+                DataState = result.Result != null ? MessageDataState.ResultOffline : MessageDataState.None
+            });
+        }
+
+        /// <summary>
+        /// 自动序列化为MessageResult
+        /// </summary>
+        /// <param name="message">消息</param>
+        /// <returns>字符</returns>
+        /// <remarks>
+        /// 基于内部全部使用JSON传输的规则,如序列化器不存在,则为JSON
+        /// </remarks>
+        public static string SerializeResult(IInlineMessage message)
+        {
+            return JsonSerializer.Serialize(message.ToMessageResult(true));
+        }
+
+        /// <summary>
+        /// 自动根据字符特点反序列化
+        /// </summary>
+        /// <param name="str">文本</param>
+        /// <param name="message">返回的消息</param>
+        /// <param name="trim">执行Trim,以消除空白字符</param>
+        /// <returns>是否成功</returns>
+        /// <remarks>
+        /// xml以&lt;为第一个字符
+        /// json以[或{为第一个字符
+        /// </remarks>
+        public static bool TryToMessage(string str, out IInlineMessage message, bool trim = true)
+        {
+            try
+            {
+                message = ToMessage(str, trim);
+                return message != null;
+            }
+            catch
+            {
+                message = null;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 自动根据字符特点反序列化
+        /// </summary>
+        /// <param name="str">文本</param>
+        /// <param name="result">返回的消息</param>
+        /// <param name="trim">执行Trim,以消除空白字符</param>
+        /// <returns>是否成功</returns>
+        /// <remarks>
+        /// xml以&lt;为第一个字符
+        /// json以[或{为第一个字符
+        /// </remarks>
+        public static bool TryToResult(string str, out IMessageResult result, bool trim = true)
+        {
+            try
+            {
+                result = ToResult(str, trim);
+                return result != null;
+            }
+            catch
+            {
+                result = null;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 自动根据字符特点反序列化
+        /// </summary>
+        /// <param name="str">文本</param>
+        /// <param name="trim">执行Trim,以消除空白字符</param>
+        /// <returns>对象</returns>
+        /// <remarks>
+        /// xml以&lt;为第一个字符
+        /// json以[或{为第一个字符
+        /// </remarks>
+        public static IMessageResult ToResult(string str, bool trim = true)
+        {
+            if (string.IsNullOrWhiteSpace(str))
+            {
+                return null;
+            }
+            if (trim)
+                str = str.Trim();
+            IMessageResult message;
+            switch (str[0])
+            {
+                case '{':
+                case '[':
+                    message = MsJson.ToObject(str, ResultType) as IMessageResult;
+                    break;
+                case '<':
+                    message = Xml.ToObject(str, ResultType) as IMessageResult;
+                    break;
+                default:
+                    return null;
+            }
+            message.DataState = MessageDataState.ArgumentOffline | MessageDataState.ExtensionOffline;
+            return message;
+        }
+        /// <summary>
+        /// 自动根据字符特点反序列化
+        /// </summary>
+        /// <param name="str">文本</param>
+        /// <param name="trim">执行Trim,以消除空白字符</param>
+        /// <returns>对象</returns>
+        /// <remarks>
+        /// xml以&lt;为第一个字符
+        /// json以[或{为第一个字符
+        /// </remarks>
+        public static IInlineMessage ToMessage(string str, bool trim = true)
+        {
+            if (string.IsNullOrWhiteSpace(str))
+            {
+                return null;
+            }
+            if (trim)
+                str = str.Trim();
+            IInlineMessage message;
+            switch (str[0])
+            {
+                case '{':
+                case '[':
+                    message = MsJson.ToObject(str, MessageType) as IInlineMessage;
+                    break;
+                case '<':
+                    message = Xml.ToObject(str, MessageType) as IInlineMessage;
+                    break;
+                default:
+                    return null;
+            }
+            message.DataState = MessageDataState.ArgumentOffline | MessageDataState.ExtensionOffline;
+            return message;
+        }
+
+        /// <summary>
+        /// 序列化妻字节
+        /// </summary>
+        /// <param name="obj">对象</param>
+        /// <returns>Utf8字节</returns>
+        public static byte[] ToBytes<T>(T obj) where T : class
+        {
+            if (obj == null)
+            {
+                return default;
+            }
+            return MsJson.ToBytes<T>(obj);
+        }
+
+        /// <summary>
+        /// 反序列化字节
+        /// </summary>
+        /// <param name="bytes">Utf8字节</param>
+        /// <returns>对象</returns>
+        public static T ToObject<T>(byte[] bytes)
+        {
+            if (bytes == null || bytes.Length == 0)
+            {
+                return default;
+            }
+            return MsJson.ToObject<T>(bytes);
+        }
+        #endregion
     }
 
 }

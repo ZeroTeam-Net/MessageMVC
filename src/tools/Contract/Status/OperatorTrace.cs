@@ -20,9 +20,9 @@ namespace ZeroTeam.MessageMVC.ApiContract
             if (ContractOption.Instance.EnableResultTrace)
             {
                 Point = ContractOption.Instance.TraceMachine
-                    ? $"{GlobalContext.CurrentNoLazy?.Trace?.LocalApp}|{GlobalContext.CurrentNoLazy?.Trace?.LocalMachine}"
-                    : GlobalContext.CurrentNoLazy?.Trace?.LocalApp;
-                RequestId = GlobalContext.CurrentNoLazy?.Trace?.TraceId;
+                    ? $"{GlobalContext.CurrentNoLazy?.TraceInfo?.LocalApp}|{GlobalContext.CurrentNoLazy?.TraceInfo?.LocalMachine}"
+                    : GlobalContext.CurrentNoLazy?.TraceInfo?.LocalApp;
+                RequestId = GlobalContext.CurrentNoLazy?.TraceInfo?.TraceId;
             }
         }
 

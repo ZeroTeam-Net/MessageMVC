@@ -1,17 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
+    <Compile Remove="Http\HttpReceiver.cs" />
     <Compile Remove="Http\HttpRoute.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="MicroZero.Http.GatewayBase.deps.json" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.14.0" />
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.14.0" />
-    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Core" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.6" />
-    <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="3.1.6" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Parallel\" />
@@ -31,7 +28,11 @@
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/ZeroTeam-Net/MessageMVC</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ZeroTeam-Net/MessageMVC.git</RepositoryUrl>
-    <Version>1.0.1.17</Version>
+    <Version>1.1.4.38</Version>
+    <Authors>Agebull</Authors>
+    <Company>ZeroTeam</Company>
+    <Product>MessageMVC</Product>
+    <PackageTags>MessageMVC</PackageTags>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>ZeroTeam.MessageMVC.Http.xml</DocumentationFile>

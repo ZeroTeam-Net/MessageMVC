@@ -5,8 +5,8 @@
 
 #region
 
-using System.Xml ;
-using System.Xml.Linq ;
+using System.Xml;
+using System.Xml.Linq;
 
 
 #endregion
@@ -27,9 +27,9 @@ namespace Agebull.Common.Xml
         /// <param name="parfriend"> </param>
         /// <param name="path"> 路径 </param>
         /// <returns> 成功或失败 </returns>
-        public static bool MoveXmlTo(XmlReader xr , string parfriend , string[] path)
+        public static bool MoveXmlTo(XmlReader xr, string parfriend, string[] path)
         {
-            return xr.ReadToFollowing(parfriend) && MoveXmlTo(xr , path) ;
+            return xr.ReadToFollowing(parfriend) && MoveXmlTo(xr, path);
         }
 
         /// <summary>
@@ -38,16 +38,16 @@ namespace Agebull.Common.Xml
         /// <param name="xr"> 读取器 </param>
         /// <param name="path"> 路径 </param>
         /// <returns> 成功或失败 </returns>
-        public static bool MoveXmlTo(XmlReader xr , string[] path)
+        public static bool MoveXmlTo(XmlReader xr, string[] path)
         {
-            foreach(var t in path)
+            foreach (var t in path)
             {
-                if(!xr.ReadToFollowing(t))
+                if (!xr.ReadToFollowing(t))
                 {
-                    return false ;
+                    return false;
                 }
             }
-            return true ;
+            return true;
         }
 
         /// <summary>
@@ -59,12 +59,12 @@ namespace Agebull.Common.Xml
         {
             try
             {
-                xr.Read() ;
-                return xr.ReadContentAsString().Trim() ;
+                xr.Read();
+                return xr.ReadContentAsString().Trim();
             }
             catch
             {
-                return null ;
+                return null;
             }
         }
 
@@ -74,23 +74,23 @@ namespace Agebull.Common.Xml
         /// <param name="xr"> 读取器 </param>
         /// <param name="attName"> 属性名 </param>
         /// <returns> 属性值 </returns>
-        public static string ReadXmlAttrib(XmlReader xr , string attName)
+        public static string ReadXmlAttrib(XmlReader xr, string attName)
         {
             try
             {
-                if(!xr.MoveToAttribute(attName))
+                if (!xr.MoveToAttribute(attName))
                 {
-                    return null ;
+                    return null;
                 }
-                if(!xr.ReadAttributeValue())
+                if (!xr.ReadAttributeValue())
                 {
-                    return null ;
+                    return null;
                 }
-                return xr.Value ;
+                return xr.Value;
             }
             catch
             {
-                return null ;
+                return null;
             }
         }
 
@@ -104,15 +104,15 @@ namespace Agebull.Common.Xml
         /// <param name="name"> 属性名($SG$) </param>
         /// <param name="value"> 属性值($SG$) </param>
         /// <returns> 属性值 </returns>
-        public static XmlNode Write(XmlDocument doc , XmlNode par , string name , object value = null)
+        public static XmlNode Write(XmlDocument doc, XmlNode par, string name, object value = null)
         {
-            var sc = doc.CreateNode(XmlNodeType.Element , name , "") ;
-            par.AppendChild(sc) ;
-            if(value != null)
+            var sc = doc.CreateNode(XmlNodeType.Element, name, "");
+            par.AppendChild(sc);
+            if (value != null)
             {
-                sc.InnerText = value.ToString() ;
+                sc.InnerText = value.ToString();
             }
-            return sc ;
+            return sc;
         }
 
         /// <summary>
@@ -121,14 +121,14 @@ namespace Agebull.Common.Xml
         /// <param name="rootName"> </param>
         /// <param name="nodes"> </param>
         /// <returns> </returns>
-        public static string BuildXml(string rootName , params string[] nodes)
+        public static string BuildXml(string rootName, params string[] nodes)
         {
             var doc = new XElement(rootName);
             if (nodes != null && nodes.Length >= 2)
             {
                 for (var i = 1; i < nodes.Length; i += 2)
                 {
-                    doc.SetAttributeValue(nodes[i - 1],nodes[i]);
+                    doc.SetAttributeValue(nodes[i - 1], nodes[i]);
                 }
             }
             return doc.ToString();

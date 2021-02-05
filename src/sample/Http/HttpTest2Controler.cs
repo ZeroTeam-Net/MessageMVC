@@ -1,20 +1,24 @@
-﻿using System.Threading;
+﻿using Agebull.Common.Logging;
+using Microsoft.Extensions.Logging;
+using System.Threading;
+using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Sample.Controllers
 {
     [Service("test2")]
-    public class HttpTest3Controler : IApiController
+    public class HttpTest2Controler : IApiController
     {
         /// <summary>
         /// 测试接口
         /// </summary>
         [Route("hello"), ApiOption(ApiOption.CustomContent)]
-        public IApiResult<string> Hello(string abc)
+        public async Task<IApiResult<string>> Hello()
         {
-            MessagePoster.Call("abc","test","");
-            return ApiResultHelper.Helper.Succees($"hello1:{abc}");
+            var (res, state) = await MessagePoster.CallApiAsync<string>("test2", "test");
+            FlowTracer.MonitorInfomation("hello");
+            return ApiResultHelper.Helper.Succees($"hello1:{res.ResultData}");
         }
         /// <summary>
         /// 测试接口
@@ -45,6 +49,14 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers
             GlobalContext.Current.Task.SetCanceled();
         }
 
+        /// <summary>
+        /// 测试接口
+        /// </summary>
+        [Route("test"), ApiOption(ApiOption.CustomContent)]
+        public IApiResult<string> Exception()
+        {
+            return ApiResultHelper.Succees("测试接口");
+        }
         /// <summary>
         /// 测试接口
         /// </summary>

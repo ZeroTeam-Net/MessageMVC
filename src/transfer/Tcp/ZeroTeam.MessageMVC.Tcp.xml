@@ -1,0 +1,224 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ZeroTeam.MessageMVC.Tcp</name>
+    </assembly>
+    <members>
+        <member name="T:ZeroTeam.MessageMVC.Tcp.TcpApp">
+            <summary>
+            Http应用
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Tcp.TcpApp.ClientOptionService">
+            <summary>
+            用于客户端接收服务器发送的配置服务名
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Tcp.TcpApp.AddMessageMvcTcp(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+                初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Tcp.TcpApp.AddMessageMvcTcpClient(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+                初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Tcp.TcpApp.AddMessageMvcTcpServer(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+                初始化
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Tcp.ClientOption">
+            <summary>
+            接收服务配置
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tcp.ClientOption.Address">
+            <summary>
+            地址
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tcp.ClientOption.Port">
+            <summary>
+            端口号
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tcp.ClientOption.IsLog">
+            <summary>
+            是否日志
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Tcp.ServerOption">
+            <summary>
+            接收服务配置
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tcp.ServerOption.Port">
+            <summary>
+            端口号
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tcp.ServerOption.Concurrency">
+            <summary>
+            同时处理数据最大并发数(1-8192)，默认为32
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tcp.ServerOption.ServiceTypes">
+            <summary>
+            服务类型，默认为RPC
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Tcp.TcpOption">
+            <summary>
+            接收服务配置
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tcp.TcpOption.Server">
+            <summary>
+            服务端
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tcp.TcpOption.Client">
+            <summary>
+            客户端
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Tcp.TcpOption.Instance">
+            <summary>
+            实例
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tcp.TcpOption.ZeroTeam#MessageMVC#IZeroOption#SupperUrl">
+            <summary>
+            支持地址
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tcp.TcpOption.ZeroTeam#MessageMVC#IZeroOption#OptionName">
+            <summary>
+            配置名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tcp.TcpOption.ZeroTeam#MessageMVC#IZeroOption#SectionName">
+            <summary>
+            节点名称
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tcp.TcpOption.ZeroTeam#MessageMVC#IZeroOption#IsDynamic">
+            <summary>
+            是否动态配置
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tcp.TcpOption.ConcurrencySemaphore">
+            <summary>
+            并发数量控制信号量
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Tcp.TcpOption.IsType(System.String,System.String)">
+            <summary>
+            服务是否指定类型
+            </summary>
+            <param name="service"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Tcp.TcpHandler">
+            <summary>
+            Tcp处理器
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Tcp.TcpPoster">
+            <summary>
+                Http进站出站的处理类
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tcp.TcpPoster.LifeFlow">
+            <summary>
+            征集周期管理器
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Tcp.TcpPoster.#ctor">
+            <summary>
+            构造
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Tcp.TcpPoster.Instance">
+            <summary>
+            单例
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Tcp.TcpPoster.ZeroTeam#MessageMVC#IZeroDiscover#Discovery">
+            <summary>
+            检查期间就开启服务
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Tcp.TcpPoster.RecordLog(Microsoft.Extensions.Logging.LogLevel,System.String)">
+            <summary>
+            写日志
+            </summary>
+            <param name="level"></param>
+            <param name="log"></param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Tcp.TcpPoster.RecordLog(Microsoft.Extensions.Logging.LogLevel,System.Func{System.String})">
+            <summary>
+            写日志
+            </summary>
+            <param name="level"></param>
+            <param name="log"></param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Tcp.TcpPoster.DoPost(ZeroTeam.MessageMVC.MessageQueue.QueueItem)">
+            <summary>
+            执行发送
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Tcp.TcpServerFlow">
+            <summary>
+                Http进站出站的处理类
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Tcp.TcpServerFlow.State">
+            <summary>
+            运行状态
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Tcp.TcpServerFlow.Instance">
+            <summary>
+            绝对单例
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Tcp.TcpServerFlow.ZeroTeam#MessageMVC#ILifeFlow#Initialize">
+            <summary>
+            初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Tcp.TcpServerFlow.ZeroTeam#MessageMVC#ILifeFlow#Open">
+            <summary>
+            初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Tcp.TcpServerFlow.ZeroTeam#MessageMVC#ILifeFlow#Destroy">
+            <summary>
+            初始化
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Tcp.TcpWriter">
+            <summary>
+                Http进站出站的处理类
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Tcp.TcpWriter.WriteResult(ZeroTeam.MessageMVC.Messages.IInlineMessage)">
+            <summary>
+            标明调用结束
+            </summary>
+            <returns>是否发送成功</returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Tcp.TcpWriter.ZeroTeam#MessageMVC#Messages#IMessageWriter#OnResult(ZeroTeam.MessageMVC.Messages.IInlineMessage,System.Object)">
+            <summary>
+            标明调用结束
+            </summary>
+            <returns>是否发送成功</returns>
+        </member>
+    </members>
+</doc>

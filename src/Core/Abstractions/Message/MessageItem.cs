@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 using ZeroTeam.MessageMVC.Context;
 
 namespace ZeroTeam.MessageMVC.Messages
@@ -25,20 +26,25 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 分类
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public string Topic { get; set; }
+        public string Service { get; set; }
 
         /// <summary>
         /// 标题
         /// </summary>
-
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public string Title { get; set; }
+        public string Method { get; set; }
 
         /// <summary>
         /// 内容
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public string Content { get; set; }
+        public string Argument { get; set; }
+
+        /// <summary>
+        /// 扩展信息（固定为字典）
+        /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+        public string Extension { get; set; }
 
         /*// <summary>
         /// 其他二进制内容
@@ -46,6 +52,9 @@ namespace ZeroTeam.MessageMVC.Messages
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public Dictionary<string, byte[]> Binary { get; set; }*/
 
+
+        [JsonIgnore]
+        private string result;
 
         /// <summary>
         /// 处理结果,对应状态的解释信息
@@ -60,14 +69,39 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 处理成功 : 结果信息或无
         /// </remarks>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public string Result { get; set; }
+        public string Result
+        {
+            get => result;
+            set
+            {
+                result = value;
+                DataState |= MessageDataState.ResultOffline;
+            }
+        }
+
+        /// <summary>
+        /// 数据状态
+        /// </summary>
+        [JsonIgnore]
+        public MessageDataState DataState { get; set; }
 
 
         /// <summary>
         ///     跟踪信息
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public TraceInfo Trace { get; set; }
+        public TraceInfo TraceInfo { get; set; }
+
+        /// <summary>
+        /// 上下文信息
+        /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public Dictionary<string, string> Context { get; set; }
+
+        /// <summary>
+        /// 用户
+        /// </summary>
+        public Dictionary<string, string> User { get; set; }
 
     }
 }

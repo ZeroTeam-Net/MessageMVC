@@ -7,7 +7,7 @@ namespace ZeroTeam.MessageMVC.Consul
     /// <summary>
     /// Consul对应配置
     /// </summary>
-    internal class ConsulOption
+    internal class ConsulOption:IZeroOption
     {
         /// <summary>
         /// 本地IP
@@ -59,16 +59,45 @@ namespace ZeroTeam.MessageMVC.Consul
             HealthTimeout = 3
         };
 
-        static ConsulOption()
-        {
-            ConfigurationHelper.RegistOnChange<ConsulOption>("Consul", Instance.OnChange, true);
-        }
+        #region IZeroOption
 
-        private void OnChange(ConsulOption option)
+
+        const string sectionName = "Consul";
+
+        const string optionName = "HttpClient配置";
+
+        const string supperUrl = "https://";
+
+        /// <summary>
+        /// 支持地址
+        /// </summary>
+        string IZeroOption.SupperUrl => supperUrl;
+
+        /// <summary>
+        /// 配置名称
+        /// </summary>
+        string IZeroOption.OptionName => optionName;
+
+
+        /// <summary>
+        /// 节点名称
+        /// </summary>
+        string IZeroOption.SectionName => sectionName;
+
+        /// <summary>
+        /// 是否动态配置
+        /// </summary>
+        bool IZeroOption.IsDynamic => false;
+
+
+        void IZeroOption.Load(bool first)
         {
-            IP = option.IP ?? "127.0.0.1";
+            var option = ConfigurationHelper.Get<ConsulOption>(sectionName);
+            if (option == null)
+                return;
+            IP = option.IP ?? ZeroAppOption.Instance.LocalIpAddress;
             Port = option.Port;
-            ConsulIP = option.ConsulIP ?? "127.0.0.1";
+            ConsulIP = option.ConsulIP;
             ConsulPort = option.ConsulPort <= 0 ? 8500 : option.ConsulPort;
             if (option.RegisterAfter > 0)
                 RegisterAfter = option.RegisterAfter;
@@ -76,8 +105,8 @@ namespace ZeroTeam.MessageMVC.Consul
                 HealthInterval = option.HealthInterval;
             if (option.HealthTimeout > 0)
                 HealthTimeout = option.HealthTimeout;
-            serviceCheck = null;
         }
+        #endregion
 
         AgentServiceCheck serviceCheck;
 

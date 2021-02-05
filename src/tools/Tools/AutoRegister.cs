@@ -1,12 +1,11 @@
 ﻿using Agebull.Common.Logging;
-using Agebull.EntityModel.Common;
 using Microsoft.Extensions.DependencyInjection;
-using System;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.ComponentModel.Composition;
-using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.AddIn;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
+using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.Tools
 {
@@ -20,26 +19,18 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <summary>
         /// 注册
         /// </summary>
-        Task<bool> IAutoRegister.AutoRegist(IServiceCollection services)
+        void IAutoRegister.AutoRegist(IServiceCollection services, Microsoft.Extensions.Logging.ILogger logger)
         {
-            ////启用跟踪日志
-            //if (ToolsOption.Instance.EnableMonitorLog)
-            //{
-            //    services.AddTransient<IMessageMiddleware, LoggerMiddleware>();
-            //}
-            //启用数据与日志记录埋点
-            if (ToolsOption.Instance.EnableMarkPoint | FlowTracer.LogMonitor)
-            {
-                services.AddSingleton<IMessageMiddleware, MarkPointMiddleware>();
-            }
-            //启用调用链跟踪(使用IZeroContext全局上下文)
-            services.AddTransient<IMessageMiddleware, GlobalContextMiddleware>();
-            if (ToolsOption.Instance.EnableLinkTrace)
-            {
-                GlobalContext.EnableLinkTrace = true;
-                //FlowTracer.GetUserNameFunc = () => GlobalContext.CurrentNoLazy?.User?.UserId.ToString() ?? "-1";
-                //FlowTracer.GetRequestIdFunc = () => GlobalContext.CurrentNoLazy?.Trace?.TraceId ?? RandomCode.Generate(10);
-            }
+            services.AddSingleton<IZeroOption>(pri => ToolsOption.Instance);
+        }
+        /// <summary>
+        /// 注册
+        /// </summary>
+        void IAutoRegister.LateConfigRegist(IServiceCollection services, Microsoft.Extensions.Logging.ILogger logger)
+        {
+            services.AddSingleton<IApiActionChecker, ApiActionChecker>();
+            //异常处理
+            services.AddTransient<IMessageMiddleware, ExceptionMiddleware>();
             //消息存储与异常消息重新消费
             if (ToolsOption.Instance.EnableMessageReConsumer)
             {
@@ -47,24 +38,32 @@ namespace ZeroTeam.MessageMVC.Tools
                 services.AddTransient<IFlowMiddleware, ReConsumerMiddleware>();
             }
             //第三方回执
-            services.AddTransient<IMessageMiddleware, ReceiptMiddleware>();
+            if (ToolsOption.Instance.EnableReceipt)
+                services.AddTransient<IMessageMiddleware, ReceiptMiddleware>();
             //通过反向代理组件处理计划任务消息发送
-            services.AddSingleton<IMessageMiddleware, ReverseProxyMiddleware>();
+            if (ToolsOption.Instance.EnableReverseProxy)
+                services.AddSingleton<IMessageMiddleware, ReverseProxyMiddleware>();
+            //JWT解析
+            if (ToolsOption.Instance.EnableJwtToken)
+            {
+                services.TryAddTransient<ITokenResolver, JwtTokenResolver>();
+                services.AddTransient<IMessageMiddleware, JwtTokenMiddleware>();
+            }
 
             //健康检查
-            services.AddTransient<IMessageMiddleware, HealthCheckMiddleware>();
-            //异常处理
-            services.AddTransient<IMessageMiddleware, ExceptionMiddleware>();
+            if (ToolsOption.Instance.EnableHealthCheck)
+                services.AddTransient<IMessageMiddleware, HealthCheckMiddleware>();
 
             //显示
-            Console.WriteLine($@"-----[Tools infomation]-----
-    LinkTrace : {(ToolsOption.Instance.EnableLinkTrace ? "Enable" : "Disable")}
-   MonitorLog : {(ToolsOption.Instance.EnableMonitorLog ? "Enable" : "Disable")}
- ReceiptSvice : {ToolsOption.Instance.ReceiptService}
-   ReConsumer : {(ToolsOption.Instance.EnableMessageReConsumer ? "Enable" : "Disable")}
-    MarkPoint : {(ToolsOption.Instance.EnableMarkPoint ? "Enable" : "Disable")}({ToolsOption.Instance.MarkPointName})
+            logger.Information($@"
+     健康检查 : 启用
+     异常处理 : 启用
+GlobalContext : 启用
+  JWT令牌解析 : {(ToolsOption.Instance.EnableJwtToken ? "启用" : "关闭")}
+     反向代理 : {(ToolsOption.Instance.EnableReverseProxy ? "启用" : "关闭")}
+ 消费失败重放 : {(ToolsOption.Instance.EnableMessageReConsumer ? "启用" : "关闭")}
+     调用回执 : {(ToolsOption.Instance.EnableReceipt ? $"启用({ToolsOption.Instance.ReceiptService}/{ToolsOption.Instance.ReceiptApi})" : "关闭")}
 ");
-            return Task.FromResult(false);
         }
 
     }

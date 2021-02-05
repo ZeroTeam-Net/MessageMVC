@@ -29,7 +29,7 @@ namespace ZeroTeam.MessageMVC
         /// 关闭
         /// </summary>
         /// <returns></returns>
-        Task IMessageReceiver.Close()
+        Task ILifeFlow.Closing()
         {
             task.SetResult(true);
             return Task.CompletedTask;

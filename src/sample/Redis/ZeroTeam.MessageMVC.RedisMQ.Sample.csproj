@@ -5,6 +5,10 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;monitor</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="AliyunSms\**" />
     <Compile Remove="Controler\**" />
@@ -23,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    
     <ProjectReference Include="..\..\Core\Core\ZeroTeam.MessageMVC.Core.csproj" />
     <ProjectReference Include="..\..\tools\Contract\ZeroTeam.MessageMVC.ApiContract.csproj" />
     <ProjectReference Include="..\..\transfer\Redis\RedisMQ\ZeroTeam.MessageMVC.RedisMQ.csproj" />

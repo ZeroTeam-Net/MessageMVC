@@ -20,134 +20,14 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     public class ApiDiscover
     {
         #region 过程参数
-        static readonly ILogger logger;
 
-        /// <summary>
-        /// 主调用程序集
-        /// </summary>
-        public Assembly Assembly { get; set; }
-
-        /// <summary>
-        /// 站点文档信息
-        /// </summary>
-        public Dictionary<string, ServiceInfo> ServiceInfos = new Dictionary<string, ServiceInfo>();
-
+        ILogger logger;
         /// <summary>
         /// 构造
         /// </summary>
-        static ApiDiscover()
+        public ApiDiscover()
         {
-            logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(ApiDiscover));
-            XmlMember.Load(typeof(IMessageItem).Assembly);
-            XmlMember.Load(typeof(ApiExecuter).Assembly);
-        }
-
-        #endregion
-
-        #region 程序集发现
-
-        private static readonly List<string> knowAssemblies = new List<string>();
-
-        /// <summary>
-        ///     发现
-        /// </summary>
-        public static void FindAppDomain()
-        {
-            FindApies(AppDomain.CurrentDomain.GetAssemblies());
-
-            var path = Path.GetDirectoryName(typeof(ApiDiscover).Assembly.Location);
-            var files = Directory.GetFiles(path, "*.dll", SearchOption.TopDirectoryOnly);
-            foreach (var file in files)
-            {
-                var name = Path.GetFileName(file);
-                if (knowAssemblies.Contains(name))
-                    continue;
-                knowAssemblies.Add(file);
-                var first = name.Split('.', 2)[0];
-                switch (first)
-                {
-                    case "System":
-                    case "Microsoft":
-                    case "NuGet":
-                    case "Newtonsoft":
-                        break;
-                    default:
-                        FindApies(Assembly.LoadFile(file));
-                        break;
-                }
-            }
-        }
-
-        /// <summary>
-        ///     发现
-        /// </summary>
-        public static void FindApies(IEnumerable<Assembly> assemblies)
-        {
-            foreach (var assembly in assemblies)
-            {
-                FindApies(assembly);
-            }
-        }
-
-        /// <summary>
-        /// 查找API
-        /// </summary>
-        public static void FindApies(Assembly asm)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(asm.Location))
-                    return;
-                var file = Path.GetFileName(asm.Location);
-                if (knowAssemblies.Contains(file))
-                {
-                    return;
-                }
-                knowAssemblies.Add(file);
-                if (asm.FullName == null ||
-                    asm.FullName.Contains("netstandard") ||
-                    asm.FullName.Contains("System.") ||
-                    asm.FullName.Contains("Microsoft.") ||
-                    asm.FullName.Contains("Newtonsoft.") ||
-                    asm.FullName.Contains("Agebull.Common.") ||
-                    asm.FullName.Contains("ZeroTeam.MessageMVC.Abstractions") ||
-                    asm.FullName.Contains("ZeroTeam.MessageMVC.Core"))
-                {
-                    return;
-                }
-            }
-            catch
-            {
-                return;
-            }
-            try
-            {
-                var discover = new ApiDiscover
-                {
-                    Assembly = asm
-                };
-                XmlMember.Load(asm);
-                discover.FindApies();
-            }
-            catch (Exception e2)
-            {
-                logger.Debug(e2.ToString());
-            }
-        }
-
-        /// <summary>
-        /// 查找API
-        /// </summary>
-        void FindApies()
-        {
-            var types = Assembly.GetTypes().Where(p => p.IsSupperInterface(typeof(IApiController))).ToArray();
-            if (types.Length == 0)
-                return;
-            foreach (var type in types)
-            {
-                FindApi(type);
-            }
-            RegistToZero();
+            logger = DependencyHelper.LoggerFactory.CreateLogger<ApiDiscover>();
         }
 
         /// <summary>
@@ -155,6 +35,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         public void Discover(Assembly assembly)
         {
+            logger = DependencyHelper.LoggerFactory.CreateLogger<ApiDiscover>();
             XmlMember.Load(assembly);
             Assembly = assembly;
             var types = Assembly.GetTypes().Where(p => p.IsSupperInterface(typeof(IApiController))).ToArray();
@@ -169,11 +50,152 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         public void Discover(Type type)
         {
+            logger = DependencyHelper.LoggerFactory.CreateLogger<ApiDiscover>();
             Assembly = type.Assembly;
             XmlMember.Load(Assembly);
             if (type.IsSupperInterface(typeof(IApiController)))
             {
                 FindApi(type);
+            }
+        }
+
+        /// <summary>
+        /// 主调用程序集
+        /// </summary>
+        public Assembly Assembly { get; set; }
+
+        /// <summary>
+        /// 站点文档信息
+        /// </summary>
+        public readonly Dictionary<string, ServiceInfo> ServiceInfos = new Dictionary<string, ServiceInfo>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// 构造
+        /// </summary>
+        static ApiDiscover()
+        {
+            XmlMember.Load(typeof(IMessageItem).Assembly);
+            XmlMember.Load(typeof(ApiExecuter).Assembly);
+        }
+
+        #endregion
+
+        #region 程序集排除
+
+        private static readonly HashSet<string> knowAssemblies = new HashSet<string>();
+
+        static bool CheckAssembly(string file)
+        {
+            try
+            {
+                if (file.IsBlank())
+                {
+                    return false;
+                }
+                if (knowAssemblies.Contains(file))
+                {
+                    return false;
+                }
+                knowAssemblies.Add(file);
+
+                var name = Path.GetFileName(file);
+                if (knowAssemblies.Contains(name))
+                {
+                    return false;
+                }
+                knowAssemblies.Add(name);
+
+                switch (name.Split('.', 2)[0])
+                {
+                    case "System":
+                    case "Microsoft":
+                    case "NuGet":
+                    case "Newtonsoft":
+                        return false;
+                }
+
+                if (name.IsFirst("netstandard") ||
+                    name.IsFirst("BeetleX") ||
+                    name.IsFirst("Agebull.Common.") ||
+                    name.IsMe("CSRedis") ||
+                    name.IsMe("RabbitMQ.Client") ||
+                    name.IsMe("Confluent.Kafka") ||
+                    name.IsMe("ZeroTeam.MessageMVC.Core") ||
+                    name.IsMe("ZeroTeam.MessageMVC.Abstractions") ||
+                    name.IsMe("ZeroTeam.MessageMVC.Tools") ||
+                    name.IsMe("ZeroTeam.MessageMVC.Consul") ||
+                    name.IsMe("ZeroTeam.MessageMVC.ApiContract") ||
+                    name.IsMe("ZeroTeam.MessageMVC.Kafka") ||
+                    name.IsMe("ZeroTeam.MessageMVC.Tcp") ||
+                    name.IsMe("ZeroTeam.MessageMVC.Http") ||
+                    name.IsMe("ZeroTeam.MessageMVC.RabbitMQ") ||
+                    name.IsMe("ZeroTeam.MessageMVC.RedisMQ") ||
+                    name.IsMe("ZeroTeam.MessageMVC.PageInfoAutoSave")
+                    )
+                {
+                    return false;
+                }
+            }
+            catch(Exception ex)
+            {
+                
+                return false;
+            }
+            return true;
+        }
+        #endregion
+
+        #region 程序集发现
+
+        /// <summary>
+        ///     发现
+        /// </summary>
+        public static void FindAppDomain()
+        {
+            FindApies(AppDomain.CurrentDomain.GetAssemblies());
+
+            var path = Path.GetDirectoryName(typeof(ApiDiscover).Assembly.Location);
+            var files = Directory.GetFiles(path, "*.dll", SearchOption.TopDirectoryOnly);
+            foreach (var file in files)
+            {
+                if (!CheckAssembly(file))
+                    continue;
+                FindApies(Assembly.LoadFile(file));
+            }
+        }
+
+        /// <summary>
+        ///     发现
+        /// </summary>
+        public static void FindApies(IEnumerable<Assembly> assemblies)
+        {
+            foreach (var assembly in assemblies)
+            {
+                if (assembly.IsDynamic)
+                    continue;
+                if (!CheckAssembly( assembly.Location))
+                    continue;
+                FindApies(assembly);
+            }
+        }
+
+        /// <summary>
+        /// 查找API
+        /// </summary>
+        public static void FindApies(Assembly asm)
+        {
+            var discover = new ApiDiscover
+            {
+                Assembly = asm
+            };
+            try
+            {
+                XmlMember.Load(asm);
+                discover.FindApies();
+            }
+            catch (Exception e2)
+            {
+                discover.logger.Debug(e2.ToString());
             }
         }
 
@@ -189,24 +211,41 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 {
                     continue;
                 }
+                logger.Debug(() => $"【注册API】 {serviceInfo.Name}");
 
                 var service = ZeroFlowControl.TryGetZeroObject(serviceInfo.Name);
                 if (service == null)
                 {
-                    service = new ZeroService
-                    {
-                        IsAutoService = true,
-                        ServiceName = serviceInfo.Name,
-                        Receiver = serviceInfo.NetBuilder(serviceInfo.Name),
-                        Serialize = serviceInfo.Serialize switch
+                    var receiver = serviceInfo.NetBuilder(serviceInfo.Name);
+                    if (receiver == null || receiver is EmptyService)
+                        service = new EmptyService
                         {
-                            SerializeType.Json => DependencyHelper.GetService<IJsonSerializeProxy>(),
-                            SerializeType.NewtonJson => new NewtonJsonSerializeProxy(),
-                            SerializeType.Xml => DependencyHelper.GetService<IXmlSerializeProxy>(),
-                            SerializeType.Bson => DependencyHelper.GetService<IBsonSerializeProxy>(),
-                            _ => DependencyHelper.GetService<IJsonSerializeProxy>(),
-                        }
-                    };
+                            IsAutoService = true,
+                            ServiceName = serviceInfo.Name,
+                            Serialize = serviceInfo.Serialize switch
+                            {
+                                SerializeType.Json => DependencyHelper.GetService<IJsonSerializeProxy>(),
+                                SerializeType.NewtonJson => new NewtonJsonSerializeProxy(),
+                                SerializeType.Xml => DependencyHelper.GetService<IXmlSerializeProxy>(),
+                                SerializeType.Bson => DependencyHelper.GetService<IBsonSerializeProxy>(),
+                                _ => DependencyHelper.GetService<IJsonSerializeProxy>(),
+                            }
+                        };
+                    else
+                        service = new ZeroService
+                        {
+                            IsAutoService = true,
+                            ServiceName = serviceInfo.Name,
+                            Receiver = receiver,
+                            Serialize = serviceInfo.Serialize switch
+                            {
+                                SerializeType.Json => DependencyHelper.GetService<IJsonSerializeProxy>(),
+                                SerializeType.NewtonJson => new NewtonJsonSerializeProxy(),
+                                SerializeType.Xml => DependencyHelper.GetService<IXmlSerializeProxy>(),
+                                SerializeType.Bson => DependencyHelper.GetService<IBsonSerializeProxy>(),
+                                _ => DependencyHelper.GetService<IJsonSerializeProxy>(),
+                            }
+                        };
 
                     ZeroFlowControl.RegistService(ref service);
                 }
@@ -216,9 +255,18 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     {
                         var info = (ApiActionInfo)api.Value;
                         if (api.Key == "*")
+                        {
+                            logger.Debug(() => $"[注册接口] {serviceInfo.Name}/* => {info.Caption} {info.ControllerName}.{info.Name}");
                             service.RegistWildcardAction(info);
+                        }
+                        else if (!service.RegistAction(api.Key, info))
+                        {
+                            logger.Error($"[注册接口]失败，因为路由名称已存在 {serviceInfo.Name}/{api.Key} => {info.Caption} {info.ControllerName}.{info.Name}");
+                        }
                         else
-                            service.RegistAction(api.Key, info);
+                        {
+                            logger.Debug(() => $"[注册接口] {serviceInfo.Name}/{api.Key} => {info.Caption} {info.ControllerName}.{info.Name}");
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -235,6 +283,22 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// 查找API
         /// </summary>
+        void FindApies()
+        {
+            var types = Assembly.GetTypes().Where(p => p.IsSupperInterface(typeof(IApiController))).ToArray();
+            if (types.Length == 0)
+                return;
+            logger.Information("【解析程序集】{asm}", Assembly.FullName);
+            foreach (var type in types)
+            {
+                FindApi(type);
+            }
+            RegistToZero();
+        }
+
+        /// <summary>
+        /// 查找API
+        /// </summary>
         /// <param name="type"></param>
         private void FindApi(Type type)
         {
@@ -243,8 +307,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 return;
             }
+            logger.Debug("【解析类型】 {asm}", type.FullName);
 
-            logger.Debug(type.GetFullTypeName);
             #region 服务类型检测
 
             var serializeType = GetCustomAttribute<SerializeTypeAttribute>(type)?.Type ?? SerializeType.Json;
@@ -379,6 +443,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     argument.Name = argument.ParameterInfo.Name;
                     argument.IsEnum = argument.ParameterInfo.ParameterType.IsEnum;
                     argument.IsArray = argument.ParameterInfo.ParameterType.IsArray;
+                    argument.TypeName = argument.ParameterInfo.ParameterType.Name;
                     if (!argument.IsBaseType || argument.IsEnum)
                     {
                         var info = XmlDocumentDiscover.ReadEntity(argument.ParameterInfo.ParameterType, argument.ParameterInfo.Name);
@@ -401,8 +466,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     }
                 }
             }
+
             serviceInfo.Aips.Add(api.Route, api);
-            logger.Debug(() => $"=>{api.Caption}({api.Name}) : {api.Route}");
+            logger.Debug(() => $"【找到接口方法】{api.Route}=>{api.Name} {api.Caption}");
         }
 
 

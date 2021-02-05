@@ -1,7 +1,5 @@
-﻿using Agebull.Common.Ioc;
-using Agebull.Common.Logging;
+﻿using Agebull.Common.Logging;
 using CSRedis;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,8 +25,6 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// </summary>
         string IMessageReceiver.PosterName => nameof(CSRedisEventReceiver);
 
-        ILogger logger;
-
         /// <summary>
         /// 本地代理
         /// </summary>
@@ -38,13 +34,6 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// 订阅对象
         /// </summary>
         private SubscribeObject subscribeObject;
-        /// <summary>
-        /// 初始化
-        /// </summary>
-        void IMessagePoster.Initialize()
-        {
-            logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(CSRedisEventReceiver));
-        }
 
         private TaskCompletionSource<bool> loopTask;
         private CancellationToken token;
@@ -61,7 +50,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
                 }
                 catch (Exception ex)
                 {
-                    logger.Error(() => $"启动订阅失败.{ex.Message}");
+                    Logger.Error(() => $"CSRedisEventReceiver Loop.\r\n{ex}");
                     await Task.Delay(3000);
                 }
             }
@@ -74,16 +63,15 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// 关闭
         /// </summary>
         /// <returns></returns>
-        Task IMessageReceiver.Close()
+        Task ILifeFlow.Closing()
         {
             try
             {
-                subscribeObject?.Dispose();
                 loopTask?.SetResult(true);
             }
             catch (Exception ex)
             {
-                logger.Error(() => $"LoopBegin error.{ex.Message}");
+                Logger.Exception(ex);
             }
             return Task.CompletedTask;
         }
@@ -92,10 +80,17 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// 同步关闭状态
         /// </summary>
         /// <returns></returns>
-        Task IMessageReceiver.LoopComplete()
+        Task ILifeFlow.Close()
         {
-            subscribeObject?.Dispose();
-            client?.Dispose();
+            try
+            {
+                subscribeObject?.Dispose();
+                client?.Dispose();
+            }
+            catch (Exception ex)
+            {
+                Logger.Exception(ex);
+            }
             return Task.CompletedTask;
         }
         #region 消息处理
@@ -109,13 +104,13 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             {
                 if (SmartSerializer.TryToMessage(args.Body, out var message))
                 {
-                    message.Topic = Service.ServiceName;
+                    message.Service = Service.ServiceName;
                     MessageProcessor.OnMessagePush(Service, message, true, null).Wait();
                 }
             }
             catch (Exception ex)
             {
-                logger.Exception(ex);
+                Logger.Exception(ex);
             }
         }
 

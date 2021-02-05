@@ -137,6 +137,10 @@ namespace ZeroTeam.MessageMVC.ApiContract
         /// <remarks>Api执行超时</remarks>
         IApiResult IApiResultHelper.ExecTimeOut => Generate(OperatorStatusCode.TimeOut, "执行超时");
 
+        /// <summary>执行超时</summary>
+        /// <remarks>Api执行超时</remarks>
+        IApiResult IApiResultHelper.TokenTimeOut => Generate(OperatorStatusCode.TokenTimeOut, "登录过期");
+
         /// <summary>服务不可用</summary>
         IApiResult IApiResultHelper.Unavailable => Generate(OperatorStatusCode.Unavailable, "服务不可用");
 

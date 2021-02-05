@@ -1,11 +1,14 @@
 ﻿using Agebull.Common.Configuration;
+using Agebull.Common.Logging;
+using System;
+using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC.RedisMQ
 {
     /// <summary>
     /// Redis的配置项
     /// </summary>
-    internal class RedisOption
+    internal class RedisOption: IZeroOption
     {
         /// <summary>
         /// 连接字符串
@@ -39,37 +42,72 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         public bool NoSupperIsError { get; set; }
 
         /// <summary>
+        /// 是否异步发送
+        /// </summary>
+        public bool AsyncPost { get; set; }
+
+        #region IZeroOption
+
+        /// <summary>
         /// 实例
         /// </summary>
         public static readonly RedisOption Instance = new RedisOption();
 
+        const string sectionName = "MessageMVC:Redis";
 
-        static RedisOption()
-        {
-            ConfigurationHelper.RegistOnChange<RedisOption>("MessageMVC:Redis", Instance.Update, true);
-        }
+        const string optionName = "Redis发布订阅配置";
+
+        const string supperUrl = "https://";
 
         /// <summary>
-        /// 重新载入并更新
+        /// 支持地址
         /// </summary>
-        private void Update(RedisOption option)
+        string IZeroOption.SupperUrl => supperUrl;
+
+        /// <summary>
+        /// 配置名称
+        /// </summary>
+        string IZeroOption.OptionName => optionName;
+
+
+        /// <summary>
+        /// 节点名称
+        /// </summary>
+        string IZeroOption.SectionName => sectionName;
+
+        /// <summary>
+        /// 是否动态配置
+        /// </summary>
+        bool IZeroOption.IsDynamic => false;
+
+        void IZeroOption.Load(bool first)
         {
+            var option = ConfigurationHelper.Get<RedisOption>(sectionName);
+            if (option == null)
+                throw new ZeroOptionException(optionName, sectionName);
+            if (option.ConnectionString.IsBlank())
+                throw new ZeroOptionException(optionName, sectionName, "ConnectionString必须配置");
             if (!string.IsNullOrWhiteSpace(option.ConnectionString))
+            {
                 ConnectionString = option.ConnectionString;
-            GuardCheckTime = option.GuardCheckTime;
-            MessageLockTime = option.MessageLockTime;
+            }
+
+            AsyncPost = option.AsyncPost;
             FailedIsError = option.FailedIsError;
             NoSupperIsError = option.NoSupperIsError;
 
+            GuardCheckTime = option.GuardCheckTime;
             if (GuardCheckTime <= 0)
             {
                 GuardCheckTime = 3000;
             }
 
+            MessageLockTime = option.MessageLockTime;
             if (MessageLockTime <= 0)
             {
                 MessageLockTime = 1000;
             }
         }
+        #endregion
     }
 }

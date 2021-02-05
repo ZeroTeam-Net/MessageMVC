@@ -18,8 +18,9 @@
     <Authors>Agebull</Authors>
     <Company>ZeroTeam</Company>
     <PackageReleaseNotes></PackageReleaseNotes>
-    <Product>ZeroTeam.MessageMVC.ApiContract</Product>
-    <Version>1.0.1.17</Version>
+    <Product>MessageMVC</Product>
+    <Version>1.1.4.38</Version>
+    <PackageTags>MessageMVC</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.1|AnyCPU'">
@@ -33,10 +34,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ApiExtend\ZeroContextEx.cs" />
     <Compile Remove="MessageMiddleware\LoggerMiddleware.cs" />
+    <Compile Remove="MessageMiddleware\MarkPointMiddleware.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.8.0" />
     <ProjectReference Include="..\..\Core\Core\ZeroTeam.MessageMVC.Core.csproj" />
   </ItemGroup>
 

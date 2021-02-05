@@ -21,7 +21,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         /// 本地跟踪
         /// </summary>
-        public TraceStep Root { get; set; }
+        public TraceStep Monitor { get; set; }
     }
 }
 

@@ -10,26 +10,26 @@
   <PropertyGroup>
     <Description>一些常用的基础功能扩展</Description>
     <AssemblyTitle>Agebull.Common.Extend</AssemblyTitle>
-    <Version>4.0.0.43</Version>
+    <Version>4.0.4.37</Version>
     <!--monoandroid60;xamarinios10-->
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <DebugType>portable</DebugType>
     <AssemblyName>Agebull.Common.Extend</AssemblyName>
     <PackageId>Agebull.Common.Extend</PackageId>
-    <PackageTags>Agebull.Common.Extend</PackageTags>
+    <PackageTags>MessageMVC</PackageTags>
     
-    <PackageProjectUrl>https://github.com/agebullhu/EntityModel</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/ZeroTeam-Net/MessageMVC</PackageProjectUrl>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/agebullhu/EntityModel</RepositoryUrl>
+    <RepositoryUrl>https://github.com/ZeroTeam-Net/MessageMVC.git</RepositoryUrl>
     <IncludeSymbols>false</IncludeSymbols>
     <IncludeSource>false</IncludeSource>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     
     <Authors>Agebull</Authors>
-    <Company>Agebull</Company>
+    <Company>ZeroTeam</Company>
     <Product>Agebull.EntityModel</Product>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <Copyright />
@@ -39,6 +39,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>monitor</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp3.1|AnyCPU'">
@@ -51,7 +52,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;monitor</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
@@ -76,22 +77,25 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Dependency\AppConfigHelper.cs" />
+    <Compile Remove="Dependency\DependencyScope.cs" />
+    <Compile Remove="Dependency\Scope\DependencyScope.cs" />
     <Compile Remove="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.6" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.6" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.6" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.NewtonsoftJson" Version="3.1.6" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.6" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.6" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.6" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.6" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.6" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.6" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.NewtonsoftJson" Version="5.0.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.7.0" />
     <PackageReference Include="System.Threading" Version="4.3.0" />

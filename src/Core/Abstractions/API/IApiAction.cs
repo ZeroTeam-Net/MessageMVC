@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Threading.Tasks;
+using ZeroTeam.MessageMVC.Documents;
 using ZeroTeam.MessageMVC.Messages;
-using ActionTask = System.Threading.Tasks.TaskCompletionSource<(ZeroTeam.MessageMVC.Messages.MessageState state, object result)>;
 
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
@@ -11,9 +10,14 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     public interface IApiAction
     {
         /// <summary>
+        /// 接口信息
+        /// </summary>
+        ApiActionInfo Info { get; set; }
+
+        /// <summary>
         ///     API配置
         /// </summary>
-        ApiOption Option { get; set; }
+        ApiOption Option { get; }
 
         /// <summary>
         ///     Api名称
@@ -24,7 +28,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ///     是合符合API契约规定
         /// </summary>
         bool IsApiContract { get; }
-
 
         /// <summary>
         ///     参数类型
@@ -84,11 +87,25 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ///     执行
         /// </summary>
         /// <returns></returns>
-        Task Execute(ActionTask task, IInlineMessage message, ISerializeProxy serializer);
+        void Execute(IInlineMessage message, ISerializeProxy serializer);
 
         /// <summary>
         /// 初始化检查
         /// </summary>
         void Initialize();
+    }
+
+    /// <summary>
+    /// 方法执行检查器
+    /// </summary>
+    public interface IApiActionChecker
+    {
+        /// <summary>
+        /// 检查接口是否可执行
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        bool Check(IApiAction action, IInlineMessage message);
     }
 }

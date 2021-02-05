@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
 using System;
 using ZeroTeam.MessageMVC.ApiContract;
-using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
 
@@ -34,12 +33,12 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
                 {
                     ID = id,
                     State = MessageState.Accept,
-                    Topic = "Topic",
-                    Title = "Title",
-                    Content = @"{""Value"": ""Content""}",
-                    Trace = TraceInfo.New(id),
+                    Service = "Topic",
+                    Method = "Title",
+                    Argument = @"{""Value"": ""Content""}",
                     Result = @"{""Value"": ""Result""}"
                 };
+
                 var json = SmartSerializer.SerializeMessage(message);
                 Console.WriteLine(json);
                 var message2 = SmartSerializer.ToMessage(json);
@@ -47,10 +46,10 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
 
                 Assert.IsTrue(message2.ID == message.ID, json);
                 Assert.IsTrue(message2.State == message.State, json);
-                Assert.IsTrue(message2.Topic == message.Topic, json);
-                Assert.IsTrue(message2.Content == message.Content, json);
+                Assert.IsTrue(message2.Service == message.Service, json);
+                Assert.IsTrue(message2.Argument == message.Argument, json);
                 Assert.IsTrue(message2.Result == message.Result, json);
-                Assert.IsTrue(message2.Trace.LocalMachine == message.Trace.LocalMachine, json);
+                Assert.IsTrue(message2.TraceInfo.LocalMachine == message.TraceInfo.LocalMachine, json);
             }
             catch (Exception ex)
             {
@@ -71,12 +70,12 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
                 {
                     ID = id,
                     State = MessageState.Accept,
-                    Topic = "Topic",
-                    Title = "Title",
-                    Content = @"{""Value"": ""Content""}",
-                    Trace = TraceInfo.New(id),
+                    Service = "Topic",
+                    Method = "Title",
+                    Argument = @"{""Value"": ""Content""}",
                     Result = @"{""Value"": ""Result""}"
                 };
+
                 SmartSerializer.SerializeMessage(message);
 
                 DateTime start = DateTime.Now;
@@ -103,17 +102,17 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             {
                 ID = id,
                 State = MessageState.Accept,
-                Topic = "Topic",
-                Title = "Title",
-                Content = @"{""Value"": ""Content""}",
-                Trace = TraceInfo.New(id),
+                Service = "Topic",
+                Method = "Title",
+                Argument = @"{""Value"": ""Content""}",
                 Result = @"{""Value"": ""Result""}"
             };
-            message.PrepareInline();
+
+            message.CheckState();
             Assert.IsTrue(message.DataState == (MessageDataState.ArgumentOffline | MessageDataState.ResultOffline), message.DataState.ToString());
 
             //message.PrepareResult(null, ApiResultHelper.State);
-            message.RestoryContent(DependencyHelper.GetService<IJsonSerializeProxy>(), typeof(Argument));;
+            message.RestoryContent(DependencyHelper.GetService<IJsonSerializeProxy>(), typeof(Argument)); ;
             Assert.IsTrue(message.ArgumentData is Argument, message.ArgumentData.GetTypeName());
             Assert.IsTrue(message.DataState == (MessageDataState.ArgumentOffline | MessageDataState.ResultOffline | MessageDataState.ArgumentInline),
                 message.DataState.ToString());
@@ -132,13 +131,13 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             {
                 ID = id,
                 State = MessageState.Accept,
-                Topic = "Topic",
-                Title = "Title",
-                Content = @"{""Value"": ""Content""}",
-                Trace = TraceInfo.New(id),
+                Service = "Topic",
+                Method = "Title",
+                Argument = @"{""Value"": ""Content""}",
                 Result = @"{""Value"": ""Result""}"
             };
-            message.Reset();
+
+            message.ResetToRequest();
             //message.PrepareResult(null, ApiResultHelper.State);
             message.RestoryContent(DependencyHelper.GetService<IJsonSerializeProxy>(), typeof(Argument)); ;
             message.ResultData = new Argument<int>
@@ -162,13 +161,12 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             {
                 ID = id,
                 State = MessageState.Accept,
-                Topic = "Topic",
-                Title = "Title",
-                Content = @"{""Value"": ""Content""}",
-                Trace = TraceInfo.New(id),
+                Service = "Topic",
+                Method = "Title",
+                Argument = @"{""Value"": ""Content""}",
                 Result = @"{""Value"": ""Result""}"
             };
-            message.Reset();
+            message.ResetToRequest();
             //message.PrepareResult(null, ApiResultHelper.State);
             message.RestoryContent(DependencyHelper.GetService<IJsonSerializeProxy>(), typeof(Argument)); ;
             message.State = MessageState.Failed;
@@ -190,16 +188,16 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             {
                 ID = id,
                 State = MessageState.Accept,
-                Topic = "Topic",
-                Title = "Title",
-                Content = @"{""Value"": ""Content""}",
-                Trace = TraceInfo.New(id),
+                Service = "Topic",
+                Method = "Title",
+                Argument = @"{""Value"": ""Content""}",
+
                 ResultData = new Argument<int>
                 {
                     Value = 1
                 }
             };
-            message.PrepareInline();
+            message.CheckState();
             Assert.IsTrue(message.DataState == (MessageDataState.ArgumentOffline | MessageDataState.ResultInline),
                 message.DataState.ToString());
 
@@ -218,7 +216,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             Assert.IsTrue(result2.State == message.State, result2.State.ToString());
             Assert.IsTrue(result2.DataState == MessageDataState.ResultOffline, result2.DataState.ToString());
             Assert.IsTrue(result2.Result == message.Result, result2.Result);
-            Assert.IsTrue(result2.Trace.LocalMachine == message.Trace.LocalMachine, result2.Trace.LocalMachine);
+            Assert.IsTrue(result2.Trace.LocalMachine == message.TraceInfo.LocalMachine, result2.Trace.LocalMachine);
         }
 
         /// <summary>
@@ -232,13 +230,13 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             {
                 ID = id,
                 State = MessageState.Accept,
-                Topic = "Topic",
-                Title = "Title",
-                Content = @"{""Value"": ""Content""}",
-                Trace = TraceInfo.New(id),
+                Service = "Topic",
+                Method = "Title",
+                Argument = @"{""Value"": ""Content""}",
+
                 Result = @"{""Value"": ""Result""}"
             };
-            message.PrepareInline();
+            message.CheckState();
             Assert.IsTrue(message.DataState == (MessageDataState.ArgumentOffline | MessageDataState.ResultOffline), message.DataState.ToString());
 
             //message.PrepareResult(null, ApiResultHelper.State);
@@ -251,13 +249,13 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             {
                 ID = id,
                 State = MessageState.Accept,
-                Topic = "Topic",
-                Title = "Title",
-                Content = @"{""Value"": ""Content""}",
-                Trace = TraceInfo.New(id),
+                Service = "Topic",
+                Method = "Title",
+                Argument = @"{""Value"": ""Content""}",
+
                 Result = @"{""Value"": ""Result""}"
             };
-            message.Reset();
+            message.ResetToRequest();
             Assert.IsTrue(message.DataState == MessageDataState.ArgumentOffline, message.DataState.ToString());
             Assert.IsTrue(message.Result == null, message.Result);
             //message.PrepareResult(null, ApiResultHelper.State);
@@ -286,7 +284,7 @@ namespace ZeroTeam.MessageMVC.Sample.Controllers.UnitTest
             Assert.IsTrue(result2.State == result.State, result2.State.ToString());
             Assert.IsTrue(result2.DataState == result.DataState, result2.DataState.ToString());
             Assert.IsTrue(result2.Result == result.Result, result2.Result);
-            Assert.IsTrue(result2.Trace.LocalMachine == message.Trace.LocalMachine, result2.Trace.LocalMachine);
+            Assert.IsTrue(result2.Trace.LocalMachine == message.TraceInfo.LocalMachine, result2.Trace.LocalMachine);
         }
     }
 }

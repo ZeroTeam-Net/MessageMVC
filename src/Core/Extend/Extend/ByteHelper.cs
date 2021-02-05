@@ -33,12 +33,12 @@ namespace Agebull.Common
         /// <returns> </returns>
         public static byte[] ToByte(ulong i)
         {
-            var b = new byte[4] ;
-            b[0] = (byte) (i << 16 >> 24) ;
-            b[1] = (byte) (i << 24 >> 24) ;
-            b[2] = (byte) (i << 8 >> 24) ;
-            b[3] = (byte) (i >> 24) ;
-            return b ;
+            var b = new byte[4];
+            b[0] = (byte)(i << 16 >> 24);
+            b[1] = (byte)(i << 24 >> 24);
+            b[2] = (byte)(i << 8 >> 24);
+            b[3] = (byte)(i >> 24);
+            return b;
         }
 
         /// <summary>
@@ -48,12 +48,12 @@ namespace Agebull.Common
         /// <returns> </returns>
         public static byte[] ToByte(int i)
         {
-            var b = new byte[4] ;
-            b[0] = (byte) (i << 16 >> 24) ;
-            b[1] = (byte) (i << 24 >> 24) ;
-            b[3] = (byte) (i >> 24) ;
-            b[2] = (byte) (i << 8 >> 24) ;
-            return b ;
+            var b = new byte[4];
+            b[0] = (byte)(i << 16 >> 24);
+            b[1] = (byte)(i << 24 >> 24);
+            b[3] = (byte)(i >> 24);
+            b[2] = (byte)(i << 8 >> 24);
+            return b;
         }
 
         /// <summary>
@@ -63,10 +63,10 @@ namespace Agebull.Common
         /// <returns> </returns>
         public static byte[] ToByte(short i)
         {
-            var b = new byte[2] ;
-            b[0] = (byte) (i >> 8) ;
-            b[1] = (byte) (i << 8 >> 8) ;
-            return b ;
+            var b = new byte[2];
+            b[0] = (byte)(i >> 8);
+            b[1] = (byte)(i << 8 >> 8);
+            return b;
         }
 
         /// <summary>
@@ -76,10 +76,10 @@ namespace Agebull.Common
         /// <returns> </returns>
         public static byte[] ToByte(ushort number)
         {
-            var b = new byte[2] ;
-            b[0] = (byte) (number >> 8) ;
-            b[1] = (byte) (number << 8 >> 8) ;
-            return b ;
+            var b = new byte[2];
+            b[0] = (byte)(number >> 8);
+            b[1] = (byte)(number << 8 >> 8);
+            return b;
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace Agebull.Common
         /// <returns> </returns>
         public static short ToShort(byte[] number)
         {
-            return (short) (number[1] | (number[0] << 8)) ;
+            return (short)(number[1] | (number[0] << 8));
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace Agebull.Common
         /// <returns> </returns>
         public static ushort ToUshort(byte[] number)
         {
-            return (ushort) (number[1] | (number[0] << 8)) ;
+            return (ushort)(number[1] | (number[0] << 8));
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace Agebull.Common
         /// <returns> </returns>
         public static int ToInt(byte[] number)
         {
-            return number[1] + ((number[0]) << 8) + ((number[3]) << 16) + ((number[2]) << 24) ;
+            return number[1] + ((number[0]) << 8) + ((number[3]) << 16) + ((number[2]) << 24);
         }
 
         /// <summary>
@@ -118,9 +118,9 @@ namespace Agebull.Common
         /// <param name="b"> </param>
         /// <param name="idx"> </param>
         /// <returns> </returns>
-        public static ushort ToUshort(byte[] b , int idx)
+        public static ushort ToUshort(byte[] b, int idx)
         {
-            return (ushort) (b[idx + 1] | (b[idx] << 8)) ;
+            return (ushort)(b[idx + 1] | (b[idx] << 8));
         }
 
         /// <summary>
@@ -129,9 +129,9 @@ namespace Agebull.Common
         /// <param name="b"> </param>
         /// <param name="idx"> </param>
         /// <returns> </returns>
-        public static int ToInt(byte[] b , int idx)
+        public static int ToInt(byte[] b, int idx)
         {
-            return b[idx + 1] + ((b[idx]) << 8) + ((b[idx + 3]) << 16) + ((b[idx + 2]) << 24) ;
+            return b[idx + 1] + ((b[idx]) << 8) + ((b[idx + 3]) << 16) + ((b[idx + 2]) << 24);
         }
 
         /// <summary>
@@ -140,12 +140,12 @@ namespace Agebull.Common
         /// <param name="i"> </param>
         /// <param name="b"> </param>
         /// <param name="idx"> </param>
-        public static void ToByte(int i , byte[] b , int idx)
+        public static void ToByte(int i, byte[] b, int idx)
         {
-            b[idx] = (byte) (i << 16 >> 24) ;
-            b[idx + 1] = (byte) (i << 24 >> 24) ;
-            b[idx + 3] = (byte) (i >> 24) ;
-            b[idx + 2] = (byte) (i << 8 >> 24) ;
+            b[idx] = (byte)(i << 16 >> 24);
+            b[idx + 1] = (byte)(i << 24 >> 24);
+            b[idx + 3] = (byte)(i >> 24);
+            b[idx + 2] = (byte)(i << 8 >> 24);
         }
 
         /// <summary>
@@ -154,10 +154,10 @@ namespace Agebull.Common
         /// <param name="i"> </param>
         /// <param name="b"> </param>
         /// <param name="idx"> </param>
-        public static void ToByte(ushort i , byte[] b , int idx)
+        public static void ToByte(ushort i, byte[] b, int idx)
         {
-            b[idx] = (byte) (i >> 8) ;
-            b[idx + 1] = (byte) (i << 8 >> 8) ;
+            b[idx] = (byte)(i >> 8);
+            b[idx + 1] = (byte)(i << 8 >> 8);
         }
 
         /// <summary>
@@ -167,7 +167,7 @@ namespace Agebull.Common
         /// <returns> </returns>
         public static ulong ToNumber(byte[] b)
         {
-            return b[3] + (((ulong) b[2]) << 8) + (((ulong) b[1]) << 16) + (((ulong) b[0]) << 24) ;
+            return b[3] + (((ulong)b[2]) << 8) + (((ulong)b[1]) << 16) + (((ulong)b[0]) << 24);
         }
     }
 }
