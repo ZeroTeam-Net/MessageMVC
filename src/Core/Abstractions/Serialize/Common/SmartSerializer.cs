@@ -470,7 +470,7 @@ namespace ZeroTeam.MessageMVC.Messages
         }
 
         /// <summary>
-        /// 序列化妻字节
+        /// 序列化为Json的Utf8字节
         /// </summary>
         /// <param name="obj">对象</param>
         /// <returns>Utf8字节</returns>

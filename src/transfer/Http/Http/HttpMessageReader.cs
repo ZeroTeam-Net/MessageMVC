@@ -83,7 +83,8 @@ namespace ZeroTeam.MessageMVC.Http
             }
             if (TryGetHeader(context.Request, "x-zmvc-user", out var user))
             {
-                Message.User = SmartSerializer.ToObject<Dictionary<string, string>>(user);
+                var bytes = Convert.FromBase64String(user);
+                Message.User = SmartSerializer.MsJson.ToObject<Dictionary<string, string>>(bytes);
             }
             if (TryGetHeader(context.Request, "x-zmvc-ctx", out var ctx))
             {

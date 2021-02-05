@@ -75,11 +75,11 @@ namespace ZeroTeam.MessageMVC.Http
                 }
                 requestMessage.Headers.Add("x-zmvc-ver", "v2");
                 requestMessage.Headers.Add("x-zmvc-id", message.ID);
-                if (message.TraceInfo != null)
+                if (message.TraceInfo != null )
                     requestMessage.Headers.Add("x-zmvc-trace", message.TraceInfo.ToInnerString());
-                if (message.User != null)
-                    requestMessage.Headers.Add("x-zmvc-user", message.User.ToInnerString());
-                if (message.Context != null)
+                if (message.User != null && message.User.Count > 0)
+                    requestMessage.Headers.Add("x-zmvc-user", Convert.ToBase64String(SmartSerializer.ToBytes(message.User)));
+                if (message.Context != null && message.Context.Count > 0)
                     requestMessage.Headers.Add("x-zmvc-ctx", message.Context.ToInnerString());
 
                 using var response = await client.SendAsync(requestMessage);
