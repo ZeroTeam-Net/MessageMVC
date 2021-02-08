@@ -33,6 +33,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.Logging
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{F7F72666-66C0-446F-AC39-D7B9CEA0DABE}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.FastHttpApi", "src\transfer\FastHttpApi\ZeroTeam.MessageMVC.FastHttpApi.csproj", "{EDC2210C-6808-4BF7-885C-10D4513885BA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,10 @@ Global
 		{CFE74730-2DF7-417F-BEAF-D827D007C4BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CFE74730-2DF7-417F-BEAF-D827D007C4BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CFE74730-2DF7-417F-BEAF-D827D007C4BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDC2210C-6808-4BF7-885C-10D4513885BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDC2210C-6808-4BF7-885C-10D4513885BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDC2210C-6808-4BF7-885C-10D4513885BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDC2210C-6808-4BF7-885C-10D4513885BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -104,6 +110,7 @@ Global
 		{E5542EC2-EA82-4020-BC9E-A254F98D1568} = {85554FA9-20AE-4261-A58E-CD36624FEFEB}
 		{BE6F88E4-E939-4F4F-8F37-0946FE069A3E} = {484C92F6-14EA-480D-80A8-1318F732A914}
 		{CFE74730-2DF7-417F-BEAF-D827D007C4BD} = {F7F72666-66C0-446F-AC39-D7B9CEA0DABE}
+		{EDC2210C-6808-4BF7-885C-10D4513885BA} = {484C92F6-14EA-480D-80A8-1318F732A914}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {866CE928-6325-4962-BB28-9A3BAF4BBCD1}

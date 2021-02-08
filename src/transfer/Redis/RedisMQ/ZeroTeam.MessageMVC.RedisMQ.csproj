@@ -25,7 +25,7 @@
     <Company>ZeroTeam</Company>
     <PackageReleaseNotes></PackageReleaseNotes>
     <Product>MessageMVC</Product>
-    <Version>4.0.4.40</Version>
+    <Version>1.1.5.1</Version>
     <PackageTags>MessageMVC</PackageTags>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

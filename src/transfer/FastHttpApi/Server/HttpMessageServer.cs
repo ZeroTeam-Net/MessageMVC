@@ -2,6 +2,7 @@
 using Agebull.Common.Logging;
 using BeetleX.FastHttpApi.WebSockets;
 using System;
+using System.IO;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.Services;
@@ -31,6 +32,11 @@ namespace BeetleX.FastHttpApi
         /// <param name="response"></param>
         protected override void OnHttpRequest(HttpRequest request, HttpResponse response)
         {
+            if (Path.GetFileName(request.BaseUrl).Contains('.'))
+            {
+                base.OnHttpRequest(request, response);
+                return;
+            }
             var writer = new HttpWriter
             {
                 Request = request,
