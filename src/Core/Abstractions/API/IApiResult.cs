@@ -11,6 +11,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ///跟踪对象
         /// </summary>
         IOperatorTrace Trace { get; set; }
+
+
     }
 
     /// <summary>

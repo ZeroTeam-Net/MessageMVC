@@ -150,9 +150,11 @@ namespace ZeroTeam.MessageMVC.Messages
         {
             return obj == null
                 ? null
-                : serializer != null
-                    ? serializer.ToString(obj)
-                    : Json.ToString(obj);
+                : obj.GetType().IsBaseType()
+                    ? obj.ToString()
+                    : serializer != null
+                        ? serializer.ToString(obj)
+                        : Json.ToString(obj);
         }
 
         /// <summary>

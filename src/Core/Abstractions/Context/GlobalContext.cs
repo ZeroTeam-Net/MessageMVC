@@ -52,7 +52,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         ///     当前线程的调用上下文(无懒构造)
         /// </summary>
-        public static IZeroContext CurrentNoLazy => (IZeroContext)(ScopeRuner.ScopeContext);
+        public static IZeroContext CurrentNoLazy => ScopeRuner.ScopeContext as IZeroContext;
 
         /// <summary>
         ///     设置当前上下文（框架内调用，外部误用后果未知）

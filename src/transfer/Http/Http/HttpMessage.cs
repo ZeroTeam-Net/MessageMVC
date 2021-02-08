@@ -23,6 +23,12 @@ namespace ZeroTeam.MessageMVC.Http
         #region IMessageItem
 
         /// <summary>
+        /// 请求ID
+        /// </summary>
+        [JsonIgnore]
+        public string RequestId { get; set; }
+
+        /// <summary>
         /// 是否外部访问
         /// </summary>
         [JsonIgnore]

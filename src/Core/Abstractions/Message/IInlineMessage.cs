@@ -18,6 +18,11 @@ namespace ZeroTeam.MessageMVC.Messages
         #region 数据
 
         /// <summary>
+        /// 请求ID
+        /// </summary>
+        string RequestId { get; }
+
+        /// <summary>
         /// 实体参数
         /// </summary>
         object ArgumentData { get; set; }

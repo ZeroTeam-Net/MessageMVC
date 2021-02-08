@@ -2,6 +2,7 @@ using Agebull.Common.Ioc;
 using Newtonsoft.Json;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
+using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace ZeroTeam.MessageMVC.ApiContract
@@ -20,6 +21,7 @@ namespace ZeroTeam.MessageMVC.ApiContract
             if (ContractOption.Instance.EnableResultTrace)
                 Trace = new OperatorTrace();
             Success = true;
+            RequestId = GlobalContext.CurrentNoLazy?.Message.RequestId;
         }
 
         /// <summary>

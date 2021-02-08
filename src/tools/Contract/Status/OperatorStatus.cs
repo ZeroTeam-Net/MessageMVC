@@ -13,10 +13,16 @@ namespace ZeroTeam.MessageMVC.ApiContract
     public class OperatorStatus : IOperatorStatus
     {
         /// <summary>
+        /// 请求ID
+        /// </summary>
+        [DataMember(Name = "id"), JsonPropertyName("id"), JsonProperty("id", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public string RequestId { get; set; }
+
+        /// <summary>
         ///     成功或失败标记
         /// </summary>
         /// <example>true</example>
-        [DataMember(Name = "success"), JsonPropertyName("success"), JsonProperty("success", NullValueHandling = NullValueHandling.Ignore)]
+        [DataMember(Name = "success"), JsonPropertyName("success"), JsonProperty("success", DefaultValueHandling = DefaultValueHandling.Include)]
         public bool Success { get; set; }
 
         /// <summary>
@@ -26,7 +32,7 @@ namespace ZeroTeam.MessageMVC.ApiContract
         ///     参见 ErrorCode 说明
         /// </remarks>
         /// <example>-1</example>
-        [DataMember(Name = "code"), JsonPropertyName("code"), JsonProperty("code", NullValueHandling = NullValueHandling.Ignore)]
+        [DataMember(Name = "code"), JsonPropertyName("code"), JsonProperty("code", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int Code { get; set; }
 
         /// <summary>
@@ -36,7 +42,7 @@ namespace ZeroTeam.MessageMVC.ApiContract
         ///  说明错误的原因
         /// </remarks>
         /// <example>你的数据不正确</example>
-        [DataMember(Name = "message"), JsonPropertyName("message"), JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
+        [DataMember(Name = "message"), JsonPropertyName("message"), JsonProperty("message", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string Message { get; set; }
 
         /// <summary>

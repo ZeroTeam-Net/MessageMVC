@@ -8,9 +8,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
     public interface IOperatorStatus
     {
         /// <summary>
-        ///  异常
+        /// 请求ID
         /// </summary>
-        Exception Exception { get; set; }
+        string RequestId { get; set; }
 
         /// <summary>
         ///     成功或失败标记
@@ -26,5 +26,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         ///  信息
         /// </summary>
         string Message { get; set; }
+
+        /// <summary>
+        ///  异常
+        /// </summary>
+        Exception Exception { get; set; }
+
     }
 }

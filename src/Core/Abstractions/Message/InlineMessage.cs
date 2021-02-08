@@ -17,6 +17,12 @@ namespace ZeroTeam.MessageMVC.Messages
         string IInlineMessage.MessageType => "InlineMessage";
 
         /// <summary>
+        /// 请求ID
+        /// </summary>
+        [JsonIgnore]
+        public string RequestId { get; set; }
+
+        /// <summary>
         /// 是否外部访问
         /// </summary>
         [JsonIgnore]

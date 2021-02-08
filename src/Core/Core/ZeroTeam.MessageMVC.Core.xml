@@ -544,6 +544,11 @@
             构造
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.EmptyReceiver.ZeroTeam#MessageMVC#Messages#IMessageReceiver#PosterName">
+            <summary>
+            对应发送器名称
+            </summary>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.EmptyReceiver.ZeroTeam#MessageMVC#ILifeFlow#Closing">
             <summary>
             关闭

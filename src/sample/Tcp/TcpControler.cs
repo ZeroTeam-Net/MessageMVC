@@ -1,5 +1,7 @@
 ﻿using Agebull.Common.Logging;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
 using ZeroTeam.MessageMVC.ZeroApis;
 
@@ -17,7 +19,7 @@ namespace ZeroTeam.MessageMVC.Tcp.Sample
         /// 测试接口
         /// </summary>
         [Route("test")]
-        public void Text(IInlineMessage message)
+        public void Test(IInlineMessage message)
         {
             Logger.Information(message.Argument);
         }

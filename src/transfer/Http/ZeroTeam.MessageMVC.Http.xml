@@ -73,6 +73,11 @@
             消息类型
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.RequestId">
+            <summary>
+            请求ID
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.Http.HttpMessage.IsOutAccess">
             <summary>
             是否外部访问

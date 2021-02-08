@@ -14,9 +14,13 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public EmptyReceiver() : base(nameof(EmptyReceiver))
         {
+            CanLocalTunnel = true;
         }
 
-        string IMessageReceiver.PosterName => null;
+        /// <summary>
+        /// 对应发送器名称
+        /// </summary>
+        string IMessageReceiver.PosterName => nameof(EmptyReceiver);
 
         private TaskCompletionSource<bool> task;
         Task<bool> IMessageReceiver.Loop(CancellationToken token)
@@ -34,5 +38,6 @@ namespace ZeroTeam.MessageMVC
             task.SetResult(true);
             return Task.CompletedTask;
         }
+
     }
 }

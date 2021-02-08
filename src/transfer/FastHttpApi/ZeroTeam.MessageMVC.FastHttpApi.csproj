@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <DebugType>portable</DebugType>
+    <ApplicationIcon />
+    <OutputType>Library</OutputType>
+    <StartupObject />
+
+    <Description>以MVC方式进行消息处理,此包为基于BeetleX.FastHttpApi的Http实现</Description>
+    <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/ZeroTeam-Net/MessageMVC</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ZeroTeam-Net/MessageMVC.git</RepositoryUrl>
+    <Version>4.0.4.40</Version>
+    <Authors>Agebull.Hu</Authors>
+    <Company>ZeroTeam</Company>
+    <Product>MessageMVC</Product>
+    <PackageTags>MessageMVC</PackageTags>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>ZeroTeam.MessageMVC.Tcp.xml</DocumentationFile>
+    <DefineConstants>monitor</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>ZeroTeam.MessageMVC.Tcp.xml</DocumentationFile>
+    <DefineConstants>DEBUG;TRACE;monitor</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="BeetleX.FastHttpApi" Version="1.9.3.12" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.8.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.8.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\Core\ZeroTeam.MessageMVC.Core.csproj" />
+  </ItemGroup>
+</Project>
