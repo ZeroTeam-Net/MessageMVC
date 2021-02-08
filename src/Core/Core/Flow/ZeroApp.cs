@@ -90,6 +90,29 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 检查并注入配置
         /// </summary>
+        public static async Task StartNoHost(Action<IServiceCollection> registAction, bool autoDiscovery, Action discovery)
+        {
+            ConfigurationHelper.CreateBuilder();
+            ZeroFlowControl.LoadConfig();
+            ZeroAppOption.Instance.AutoDiscover = autoDiscovery;
+            ZeroAppOption.Instance.Discovery = discovery;
+            DependencyHelper.Flush();
+            ZeroFlowControl.Logger = DependencyHelper.LoggerFactory.CreateLogger("ZeroFlowControl");
+            registAction(DependencyHelper.ServiceCollection);
+            AddDependency(DependencyHelper.ServiceCollection);
+            await ZeroFlowControl.CheckConfig();
+            if (ZeroAppOption.Instance.AutoDiscover)
+                ZeroFlowControl.Discove();
+            ZeroAppOption.Instance.Discovery?.Invoke();
+
+            ZeroFlowControl.Discove();
+            await ZeroFlowControl.Initialize();
+            await ZeroFlowControl.RunAsync();
+        }
+
+        /// <summary>
+        /// 检查并注入配置
+        /// </summary>
         internal static void AddDependency(IServiceCollection services)
         {
             ZeroFlowControl.LoadAddIn();

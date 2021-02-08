@@ -359,6 +359,11 @@
             <param name="autoDiscovery">自动发现</param>
             <param name="discovery">自定义API发现方法</param>
         </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApp.StartNoHost(System.Action{Microsoft.Extensions.DependencyInjection.IServiceCollection},System.Boolean,System.Action)">
+            <summary>
+            检查并注入配置
+            </summary>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApp.AddDependency(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             检查并注入配置

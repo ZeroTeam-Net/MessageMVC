@@ -78,13 +78,13 @@ namespace BeetleX.FastHttpApi
         /// <param name="data"></param>
         protected override void OnWebSocketRequest(HttpRequest request, ISession session, DataFrame data)
         {
-            if (Options.WebSocketMaxRps > 0 && session.Count > Options.WebSocketMaxRps)
-            {
-                FlowTracer.MonitorInfomation(() => $"Websocket {request.ID} {request.RemoteIPAddress} session message queuing exceeds maximum rps!");
+            //if (Options.WebSocketMaxRps > 0 && session.Count > Options.WebSocketMaxRps)
+            //{
+            //    FlowTracer.MonitorInfomation(() => $"Websocket {request.ID} {request.RemoteIPAddress} session message queuing exceeds maximum rps!");
 
-                session.Dispose();
-                return;
-            }
+            //    session.Dispose();
+            //    return;
+            //}
             FlowTracer.MonitorTrace(() => $"Websocket {request.ID} {request.RemoteIPAddress} receive {data.Type.ToString()}");
 
             HttpToken token = (HttpToken)session.Tag;

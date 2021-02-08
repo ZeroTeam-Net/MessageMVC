@@ -25,11 +25,13 @@ namespace BeetleX.FastHttpApi
         public (bool success, HttpMessage message) CheckRequest(HttpApiServer server, HttpRequest request, DataFrame dataFrame)
         {
             string json;
-            if (dataFrame.Body is DataBuffer<byte> buffer)
-            {
-                json = Encoding.UTF8.GetString(buffer.Data);
-            }
-            else if (dataFrame.Body is byte[] bytes)
+            //if (dataFrame.Body is DataBuffer<byte> buffer)
+            //{
+            //    json = Encoding.UTF8.GetString(buffer.Data);
+            //}
+            //else 
+            
+            if (dataFrame.Body is byte[] bytes)
             {
                 json = Encoding.UTF8.GetString(bytes);
             }
