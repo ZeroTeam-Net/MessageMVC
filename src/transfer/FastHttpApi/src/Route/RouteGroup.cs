@@ -22,7 +22,7 @@ namespace BeetleX.FastHttpApi
 
         public int PathLevel { get; set; }
 
-        private List<UrlRoute> mRoutes;
+        private readonly List<UrlRoute> mRoutes;
 
         private UrlRoute[] mMatchRoute = new UrlRoute[0];
 

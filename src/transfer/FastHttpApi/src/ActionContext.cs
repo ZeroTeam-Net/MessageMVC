@@ -41,7 +41,7 @@ namespace BeetleX.FastHttpApi
                 Controller = handler.Controller;
         }
 
-        private List<FilterAttribute> mFilters;
+        private readonly List<FilterAttribute> mFilters;
 
         public object[] Parameters { get; private set; }
 

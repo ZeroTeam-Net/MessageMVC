@@ -6,7 +6,7 @@ namespace BeetleX.FastHttpApi.Data
 {
     public class InvalidDataFilter
     {
-        private CharItem[] Items = new CharItem[256];
+        private readonly CharItem[] Items = new CharItem[256];
 
         public void Add(params string[] items)
         {
@@ -108,7 +108,7 @@ namespace BeetleX.FastHttpApi.Data
 
             public string Data { get; set; }
 
-            private CharItem[] Items = new CharItem[256];
+            private readonly CharItem[] Items = new CharItem[256];
 
             public void Add(string key, int offset)
             {

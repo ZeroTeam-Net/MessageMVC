@@ -17,7 +17,7 @@ namespace ZeroTeam.MessageMVC.Tools
         /// </summary>
         int IMessageMiddleware.Level => MiddlewareLevel.Last;
 
-        MessageHandleScope scope = MessageHandleScope.Handle;
+        readonly MessageHandleScope scope = MessageHandleScope.Handle;
         /// <summary>
         /// 消息中间件的处理范围
         /// </summary>

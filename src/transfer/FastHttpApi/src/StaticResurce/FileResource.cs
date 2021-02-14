@@ -21,7 +21,7 @@ namespace BeetleX.FastHttpApi.StaticResurce
 
         public System.Reflection.Assembly Assembly { get; set; }
 
-        private bool mInnerResource;
+        private readonly bool mInnerResource;
 
         public string Ext { get; set; }
 
@@ -174,7 +174,7 @@ namespace BeetleX.FastHttpApi.StaticResurce
 
         }
 
-        private System.Collections.Concurrent.ConcurrentQueue<byte[]> mPool = new System.Collections.Concurrent.ConcurrentQueue<byte[]>();
+        private readonly System.Collections.Concurrent.ConcurrentQueue<byte[]> mPool = new System.Collections.Concurrent.ConcurrentQueue<byte[]>();
 
         public override ArraySegment<byte> GetBlodk(int offset, int size, out int newOffset)
         {

@@ -13,13 +13,13 @@ namespace BeetleX.FastHttpApi
             Init();
         }
 
-        private int mOffset;
+        private readonly int mOffset;
 
-        private List<MatchItem> mItems = new List<MatchItem>();
+        private readonly List<MatchItem> mItems = new List<MatchItem>();
 
         public List<MatchItem> Items => mItems;
 
-        private string mTemplate;
+        private readonly string mTemplate;
 
         public string Template => mTemplate;
 

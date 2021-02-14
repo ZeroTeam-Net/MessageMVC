@@ -25,6 +25,7 @@ namespace BeetleX.FastHttpApi
 
         }
 
+        readonly object locked = new object();
         /// <summary>
         /// Http消息接收处理
         /// </summary>
@@ -32,42 +33,28 @@ namespace BeetleX.FastHttpApi
         /// <param name="response"></param>
         protected override void OnHttpRequest(HttpRequest request, HttpResponse response)
         {
-            if (Path.GetFileName(request.BaseUrl).Contains('.'))
+            lock(locked)
             {
-                base.OnHttpRequest(request, response);
-                return;
-            }
-            var writer = new HttpWriter
-            {
-                Request = request,
-                Response = response
-            };
-            try
-            {
-                //命令
-                var reader = new HttpMessageReader();
-                var (success, message) = reader.CheckRequest(this, request, response);
-                //开始调用
-                if (success)
+                if (OnHttpRequesting(request, response).Cancel)
                 {
-                    var service = ZeroFlowControl.GetService(message.Service) ?? new ZeroService
-                    {
-                        ServiceName = message.Service,
-                        Receiver = new EmptyReceiver(),
-                        Serialize = DependencyHelper.GetService<ISerializeProxy>()
-                    };
-                    MessageProcessor.RunOnMessagePush(service, message, false, writer);
+                    return;
+                }
+                string baseUrl = request.BaseUrl;
+                if (string.IsNullOrEmpty(request.Ext) && baseUrl[baseUrl.Length - 1] != '/')
+                {
+                    HttpMessageReader.OnHttpRequest(this, request, response);
                 }
                 else
                 {
-                    writer.WriteResult(ApiResultHelper.State(OperatorStatusCode.NoFind));
+                    OnProcessResource(request, response);
                 }
             }
-            catch (Exception e)
-            {
-                ScopeRuner.ScopeLogger.Exception(e);
-                writer.WriteResult(ApiResultHelper.State(OperatorStatusCode.BusinessError));
-            }
+            //if (request.BaseUrl == "/" || Path.GetFileName(request.BaseUrl).Contains('.'))
+            //{
+            //    base.OnHttpRequest(request, response);
+            //    return;
+            //}
+
         }
 
         /// <summary>

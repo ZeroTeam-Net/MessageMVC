@@ -69,7 +69,7 @@ namespace ZeroTeam.MessageMVC.Http
                     RequestUri = uri,
                     Method = HttpMethod.Post
                 };
-                if (message.Argument.IsNotBlank())
+                if (message.Argument.IsPresent())
                 {
                     requestMessage.Content = content = new StringContent(message.Argument);
                 }

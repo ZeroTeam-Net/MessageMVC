@@ -92,7 +92,7 @@ namespace ZeroTeam.MessageMVC.Http
             if (option == null)
                 return;
 
-            if (option.DefaultUrl.IsBlank())
+            if (option.DefaultUrl.IsMissing())
                 throw new ZeroOptionException(optionName, sectionName, "DefaultUrl不能为空");
 
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls;

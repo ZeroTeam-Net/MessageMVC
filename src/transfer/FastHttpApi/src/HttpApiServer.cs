@@ -51,13 +51,13 @@ namespace BeetleX.FastHttpApi
 
         const string mConfigFile = "HttpConfig.json";
 
-        private RouteRewrite mUrlRewrite;
+        private readonly RouteRewrite mUrlRewrite;
 
-        private IPv4Tables mIPv4Tables = new IPv4Tables();
+        private readonly IPv4Tables mIPv4Tables = new IPv4Tables();
 
-        private ModuleManager mModuleManager;
+        private readonly ModuleManager mModuleManager;
 
-        private StaticResurce.ResourceCenter mResourceCenter;
+        private readonly StaticResurce.ResourceCenter mResourceCenter;
 
         private IServer mServer;
 
@@ -67,7 +67,7 @@ namespace BeetleX.FastHttpApi
 
         public ServerCounter ServerCounter => mServerCounter;
 
-        private FileLogWriter mFileLog;
+        private readonly FileLogWriter mFileLog;
 
         private IPLimit mIPLimit;
 
@@ -77,11 +77,11 @@ namespace BeetleX.FastHttpApi
 
         private long mTotalConnections;
 
-        private ActionSettings mActionSettings = new ActionSettings();
+        private readonly ActionSettings mActionSettings = new ActionSettings();
 
-        private ActionHandlerFactory mActionFactory;
+        private readonly ActionHandlerFactory mActionFactory;
 
-        private ConcurrentQueue<LogRecord> mCacheLogQueue = new ConcurrentQueue<LogRecord>();
+        private readonly ConcurrentQueue<LogRecord> mCacheLogQueue = new ConcurrentQueue<LogRecord>();
 
         public LogRecord[] GetCacheLog()
         {
@@ -90,7 +90,7 @@ namespace BeetleX.FastHttpApi
 
         private int mCacheLogLength = 0;
 
-        private ConcurrentDictionary<string, object> mProperties = new ConcurrentDictionary<string, object>();
+        private readonly ConcurrentDictionary<string, object> mProperties = new ConcurrentDictionary<string, object>();
 
         public long RequestErrors => mRequestErrors;
 
@@ -110,7 +110,7 @@ namespace BeetleX.FastHttpApi
 
         public IDataFrameSerializer FrameSerializer { get; set; }
 
-        private ObjectPoolGroup<HttpRequest> mRequestPool = new ObjectPoolGroup<HttpRequest>();
+        private readonly ObjectPoolGroup<HttpRequest> mRequestPool = new ObjectPoolGroup<HttpRequest>();
 
         internal HttpRequest CreateRequest(ISession session)
         {
@@ -211,7 +211,7 @@ namespace BeetleX.FastHttpApi
 
         public EventHandler<WebSocketConnectArgs> WebSocketConnect { get; set; }
 
-        private List<System.Reflection.Assembly> mAssemblies = new List<System.Reflection.Assembly>();
+        private readonly List<System.Reflection.Assembly> mAssemblies = new List<System.Reflection.Assembly>();
 
         public List<System.Reflection.Assembly> Assemblies => mAssemblies;
 
@@ -644,7 +644,7 @@ namespace BeetleX.FastHttpApi
             return stream.ReadString((int)data.Length);
         }
 
-        private System.Collections.Concurrent.ConcurrentQueue<byte[]> mBuffers = new System.Collections.Concurrent.ConcurrentQueue<byte[]>();
+        private readonly System.Collections.Concurrent.ConcurrentQueue<byte[]> mBuffers = new System.Collections.Concurrent.ConcurrentQueue<byte[]>();
 
         public virtual ArraySegment<byte> FrameSerialize(DataFrame data, object body)
         {
@@ -1040,7 +1040,7 @@ namespace BeetleX.FastHttpApi
 
 
 
-        public virtual void SendCompleted(ISession session, SocketAsyncEventArgs e)
+        public virtual void SendCompleted(ISession session, SocketAsyncEventArgs e, bool end)
         {
             HttpToken token = (HttpToken)session.Tag;
             if (token.File != null)
@@ -1116,9 +1116,5 @@ namespace BeetleX.FastHttpApi
                 BaseServer.Dispose();
         }
 
-        public void SendCompleted(ISession session, SocketAsyncEventArgs e, bool end)
-        {
-           // throw new NotImplementedException();
-        }
     }
 }

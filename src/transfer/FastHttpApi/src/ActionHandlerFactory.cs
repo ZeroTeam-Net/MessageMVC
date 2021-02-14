@@ -18,9 +18,9 @@ namespace BeetleX.FastHttpApi
 
         public HttpApiServer Server { get; set; }
 
-        private System.Collections.Generic.Dictionary<string, ActionHandler> mMethods = new Dictionary<string, ActionHandler>(StringComparer.OrdinalIgnoreCase);
+        private readonly System.Collections.Generic.Dictionary<string, ActionHandler> mMethods = new Dictionary<string, ActionHandler>(StringComparer.OrdinalIgnoreCase);
 
-        private Dictionary<Type, Type> mParameterBinders = new Dictionary<Type, Type>();
+        private readonly Dictionary<Type, Type> mParameterBinders = new Dictionary<Type, Type>();
 
         public Action<Assembly[]> AssembliesLoading { get; set; }
 

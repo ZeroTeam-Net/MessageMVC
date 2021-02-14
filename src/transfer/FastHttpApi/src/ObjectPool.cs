@@ -7,7 +7,7 @@ namespace BeetleX.FastHttpApi
 
     class ObjectPoolGroup<T>
     {
-        private List<ObjectPool<T>> objectPools = new List<ObjectPool<T>>();
+        private readonly List<ObjectPool<T>> objectPools = new List<ObjectPool<T>>();
 
         private long mIndex = 0;
 
@@ -38,9 +38,9 @@ namespace BeetleX.FastHttpApi
 
         }
 
-        private int mMaxItems;
+        private readonly int mMaxItems;
 
-        private System.Collections.Concurrent.ConcurrentStack<T> mQueues = new System.Collections.Concurrent.ConcurrentStack<T>();
+        private readonly System.Collections.Concurrent.ConcurrentStack<T> mQueues = new System.Collections.Concurrent.ConcurrentStack<T>();
 
         private int mCount;
 

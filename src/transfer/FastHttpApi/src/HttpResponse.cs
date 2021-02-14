@@ -24,7 +24,7 @@ namespace BeetleX.FastHttpApi
 
         private int mCompletedStatus = 0;
 
-        private List<string> mSetCookies = new List<string>();
+        private readonly List<string> mSetCookies = new List<string>();
 
         private object mBody;
 
@@ -42,7 +42,7 @@ namespace BeetleX.FastHttpApi
 
         internal bool AsyncResult { get; set; }
 
-        private byte[] mLengthBuffer = new byte[10];
+        private readonly byte[] mLengthBuffer = new byte[10];
 
         internal void Reset()
         {

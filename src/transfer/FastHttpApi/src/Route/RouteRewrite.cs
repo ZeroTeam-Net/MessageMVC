@@ -23,13 +23,13 @@ namespace BeetleX.FastHttpApi
 
         private long mVersion = 0;
 
-        private LRUCached mRouteCached;
+        private readonly LRUCached mRouteCached;
 
-        private ConcurrentDictionary<string, RouteGroup> mRoutes = new ConcurrentDictionary<string, RouteGroup>(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, RouteGroup> mRoutes = new ConcurrentDictionary<string, RouteGroup>(StringComparer.OrdinalIgnoreCase);
 
         private RouteGroup[] mMatchRoutes = new RouteGroup[0];
 
-        private HttpApiServer mServer;
+        private readonly HttpApiServer mServer;
 
         public int MaxCacheSize
         {

@@ -1572,6 +1572,20 @@
             <param name="str"></param>
             <returns>是否为空</returns>
         </member>
+        <member name="M:System.ValueToStringHelper.IsMissing(System.String)">
+            <summary>
+            是否为空
+            </summary>
+            <param name="str"></param>
+            <returns>是否为空</returns>
+        </member>
+        <member name="M:System.ValueToStringHelper.IsPresent(System.String)">
+            <summary>
+            是否非空
+            </summary>
+            <param name="str"></param>
+            <returns>是否为空</returns>
+        </member>
         <member name="M:System.ValueToStringHelper.AnyBlank(System.Object,System.String[])">
             <summary>
             是否其中一或多个为空
@@ -5523,6 +5537,9 @@
                 值
             </summary>
         </member>
+        <member name="M:Agebull.EntityModel.Common.NameValue`2.ToString">
+            <inheritdoc/>
+        </member>
         <member name="T:Agebull.EntityModel.Common.NameValue`1">
             <summary>
                 名称内容对象
@@ -5654,7 +5671,27 @@
             过期时间
             </summary>
         </member>
+        <member name="P:Agebull.EntityModel.Common.MemoryCacheData`1.Token">
+            <summary>
+            取消令牌
+            </summary>
+        </member>
+        <member name="P:Agebull.EntityModel.Common.MemoryCacheData`1.CacheName">
+            <summary>
+            缓存名称
+            </summary>
+        </member>
+        <member name="M:Agebull.EntityModel.Common.MemoryCacheData`1.#ctor">
+            <summary>
+            构造
+            </summary>
+        </member>
         <member name="M:Agebull.EntityModel.Common.MemoryCacheData`1.Reset">
+            <summary>
+            重置数据
+            </summary>
+        </member>
+        <member name="M:Agebull.EntityModel.Common.MemoryCacheData`1.Load(System.Threading.CancellationToken)">
             <summary>
             重置数据
             </summary>

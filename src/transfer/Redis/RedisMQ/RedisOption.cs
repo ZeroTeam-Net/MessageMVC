@@ -85,7 +85,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             var option = ConfigurationHelper.Get<RedisOption>(sectionName);
             if (option == null)
                 throw new ZeroOptionException(optionName, sectionName);
-            if (option.ConnectionString.IsBlank())
+            if (option.ConnectionString.IsMissing())
                 throw new ZeroOptionException(optionName, sectionName, "ConnectionString必须配置");
             if (!string.IsNullOrWhiteSpace(option.ConnectionString))
             {

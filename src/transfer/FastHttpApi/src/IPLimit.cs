@@ -14,11 +14,11 @@ namespace BeetleX.FastHttpApi
             mClearTimer = new System.Threading.Timer(OnClearLimit, null, 1000, 1000 * 600);
         }
 
-        private System.Threading.Timer mClearTimer;
+        private readonly System.Threading.Timer mClearTimer;
 
-        private HttpApiServer mHttpServer;
+        private readonly HttpApiServer mHttpServer;
 
-        private ConcurrentDictionary<string, LimitItem> mIpLimitTable = new ConcurrentDictionary<string, LimitItem>();
+        private readonly ConcurrentDictionary<string, LimitItem> mIpLimitTable = new ConcurrentDictionary<string, LimitItem>();
 
         public LimitItem GetItem(string ip)
         {
@@ -81,7 +81,7 @@ namespace BeetleX.FastHttpApi
 
             private long mEnbaledTime = 0;
 
-            private HttpApiServer mServer;
+            private readonly HttpApiServer mServer;
 
             private int mRPS;
 

@@ -28,7 +28,7 @@ namespace BeetleX.FastHttpApi
 
         private int mCount;
 
-        private System.Collections.Concurrent.ConcurrentQueue<IEventWork> mQueue;
+        private readonly System.Collections.Concurrent.ConcurrentQueue<IEventWork> mQueue;
 
         public int Count => mCount;
 
@@ -118,7 +118,7 @@ namespace BeetleX.FastHttpApi
     public class NextQueueGroup
     {
 
-        private List<NextQueue> mQueues = new List<NextQueue>();
+        private readonly List<NextQueue> mQueues = new List<NextQueue>();
 
         public IList<NextQueue> Queues => mQueues;
 
@@ -185,7 +185,7 @@ namespace BeetleX.FastHttpApi
 
         public int Count { get; private set; }
 
-        private static NextQueueGroup mUniqueQueueGroup = new NextQueueGroup(25 * Environment.ProcessorCount);
+        private static readonly NextQueueGroup mUniqueQueueGroup = new NextQueueGroup(25 * Environment.ProcessorCount);
 
         public ThreadQueueAttribute(string uniqueName)
         {

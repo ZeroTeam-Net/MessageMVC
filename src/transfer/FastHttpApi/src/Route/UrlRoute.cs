@@ -32,7 +32,7 @@ namespace BeetleX.FastHttpApi
 
         public bool UrlIgnoreCase { get; set; }
 
-        private List<string> mItems = new List<string>();
+        private readonly List<string> mItems = new List<string>();
 
         public string Path { get; private set; }
 

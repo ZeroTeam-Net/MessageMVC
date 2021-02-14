@@ -25,11 +25,11 @@ namespace BeetleX.FastHttpApi
             return new HttpPacket(mServer, this.mDataPacketSerializer);
         }
 
-        private HttpOptions mServerConfig;
+        private readonly HttpOptions mServerConfig;
 
-        private HttpApiServer mServer;
+        private readonly HttpApiServer mServer;
 
-        private PacketDecodeCompletedEventArgs mCompletedArgs = new PacketDecodeCompletedEventArgs();
+        private readonly PacketDecodeCompletedEventArgs mCompletedArgs = new PacketDecodeCompletedEventArgs();
 
         private HttpRequest mRequest;
 
@@ -41,7 +41,7 @@ namespace BeetleX.FastHttpApi
 
         private DataFrame mDataPacket;
 
-        private WebSockets.IDataFrameSerializer mDataPacketSerializer;
+        private readonly WebSockets.IDataFrameSerializer mDataPacketSerializer;
 
         private void OnHttpDecode(ISession session, PipeStream pstream)
         {

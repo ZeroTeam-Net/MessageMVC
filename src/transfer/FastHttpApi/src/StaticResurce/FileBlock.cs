@@ -26,7 +26,7 @@ namespace BeetleX.FastHttpApi.StaticResurce
 
         public bool GZip { get; set; }
 
-        private FileResource mFileResource;
+        private readonly FileResource mFileResource;
 
         private GZipStream gZipStream;
 

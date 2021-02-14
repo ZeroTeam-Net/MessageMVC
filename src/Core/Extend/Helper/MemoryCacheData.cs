@@ -57,10 +57,38 @@ namespace Agebull.EntityModel.Common
         DateTime expiration;
 
         /// <summary>
+        /// 取消令牌
+        /// </summary>
+        protected CancellationToken Token { get; private set; }
+
+        /// <summary>
+        /// 缓存名称
+        /// </summary>
+        public string CacheName { get;set; } 
+
+        /// <summary>
+        /// 构造
+        /// </summary>
+        protected MemoryCacheData()
+        {
+            CacheName = GetType().Name;
+        }
+
+        /// <summary>
         /// 重置数据
         /// </summary>
         public Task Reset()
         {
+            expiration = DateTime.MinValue;
+            return LoadData();
+        }
+
+        /// <summary>
+        /// 重置数据
+        /// </summary>
+        public Task Load(CancellationToken token)
+        {
+            Token = token;
             expiration = DateTime.MinValue;
             return LoadData();
         }
@@ -74,17 +102,17 @@ namespace Agebull.EntityModel.Common
             if (Data != null)
             {
                 if (expiration < DateTime.Now && Interlocked.Increment(ref IsLoading) == 1)
-                    ScopeRuner.RunScope($"{GetType().Name}-LoadData", LoadInner, ContextInheritType.None);
+                    ScopeRuner.RunScope($"{CacheName}-LoadData", LoadInner, ContextInheritType.None);
                 return Task.FromResult(Data);
             }
             if (IsLoading < 0)
-                throw new Exception($"{GetType().FullName}.{GetType().FullName}.Load暂时不可用，请3秒后再试");
+                throw new Exception($"{CacheName}.LoadData暂时不可用，请3秒后再试");
 
             var task = new TaskCompletionSource<TData>();
             waitTasks.Add((DateTime.Now, task));
             if (Interlocked.Increment(ref IsLoading) == 1)
             {
-                ScopeRuner.RunScope($"{GetType().Name}-LoadData", LoadInner, ContextInheritType.None);
+                ScopeRuner.RunScope($"{CacheName}-LoadData", LoadInner, ContextInheritType.None);
             }
             return task.Task;
         }
@@ -101,7 +129,7 @@ namespace Agebull.EntityModel.Common
         async Task LoadInner()
         {
             await Task.Yield();
-            using var di = Logger.BeginScope($"{GetType().FullName}.Load");
+            using var di = Logger.BeginScope($"{CacheName}.LoadInner");
             try
             {
                 Data = await DoLoad();
@@ -120,7 +148,7 @@ namespace Agebull.EntityModel.Common
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, $"{GetType().FullName}.Load");
+                Logger.LogError(ex, CacheName);
                 if (Data != null)
                 {
                     expiration = DateTime.Now.AddSeconds(RetryWaitSecond);
@@ -130,7 +158,7 @@ namespace Agebull.EntityModel.Common
             var array = waitTasks.ToArray();
             if (++tryCount < MaxTryCount)
             {
-                Logger.LogError($"{GetType().FullName}.Load未读到数据，延迟{RetryWaitSecond}秒后重试");
+                Logger.LogError($"{CacheName}.LoadInner未读到数据，延迟{RetryWaitSecond}秒后重试");
 
                 foreach (var task in array)
                 {
@@ -138,7 +166,7 @@ namespace Agebull.EntityModel.Common
                     {
                         try
                         {
-                            task.Item2.SetException(new TimeoutException($"{GetType().FullName}.Load已超时({TimeoutSecond}秒)，宣告失败"));
+                            task.Item2.SetException(new TimeoutException($"{CacheName}.Load已超时({TimeoutSecond}秒)，宣告失败"));
                         }
                         catch
                         {
@@ -152,7 +180,7 @@ namespace Agebull.EntityModel.Common
             }
             else
             {
-                var msg = $"{GetType().FullName}.Load重试{MaxTryCount}次未读到数据，宣告失败";
+                var msg = $"{CacheName}.Load重试{MaxTryCount}次未读到数据，宣告失败";
                 Logger.LogError(msg);
                 IsLoading = -1;//标记异常
                 await Task.Delay(1);
@@ -161,7 +189,7 @@ namespace Agebull.EntityModel.Common
                 {
                     try
                     {
-                        task.Item2.SetException(new TimeoutException(msg));
+                        task.Item2.TrySetException(new TimeoutException(msg));
                     }
                     catch
                     {

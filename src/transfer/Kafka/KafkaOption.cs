@@ -105,13 +105,13 @@ namespace ZeroTeam.MessageMVC.Kafka
             if (haseConsumer)
             {
                 LoadConsumer();
-                if (Consumer.BootstrapServers.IsBlank() || Consumer.GroupId.IsBlank())
+                if (Consumer.BootstrapServers.IsMissing() || Consumer.GroupId.IsMissing())
                     throw new ZeroOptionException(optionName, sectionName, "Consumer.BootstrapServers与Consumer.GroupId不能为空");
             }
             if (haseProducer)
             {
                 LoadProducer();
-                if (Producer.BootstrapServers.IsBlank())
+                if (Producer.BootstrapServers.IsMissing())
                     throw new ZeroOptionException(optionName, sectionName, "Producer.BootstrapServers不能为空");
             }
         }

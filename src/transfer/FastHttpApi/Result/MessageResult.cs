@@ -37,7 +37,7 @@ namespace BeetleX.FastHttpApi
             }
             else if (Message.DataState.HasFlag(MessageDataState.ResultOffline))
             {
-                if (Message.Result.IsBlank())
+                if (Message.Result.IsMissing())
                     return;//  bytes = "OK".ToUtf8Bytes();
                 else
                     bytes = Message.Result.ToUtf8Bytes();

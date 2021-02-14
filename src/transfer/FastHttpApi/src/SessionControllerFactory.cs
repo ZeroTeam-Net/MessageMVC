@@ -9,7 +9,7 @@ namespace BeetleX.FastHttpApi
 
         const string FACTORY_TAG = "__CONTROLLER_FACTORY_TAG";
 
-        private ConcurrentDictionary<string, object> mControllers = new ConcurrentDictionary<string, object>();
+        private readonly ConcurrentDictionary<string, object> mControllers = new ConcurrentDictionary<string, object>();
 
         private IServer mServer;
 

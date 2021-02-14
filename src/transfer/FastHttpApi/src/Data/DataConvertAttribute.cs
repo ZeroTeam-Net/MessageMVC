@@ -48,7 +48,7 @@ namespace BeetleX.FastHttpApi.Data
             mEncoding = encoding;
         }
 
-        private string mEncoding;
+        private readonly string mEncoding;
 
         public override void Execute(IDataContext dataContext, HttpRequest request)
         {
@@ -98,9 +98,9 @@ namespace BeetleX.FastHttpApi.Data
             }
         }
 
-        private string mEndBoundary;
+        private readonly string mEndBoundary;
 
-        private string mStartBoundary;
+        private readonly string mStartBoundary;
 
         public const string ContentDisposition = "Content-Disposition";
 

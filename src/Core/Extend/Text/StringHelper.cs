@@ -44,6 +44,7 @@ namespace System
         /// </summary>
         /// <param name="str"></param>
         /// <returns>是否为空</returns>
+        [Obsolete]
         public static bool IsBlank(this string str) => string.IsNullOrWhiteSpace(str);
 
         /// <summary>
@@ -51,7 +52,22 @@ namespace System
         /// </summary>
         /// <param name="str"></param>
         /// <returns>是否为空</returns>
+        [Obsolete]
         public static bool IsNotBlank(this string str) => !string.IsNullOrWhiteSpace(str);
+
+        /// <summary>
+        /// 是否为空
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns>是否为空</returns>
+        public static bool IsMissing(this string str) => string.IsNullOrWhiteSpace(str);
+
+        /// <summary>
+        /// 是否非空
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns>是否为空</returns>
+        public static bool IsPresent(this string str) => !string.IsNullOrWhiteSpace(str);
 
         /// <summary>
         /// 是否其中一或多个为空
@@ -237,8 +253,8 @@ namespace System
         /// <returns> </returns>
         public static bool IsMe(this string a, string b)
         {
-            return a.IsBlank()
-                ? b.IsBlank()
+            return a.IsMissing()
+                ? b.IsMissing()
                 : a.Equals(b, StringComparison.OrdinalIgnoreCase);
         }
         /// <summary>
@@ -249,7 +265,7 @@ namespace System
         /// <returns> </returns>
         public static bool IsFirst(this string a, string b)
         {
-            return !a.IsBlank() && !b.IsBlank() && a.IndexOf(b) == 0;
+            return !a.IsMissing() && !b.IsMissing() && a.IndexOf(b) == 0;
         }
 
         /// <summary>

@@ -24,11 +24,11 @@ namespace BeetleX.FastHttpApi
 
         public string Type { get; private set; }
 
-        private string mLogPath;
+        private readonly string mLogPath;
 
         private int FileIndex = 0;
 
-        private SingleThreadDispatcher<LogItem> mDispatcher;
+        private readonly SingleThreadDispatcher<LogItem> mDispatcher;
 
         private System.IO.StreamWriter mWriter;
 

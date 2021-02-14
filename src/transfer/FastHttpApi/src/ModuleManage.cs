@@ -36,11 +36,11 @@ namespace BeetleX.FastHttpApi
             mUpdateTimer = new System.Threading.Timer(OnUpdateHandler, null, 5000, 5000);
         }
 
-        private System.Threading.Timer mUpdateTimer;
+        private readonly System.Threading.Timer mUpdateTimer;
 
         private int mUpdateCount = 0;
 
-        private System.Collections.Concurrent.ConcurrentDictionary<string, UpdateItem> mUpdateItems = new System.Collections.Concurrent.ConcurrentDictionary<string, UpdateItem>();
+        private readonly System.Collections.Concurrent.ConcurrentDictionary<string, UpdateItem> mUpdateItems = new System.Collections.Concurrent.ConcurrentDictionary<string, UpdateItem>();
 
         class UpdateItem
         {
@@ -112,11 +112,11 @@ namespace BeetleX.FastHttpApi
             }
         }
 
-        private FileSystemWatcher fileSystemWatcher;
+        private readonly FileSystemWatcher fileSystemWatcher;
 
-        private string mRunningPath;
+        private readonly string mRunningPath;
 
-        private string mPath;
+        private readonly string mPath;
 
         public HttpApiServer Server { get; set; }
 

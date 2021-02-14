@@ -88,7 +88,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         {
             try
             {
-                if (file.IsBlank())
+                if (file.IsMissing())
                 {
                     return false;
                 }

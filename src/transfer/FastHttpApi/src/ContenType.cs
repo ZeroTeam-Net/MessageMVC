@@ -299,7 +299,7 @@ namespace BeetleX.FastHttpApi
             }
         }
 
-        private static Dictionary<string, string> mContent = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> mContent = new Dictionary<string, string>();
 
        private const string OTHER_OCTET_STREAM = "application/octet-stream";
 

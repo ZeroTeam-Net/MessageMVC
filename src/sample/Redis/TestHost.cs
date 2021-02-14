@@ -11,7 +11,7 @@ namespace MicroZero.Kafka.QueueStation
 {
     public class TestHost : IHostedService
     {
-        ILogger _logger;
+        readonly ILogger _logger;
         public TestHost(ILogger<TestHost> logger)
         {
             _logger = logger;

@@ -21,7 +21,7 @@ namespace BeetleX.FastHttpApi
             mData = Encoding.UTF8.GetBytes($"Content-Type: {type}\r\n");
         }
 
-        private byte[] mData;
+        private readonly byte[] mData;
 
         public void Write(PipeStream stream)
         {
@@ -39,7 +39,7 @@ namespace BeetleX.FastHttpApi
             mData = Encoding.UTF8.GetBytes(value);
         }
 
-        private byte[] mData;
+        private readonly byte[] mData;
 
         public void Write(PipeStream stream)
         {
@@ -201,7 +201,7 @@ namespace BeetleX.FastHttpApi
             Add(HeaderTypeFactory.USER_AGENT);
         }
 
-        private static System.Collections.Generic.Dictionary<long, HeaderType> mHeaderTypes = new Dictionary<long, HeaderType>();
+        private static readonly System.Collections.Generic.Dictionary<long, HeaderType> mHeaderTypes = new Dictionary<long, HeaderType>();
 
         private static int mCount;
 
@@ -263,7 +263,7 @@ namespace BeetleX.FastHttpApi
     public class Header
     {
 
-        private Dictionary<long, HeaderValue> mValues = new Dictionary<long, HeaderValue>();
+        private readonly Dictionary<long, HeaderValue> mValues = new Dictionary<long, HeaderValue>();
 
         public void Add(string name, string value)
         {

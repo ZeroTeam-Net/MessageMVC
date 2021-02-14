@@ -19,17 +19,17 @@ namespace BeetleX.FastHttpApi
 
         }
 
-        private System.Diagnostics.Process mProcess;
+        private readonly System.Diagnostics.Process mProcess;
 
-        private long mCpuMaxTime;
+        private readonly long mCpuMaxTime;
 
-        private long mTotalMemory;
+        private readonly long mTotalMemory;
 
-        private HttpApiServer mServer;
+        private readonly HttpApiServer mServer;
 
         private long mLastTime;
 
-        private int mProcessorCount;
+        private readonly int mProcessorCount;
 
         private long mLastTotalRequest;
 

@@ -73,7 +73,8 @@ namespace ZeroTeam.MessageMVC.Tcp
             Logger.Trace(() => $"远程连接关闭:{e.Session.RemoteEndPoint}");
             base.Disconnect(server, e);
         }
-        Dictionary<long, ISession> Sessions = new Dictionary<long, ISession>();
+
+        readonly Dictionary<long, ISession> Sessions = new Dictionary<long, ISession>();
         private void OnReceive(SessionReceiveEventArgs e)
         {
             TcpOption.Instance.ConcurrencySemaphore.Wait();
@@ -84,7 +85,7 @@ namespace ZeroTeam.MessageMVC.Tcp
                 return;
             }
             message = message.Trim('\0').Trim();
-            if (message.IsBlank())
+            if (message.IsMissing())
             {
                 return;
             }

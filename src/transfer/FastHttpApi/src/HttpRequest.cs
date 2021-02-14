@@ -38,7 +38,7 @@ namespace BeetleX.FastHttpApi
 
         private static long mID = 0;
 
-        private static object mLockID = new object();
+        private static readonly object mLockID = new object();
 
         internal static long GetID()
         {
@@ -127,9 +127,9 @@ namespace BeetleX.FastHttpApi
 
         private bool mKeepAlive = true;
 
-        private Data.DataContxt mDataContxt;
+        private readonly Data.DataContxt mDataContxt;
 
-        private List<PostFile> mFiles = new List<PostFile>();
+        private readonly List<PostFile> mFiles = new List<PostFile>();
 
         public IList<PostFile> Files => mFiles;
 
@@ -147,9 +147,9 @@ namespace BeetleX.FastHttpApi
 
         private int mQueryStringIndex;
 
-        private QueryString mQueryString;
+        private readonly QueryString mQueryString;
 
-        private Cookies mCookies;
+        private readonly Cookies mCookies;
 
         private PipeStream mStream;
 

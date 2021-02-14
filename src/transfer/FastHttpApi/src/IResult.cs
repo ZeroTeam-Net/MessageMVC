@@ -277,7 +277,7 @@ namespace BeetleX.FastHttpApi
 
         public object Data { get; set; }
 
-        private bool mAutoGzip = false;
+        private readonly bool mAutoGzip = false;
 
         private ArraySegment<byte> mJsonData;
 
@@ -471,11 +471,11 @@ namespace BeetleX.FastHttpApi
                 mContentType = contentType;
         }
 
-        private string mFileName;
+        private readonly string mFileName;
 
-        private byte[] mData;
+        private readonly byte[] mData;
 
-        private IHeaderItem mContentType = ContentTypes.OCTET_STREAM;
+        private readonly IHeaderItem mContentType = ContentTypes.OCTET_STREAM;
 
         public IHeaderItem ContentType => mContentType;
 

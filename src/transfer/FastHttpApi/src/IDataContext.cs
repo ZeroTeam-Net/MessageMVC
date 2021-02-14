@@ -19,7 +19,7 @@ namespace BeetleX.FastHttpApi
             mDataContext = dataContext;
         }
 
-        private Data.IDataContext mDataContext;
+        private readonly Data.IDataContext mDataContext;
 
         public HttpRequest Request { get; set; }
 
@@ -113,7 +113,7 @@ namespace BeetleX.FastHttpApi
             mDataContext = dataContext;
         }
 
-        private Data.IDataContext mDataContext;
+        private readonly Data.IDataContext mDataContext;
 
         public NextQueue Queue { get; set; }
 

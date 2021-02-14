@@ -58,13 +58,13 @@ namespace BeetleX.FastHttpApi.StaticResurce
             }
         }
 
-        private ConcurrentDictionary<string, FileResource> mResources = new ConcurrentDictionary<string, FileResource>(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, FileResource> mResources = new ConcurrentDictionary<string, FileResource>(StringComparer.OrdinalIgnoreCase);
 
-        private ConcurrentDictionary<string, FileContentType> mExts = new ConcurrentDictionary<string, FileContentType>(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, FileContentType> mExts = new ConcurrentDictionary<string, FileContentType>(StringComparer.OrdinalIgnoreCase);
 
-        private List<FileSystemWatcher> mFileWatch = new List<FileSystemWatcher>();
+        private readonly List<FileSystemWatcher> mFileWatch = new List<FileSystemWatcher>();
 
-        private List<string> mDefaultPages = new List<string>();
+        private readonly List<string> mDefaultPages = new List<string>();
 
         public List<string> DefaultPages => mDefaultPages;
 

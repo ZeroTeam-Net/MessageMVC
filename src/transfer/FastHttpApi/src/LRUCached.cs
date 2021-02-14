@@ -18,9 +18,9 @@ namespace BeetleX.FastHttpApi
 
         public Action<object> Removed { get; set; }
 
-        private ConcurrentDictionary<string, LinkedListNode<CacheItem>> mKeyCached;
+        private readonly ConcurrentDictionary<string, LinkedListNode<CacheItem>> mKeyCached;
 
-        private LinkedList<CacheItem> mCachedItems = new LinkedList<CacheItem>();
+        private readonly LinkedList<CacheItem> mCachedItems = new LinkedList<CacheItem>();
 
         private void ActiveItem(LinkedListNode<CacheItem> item)
         {

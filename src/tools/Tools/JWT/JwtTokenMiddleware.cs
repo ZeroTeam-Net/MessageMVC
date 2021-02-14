@@ -51,7 +51,7 @@ namespace ZeroTeam.MessageMVC.Context
 
         private static bool CheckToken(IInlineMessage message, IZeroContext context)
         {
-            if (message.TraceInfo.Token.IsBlank() || !message.IsOutAccess)
+            if (message.TraceInfo.Token.IsMissing() || !message.IsOutAccess)
             {
                 return true;
             }

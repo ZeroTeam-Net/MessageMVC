@@ -97,7 +97,7 @@ namespace ZeroTeam.MessageMVC
             }
             foreach (var kv in option)
             {
-                if (kv.Value.IsBlank())
+                if (kv.Value.IsMissing())
                     continue;
 
                 if ("LocalTunnel".IsMe(kv.Key))
@@ -122,10 +122,10 @@ namespace ZeroTeam.MessageMVC
                     BindingPoster(poster.Key, poster.Value, services);
             }
 
-            if (DefaultPosterName.IsBlank() || !posters.TryGetValue(DefaultPosterName, out DefaultPoster))
+            if (DefaultPosterName.IsMissing() || !posters.TryGetValue(DefaultPosterName, out DefaultPoster))
             {
                 var f = posters.FirstOrDefault();
-                if (!f.Key.IsBlank())
+                if (!f.Key.IsMissing())
                 {
                     DefaultPosterName = f.Key;
                     DefaultPoster = f.Value;

@@ -51,7 +51,7 @@ namespace BeetleX.FastHttpApi.WebSockets
 
         public bool RSV3 { get; set; }
 
-        private HttpApiServer mServer;
+        private readonly HttpApiServer mServer;
 
         internal IDataFrameSerializer DataPacketSerializer { get; set; }
 

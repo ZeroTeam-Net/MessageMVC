@@ -118,11 +118,11 @@ namespace ZeroTeam.MessageMVC.Tools
 
             ReceiptService = option.ReceiptService;
             ReceiptApi = option.ReceiptApi;
-            EnableReceipt = option.EnableReceipt && ReceiptService.IsNotBlank() && ReceiptApi.IsNotBlank();
+            EnableReceipt = option.EnableReceipt && ReceiptService.IsPresent() && ReceiptApi.IsPresent();
 
             JwtIssue = option.JwtIssue;
             JwtAppSecretByte = option.JwtAppSecret?.ToUtf8Bytes();
-            EnableJwtToken = option.EnableJwtToken && JwtIssue.IsNotBlank() && JwtAppSecretByte != null;
+            EnableJwtToken = option.EnableJwtToken && JwtIssue.IsPresent() && JwtAppSecretByte != null;
         }
         #endregion
     }

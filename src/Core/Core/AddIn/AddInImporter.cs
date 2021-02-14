@@ -21,7 +21,7 @@ namespace ZeroTeam.MessageMVC.AddIn
 
         static bool CheckAssembly(string file)
         {
-            if (file.IsBlank())
+            if (file.IsMissing())
             {
                 return false;
             }

@@ -81,7 +81,7 @@ namespace BeetleX.FastHttpApi
 
         public List<FilterAttribute> Filters { get; set; }
 
-        private MethodHandler mMethodHandler;
+        private readonly MethodHandler mMethodHandler;
 
         private long mErrors;
 
@@ -134,7 +134,7 @@ namespace BeetleX.FastHttpApi
             }
         }
 
-        private MethodInfo mMethod;
+        private readonly MethodInfo mMethod;
 
         public MethodInfo MethodInfo => mMethod;
 
@@ -716,7 +716,7 @@ namespace BeetleX.FastHttpApi
                 mField = value;
             }
         }
-        private GetValueHandler mGetValue;
+        private readonly GetValueHandler mGetValue;
         public GetValueHandler GetValue
         {
             get
@@ -725,7 +725,7 @@ namespace BeetleX.FastHttpApi
             }
 
         }
-        private SetValueHandler mSetValue;
+        private readonly SetValueHandler mSetValue;
         public SetValueHandler SetValue
         {
             get
@@ -770,7 +770,7 @@ namespace BeetleX.FastHttpApi
                 mProperty = value;
             }
         }
-        private GetValueHandler mGetValue;
+        private readonly GetValueHandler mGetValue;
         public GetValueHandler Get
         {
             get
@@ -779,7 +779,7 @@ namespace BeetleX.FastHttpApi
             }
 
         }
-        private SetValueHandler mSetValue;
+        private readonly SetValueHandler mSetValue;
         public SetValueHandler Set
         {
             get
@@ -796,7 +796,7 @@ namespace BeetleX.FastHttpApi
             mExecute = ReflectionHandlerFactory.MethodHandler(method);
             mInfo = method;
         }
-        private MethodInfo mInfo;
+        private readonly MethodInfo mInfo;
         public MethodInfo Info
         {
             get
@@ -804,7 +804,7 @@ namespace BeetleX.FastHttpApi
                 return mInfo;
             }
         }
-        private FastMethodHandler mExecute;
+        private readonly FastMethodHandler mExecute;
         public FastMethodHandler Execute
         {
             get
@@ -819,7 +819,7 @@ namespace BeetleX.FastHttpApi
         {
             mInstance = ReflectionHandlerFactory.InstanceHandler(type);
         }
-        private ObjectInstanceHandler mInstance;
+        private readonly ObjectInstanceHandler mInstance;
         public ObjectInstanceHandler Instance
         {
             get
@@ -838,8 +838,8 @@ namespace BeetleX.FastHttpApi
 
         #region field handler
 
-        private static Dictionary<FieldInfo, GetValueHandler> mFieldGetHandlers = new Dictionary<FieldInfo, GetValueHandler>();
-        private static Dictionary<FieldInfo, SetValueHandler> mFieldSetHandlers = new Dictionary<FieldInfo, SetValueHandler>();
+        private static readonly Dictionary<FieldInfo, GetValueHandler> mFieldGetHandlers = new Dictionary<FieldInfo, GetValueHandler>();
+        private static readonly Dictionary<FieldInfo, SetValueHandler> mFieldSetHandlers = new Dictionary<FieldInfo, SetValueHandler>();
         public static GetValueHandler FieldGetHandler(FieldInfo field)
         {
             GetValueHandler handler;
@@ -915,8 +915,8 @@ namespace BeetleX.FastHttpApi
 
         #region Property Handler
 
-        private static Dictionary<PropertyInfo, GetValueHandler> mPropertyGetHandlers = new Dictionary<PropertyInfo, GetValueHandler>();
-        private static Dictionary<PropertyInfo, SetValueHandler> mPropertySetHandlers = new Dictionary<PropertyInfo, SetValueHandler>();
+        private static readonly Dictionary<PropertyInfo, GetValueHandler> mPropertyGetHandlers = new Dictionary<PropertyInfo, GetValueHandler>();
+        private static readonly Dictionary<PropertyInfo, SetValueHandler> mPropertySetHandlers = new Dictionary<PropertyInfo, SetValueHandler>();
         public static SetValueHandler PropertySetHandler(PropertyInfo property)
         {
             SetValueHandler handler;
@@ -1019,7 +1019,7 @@ namespace BeetleX.FastHttpApi
 
         #region Method Handler
 
-        private static Dictionary<MethodInfo, FastMethodHandler> mMethodHandlers = new Dictionary<MethodInfo, FastMethodHandler>();
+        private static readonly Dictionary<MethodInfo, FastMethodHandler> mMethodHandlers = new Dictionary<MethodInfo, FastMethodHandler>();
         public static FastMethodHandler MethodHandler(MethodInfo method)
         {
             FastMethodHandler handler = null;
@@ -1112,7 +1112,7 @@ namespace BeetleX.FastHttpApi
 
         #region Instance Handler
 
-        private static Dictionary<Type, ObjectInstanceHandler> mInstanceHandlers = new Dictionary<Type, ObjectInstanceHandler>();
+        private static readonly Dictionary<Type, ObjectInstanceHandler> mInstanceHandlers = new Dictionary<Type, ObjectInstanceHandler>();
         public static ObjectInstanceHandler InstanceHandler(Type type)
         {
             ObjectInstanceHandler handler;

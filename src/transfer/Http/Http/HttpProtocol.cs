@@ -7,8 +7,8 @@ namespace ZeroTeam.MessageMVC.Http
     /// </summary>
     internal class HttpProtocol
     {
-        static string[] methods = new[] { "GET", "POST", "OPTIONS" };
-        static string[] headers = new[]
+        static readonly string[] methods = new[] { "GET", "POST", "OPTIONS" };
+        static readonly string[] headers = new[]
         {
             "x-requested-with",
             "content-type",

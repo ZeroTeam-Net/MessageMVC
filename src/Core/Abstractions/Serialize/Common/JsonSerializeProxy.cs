@@ -25,8 +25,8 @@ namespace ZeroTeam.MessageMVC.Messages
             return option;
         }
 
-        static JsonSerializerOptions aOptions = Options(false);
-        static JsonSerializerOptions bOptions = Options(true);
+        static readonly JsonSerializerOptions aOptions = Options(false);
+        static readonly JsonSerializerOptions bOptions = Options(true);
         /// <summary>
         /// 反序列化
         /// </summary>

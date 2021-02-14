@@ -13,9 +13,9 @@ namespace BeetleX.FastHttpApi
 
         public VerifyType Type { get; set; } = VerifyType.None;
 
-        private List<IPv4Match> mWhiteList = new List<IPv4Match>();
+        private readonly List<IPv4Match> mWhiteList = new List<IPv4Match>();
 
-        private List<IPv4Match> mBlackList = new List<IPv4Match>();
+        private readonly List<IPv4Match> mBlackList = new List<IPv4Match>();
 
         private IPv4Match[] mWhiteMatchs = new IPv4Match[0];
 
@@ -217,9 +217,9 @@ namespace BeetleX.FastHttpApi
             return data[0] << 24 | data[1] << 16 | data[2] << 8 | data[3];
         }
 
-        private int IPValue;
+        private readonly int IPValue;
 
-        private uint? Mark;
+        private readonly uint? Mark;
 
         public bool Match(System.Net.IPAddress remote)
         {

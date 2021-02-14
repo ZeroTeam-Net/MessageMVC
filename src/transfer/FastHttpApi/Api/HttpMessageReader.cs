@@ -1,12 +1,17 @@
-﻿using BeetleX.FastHttpApi.Data;
+﻿using Agebull.Common.Ioc;
+using Agebull.Common.Logging;
+using BeetleX.FastHttpApi.Data;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using ZeroTeam.MessageMVC;
 using ZeroTeam.MessageMVC.Context;
 using ZeroTeam.MessageMVC.Messages;
+using ZeroTeam.MessageMVC.Services;
+using ZeroTeam.MessageMVC.ZeroApis;
 
 namespace BeetleX.FastHttpApi
 {
@@ -15,6 +20,55 @@ namespace BeetleX.FastHttpApi
     /// </summary>
     public class HttpMessageReader
     {
+
+        #region 消息接收与处理
+
+        /// <summary>
+        /// Http消息接收处理
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="response"></param>
+        public static bool OnHttpRequest(HttpApiServer server, HttpRequest request, HttpResponse response)
+        {
+            if (Path.GetFileName(request.BaseUrl).Contains('.'))
+            {
+                return false;
+            }
+            var writer = new HttpWriter
+            {
+                Request = request,
+                Response = response
+            };
+            try
+            {
+                //命令
+                var reader = new HttpMessageReader();
+                var (success, message) = reader.CheckRequest(server, request, response);
+                //开始调用
+                if (success)
+                {
+                    var service = ZeroFlowControl.GetService(message.Service) ?? new ZeroService
+                    {
+                        ServiceName = message.Service,
+                        Receiver = new EmptyReceiver(),
+                        Serialize = DependencyHelper.GetService<ISerializeProxy>()
+                    };
+                    MessageProcessor.RunOnMessagePush(service, message, false, writer);
+                }
+                else
+                {
+                    writer.WriteResult(ApiResultHelper.State(OperatorStatusCode.NoFind));
+                }
+            }
+            catch (Exception e)
+            {
+                ScopeRuner.ScopeLogger.Exception(e);
+                writer.WriteResult(ApiResultHelper.State(OperatorStatusCode.BusinessError));
+            }
+            return true;
+        }
+        #endregion
+
         /// <summary>
         ///     请求的内容
         /// </summary>

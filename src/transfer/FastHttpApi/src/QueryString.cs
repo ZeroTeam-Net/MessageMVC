@@ -12,7 +12,7 @@ namespace BeetleX.FastHttpApi
             mDataContext = dataContext;
         }
 
-        private Data.IDataContext mDataContext;
+        private readonly Data.IDataContext mDataContext;
 
 
         public string this[string name]

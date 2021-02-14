@@ -113,7 +113,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.Logging
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.FastHttpApi", "src\transfer\FastHttpApi\ZeroTeam.MessageMVC.FastHttpApi.csproj", "{EAAF0190-A375-430A-AED0-DF4C698CD4C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastHttpApi", "src\sample\FastHttpApi\FastHttpApi.csproj", "{D8E3E5E5-6838-4893-B3D9-05A7D447DD62}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.FastHttpApi.Sample", "src\sample\FastHttpApi\ZeroTeam.MessageMVC.FastHttpApi.Sample.csproj", "{D8E3E5E5-6838-4893-B3D9-05A7D447DD62}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

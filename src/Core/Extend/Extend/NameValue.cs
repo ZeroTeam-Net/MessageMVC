@@ -33,6 +33,12 @@ namespace Agebull.EntityModel.Common
         /// </summary>
         [JsonProperty("value")]
         public TValue Value;
+
+        ///<inheritdoc/>
+        public override string ToString()
+        {
+            return $"{Name} : {Value}";
+        }
     }
 
 

@@ -198,7 +198,7 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
             var option = ConfigurationHelper.Get<RabbitMQOption>(sectionName);
             if (option == null)
                 throw new ZeroOptionException(optionName, sectionName);
-            if (option.HostName.IsBlank() || option.Port < 0 || option.Port > 65536)
+            if (option.HostName.IsMissing() || option.Port < 0 || option.Port > 65536)
                 throw new ZeroOptionException(optionName, sectionName, "HostName或Port不正确");
 
             HostName = option.HostName;

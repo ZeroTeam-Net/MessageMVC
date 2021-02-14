@@ -45,7 +45,7 @@ namespace ZeroTeam.MessageMVC.Tcp
         /// </summary>
         Task IZeroDiscover.Discovery()
         {
-            if (TcpOption.Instance.Client == null || TcpOption.Instance.Client.Address.IsBlank() || 
+            if (TcpOption.Instance.Client == null || TcpOption.Instance.Client.Address.IsMissing() || 
                 TcpOption.Instance.Client.Port <= 1024 || TcpOption.Instance.Client.Port >= short.MaxValue)
                 return Task.CompletedTask;
             client = SocketFactory.CreateClient<AsyncTcpClient>(TcpOption.Instance.Client.Address, TcpOption.Instance.Client.Port);
@@ -145,7 +145,7 @@ namespace ZeroTeam.MessageMVC.Tcp
                     return;
                 }
                 msg = msg.Trim('\0').Trim();
-                if (msg.IsBlank())
+                if (msg.IsMissing())
                 {
                     return;
                 }
