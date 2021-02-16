@@ -136,9 +136,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     return false;
                 }
             }
-            catch(Exception ex)
+            catch
             {
-                
                 return false;
             }
             return true;

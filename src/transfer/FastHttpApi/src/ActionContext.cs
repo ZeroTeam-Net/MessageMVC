@@ -205,7 +205,7 @@ namespace BeetleX.FastHttpApi
                 {
                     if (Handler.Async)
                     {
-                        OnAsyncExecute(resultHandler);
+                        _=OnAsyncExecute(resultHandler);
                     }
                     else
                     {

@@ -110,7 +110,7 @@ namespace ZeroTeam.MessageMVC.Tcp
                 throw new ZeroOptionException(optionName, ServerName);
 
             if (haseProducer && Client == null)
-                throw new ZeroOptionException(optionName, ServerName);
+                throw new ZeroOptionException(optionName, ClientName);
             if (Server == null)
                 return;
             if (Server.Concurrency <= 0)

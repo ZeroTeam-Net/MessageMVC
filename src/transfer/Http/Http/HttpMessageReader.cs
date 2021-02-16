@@ -158,7 +158,7 @@ namespace ZeroTeam.MessageMVC.Http
             {
                 Message.ExtensionDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 var request = HttpContext.Request;
-                if (!request.QueryString.HasValue)
+                if (request.QueryString.HasValue)
                     ReadArgument(request);
                 if (request.HasFormContentType)
                 {
