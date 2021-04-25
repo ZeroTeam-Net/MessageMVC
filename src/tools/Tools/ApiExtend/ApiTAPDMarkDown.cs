@@ -99,7 +99,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 {(api.Description ?? api.Caption)}
 
 **请求URL：** 
-` http://xx.com/{serviceInfo.Name}/{api.Route}`
+` http://xx.com/{serviceInfo.Name}/{api.Routes[0]}`
 
 **请求方式：**
 - POST

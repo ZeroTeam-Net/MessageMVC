@@ -172,7 +172,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 if (assembly.IsDynamic)
                     continue;
-                if (!CheckAssembly( assembly.Location))
+                if (!CheckAssembly(assembly.Location))
                     continue;
                 FindApies(assembly);
             }
@@ -306,6 +306,11 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 return;
             }
+            var routeAttr = GetCustomAttribute<RouteAttribute>(type);
+            //if (routeAttr == null)
+            //{
+            //    return;
+            //}
             logger.Debug("【解析类型】 {asm}", type.FullName);
 
             #region 服务类型检测
@@ -339,11 +344,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
             #region API发现
 
-            string routeHead = GetCustomAttribute<RouteAttribute>(type)?.Name.SafeTrim(' ', '\t', '\r', '\n', '/');
-            if (routeHead != null)
-            {
-                routeHead += "/";
-            }
 
             var defPage = GetCustomAttribute<ApiPageAttribute>(type)?.PageUrl?.SafeTrim();
             var defOption = GetCustomAttribute<ApiOptionAttribute>(type)?.Option ?? ApiOption.None;
@@ -351,31 +351,22 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
             foreach (var method in type.GetMethods(PublicFlags))
             {
-                CheckMethod(type, docx, service, routeHead, defPage, defOption, defCategory, method);
+                CheckMethod(type, docx, service, routeAttr, defPage, defOption, defCategory, method);
             }
             #endregion
         }
 
-        private void CheckMethod(Type type, XmlMember docx, ServiceInfo serviceInfo, string routeHead, string defPage, ApiOption defOption, string defCategory, MethodInfo method)
+        private void CheckMethod(Type type, XmlMember docx, ServiceInfo serviceInfo, RouteAttribute routeAttr, string defPage, ApiOption defOption, string defCategory, MethodInfo method)
         {
+            if (method.Name.Length > 4 && (method.Name.IndexOf("get_", StringComparison.Ordinal) == 0 || method.Name.IndexOf("set_", StringComparison.Ordinal) == 0))
+            {
+                return;
+            }
             var routeAttribute = GetCustomAttribute<RouteAttribute>(method);
             if (routeAttribute == null)
             {
                 return;
             }
-            if (method.Name.Length > 4 && (method.Name.IndexOf("get_", StringComparison.Ordinal) == 0 || method.Name.IndexOf("set_", StringComparison.Ordinal) == 0))
-            {
-                return;
-            }
-            var head = routeHead;
-            if (routeHead == null && method.DeclaringType != type)//基类方法,即增加自动前缀
-            {
-                head = type.Name;
-            }
-            var route = routeAttribute.Name == null
-                ? $"{head}{method.Name}"
-                : $"{head}{routeAttribute.Name.Trim(' ', '\t', '\r', '\n', '/')}";
-
             var accessOption = GetCustomAttribute<ApiOptionAttribute>(method);
             ApiOption option;
             if (accessOption != null)
@@ -393,7 +384,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             var api = new ApiActionInfo
             {
                 Name = method.Name,
-                Route = route,
+                Routes = GetRoutes(routeAttr?.Names, routeAttribute.Names),
                 ControllerName = type.GetTypeName(),
                 ControllerCaption = docx?.Caption,
                 Category = category ?? defCategory ?? docx?.Caption ?? docx?.Name,
@@ -465,11 +456,37 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                     }
                 }
             }
-
-            serviceInfo.Aips.Add(api.Route, api);
-            logger.Debug(() => $"【找到接口方法】{api.Route}=>{api.Name} {api.Caption}");
+            foreach (var path in api.Routes)
+            {
+                serviceInfo.Aips.Add(path, api);
+                logger.Debug(() => $"【找到接口方法】{path}=>{api.Name} {api.Caption}");
+            }
         }
 
+        string[] GetRoutes(string[] heads, string[] routes)
+        {
+            if (heads == null || heads.Length == 0)
+            {
+                return routes.Select(p => p.Trim(' ', '\t', '\r', '\n', '/')).ToArray();
+            }
+            heads = heads.Select(p => p.Trim(' ', '\t', '\r', '\n', '/')).ToArray();
+            var names = new List<string>();
+            foreach (var route in routes)
+            {
+                if (route[0] == '/')
+                {
+                    names.Add(route.Trim(' ', '\t', '\r', '\n', '/'));
+                    continue;
+                }
+                var last = route.Trim(' ', '\t', '\r', '\n', '/');
+                foreach (var head in heads)
+                {
+                    names.Add($"{head}/{last}");
+                }
+            }
+            return names.ToArray();
+
+        }
 
         #endregion
 

@@ -71,12 +71,12 @@ namespace {serviceInfo.Type.Namespace}.UnitTest
         /// {api.Caption}
         /// </summary>
         [Test]
-        public async Task {api.Route.Replace('/', '_')}()
+        public async Task {api.Routes[0].Replace('/', '_')}()
         {{
             var (msg, ser) = await MessagePoster.Post(new InlineMessage
             {{
                 ServiceName = ""{serviceInfo.Name}"",
-                ApiName = ""{api.Route}"",
+                ApiName = ""{api.Routes[0]}"",
                 Content = 
 @""{json}""
             }});
@@ -139,7 +139,7 @@ namespace {serviceInfo.Type.Namespace}.UnitTest
             var (msg, ser) = await MessagePoster.Post(new InlineMessage
             {{
                 ServiceName = ""{serviceInfo.Name}"",
-                ApiName = ""{api.Route}"",
+                ApiName = ""{api.Routes[0]}"",
                 Content = @""{json}""
             }});
             Assert.True(msg.State == MessageState.Success , msg.Result);

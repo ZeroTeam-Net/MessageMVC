@@ -28,7 +28,7 @@ namespace ZeroTeam.MessageMVC.Documents
         ///     Api路由地址
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string Route;
+        public string[] Routes;
 
         /// <summary>
         ///     承载页面

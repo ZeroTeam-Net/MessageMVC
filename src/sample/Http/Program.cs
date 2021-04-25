@@ -63,7 +63,7 @@ namespace ZeroTeam.MessageMVC.Http
             service.RegistWildcardAction(new ApiActionInfo
             {
                 Name = "*",
-                Route = "*",
+                Routes =new []{ "*" },
                 ControllerName = "DataEventProxy",
                 ControllerCaption = "DataEventProxy",
                 AccessOption = ApiOption.Public | ApiOption.Anymouse,

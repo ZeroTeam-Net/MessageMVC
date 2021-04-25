@@ -13,7 +13,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/ZeroTeam-Net/MessageMVC</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ZeroTeam-Net/MessageMVC.git</RepositoryUrl>
-    <Version>1.1.5.11</Version>
+    <Version>1.1.5.14</Version>
     <Authors>Agebull.Hu</Authors>
     <Company>ZeroTeam</Company>
     <Product>MessageMVC</Product>
@@ -34,7 +34,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
-    <PackageReference Include="BeetleX" Version="1.6.3.8" />
+    <PackageReference Include="BeetleX" Version="1.6.5.60" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Core\ZeroTeam.MessageMVC.Core.csproj" />

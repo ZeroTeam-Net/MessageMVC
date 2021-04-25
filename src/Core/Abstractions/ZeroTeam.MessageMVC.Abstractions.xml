@@ -1019,13 +1019,13 @@
             路由名称
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.ZeroApis.RouteAttribute.#ctor(System.String)">
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.RouteAttribute.#ctor(System.String[])">
             <summary>
             构造
             </summary>
-            <param name="name"></param>
+            <param name="names"></param>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroApis.RouteAttribute.Name">
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.RouteAttribute.Names">
             <summary>
             配置
             </summary>
@@ -2245,7 +2245,7 @@
                 分类
             </summary>
         </member>
-        <member name="F:ZeroTeam.MessageMVC.Documents.ApiDocument.Route">
+        <member name="F:ZeroTeam.MessageMVC.Documents.ApiDocument.Routes">
             <summary>
                 Api路由地址
             </summary>

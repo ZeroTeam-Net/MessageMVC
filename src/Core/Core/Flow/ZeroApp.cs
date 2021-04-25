@@ -105,7 +105,6 @@ namespace ZeroTeam.MessageMVC
                 ZeroFlowControl.Discove();
             ZeroAppOption.Instance.Discovery?.Invoke();
 
-            ZeroFlowControl.Discove();
             await ZeroFlowControl.Initialize();
             await ZeroFlowControl.RunAsync();
         }

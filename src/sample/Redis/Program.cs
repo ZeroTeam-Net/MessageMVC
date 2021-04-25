@@ -11,14 +11,15 @@ namespace MicroZero.Kafka.QueueStation
         static async Task Main()
         {
             var builder = new HostBuilder()
-                .UseMessageMVC(true, services =>
+                .UseMessageMVC(services =>
                 {
                     services.AddMessageMvcRedis();
                 })
-                .ConfigureServices((ctx, services) =>
-                {
-                    services.AddHostedService<TestHost>();
-                });
+                //.ConfigureServices((ctx, services) =>
+                //{
+                //    services.AddHostedService<TestHost>();
+                //})
+                ;
             await builder.Build().RunAsync();
         }
     }

@@ -94,7 +94,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
         private void ApiDoc(ServiceInfo serviceInfo, StringBuilder code, ApiActionInfo api)
         {
-            code.AppendLine($@"
+            code.Append($@"
 ## {api.ControllerCaption ?? api.ControllerName}-{(api.Caption ?? api.Name)}
 > {api.ControllerName}
 
@@ -102,9 +102,12 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 {(api.Description ?? api.Caption)}
 
 
-**请求URL：** 
-` http://xx.com/{serviceInfo.Name}/{api.Route}`
+**请求URL：**");
+            foreach (var path in api.Routes)
+                code.AppendLine($@"
+`http://xx.com/{serviceInfo.Name}/{path}`");
 
+            code.AppendLine($@"
 **请求方式：**
 - POST
 ");

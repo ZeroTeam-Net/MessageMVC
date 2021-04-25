@@ -10,15 +10,15 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// 构造
         /// </summary>
-        /// <param name="name"></param>
-        public RouteAttribute(string name)
+        /// <param name="names"></param>
+        public RouteAttribute(params string[] names)
         {
-            Name = name;
+            Names = names;
         }
         /// <summary>
         /// 配置
         /// </summary>
-        public string Name { get; }
+        public string[] Names { get; }
     }
 
 }

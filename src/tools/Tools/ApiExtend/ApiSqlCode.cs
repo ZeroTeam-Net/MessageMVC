@@ -34,7 +34,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
                 {
                     code.AppendLine($@"
 INSERT INTO `tb_app_api`(`app_id`,`service_name`,`model_name`,`model_caption`,`api_name`,`api_caption`,`url`,`option`,`memo`,`binding_pages`) 
-VALUES ('请修改为正确的AppId', '{serviceInfo.Name}', '{api.ControllerName}','{api.ControllerCaption}', '{api.Name}', '{api.Caption}', '{serviceInfo.Name}/{api.Route}','{(int)api.AccessOption}', '{api.Description}', '{api.PageUrl}');
+VALUES ('请修改为正确的AppId', '{serviceInfo.Name}', '{api.ControllerName}','{api.ControllerCaption}', '{api.Name}', '{api.Caption}', '{serviceInfo.Name}/{api.Routes[0]}','{(int)api.AccessOption}', '{api.Description}', '{api.PageUrl}');
 ");
                 }
                 File.WriteAllText(file, code.ToString());

@@ -32,7 +32,7 @@ namespace ZeroTeam.MessageMVC.ApiContract
         ///     参见 ErrorCode 说明
         /// </remarks>
         /// <example>-1</example>
-        [DataMember(Name = "code"), JsonPropertyName("code"), JsonProperty("code", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [DataMember(Name = "code"), JsonPropertyName("code"), JsonProperty("code", DefaultValueHandling = DefaultValueHandling.Include)]
         public int Code { get; set; }
 
         /// <summary>
