@@ -32,7 +32,7 @@ namespace BeetleX.FastHttpApi
 
         public bool UrlIgnoreCase { get; set; }
 
-        private readonly List<string> mItems = new List<string>();
+        private readonly List<string> mItems = new();
 
         public string Path { get; private set; }
 
@@ -108,7 +108,7 @@ namespace BeetleX.FastHttpApi
 
                         if (nameIndex > 0)
                         {
-                            string name = new string(str.Slice(nameIndex, i - nameIndex));
+                            string name = new(str.Slice(nameIndex, i - nameIndex));
                             if (parameters.TryGetValue(name, out string value))
                             {
                                 for (int l = 0; l < value.Length; l++)

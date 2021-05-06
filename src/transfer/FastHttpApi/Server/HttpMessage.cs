@@ -676,7 +676,7 @@ namespace BeetleX.FastHttpApi
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             foreach (var item in ExtensionDictionary)
                 sb.AppendFormat("{0}={1}\r\n", item.Key, item.Value);
             return sb.ToString();
@@ -684,7 +684,7 @@ namespace BeetleX.FastHttpApi
 
         public IDictionary<string, object> Copy()
         {
-            Dictionary<string, object> result = new Dictionary<string, object>();
+            Dictionary<string, object> result = new();
             foreach (var item in ExtensionDictionary)
                 result[item.Key] = item.Value;
             return result;

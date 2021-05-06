@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC
 {
@@ -6,11 +8,11 @@ namespace ZeroTeam.MessageMVC
     ///     本地站点配置
     /// </summary>
     public class ZeroAppConfig
-        {
-            /// <summary>
-            ///     当前应用名称
-            /// </summary>
-            public string AppName { get; set; }
+    {
+        /// <summary>
+        ///     当前应用名称
+        /// </summary>
+        public string AppName { get; set; }
 
         /// <summary>
         ///     当前应用版本号
@@ -48,9 +50,34 @@ namespace ZeroTeam.MessageMVC
         public int MaxCloseSecond { get; set; }
 
         /// <summary>
+        ///     插件地址,如为空则与运行目录相同
+        /// </summary>
+        public string AddInPath { get; set; }
+
+        /// <summary>
+        ///     使用System.Text.Json序列化，而不是使用默认的Newtonsoft.Json
+        /// </summary>
+        public bool UsMsJson { get; set; }
+
+        /// <summary>
         ///     当前接口服务名称（未明显设置Service属性的Controler使用）
         /// </summary>
         public string ApiServiceName { get; set; }
+
+        /// <summary>
+        ///     默认使用的传输器
+        /// </summary>
+        public string DefaultPoster { get; set; }
+
+        /// <summary>
+        ///     启用本地隧道（即本地接收器存在的话，本地处理）
+        /// </summary>
+        public bool LocalTunnel { get; set; }
+
+        /// <summary>
+        /// 服务字典
+        /// </summary>
+        public Dictionary<string,string[]> ServiceMaps { get; set; }
 
         #region 复制
 
@@ -65,15 +92,23 @@ namespace ZeroTeam.MessageMVC
                 return;
             }
 
-            if (!string.IsNullOrWhiteSpace(option.AppName))
+            if (option.AppName.IsPresent())
             {
                 AppName = option.AppName;
             }
-            if (!string.IsNullOrWhiteSpace(option.ApiServiceName))
+            if (option.DefaultPoster.IsPresent())
+            {
+                DefaultPoster = option.DefaultPoster;
+            }
+            if (option.LocalTunnel)
+            {
+                LocalTunnel = option.LocalTunnel;
+            }
+            if (option.ApiServiceName.IsPresent())
             {
                 ApiServiceName = option.ApiServiceName;
             }
-            if (!string.IsNullOrWhiteSpace(option.ShortName))
+            if (option.ShortName.IsPresent())
             {
                 ShortName = option.ShortName;
             }
@@ -95,7 +130,7 @@ namespace ZeroTeam.MessageMVC
                 IsOpenAccess = option.IsOpenAccess;
             }
 
-            if (!string.IsNullOrWhiteSpace(option.AppVersion))
+            if (option.AppVersion.IsPresent())
             {
                 AppVersion = option.AppVersion;
             }
@@ -104,6 +139,19 @@ namespace ZeroTeam.MessageMVC
             {
                 IsolateFolder = option.IsolateFolder;
             }
+            if (option.AddInPath.IsPresent())
+            {
+                AddInPath = option.AddInPath;
+            }
+            if (option.UsMsJson)
+            {
+                UsMsJson = option.UsMsJson;
+            }
+            if (option.ServiceMaps != null)
+            {
+                ServiceMaps = option.ServiceMaps;
+            }
+            
         }
 
         /// <summary>
@@ -117,23 +165,23 @@ namespace ZeroTeam.MessageMVC
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(ShortName))
+            if (ShortName.IsMissing())
             {
                 ShortName = option.ShortName;
             }
-            if (!string.IsNullOrWhiteSpace(ApiServiceName))
+            if (ApiServiceName.IsMissing())
             {
                 ApiServiceName = option.ApiServiceName;
             }
-            if (string.IsNullOrWhiteSpace(AppName))
+            if (AppName.IsMissing())
             {
                 AppName = option.AppName;
             }
-            if (string.IsNullOrWhiteSpace(AppVersion))
+            if (AppVersion.IsMissing())
             {
                 AppVersion = option.AppVersion;
             }
-            
+
             if (!IsolateFolder)
             {
                 IsolateFolder = option.IsolateFolder;
@@ -154,8 +202,15 @@ namespace ZeroTeam.MessageMVC
             {
                 MaxCloseSecond = option.MaxCloseSecond;
             }
+            if (AddInPath.IsMissing())
+            {
+                AddInPath = option.AddInPath;
+            }
+            if (!UsMsJson)
+                UsMsJson = option.UsMsJson;
         }
 
         #endregion
     }
+
 }

@@ -24,7 +24,7 @@ namespace BeetleX.FastHttpApi
 
         private int mCompletedStatus = 0;
 
-        private readonly List<string> mSetCookies = new List<string>();
+        private readonly List<string> mSetCookies = new();
 
         private object mBody;
 
@@ -78,7 +78,7 @@ namespace BeetleX.FastHttpApi
                 return;
             name = System.Web.HttpUtility.UrlEncode(name);
             value = System.Web.HttpUtility.UrlEncode(value);
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             sb.Append(name).Append("=").Append(value);
 
             if (!string.IsNullOrEmpty(path))
@@ -279,7 +279,7 @@ namespace BeetleX.FastHttpApi
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             sb.AppendLine("");
             sb.AppendLine(Request.Method + " " + Request.Url + " response " + Code + " " + CodeMsg);
             sb.Append(this.Header.ToString());

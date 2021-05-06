@@ -196,7 +196,7 @@ namespace BeetleX.FastHttpApi
 
         public object Clone()
         {
-            HttpOptions config = new HttpOptions();
+            HttpOptions config = new();
             config.CertificateFile = this.CertificateFile;
             config.CertificatePassword = this.CertificatePassword;
             config.Debug = this.Debug;

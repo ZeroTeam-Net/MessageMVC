@@ -58,7 +58,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <summary>
         ///  唯一实例 
         /// </summary>
-        public readonly static KafkaOption Instance = new KafkaOption();
+        public readonly static KafkaOption Instance = new();
 
         internal static bool haseConsumer, haseProducer;
 

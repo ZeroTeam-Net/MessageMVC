@@ -47,9 +47,9 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
         static bool IsLetter(char ch) => (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z');
 
-        static readonly Dictionary<Type, TypeDocument> _typeDocs = new Dictionary<Type, TypeDocument>();
+        static readonly Dictionary<Type, TypeDocument> _typeDocs = new();
 
-        static readonly Dictionary<Type, TypeDocument> _lock = new Dictionary<Type, TypeDocument>();
+        static readonly Dictionary<Type, TypeDocument> _lock = new();
 
         /// <summary>
         /// 读取类型说明

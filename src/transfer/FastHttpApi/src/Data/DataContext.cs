@@ -9,7 +9,7 @@ namespace BeetleX.FastHttpApi.Data
     public class DataContxt : IDataContext
     {
 
-        private readonly Dictionary<string, object> mProperties = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, object> mProperties = new(StringComparer.OrdinalIgnoreCase);
 
         public string this[string name]
         {
@@ -359,7 +359,7 @@ namespace BeetleX.FastHttpApi.Data
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             foreach (var item in mProperties)
                 sb.AppendFormat("{0}={1}\r\n", item.Key, item.Value);
             return sb.ToString();
@@ -367,7 +367,7 @@ namespace BeetleX.FastHttpApi.Data
 
         public IDictionary<string, object> Copy()
         {
-            Dictionary<string, object> result = new Dictionary<string, object>();
+            Dictionary<string, object> result = new();
             foreach (var item in mProperties)
                 result[item.Key] = item.Value;
             return result;

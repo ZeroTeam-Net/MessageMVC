@@ -18,7 +18,7 @@ namespace Agebull.Common.Logging
         /// <summary>
         /// 消息中间件的处理范围
         /// </summary>
-        MessageHandleScope IMessageMiddleware.Scope => FlowTracer.LogMonitor ? MessageHandleScope.End : MessageHandleScope.None;
+        MessageHandleScope IMessageMiddleware.Scope => MessageHandleScope.End;
 
         /// <summary>
         /// 结果处理
@@ -27,6 +27,8 @@ namespace Agebull.Common.Logging
         /// <returns></returns>
         Task IMessageMiddleware.OnEnd(IInlineMessage message)
         {
+            if (!FlowTracer.LogMonitor || !LogOption.Instance.Enable)
+                return Task.CompletedTask;
             return MessagePoster.PublishAsync(LogOption.Instance.Service, LogOption.Instance.MonitorApi, new TraceLinkMessage
             {
                 Monitor = FlowTracer.EndMonitor(false),

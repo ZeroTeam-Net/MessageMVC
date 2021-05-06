@@ -48,6 +48,12 @@ namespace ZeroTeam.MessageMVC.Context
         public string RequestApp { get; set; }
 
         /// <summary>
+        /// 请求的主页面
+        /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public string RequestHost { get; set; }
+
+        /// <summary>
         /// 请求的页面(传递)
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]

@@ -3,7 +3,7 @@
 namespace ZeroTeam.MessageMVC.ZeroApis
 {
     /// <summary>
-    /// 表示一个消息队列消费者
+    /// 表示一个服务接收类型获取对象
     /// </summary>
     public interface IReceiverGet
     {

@@ -18,11 +18,12 @@ namespace ZeroTeam.MessageMVC.Tcp
     internal class TcpHandler : ServerHandlerBase
     {
         internal ILogger Logger { get; set; }
+        /*
         public override void Log(IServer server, ServerLogEventArgs e)
         {
             base.Log(server, e);
         }
-
+        */
         protected override void OnLogToConsole(IServer server, ServerLogEventArgs e)
         {
             LogLevel level;
@@ -74,7 +75,7 @@ namespace ZeroTeam.MessageMVC.Tcp
             base.Disconnect(server, e);
         }
 
-        readonly Dictionary<long, ISession> Sessions = new Dictionary<long, ISession>();
+        readonly Dictionary<long, ISession> Sessions = new();
         private void OnReceive(SessionReceiveEventArgs e)
         {
             TcpOption.Instance.ConcurrencySemaphore.Wait();
@@ -127,6 +128,24 @@ namespace ZeroTeam.MessageMVC.Tcp
             finally
             {
                 TcpOption.Instance.ConcurrencySemaphore.Release();
+            }
+        }
+
+        internal async Task Heartbeat()
+        {
+            ReadOnlyMemory<byte> json = "!".ToUtf8Bytes();
+            foreach (var session in Sessions.Values)
+            {
+                try
+                {
+                    var pipeStream = session.Stream.ToPipeStream();
+                    await pipeStream.WriteAsync(json);
+                    session.Stream.Flush();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Exception(ex, "Heartbeat");
+                }
             }
         }
 

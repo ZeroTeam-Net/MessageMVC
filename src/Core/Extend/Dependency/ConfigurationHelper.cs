@@ -205,7 +205,7 @@ namespace Agebull.Common.Configuration
             }
         }
 
-        static readonly List<ChangeAction> actions = new List<ChangeAction>();
+        static readonly List<ChangeAction> actions = new();
         /// <summary>
         /// 注册更新处理器
         /// </summary>

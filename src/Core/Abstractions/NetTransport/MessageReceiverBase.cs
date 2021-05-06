@@ -39,7 +39,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// 是否可启动本地隧道
         /// </summary>
         protected bool CanLocalTunnel { get; set; }
-
+        string IMessagePoster.PosterName => Name;
         /// <summary>
         /// 名称
         /// </summary>

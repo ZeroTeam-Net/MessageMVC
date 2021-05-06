@@ -748,7 +748,7 @@ namespace Agebull.Common
         /// <returns></returns>
         private static DiskInfo LinuxFolderDiskInfo(string path)
         {
-            DiskInfo disk = new DiskInfo();
+            DiskInfo disk = new();
             if (string.IsNullOrEmpty(path))
             {
                 return disk;
@@ -758,7 +758,7 @@ namespace Agebull.Common
                 path = $"/{path}";
             }
 
-            Process p = new Process();
+            Process p = new();
             p.StartInfo.FileName = "sh";
             p.StartInfo.UseShellExecute = false;
             p.StartInfo.RedirectStandardInput = true;

@@ -261,7 +261,7 @@ namespace BeetleX.FastHttpApi
 
         private static ContentHeaderProperty[] GetProperties(ReadOnlySpan<char> line)
         {
-            List<ContentHeaderProperty> proerties = new List<ContentHeaderProperty>();
+            List<ContentHeaderProperty> proerties = new();
             int offset = 0;
             string name = null;
             string value;
@@ -298,7 +298,7 @@ namespace BeetleX.FastHttpApi
 
         public static ContentHeader AnalyzeContentHeader(ReadOnlySpan<char> line)
         {
-            ContentHeader result = new ContentHeader();
+            ContentHeader result = new();
             ReadOnlySpan<char> property = line;
             int offset = 0;
             for (int i = 0; i < line.Length; i++)
@@ -540,7 +540,7 @@ namespace BeetleX.FastHttpApi
 
             public bool Import(ReadOnlySpan<byte> bytes, PipeStream stream, Header header, Cookies cookie)
             {
-                Span<char> bufferSpan = new Span<char>(Buffer);
+                Span<char> bufferSpan = new(Buffer);
                 for (int i = 0; i < bytes.Length; i++)
                 {
                     byte b = bytes[i];
@@ -555,7 +555,7 @@ namespace BeetleX.FastHttpApi
                             EmptyLine = true;
                             return true;
                         }
-                        string value = new string(bufferSpan.Slice(Offset, Count - Offset - 2));
+                        string value = new(bufferSpan.Slice(Offset, Count - Offset - 2));
                         header[Name] = value;
                         if (Name[0] == 'C' && Name[5] == 'e' && Name[1] == 'o' && Name[2] == 'o' && Name[3] == 'k' && Name[4] == 'i')
                         {
@@ -676,7 +676,7 @@ namespace BeetleX.FastHttpApi
 
             public bool Import(ReadOnlySpan<byte> bytes, PipeStream stream, QueryString queryString, HttpRequest request)
             {
-                Span<char> bufferSpan = new Span<char>(Buffer);
+                Span<char> bufferSpan = new(Buffer);
                 ReadOnlySpan<char> UrlData = Buffer;
                 ReadOnlySpan<char> VersionData = Buffer;
                 for (int i = 0; i < bytes.Length; i++)

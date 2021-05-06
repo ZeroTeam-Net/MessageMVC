@@ -18,7 +18,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <summary>
         /// 单例
         /// </summary>
-        public static KafkaPoster Instance = new KafkaPoster();
+        public static KafkaPoster Instance = new();
 
         /// <summary>
         /// 征集周期管理器
@@ -144,7 +144,7 @@ namespace ZeroTeam.MessageMVC.Kafka
 
         private async Task<HealthItem> ProduceTest()
         {
-            HealthItem item = new HealthItem
+            HealthItem item = new()
             {
                 ItemName = "Produce"
             };
@@ -185,7 +185,7 @@ namespace ZeroTeam.MessageMVC.Kafka
 
         private HealthItem ConsumerTest()
         {
-            HealthItem item = new HealthItem
+            HealthItem item = new()
             {
                 ItemName = "Consumer"
             };

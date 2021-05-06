@@ -13,9 +13,9 @@ namespace BeetleX.FastHttpApi
 
         public VerifyType Type { get; set; } = VerifyType.None;
 
-        private readonly List<IPv4Match> mWhiteList = new List<IPv4Match>();
+        private readonly List<IPv4Match> mWhiteList = new();
 
-        private readonly List<IPv4Match> mBlackList = new List<IPv4Match>();
+        private readonly List<IPv4Match> mBlackList = new();
 
         private IPv4Match[] mWhiteMatchs = new IPv4Match[0];
 
@@ -102,7 +102,7 @@ namespace BeetleX.FastHttpApi
 
         public void Save()
         {
-            using (System.IO.StreamWriter writer = new System.IO.StreamWriter(IPTABLE_FILE, false))
+            using (System.IO.StreamWriter writer = new(IPTABLE_FILE, false))
             {
                 writer.Write(Newtonsoft.Json.JsonConvert.SerializeObject(GetConfig()));
                 writer.Flush();
@@ -113,7 +113,7 @@ namespace BeetleX.FastHttpApi
         {
             if (System.IO.File.Exists(IPTABLE_FILE))
             {
-                using (System.IO.StreamReader reader = new System.IO.StreamReader(IPTABLE_FILE))
+                using (System.IO.StreamReader reader = new(IPTABLE_FILE))
                 {
                     string data = reader.ReadToEnd();
                     var config = Newtonsoft.Json.JsonConvert.DeserializeObject<Config>(data);

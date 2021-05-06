@@ -34,4 +34,30 @@ namespace BeetleX.FastHttpApi
             stream.Write(bytes, 0, bytes.Length);
         }
     }
+
+
+    public class OptionsResult : IResult
+    {
+        public IHeaderItem ContentType => ContentTypes.TEXT_UTF8;
+
+        public int Length { get; set; }
+
+        public bool HasBody => false;
+
+        /// <summary>
+        /// 写入
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="response"></param>
+        public void Write(PipeStream stream, HttpResponse response)
+        {
+        }
+
+        public void Setting(HttpResponse response)
+        {
+            response.Header.Add("Access-Control-Allow-Headers", "*");
+            response.Header.Add("Access-Control-Allow-Methods", "*");
+            response.Header.Add("Access-Control-Allow-Origin", "*");
+        }
+    }
 }

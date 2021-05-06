@@ -147,7 +147,7 @@ namespace Agebull.Common
         /// <summary>
         ///   锁定表
         /// </summary>
-        private static readonly List<string> AtomLocks = new List<string>();
+        private static readonly List<string> AtomLocks = new();
 
         /// <summary>
         ///   当前范围作用的对象

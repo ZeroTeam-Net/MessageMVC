@@ -15,6 +15,11 @@ namespace ZeroTeam.MessageMVC.Tcp
     {
         #region IMessagePoster
 
+        /// <summary>
+        /// 投递对象名称
+        /// </summary>
+        public string PosterName => TcpApp.ClientOptionService;
+
         ILifeFlow IMessagePoster.GetLife() => null;
         bool IMessagePoster.IsLocalReceiver => true;
 
@@ -32,6 +37,7 @@ namespace ZeroTeam.MessageMVC.Tcp
         }
 
         #endregion
+
         /// <summary>
         /// 运行状态
         /// </summary>
@@ -40,7 +46,7 @@ namespace ZeroTeam.MessageMVC.Tcp
         /// <summary>
         /// 绝对单例
         /// </summary>
-        public static TcpServerFlow Instance = new TcpServerFlow();
+        public static TcpServerFlow Instance = new();
 
         IServer server;
         TcpHandler handler;
@@ -56,7 +62,7 @@ namespace ZeroTeam.MessageMVC.Tcp
         {
             if (TcpOption.Instance.Server == null || TcpOption.Instance.Server.Port <= 1024 || TcpOption.Instance.Server.Port >= short.MaxValue)
                 return Task.CompletedTask;
-            MessagePoster.RegistPoster(this,TcpApp.ClientOptionService);
+            MessagePoster.RegistPoster(this, PosterName);
             logger = DependencyHelper.LoggerFactory.CreateLogger<TcpServerFlow>();
             server = SocketFactory.CreateTcpServer<TcpHandler>();
             handler = server.Handler as TcpHandler;
@@ -71,7 +77,22 @@ namespace ZeroTeam.MessageMVC.Tcp
         /// </summary>
         Task ILifeFlow.Open()
         {
+            CheckTimeOut();
             return Task.CompletedTask;
+        }
+
+
+        /// <summary>
+        /// 检查超时
+        /// </summary>
+        async void CheckTimeOut()
+        {
+            await Task.Yield();
+            while (State == StationStateType.Run)
+            {
+                await Task.Delay(10000);
+                await handler.Heartbeat();
+            }
         }
 
         /// <summary>

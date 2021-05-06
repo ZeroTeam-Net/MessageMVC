@@ -18,7 +18,7 @@ namespace BeetleX.FastHttpApi
 
         private readonly HttpApiServer mHttpServer;
 
-        private readonly ConcurrentDictionary<string, LimitItem> mIpLimitTable = new ConcurrentDictionary<string, LimitItem>();
+        private readonly ConcurrentDictionary<string, LimitItem> mIpLimitTable = new();
 
         public LimitItem GetItem(string ip)
         {
@@ -55,7 +55,7 @@ namespace BeetleX.FastHttpApi
             string ip = request.RemoteIPAddress;
             if (mIpLimitTable.TryGetValue(ip, out LimitItem result))
                 return result;
-            LimitItem item = new LimitItem(ip, mHttpServer);
+            LimitItem item = new(ip, mHttpServer);
             if (!mIpLimitTable.TryAdd(ip, item))
                 mIpLimitTable.TryGetValue(ip, out item);
             return item;

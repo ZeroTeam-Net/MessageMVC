@@ -1,0 +1,406 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ZeroTeam.MessageMVC.ApiContract</name>
+    </assembly>
+    <members>
+        <member name="T:ZeroTeam.MessageMVC.ApiContract.Argument">
+            <summary>
+                请求参数
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.Argument.Value">
+            <summary>
+                文本内容
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ApiContract.Argument.Validate(ZeroTeam.MessageMVC.ZeroApis.IOperatorStatus@)">
+            <summary>
+                数据校验
+            </summary>
+            <param name="status">返回的消息</param>
+            <returns>成功则返回真</returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ApiContract.Argument`1">
+            <summary>
+                请求参数
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.Argument`1.Value">
+            <summary>
+                数值
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ApiContract.Argument`1.Validate(ZeroTeam.MessageMVC.ZeroApis.IOperatorStatus@)">
+            <summary>
+                数据校验
+            </summary>
+            <param name="status">返回的消息</param>
+            <returns>成功则返回真</returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ApiContract.ApiResult">
+            <summary>
+                API返回基类
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ApiContract.ApiResult.#ctor">
+            <summary>
+            构造
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.ApiResult.ZeroTeam#MessageMVC#ZeroApis#IApiResult#Trace">
+            <summary>
+                执行跟踪
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.ApiResult.Trace">
+            <summary>
+                执行跟踪
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ApiContract.ApiResult`1">
+            <summary>
+                API返回数据泛型类
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.ApiResult`1.ResultData">
+            <summary>
+                返回值
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ApiContract.DependencyApiResult`1">
+            <summary>
+                API返回数据泛型类
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.DependencyApiResult`1.ResultData">
+            <summary>
+                返回值
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ApiContract.DependencyApiResult`1.#ctor">
+            <summary>
+            构造
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault">
+            <summary>API返回基类</summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.Serialize``1(``0)">
+            <summary>
+            序列化
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="t"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.ZeroTeam#MessageMVC#ZeroApis#IApiResultHelper#Deserialize(System.String)">
+            <summary>
+            反序列化
+            </summary>
+            <param name="str"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.Deserialize``1(System.String)">
+            <summary>
+            反序列化
+            </summary>
+            <param name="str"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.DeserializeInterface``1(System.String)">
+            <summary>
+            反序列化(BUG:interface构造)
+            </summary>
+            <param name="json"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.Generate(System.Int32,System.String)">
+            <summary>
+                生成一个包含状态码的标准返回
+            </summary>
+            <param name="code">状态码</param>
+            <param name="message">提示消息</param>
+            <returns></returns>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.ZeroTeam#MessageMVC#ZeroApis#IApiResultHelper#Waiting">
+            <inheritdoc/>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.ZeroTeam#MessageMVC#ZeroApis#IApiResultHelper#Ok">
+            <summary>成功</summary>
+            <remarks>成功</remarks>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.ZeroTeam#MessageMVC#ZeroApis#IApiResultHelper#NoFind">
+            <summary>页面不存在</summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.ZeroTeam#MessageMVC#ZeroApis#IApiResultHelper#NonSupport">
+            <summary>不支持的操作</summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.ZeroTeam#MessageMVC#ZeroApis#IApiResultHelper#ArgumentError">
+            <summary>参数错误字符串</summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.ZeroTeam#MessageMVC#ZeroApis#IApiResultHelper#DenyAccess">
+            <summary>拒绝访问</summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.ZeroTeam#MessageMVC#ZeroApis#IApiResultHelper#NoReady">
+            <summary>系统未就绪</summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.ZeroTeam#MessageMVC#ZeroApis#IApiResultHelper#Pause">
+            <summary>暂停服务</summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.ZeroTeam#MessageMVC#ZeroApis#IApiResultHelper#BusinessError">
+            <summary>逻辑错误</summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.ZeroTeam#MessageMVC#ZeroApis#IApiResultHelper#BusinessException">
+            <summary>
+            服务异常
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.ZeroTeam#MessageMVC#ZeroApis#IApiResultHelper#NetworkError">
+            <summary>网络错误</summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.ZeroTeam#MessageMVC#ZeroApis#IApiResultHelper#NetTimeOut">
+            <summary>网络超时</summary>
+            <remarks>调用其它Api时时抛出未处理异常</remarks>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.ZeroTeam#MessageMVC#ZeroApis#IApiResultHelper#ExecTimeOut">
+            <summary>执行超时</summary>
+            <remarks>Api执行超时</remarks>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.ZeroTeam#MessageMVC#ZeroApis#IApiResultHelper#TokenTimeOut">
+            <summary>执行超时</summary>
+            <remarks>Api执行超时</remarks>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.ZeroTeam#MessageMVC#ZeroApis#IApiResultHelper#Unavailable">
+            <summary>服务不可用</summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.ZeroTeam#MessageMVC#ZeroApis#IApiResultHelper#Succees">
+            <summary>
+                生成一个成功的标准返回
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.ZeroTeam#MessageMVC#ZeroApis#IApiResultHelper#State(System.Int32)">
+            <summary>
+                生成一个包含状态码的标准返回
+            </summary>
+            <param name="code">状态码</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.ZeroTeam#MessageMVC#ZeroApis#IApiResultHelper#State(System.Int32,System.String)">
+            <summary>
+                生成一个包含状态码的标准返回
+            </summary>
+            <param name="code">状态码</param>
+            <param name="message">提示消息</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.ZeroTeam#MessageMVC#ZeroApis#IApiResultHelper#State(System.Int32,System.String,System.String)">
+            <summary>
+                生成一个包含状态码的标准返回
+            </summary>
+            <param name="code">状态码</param>
+            <param name="message">提示消息</param>
+            <param name="innerMessage">内部说明</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.ZeroTeam#MessageMVC#ZeroApis#IApiResultHelper#State(System.Int32,System.String,System.String,System.String,System.String)">
+            <summary>
+                生成一个包含状态码的标准返回
+            </summary>
+            <param name="code">状态码</param>
+            <param name="message">提示消息</param>
+            <param name="innerMessage">内部说明</param>
+            <param name="guide">错误指导</param>
+            <param name="describe">错误解释</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.ZeroTeam#MessageMVC#ZeroApis#IApiResultHelper#State(System.Int32,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+                生成一个包含状态码的标准返回
+            </summary>
+            <param name="code">状态码</param>
+            <param name="message">提示消息</param>
+            <param name="innerMessage">内部说明</param>
+            <param name="point">错误点</param>
+            <param name="guide">错误指导</param>
+            <param name="describe">错误解释</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.Succees``1(``0)">
+            <summary>
+                生成一个成功的标准返回
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.State``1(System.Int32)">
+            <summary>
+                生成一个包含状态码的标准返回
+            </summary>
+            <param name="code">状态码</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.State``1(System.Int32,System.String)">
+            <summary>
+                生成一个包含状态码的标准返回
+            </summary>
+            <param name="code">状态码</param>
+            <param name="message"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.State``1(System.Int32,System.String,System.String)">
+            <summary>
+                生成一个包含状态码的标准返回
+            </summary>
+            <param name="code">状态码</param>
+            <param name="message">提示消息</param>
+            <param name="innerMessage">内部说明</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.State``1(System.Int32,System.String,System.String,System.String,System.String)">
+            <summary>
+                生成一个包含状态码的标准返回
+            </summary>
+            <param name="code">状态码</param>
+            <param name="message">提示消息</param>
+            <param name="innerMessage">内部说明</param>
+            <param name="guide">错误指导</param>
+            <param name="describe">错误解释</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ApiContract.ApiResultDefault.State``1(System.Int32,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+                生成一个包含状态码的标准返回
+            </summary>
+            <param name="code">状态码</param>
+            <param name="message">提示消息</param>
+            <param name="innerMessage">内部说明</param>
+            <param name="point">错误点</param>
+            <param name="guide">错误指导</param>
+            <param name="describe">错误解释</param>
+            <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ApiContract.AutoRegister">
+            <summary>
+              组件注册
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ApiContract.AutoRegister.ZeroTeam#MessageMVC#AddIn#IAutoRegister#AutoRegist(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            注册
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ApiContract.ContractOption">
+            <summary>
+            接口契约配置
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.ContractOption.EnableResultTrace">
+            <summary>
+                启用返回值调用链跟踪
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.ContractOption.TraceMachine">
+            <summary>
+                返回值跟踪包含机器名
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.ApiContract.ContractOption.Instance">
+            <summary>
+            实例
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ApiContract.ContractOption.Update(ZeroTeam.MessageMVC.ApiContract.ContractOption)">
+            <summary>
+            重新载入并更新
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ApiContract.OperatorStatus">
+            <summary>
+                API状态返回接口实现
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.OperatorStatus.RequestId">
+            <summary>
+            请求ID
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.OperatorStatus.Success">
+            <summary>
+                成功或失败标记
+            </summary>
+            <example>true</example>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.OperatorStatus.Code">
+            <summary>
+                错误码
+            </summary>
+            <remarks>
+                参见 ErrorCode 说明
+            </remarks>
+            <example>-1</example>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.OperatorStatus.Message">
+            <summary>
+                提示信息
+            </summary>
+            <remarks>
+             说明错误的原因
+            </remarks>
+            <example>你的数据不正确</example>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.OperatorStatus.InnerMessage">
+            <summary>
+                内部提示信息
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.OperatorStatus.Exception">
+            <summary>
+            异常
+            </summary>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.ApiContract.OperatorTrace">
+            <summary>
+                API接口跟踪
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ApiContract.OperatorTrace.#ctor">
+            <summary>
+                默认构造
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.OperatorTrace.RequestId">
+            <summary>
+                API请求标识
+            </summary>
+            <example>AxV6389FC</example>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.OperatorTrace.Point">
+            <summary>
+                错误点
+            </summary>
+            <remarks>
+            系统在哪一个节点发生错误的标识
+            </remarks>
+            <example>http-gateway</example>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.OperatorTrace.Guide">
+            <summary>
+                指导码
+            </summary>
+            <remarks>
+            内部使用:指示下一步应如何处理的代码
+            </remarks>
+            <example>retry</example>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ApiContract.OperatorTrace.Describe">
+            <summary>
+                错误说明
+            </summary>
+            <remarks>
+            内部使用:详细说明错误内容
+            </remarks>
+            <example>系统未就绪</example>
+        </member>
+    </members>
+</doc>

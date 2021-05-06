@@ -32,7 +32,7 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <summary>
         /// 校验参数
         /// </summary>
-        static readonly TokenValidationParameters tokenValidationParameters = new TokenValidationParameters
+        static readonly TokenValidationParameters tokenValidationParameters = new()
         {
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(ToolsOption.Instance.JwtAppSecretByte),

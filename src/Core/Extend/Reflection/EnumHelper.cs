@@ -122,7 +122,7 @@ namespace Agebull.Common.Reflection
         /// <summary>
         ///   枚举以中文表示的值的字典，以防止每次都需要做反序列化
         /// </summary>
-        private static readonly Dictionary<Type, List<IEnumInfomation>> EnumInfomationMaps = new Dictionary<Type, List<IEnumInfomation>>();
+        private static readonly Dictionary<Type, List<IEnumInfomation>> EnumInfomationMaps = new();
 
     }
 

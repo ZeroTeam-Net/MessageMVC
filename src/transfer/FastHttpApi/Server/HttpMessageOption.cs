@@ -19,7 +19,7 @@ namespace BeetleX.FastHttpApi
         /// <summary>
         /// 实例
         /// </summary>
-        public static HttpMessageOption Instance = new HttpMessageOption();
+        public static HttpMessageOption Instance = new();
 
 
         const string sectionName = "FastHttpApi";
@@ -54,8 +54,8 @@ namespace BeetleX.FastHttpApi
             ServerOption = ConfigurationHelper.Get<HttpOptions>(sectionName);
             if (ServerOption == null)
                 throw new ZeroOptionException(optionName, sectionName);
-            if (ServerOption.Port < 1024 || ServerOption.Port > 65535)
-                throw new ZeroOptionException(optionName, sectionName, "端口号配置不正确，应在1025-65534之间");
+            if (ServerOption.Port != 80 && ServerOption.Port != 81 && (ServerOption.Port < 1024 || ServerOption.Port > 65535))
+                throw new ZeroOptionException(optionName, sectionName, "端口号配置不正确，应在80,81或1025-65534之间");
 
         }
         #endregion

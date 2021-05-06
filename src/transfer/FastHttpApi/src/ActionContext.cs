@@ -214,7 +214,7 @@ namespace BeetleX.FastHttpApi
                 }
                 else
                 {
-                    ActionTask actionTask = new ActionTask(this, resultHandler);
+                    ActionTask actionTask = new(this, resultHandler);
                     var queue = Handler.ThreadQueue.GetQueue(this.HttpContext);
                     if (Handler.ThreadQueue.Enabled(queue))
                     {

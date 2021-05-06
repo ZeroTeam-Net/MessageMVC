@@ -40,7 +40,7 @@ namespace BeetleX.FastHttpApi
 
         private int mUpdateCount = 0;
 
-        private readonly System.Collections.Concurrent.ConcurrentDictionary<string, UpdateItem> mUpdateItems = new System.Collections.Concurrent.ConcurrentDictionary<string, UpdateItem>();
+        private readonly System.Collections.Concurrent.ConcurrentDictionary<string, UpdateItem> mUpdateItems = new();
 
         class UpdateItem
         {
@@ -154,7 +154,7 @@ namespace BeetleX.FastHttpApi
 
         private void OnLoadAssembly(IList<string> files, int count)
         {
-            List<string> success = new List<string>();
+            List<string> success = new();
             foreach (string file in files)
             {
                 string aname = System.IO.Path.GetFileName(file);
@@ -226,7 +226,7 @@ namespace BeetleX.FastHttpApi
                     string fastApidll = System.IO.Directory.GetCurrentDirectory() + System.IO.Path.DirectorySeparatorChar + "BeetleX.FastHttpApi.dll";
                     System.IO.File.Copy(beetledll, target + "BeetleX.dll", true);
                     System.IO.File.Copy(fastApidll, target + "BeetleX.FastHttpApi.dll", true);
-                    List<string> files = new List<string>();
+                    List<string> files = new();
                     foreach (string assemblyFile in System.IO.Directory.GetFiles(target, "*.dll"))
                     {
                         files.Add(assemblyFile);

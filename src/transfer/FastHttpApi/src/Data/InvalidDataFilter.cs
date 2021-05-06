@@ -41,7 +41,7 @@ namespace BeetleX.FastHttpApi.Data
 
         public List<string> Match(string value)
         {
-            List<string> result = new List<string>();
+            List<string> result = new();
             int offset = 0;
             while (offset < value.Length)
             {

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using ZeroTeam.MessageMVC.Messages;
@@ -27,7 +28,9 @@ namespace ZeroTeam.MessageMVC.Http
             services.AddSingleton<IZeroOption>(pri => HttpClientOption.Instance);
             services.AddHttpClient();
             services.AddHttpContextAccessor();
-            services.AddTransient<IMessagePoster, HttpPoster>();
+            services.AddNameTransient<IMessagePoster, HttpPoster>();
+
+            ZeroAppOption.Instance.Services.Regist("Http", nameof(HttpPoster), () => new EmptyReceiver());
         }
 
         /// <summary>
@@ -40,6 +43,7 @@ namespace ZeroTeam.MessageMVC.Http
             services.AddHttpClient();
             services.AddHttpContextAccessor();
             services.AddTransient<IMessagePoster, HttpPoster>();
+            ZeroAppOption.Instance.Services.Regist("Http", nameof(HttpPoster), () => new EmptyReceiver());
         }
 
         /// <summary>
@@ -133,7 +137,7 @@ namespace ZeroTeam.MessageMVC.Http
         {
             if (string.Equals(context.Request.Method, "OPTIONS", StringComparison.OrdinalIgnoreCase))
             {
-                //HttpProtocol.CrosOption(context.Response);
+                HttpProtocol.CrosOption(context.Response);
                 return;
             }
             if (context.Request.Path == "/")
@@ -146,7 +150,7 @@ namespace ZeroTeam.MessageMVC.Http
                 await context.Response.WriteAsync(ApiResultHelper.PauseJson, Encoding.UTF8);
                 return;
             }
-            //HttpProtocol.CrosCall(context.Response);
+            HttpProtocol.CrosCall(context.Response);
             try
             {
                 //命令

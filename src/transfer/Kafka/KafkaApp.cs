@@ -1,5 +1,6 @@
 ﻿using Agebull.Common.Ioc;
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
 using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC.Kafka
@@ -21,6 +22,8 @@ namespace ZeroTeam.MessageMVC.Kafka
             services.AddSingleton<IHealthCheck>(KafkaPoster.Instance);
             services.AddSingleton<IMessagePoster>(KafkaPoster.Instance);//采用Kafka生产端
             services.AddNameTransient<IMessageConsumer, KafkaConsumer>();//采用Kafka消费客户端
+
+            ZeroAppOption.Instance.Services.Regist("Kafka", nameof(KafkaPoster), () => DependencyHelper.GetService<KafkaConsumer>());
         }
 
         /// <summary>
@@ -33,17 +36,7 @@ namespace ZeroTeam.MessageMVC.Kafka
             services.AddSingleton<IZeroOption>(pri => KafkaOption.Instance);
             services.AddSingleton<IHealthCheck>(KafkaPoster.Instance);
             services.AddSingleton<IMessagePoster>(KafkaPoster.Instance);//采用Kafka生产端
-        }
-
-        /// <summary>
-        /// 使用Kafka订阅器
-        /// </summary>
-        /// <param name="services"></param>
-        public static void AddMessageMvcKafkaConsumer(this IServiceCollection services)
-        {
-            KafkaOption.haseConsumer = true;
-            services.AddSingleton<IZeroOption>(pri => KafkaOption.Instance);
-            services.AddNameTransient<IMessageConsumer, KafkaConsumer>();//采用Kafka消费客户端
+            ZeroAppOption.Instance.Services.Regist("Kafka", nameof(KafkaPoster), () => DependencyHelper.GetService<KafkaConsumer>());
         }
     }
 }

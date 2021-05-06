@@ -83,7 +83,7 @@ namespace BeetleX.FastHttpApi
             }
             public static ThreadInfo GetThreadInfo(ThreadQueueAttribute threadQueue)
             {
-                ThreadInfo info = new ThreadInfo();
+                ThreadInfo info = new();
                 info.Type = threadQueue.Type.ToString();
                 info.Count = threadQueue.Count;
                 info.UniqueName = threadQueue.UniqueName;
@@ -107,7 +107,7 @@ namespace BeetleX.FastHttpApi
 
         public void Save(params ActionHandler[] actions)
         {
-            using (System.IO.StreamWriter writer = new System.IO.StreamWriter(SETTING_FILE, false))
+            using (System.IO.StreamWriter writer = new(SETTING_FILE, false))
             {
                 this.Settings.Clear();
                 foreach (var item in actions)
@@ -122,7 +122,7 @@ namespace BeetleX.FastHttpApi
         {
             if (System.IO.File.Exists(SETTING_FILE))
             {
-                using (System.IO.StreamReader reader = new System.IO.StreamReader(SETTING_FILE))
+                using (System.IO.StreamReader reader = new(SETTING_FILE))
                 {
                     string value = reader.ReadToEnd();
                     Settings = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ActionInfo>>(value);

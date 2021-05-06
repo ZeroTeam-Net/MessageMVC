@@ -41,7 +41,7 @@ namespace BeetleX.FastHttpApi
 
         private double mLastTotalProcessorTime;
 
-        private ServerStatus mInfo = new ServerStatus();
+        private ServerStatus mInfo = new();
 
         private long mLastNextTime;
 
@@ -54,7 +54,7 @@ namespace BeetleX.FastHttpApi
                 if (System.Threading.Interlocked.CompareExchange(ref mNextStatu, 1, 0) == 0)
                 {
                     mLastNextTime = mServer.BaseServer.GetRunTime();
-                    ServerStatus result = new ServerStatus();
+                    ServerStatus result = new();
                     result.BeetleXVersion = mServer.BaseServer.GetType().Assembly.GetName().Version.ToString();
                     result.WebApiVersion = mServer.GetType().Assembly.GetName().Version.ToString();
                     result.ServerName = mServer.Name;
@@ -101,7 +101,7 @@ namespace BeetleX.FastHttpApi
                     {
                         foreach (var item in mServer.ActionFactory.Handlers)
                         {
-                            ActionStatus actionStatus = new ActionStatus();
+                            ActionStatus actionStatus = new();
                             actionStatus.ID = item.ID;
                             actionStatus.Path = item.Path;
                             actionStatus.Version = item.Version;

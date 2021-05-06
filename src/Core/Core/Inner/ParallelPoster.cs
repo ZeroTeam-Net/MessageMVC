@@ -15,9 +15,8 @@ namespace ZeroTeam.MessageMVC
     /// </summary>
     public class ParallelPoster : MessagePostBase, IMessagePoster
     {
-
-
         ILifeFlow IMessagePoster.GetLife() => null;
+        string IMessagePoster.PosterName => nameof(ParallelPoster);
 
         /// <summary>
         /// 调用的内容
@@ -40,7 +39,7 @@ namespace ZeroTeam.MessageMVC
             ConfigurationHelper.RegistOnChange("MessageMVC:ParallelService", ReloadOption, true);
         }
 
-        readonly Dictionary<string, string[]> ServiceMap = new Dictionary<string, string[]>();
+        readonly Dictionary<string, string[]> ServiceMap = new();
 
         void ReloadOption()
         {

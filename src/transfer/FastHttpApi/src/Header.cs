@@ -201,7 +201,7 @@ namespace BeetleX.FastHttpApi
             Add(HeaderTypeFactory.USER_AGENT);
         }
 
-        private static readonly System.Collections.Generic.Dictionary<long, HeaderType> mHeaderTypes = new Dictionary<long, HeaderType>();
+        private static readonly System.Collections.Generic.Dictionary<long, HeaderType> mHeaderTypes = new();
 
         private static int mCount;
 
@@ -209,7 +209,7 @@ namespace BeetleX.FastHttpApi
         {
             lock (mHeaderTypes)
             {
-                HeaderType type = new HeaderType(name);
+                HeaderType type = new(name);
                 mHeaderTypes[type.ID] = type;
             }
         }
@@ -263,7 +263,7 @@ namespace BeetleX.FastHttpApi
     public class Header
     {
 
-        private readonly Dictionary<long, HeaderValue> mValues = new Dictionary<long, HeaderValue>();
+        private readonly Dictionary<long, HeaderValue> mValues = new();
 
         public void Add(string name, string value)
         {
@@ -290,7 +290,7 @@ namespace BeetleX.FastHttpApi
 
         public IDictionary<string, string> Copy()
         {
-            Dictionary<string, string> result = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
+            Dictionary<string, string> result = new(StringComparer.CurrentCultureIgnoreCase);
             foreach (var item in mValues)
                 result[item.Value.Type.Name] = item.Value.Value;
             return result;
@@ -380,7 +380,7 @@ namespace BeetleX.FastHttpApi
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             foreach (var item in mValues.Values)
             {
                 sb.AppendFormat("{0}={1}\r\n", item.Type.Name, item.Value);

@@ -58,7 +58,7 @@ namespace Agebull.Common.Logging
                         }
                     }
                 }
-                await MessagePoster.PublishAsync(LogOption.Instance.Service, "text", item);
+                await MessagePoster.PublishAsync(LogOption.Instance.Service, LogOption.Instance.LogApi, item);
             }
             catch(Exception ex)
             {

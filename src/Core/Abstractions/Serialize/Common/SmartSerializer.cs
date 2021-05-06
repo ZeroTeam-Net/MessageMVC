@@ -15,7 +15,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 内置序列化器
         /// </summary>
-        public static readonly JsonSerializeProxy MsJson = new JsonSerializeProxy();
+        public static readonly JsonSerializeProxy MsJson = new();
 
 
         static readonly IJsonSerializeProxy Json = DependencyHelper.GetService<IJsonSerializeProxy>();

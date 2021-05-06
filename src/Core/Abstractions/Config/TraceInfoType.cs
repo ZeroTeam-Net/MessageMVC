@@ -46,7 +46,7 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 简单信息
         /// </summary>
-        Simple = User | LinkTrace,
+        Simple = Request | User | LinkTrace,
 
         /// <summary>
         /// 应用信息

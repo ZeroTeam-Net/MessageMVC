@@ -10,7 +10,7 @@ namespace ZeroTeam.MessageMVC.Messages
     /// </summary>
     public class NewtonJsonSerializeProxy : IJsonSerializeProxy
     {
-        static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
+        static readonly JsonSerializerSettings Settings = new()
         {
             Converters = new List<JsonConverter>
             {
@@ -29,13 +29,7 @@ namespace ZeroTeam.MessageMVC.Messages
             {
                 return default;
             }
-            switch (json[0])
-            {
-                case '{':
-                case '[':
-                    return JsonConvert.DeserializeObject<T>(json, Settings);
-            }
-            return default;
+            return JsonConvert.DeserializeObject<T>(json, Settings);
         }
         ///<inheritdoc/>
         public object ToObject(string json, Type type)

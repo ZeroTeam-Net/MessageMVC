@@ -27,7 +27,7 @@ namespace ZeroTeam.MessageMVC.PageInfoAutoSave
         /// <summary>
         /// 实例
         /// </summary>
-        public static readonly ToolsOption Instance = new ToolsOption();
+        public static readonly ToolsOption Instance = new();
 
         const string sectionName = "MessageMVC:Tools";
 

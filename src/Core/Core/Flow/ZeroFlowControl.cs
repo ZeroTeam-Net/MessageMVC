@@ -66,7 +66,7 @@ namespace ZeroTeam.MessageMVC
 
         #region Check
 
-        static readonly ConfigChecker configChecker = new ConfigChecker();
+        static readonly ConfigChecker configChecker = new();
 
         internal static ILogger Logger;
 
@@ -80,6 +80,8 @@ namespace ZeroTeam.MessageMVC
             configChecker.CheckBaseConfig();
             Console.WriteLine("【基础配置】完成");
             Console.ResetColor();
+            DependencyHelper.Flush();
+            Logger = DependencyHelper.LoggerFactory.CreateLogger("ZeroFlowControl");
         }
         /// <summary>
         ///     配置校验,作为第一步
@@ -120,7 +122,7 @@ namespace ZeroTeam.MessageMVC
             foreach(var option in options)
             {
                 option.Load(true);
-                Logger.Debug(() => $"〖{option.OptionName}〗{(option.IsDynamic ? "动态更新":"静态配置")}，{option.SupperUrl}\n{option.ToJson(true)}");
+                Logger.Trace(() => $"〖{option.OptionName}〗{(option.IsDynamic ? "动态更新":"静态配置")}，{option.SupperUrl}\n{option.ToJson(true)}");
             }
 
             addInImporter.LateConfigRegist(Logger);
@@ -192,7 +194,7 @@ namespace ZeroTeam.MessageMVC
         {
             ZeroAppOption.Instance.SetApplicationState(StationState.Pause);
 
-            List<Task> tasks = new List<Task>();
+            List<Task> tasks = new();
             Logger.Information("【准备关闭】开始");
 
             tokenSource.Cancel();
@@ -301,7 +303,7 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         static async Task CloseAll()
         {
-            List<Task> tasks = new List<Task>();
+            List<Task> tasks = new();
             Logger.Information("【关闭】开始");
 
             foreach (var service in FlowServices)
@@ -339,7 +341,7 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         static async Task DestoryAll()
         {
-            List<Task> tasks = new List<Task>();
+            List<Task> tasks = new();
             Logger.Information("【注销】开始");
             foreach (var action in ZeroAppOption.DestoryAction)
             {
@@ -527,12 +529,12 @@ namespace ZeroTeam.MessageMVC
             {
                 try
                 {
-                    Logger.Information("[初始化服务] {0}", service.ServiceName);
+                    Logger.Information("[初始化服务] {0}({1})", service.ServiceName,service.Receiver.GetTypeName());
                     await service.Initialize();
                 }
                 catch (Exception e)
                 {
-                    Logger.Exception(e, "[初始化服务] {0}", service.ServiceName);
+                    Logger.Exception(e, "[初始化服务] {0}({1})", service.ServiceName, service.Receiver.GetTypeName());
                 }
             }
             Logger.Information("【初始化】完成");
@@ -647,22 +649,22 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 已注册的对象
         /// </summary>
-        public static readonly ConcurrentDictionary<string, IService> Services = new ConcurrentDictionary<string, IService>(StringComparer.OrdinalIgnoreCase);
+        public static readonly ConcurrentDictionary<string, IService> Services = new(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// 活动对象(执行中)
         /// </summary>
-        internal static readonly List<IService> ActiveObjects = new List<IService>();
+        internal static readonly List<IService> ActiveObjects = new();
 
         /// <summary>
         /// 活动对象(执行中)
         /// </summary>
-        private static readonly List<IService> FailedObjects = new List<IService>();
+        private static readonly List<IService> FailedObjects = new();
 
         /// <summary>
         ///     对象活动状态记录器锁定
         /// </summary>
-        private static readonly SemaphoreSlim ActiveSemaphore = new SemaphoreSlim(0, short.MaxValue);
+        private static readonly SemaphoreSlim ActiveSemaphore = new(0, short.MaxValue);
 
         /// <summary>
         ///     取服务，内部使用
@@ -696,12 +698,12 @@ namespace ZeroTeam.MessageMVC
             {
                 try
                 {
-                    Logger.Information("[初始化服务] {0}", service.ServiceName);
+                    Logger.Information("[初始化服务] {0}({1})", service.ServiceName, service.Receiver.GetTypeName());
                     service.Initialize();
                 }
                 catch (Exception e)
                 {
-                    Logger.Exception(e, "[初始化服务] {0}", service.ServiceName);
+                    Logger.Exception(e, "[初始化服务] {0}({1})", service.ServiceName, service.Receiver.GetTypeName());
                 }
             }
             if (ZeroAppOption.Instance.ApplicationState != StationState.Run)
@@ -725,7 +727,7 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         internal static bool RegistService(ref IService service)
         {
-            if (ZeroAppOption.Instance.ServiceMap.TryGetValue(service.ServiceName, out var map))
+            if (ZeroAppOption.Instance.ServiceReplaceMap.TryGetValue(service.ServiceName, out var map))
                 service.ServiceName = map;
             if (Services.TryGetValue(service.ServiceName, out var old))
             {
@@ -742,12 +744,12 @@ namespace ZeroTeam.MessageMVC
             {
                 try
                 {
-                    Logger.Information("[初始化服务] {0}", service.ServiceName);
+                    Logger.Information("[初始化服务] {0}({1})", service.ServiceName, service.Receiver.GetTypeName());
                     service.Initialize();
                 }
                 catch (Exception e)
                 {
-                    Logger.Exception(e, "[初始化服务] {0}", service.ServiceName);
+                    Logger.Exception(e, "[初始化服务] {0}({1})", service.ServiceName, service.Receiver.GetTypeName());
                 }
             }
             if (ZeroAppOption.Instance.ApplicationState != StationState.Run)

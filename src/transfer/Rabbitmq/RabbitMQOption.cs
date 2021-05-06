@@ -12,7 +12,7 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
         /// <summary>
         ///  唯一实例 
         /// </summary>
-        public readonly static RabbitMQOption Instance = new RabbitMQOption();
+        public readonly static RabbitMQOption Instance = new();
 
         #region 基础配置
 

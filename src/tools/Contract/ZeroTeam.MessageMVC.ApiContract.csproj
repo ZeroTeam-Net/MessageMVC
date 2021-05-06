@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <Description>MessageMVC 接口契约实现</Description>
     <DebugType>portable</DebugType>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
@@ -14,10 +14,15 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Authors>Agebull</Authors>
     <Company>ZeroTeam</Company>
-    <Version>1.1.5.14</Version>
+    <Version>1.1.6.17</Version>
     <PackageReleaseNotes></PackageReleaseNotes>
     <Product>MessageMVC</Product>
     <PackageTags>MessageMVC</PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>ZeroTeam.MessageMVC.ApiContract.xml</DocumentationFile>
+    <OutputPath></OutputPath>
   </PropertyGroup>
 
   <ItemGroup>

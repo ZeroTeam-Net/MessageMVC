@@ -282,7 +282,7 @@ namespace BeetleX.FastHttpApi
 
         static ContentTypes()
         {
-            System.IO.StringReader reader = new System.IO.StringReader(CONTENT_TYPES);
+            System.IO.StringReader reader = new(CONTENT_TYPES);
             string line = reader.ReadLine();
             while (line != null)
             {
@@ -299,7 +299,7 @@ namespace BeetleX.FastHttpApi
             }
         }
 
-        private static readonly Dictionary<string, string> mContent = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> mContent = new();
 
        private const string OTHER_OCTET_STREAM = "application/octet-stream";
 

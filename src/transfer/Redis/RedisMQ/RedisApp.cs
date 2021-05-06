@@ -1,5 +1,6 @@
 ﻿using Agebull.Common.Ioc;
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
 using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC.RedisMQ
@@ -19,6 +20,9 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             services.AddSingleton<IMessagePoster>(CsRedisPoster.Instance);//Redis发布
 
             services.AddNameTransient<INetEvent, CSRedisEventReceiver>();//Redis订阅
+
+            ZeroAppOption.Instance.Services.Regist("Redis", nameof(CsRedisPoster), () => DependencyHelper.GetService<CSRedisEventReceiver>());
+
         }
 
         /// <summary>
@@ -29,6 +33,8 @@ namespace ZeroTeam.MessageMVC.RedisMQ
             services.AddSingleton<IZeroOption>(RedisOption.Instance);
             services.AddSingleton<IHealthCheck>(CsRedisPoster.Instance);
             services.AddSingleton<IMessagePoster>(CsRedisPoster.Instance);//Redis发布
+
+            ZeroAppOption.Instance.Services.Regist("Redis", nameof(CsRedisPoster), () => DependencyHelper.GetService<CSRedisEventReceiver>());
         }
     }
 }

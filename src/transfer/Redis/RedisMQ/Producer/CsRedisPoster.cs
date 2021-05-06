@@ -23,7 +23,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <summary>
         /// 单例
         /// </summary>
-        public static CsRedisPoster Instance = new CsRedisPoster();
+        public static CsRedisPoster Instance = new();
 
         public CsRedisPoster()
         {
@@ -93,7 +93,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
 
         private async Task<HealthItem> SetTest()
         {
-            HealthItem item = new HealthItem
+            HealthItem item = new()
             {
                 ItemName = "Set"
             };
@@ -129,7 +129,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
 
         private async Task<HealthItem> GetTest()
         {
-            HealthItem item = new HealthItem
+            HealthItem item = new()
             {
                 ItemName = "Get"
             };
@@ -164,7 +164,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         }
         private async Task<HealthItem> DelTest()
         {
-            HealthItem item = new HealthItem
+            HealthItem item = new()
             {
                 ItemName = "Del"
             };

@@ -20,7 +20,7 @@ namespace BeetleX.FastHttpApi
 
         private readonly ConcurrentDictionary<string, LinkedListNode<CacheItem>> mKeyCached;
 
-        private readonly LinkedList<CacheItem> mCachedItems = new LinkedList<CacheItem>();
+        private readonly LinkedList<CacheItem> mCachedItems = new();
 
         private void ActiveItem(LinkedListNode<CacheItem> item)
         {
@@ -75,7 +75,7 @@ namespace BeetleX.FastHttpApi
 
         public object ExistOrAdd(string key, object item)
         {
-            LinkedListNode<CacheItem> node = new LinkedListNode<CacheItem>(new CacheItem(key, item));
+            LinkedListNode<CacheItem> node = new(new CacheItem(key, item));
             if (mKeyCached.TryAdd(key, node))
             {
                 AddItem(node);

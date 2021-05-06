@@ -10,9 +10,9 @@
   <PropertyGroup>
     <Description>一些常用的基础功能扩展</Description>
     <AssemblyTitle>Agebull.Common.Extend</AssemblyTitle>
-    <Version>4.0.5.3</Version>
+    <Version>4.0.6.10</Version>
     <!--monoandroid60;xamarinios10-->
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <DebugType>portable</DebugType>
     <AssemblyName>Agebull.Common.Extend</AssemblyName>
     <PackageId>Agebull.Common.Extend</PackageId>
@@ -42,12 +42,12 @@
     <DefineConstants>monitor</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp3.1|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug||AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>Agebull.Common.Extend.xml</DocumentationFile>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.1|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release||AnyCPU'">
     <DocumentationFile>Agebull.Common.Extend.xml</DocumentationFile>
   </PropertyGroup>
 
@@ -55,7 +55,7 @@
     <DefineConstants>TRACE;DEBUG;monitor</DefineConstants>
   </PropertyGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == '' ">
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
   </ItemGroup>
   <ItemGroup>
@@ -96,7 +96,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.7.0" />
     <PackageReference Include="System.Threading" Version="4.3.0" />
   </ItemGroup>

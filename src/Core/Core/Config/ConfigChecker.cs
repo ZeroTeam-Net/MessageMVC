@@ -56,13 +56,13 @@ namespace ZeroTeam.MessageMVC
                     }
                 }
             });
-            ConfigurationHelper.RegistOnChange<Dictionary<string, string>>("MessageMVC:ServiceMap", dict =>
+            ConfigurationHelper.RegistOnChange<Dictionary<string, string>>("MessageMVC:ServiceReplaceMap", dict =>
             {
                 if (dict != null)
                 {
                     foreach (var kv in dict)
                     {
-                        ZeroAppOption.Instance.ServiceMap[kv.Key] = kv.Value;
+                        ZeroAppOption.Instance.ServiceReplaceMap[kv.Key] = kv.Value;
                     }
                 }
             });
@@ -86,7 +86,7 @@ namespace ZeroTeam.MessageMVC
   ConfigFolder : {ZeroAppOption.Instance.ConfigFolder}
     ThreadPool : {ZeroAppOption.Instance.MaxWorkThreads:N0}worker|{ ZeroAppOption.Instance.MaxIOThreads:N0}threads
 ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
-    ServiceMap : {ZeroAppOption.Instance.ServiceMap.LinkToString(p => $"{p.Key}:{p.Value}")}
+    ServiceMap : {ZeroAppOption.Instance.ServiceReplaceMap.LinkToString(p => $"{p.Key}:{p.Value}")}
   MessageTrace : {ZeroAppOption.Instance.TraceOption.LinkToString(p => $"{p.Key}:{p.Value}")}");
 
         }
@@ -104,11 +104,12 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
                 BinPath = Environment.CurrentDirectory,
                 MaxCloseSecond = 30,
                 DefaultTraceOption = MessageTraceType.Simple,
-                ServiceMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+                ServiceReplaceMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
                 TraceOption = new Dictionary<string, MessageTraceType>(StringComparer.OrdinalIgnoreCase),
-                IsLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
+                IsLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux),
+                Services = new Messages.ServiceMap()
             };
-            
+
             config.CopyByHase(ConfigurationHelper.Get<ZeroAppConfig>("MessageMVC:Option"));
             config.IsDevelopment = ConfigurationHelper.RunEnvironment.IsMe("Development");
 
@@ -166,9 +167,13 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
                 config.ConfigFolder = IOHelper.CheckPath(config.RootPath, "config");
             }
             #endregion
+
+            #region ServiceMap
+            config.Services.Merge(config.ServiceMaps);
+            #endregion
         }
 
-        private string GetHostIps()
+        private static string GetHostIps()
         {
             var ips = new StringBuilder();
             var first = true;

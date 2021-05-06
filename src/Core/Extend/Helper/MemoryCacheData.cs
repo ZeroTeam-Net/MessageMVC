@@ -49,7 +49,7 @@ namespace Agebull.EntityModel.Common
         /// <summary>
         /// 载入过程的等待任务
         /// </summary>
-        private readonly List<(DateTime, TaskCompletionSource<TData>)> waitTasks = new List<(DateTime, TaskCompletionSource<TData>)>();
+        private readonly List<(DateTime, TaskCompletionSource<TData>)> waitTasks = new();
 
         /// <summary>
         /// 过期时间

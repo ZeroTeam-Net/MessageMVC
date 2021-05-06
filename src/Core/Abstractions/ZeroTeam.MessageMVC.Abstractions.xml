@@ -957,7 +957,7 @@
         </member>
         <member name="T:ZeroTeam.MessageMVC.ZeroApis.IReceiverGet">
             <summary>
-            表示一个消息队列消费者
+            表示一个服务接收类型获取对象
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroApis.IReceiverGet.Receiver(System.String)">
@@ -1055,7 +1055,19 @@
             <summary>
             构造
             </summary>
-            <param name="name"></param>
+            <param name="service">服务</param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.ZeroApis.ServiceAttribute.#ctor(System.String,System.String)">
+            <summary>
+            构造
+            </summary>
+            <param name="service">服务</param>
+            <param name="prefix">接口前缀</param>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroApis.ServiceAttribute.ApiPrefix">
+            <summary>
+            接口前缀
+            </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroApis.ServiceAttribute.ServiceName">
             <summary>
@@ -1378,9 +1390,34 @@
               关闭最大等待时长
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.AddInPath">
+            <summary>
+                插件地址,如为空则与运行目录相同
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.UsMsJson">
+            <summary>
+                使用System.Text.Json序列化，而不是使用默认的Newtonsoft.Json
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.ApiServiceName">
             <summary>
                 当前接口服务名称（未明显设置Service属性的Controler使用）
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.DefaultPoster">
+            <summary>
+                默认使用的传输器
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.LocalTunnel">
+            <summary>
+                启用本地隧道（即本地接收器存在的话，本地处理）
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppConfig.ServiceMaps">
+            <summary>
+            服务字典
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroAppConfig.CopyByHase(ZeroTeam.MessageMVC.ZeroAppConfig)">
@@ -1460,14 +1497,9 @@
                 本地配置文件夹
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroAppOption.AddInPath">
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppOption.Services">
             <summary>
-                插件地址,如为空则与运行目录相同
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroAppOption.UsMsJson">
-            <summary>
-                使用System.Text.Json序列化，而不是使用默认的Newtonsoft.Json
+            服务字典
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.ZeroAppOption.RegistStartAction(System.String,System.Func{System.Threading.CancellationToken,System.Threading.Tasks.Task})">
@@ -1490,9 +1522,9 @@
             </summary>
             <param name="action"></param>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.ZeroAppOption.ServiceMap">
+        <member name="P:ZeroTeam.MessageMVC.ZeroAppOption.ServiceReplaceMap">
             <summary>
-                服务映射，即将对应服务名称替换成另一个服务
+                服务替换映射，即将对应服务名称替换成另一个服务
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.ZeroAppOption.TraceOption">
@@ -1790,6 +1822,11 @@
         <member name="P:ZeroTeam.MessageMVC.Context.TraceInfo.RequestApp">
             <summary>
             请求应用(传递)
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Context.TraceInfo.RequestHost">
+            <summary>
+            请求的主页面
             </summary>
         </member>
         <member name="P:ZeroTeam.MessageMVC.Context.TraceInfo.RequestPage">
@@ -3449,6 +3486,11 @@
             消息投递对象
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.IMessagePoster.PosterName">
+            <summary>
+            投递对象名称
+            </summary>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.Messages.IMessagePoster.GetLife">
             <summary>
             取得生命周期对象
@@ -3661,6 +3703,57 @@
             </summary>
             <param name="message">消息</param>
             <returns></returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Messages.ServiceMap">
+            <summary>
+            服务字典
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.ServiceMap.Merge(System.Collections.Generic.Dictionary{System.String,System.String[]})">
+            <summary>
+            合并
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Messages.ServiceMap.NetTransfers">
+            <summary>
+            关联的服务
+            </summary>
+        </member>
+        <member name="F:ZeroTeam.MessageMVC.Messages.ServiceMap.Services">
+            <summary>
+            关联的服务
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.ServiceMap.Regist(System.String,System.String,System.Func{ZeroTeam.MessageMVC.Messages.IMessageReceiver})">
+            <summary>
+            注册
+            </summary>
+            <param name="transfer"></param>
+            <param name="poster"></param>
+            <param name="Receiver"></param>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Messages.ServiceMap.DiscoverNetTransport(System.Type,System.String@)">
+            <summary>
+            发现传输对象
+            </summary>
+            <param name="type">控制器类型</param>
+            <param name="name">发现的服务名称</param>
+            <returns>传输对象构造器</returns>
+        </member>
+        <member name="T:ZeroTeam.MessageMVC.Messages.ServiceItem">
+            <summary>
+            服务字典
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.ServiceItem.Poster">
+            <summary>
+            发送器构造
+            </summary>
+        </member>
+        <member name="P:ZeroTeam.MessageMVC.Messages.ServiceItem.Receiver">
+            <summary>
+            接收器构造
+            </summary>
         </member>
         <member name="T:ZeroTeam.MessageMVC.Messages.IMessageMiddleware">
             <summary>
@@ -4380,6 +4473,11 @@
                后台消息发布
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.MessageQueue.BackgroundPoster`1.PosterName">
+            <summary>
+            投递对象名称
+            </summary>
+        </member>
         <member name="M:ZeroTeam.MessageMVC.MessageQueue.BackgroundPoster`1.ZeroTeam#MessageMVC#Messages#IMessagePoster#GetLife">
             <summary>
             取得生命周期对象
@@ -4595,11 +4693,6 @@
         <member name="P:ZeroTeam.MessageMVC.MessagePoster.LocalTunnel">
             <summary>
             启用本地隧道（即本地接收器存在的话，本地处理）
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.MessagePoster.DefaultPosterName">
-            <summary>
-            默认的生产者
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.MessagePoster.RegistPoster(ZeroTeam.MessageMVC.Messages.IMessagePoster,System.String[])">
@@ -4840,16 +4933,6 @@
         <member name="T:ZeroTeam.MessageMVC.MessagePostOption">
             <summary>
             消息发送器的配置
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.MessagePostOption.LocalTunnel">
-            <summary>
-            启用本地隧道（即本地接收器存在的话，本地处理）
-            </summary>
-        </member>
-        <member name="P:ZeroTeam.MessageMVC.MessagePostOption.DefaultPosterName">
-            <summary>
-            默认的生产者
             </summary>
         </member>
         <member name="F:ZeroTeam.MessageMVC.MessagePostOption.PosterServices">

@@ -35,7 +35,7 @@ namespace ZeroTeam.MessageMVC.Tcp
         /// <summary>
         /// 单例
         /// </summary>
-        public static TcpPoster Instance = new TcpPoster();
+        public static TcpPoster Instance = new();
 
         // bool isConnect;
 
@@ -45,7 +45,7 @@ namespace ZeroTeam.MessageMVC.Tcp
         /// </summary>
         Task IZeroDiscover.Discovery()
         {
-            if (TcpOption.Instance.Client == null || TcpOption.Instance.Client.Address.IsMissing() || 
+            if (TcpOption.Instance.Client == null || TcpOption.Instance.Client.Address.IsMissing() ||
                 TcpOption.Instance.Client.Port <= 1024 || TcpOption.Instance.Client.Port >= short.MaxValue)
                 return Task.CompletedTask;
             client = SocketFactory.CreateClient<AsyncTcpClient>(TcpOption.Instance.Client.Address, TcpOption.Instance.Client.Port);
@@ -150,7 +150,11 @@ namespace ZeroTeam.MessageMVC.Tcp
                     return;
                 }
                 IInlineMessage message;
-                if (msg[0] == '#')
+                if (msg.Length == 1 && msg[0] == '!')//心跳
+                {
+                    return;
+                }
+                else if (msg[0] == '#')
                 {
                     message = new InlineMessage
                     {
@@ -240,7 +244,7 @@ namespace ZeroTeam.MessageMVC.Tcp
             //    });
             //    return res;
             //}
-            client.Send(p => p.WriteLine(SmartSerializer.ToInnerString(item.Message)));
+            var cl = client.Send(p => p.WriteLine(SmartSerializer.ToInnerString(item.Message)));
 
             return res;
         }

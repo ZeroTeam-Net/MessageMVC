@@ -18,9 +18,9 @@ namespace BeetleX.FastHttpApi
 
         public HttpApiServer Server { get; set; }
 
-        private readonly System.Collections.Generic.Dictionary<string, ActionHandler> mMethods = new Dictionary<string, ActionHandler>(StringComparer.OrdinalIgnoreCase);
+        private readonly System.Collections.Generic.Dictionary<string, ActionHandler> mMethods = new(StringComparer.OrdinalIgnoreCase);
 
-        private readonly Dictionary<Type, Type> mParameterBinders = new Dictionary<Type, Type>();
+        private readonly Dictionary<Type, Type> mParameterBinders = new();
 
         public Action<Assembly[]> AssembliesLoading { get; set; }
 
@@ -49,7 +49,7 @@ namespace BeetleX.FastHttpApi
                     {
                         try
                         {
-                            EventControllerInstanceArgs e = new EventControllerInstanceArgs();
+                            EventControllerInstanceArgs e = new();
                             e.Type = type;
                             OnControllerInstance(e);
                             if (e.Controller == null)
@@ -108,7 +108,7 @@ namespace BeetleX.FastHttpApi
 
         public object GetController(Type type, IHttpContext context)
         {
-            EventControllerInstanceArgs e = new EventControllerInstanceArgs();
+            EventControllerInstanceArgs e = new();
             e.Type = type;
             e.Context = context;
             OnControllerInstance(e);
@@ -215,7 +215,7 @@ namespace BeetleX.FastHttpApi
 
             try
             {
-                EventControllerInstanceArgs e = new EventControllerInstanceArgs();
+                EventControllerInstanceArgs e = new();
                 e.Type = type;
                 OnControllerInstance(e);
                 if (e.Controller == null)
@@ -239,7 +239,7 @@ namespace BeetleX.FastHttpApi
 
         public static void RemoveFilter(List<FilterAttribute> filters, Type[] types)
         {
-            List<FilterAttribute> removeItems = new List<FilterAttribute>();
+            List<FilterAttribute> removeItems = new();
             filters.ForEach(a =>
             {
                 foreach (Type t in types)
@@ -280,7 +280,7 @@ namespace BeetleX.FastHttpApi
                     rooturl += "/";
             }
             RequestMaxRPS control_maxRPS = controllerType.GetCustomAttribute<RequestMaxRPS>();
-            List<FilterAttribute> filters = new List<FilterAttribute>();
+            List<FilterAttribute> filters = new();
             if (!ca.SkipPublicFilter)
                 filters.AddRange(config.Filters);
             IEnumerable<FilterAttribute> fas = controllerType.GetCustomAttributes<FilterAttribute>(false);
@@ -442,7 +442,7 @@ namespace BeetleX.FastHttpApi
                 {
                     RemoveFilter(handler.Filters, item.Types);
                 }
-                EventActionRegistingArgs registing = new EventActionRegistingArgs();
+                EventActionRegistingArgs registing = new();
                 registing.Url = url;
                 registing.Handler = handler;
                 registing.Cancel = false;
@@ -481,7 +481,7 @@ namespace BeetleX.FastHttpApi
 
         public void ExecuteWithWS(HttpRequest request, HttpApiServer server, JToken token)
         {
-            ActionResult result = new ActionResult();
+            ActionResult result = new();
             JToken url = token["url"];
             WebSockets.DataFrame dataFrame = server.CreateDataFrame(result);
             if (url == null)
@@ -520,16 +520,16 @@ namespace BeetleX.FastHttpApi
             {
                 try
                 {
-                    Data.DataContxt dataContxt = new Data.DataContxt();
+                    Data.DataContxt dataContxt = new();
                     DataContextBind.BindJson(dataContxt, data);
-                    WebsocketJsonContext dc = new WebsocketJsonContext(server, request, dataContxt);
+                    WebsocketJsonContext dc = new(server, request, dataContxt);
                     dc.ActionUrl = baseurl;
                     dc.RequestID = result.ID;
                     if (!Server.OnActionExecuting(dc,handler))
                         return;
-                    ActionContext context = new ActionContext(handler, dc, this);
+                    ActionContext context = new(handler, dc, this);
                     long startTime = server.BaseServer.GetRunTime();
-                    WSActionResultHandler wSActionResultHandler = new WSActionResultHandler(dc, server, request, result, dataFrame, startTime);
+                    WSActionResultHandler wSActionResultHandler = new(dc, server, request, result, dataFrame, startTime);
                     if (!handler.HasValidation || handler.ValidateParamters(context.Parameters, out (Validations.ValidationBase, ParameterInfo) error))
                     {
                         context.Execute(wSActionResultHandler);
@@ -564,7 +564,7 @@ namespace BeetleX.FastHttpApi
                     server.BaseServer.Log(EventArgs.LogType.Warring, null, $"HTTP {request.ID} {request.RemoteIPAddress} {request.Method} {request.Url}  not found");
                 if (!server.OnHttpRequesNotfound(request, response).Cancel)
                 {
-                    NotFoundResult notFoundResult = new NotFoundResult($"{request.Method} {request.Url} not found");
+                    NotFoundResult notFoundResult = new($"{request.Method} {request.Url} not found");
                     response.Result(notFoundResult);
                 }
             }
@@ -584,7 +584,7 @@ namespace BeetleX.FastHttpApi
                         {
                             if (server.EnableLog(EventArgs.LogType.Warring))
                                 server.BaseServer.Log(EventArgs.LogType.Warring, null, $"HTTP {request.ID} {request.RemoteIPAddress} {request.Method} {request.Url} not support");
-                            BadRequestResult notSupportResult = new BadRequestResult($"{request.Method}{request.Url} not support");
+                            BadRequestResult notSupportResult = new($"{request.Method}{request.Url} not support");
                             response.Result(notSupportResult);
                         }
                         return;
@@ -606,13 +606,13 @@ namespace BeetleX.FastHttpApi
                     }
                     if (dataConverter != null)
                         dataConverter.Execute(request.Data, request);
-                    HttpContext pc = new HttpContext(server, request, response, request.Data);
+                    HttpContext pc = new(server, request, response, request.Data);
                     long startTime = server.BaseServer.GetRunTime();
                     pc.ActionUrl = request.BaseUrl;
                     if (!Server.OnActionExecuting(pc,handler))
                         return;
-                    HttpActionResultHandler actionResult = new HttpActionResultHandler(Server, request, response, startTime);
-                    ActionContext context = new ActionContext(handler, pc, this);
+                    HttpActionResultHandler actionResult = new(Server, request, response, startTime);
+                    ActionContext context = new(handler, pc, this);
                     if (handler.OptionsAttribute != null)
                         handler.OptionsAttribute.SetResponse(request, response);
                     if (!handler.HasValidation || handler.ValidateParamters(context.Parameters, out (Validations.ValidationBase, ParameterInfo) error))
@@ -629,7 +629,7 @@ namespace BeetleX.FastHttpApi
                     handler.IncrementError();
                     if (server.EnableLog(EventArgs.LogType.Error))
                         server.Log(EventArgs.LogType.Error, $"HTTP {request.ID} {request.RemoteIPAddress} {request.Method} { request.Url} inner error {e_.Message}@{e_.StackTrace}");
-                    InnerErrorResult result = new InnerErrorResult($"http execute {request.BaseUrl} error ", e_, server.Options.OutputStackTrace);
+                    InnerErrorResult result = new($"http execute {request.BaseUrl} error ", e_, server.Options.OutputStackTrace);
                     response.Result(result);
 
                 }

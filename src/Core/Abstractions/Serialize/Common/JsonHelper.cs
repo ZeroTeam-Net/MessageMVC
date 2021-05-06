@@ -15,7 +15,7 @@ namespace ZeroTeam.MessageMVC.Messages
         /// <summary>
         /// 使用NewtonsoftJson的序列化器
         /// </summary>
-        public static readonly NewtonJsonSerializeProxy NewtonJson = new NewtonJsonSerializeProxy();
+        public static readonly NewtonJsonSerializeProxy NewtonJson = new();
 
         /// <summary>
         /// 序列化

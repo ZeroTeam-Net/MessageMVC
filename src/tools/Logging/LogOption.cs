@@ -9,11 +9,10 @@ namespace Agebull.Common.Logging
     /// </summary>
     public class LogOption : IZeroOption
     {
-        
         /// <summary>
         ///     独立的等级
         /// </summary>
-        public LogLevel Level { get; set; }
+        public LogLevel Level { get; set; } = LogLevel.Information;
 
         /// <summary>
         ///     启用
@@ -23,28 +22,28 @@ namespace Agebull.Common.Logging
         /// <summary>
         ///     日志服务
         /// </summary>
-        public string Service { get; set; }
+        public string Service { get; set; } = "log";
 
         /// <summary>
         ///     日志API
         /// </summary>
-        public string LogApi { get; set; }
+        public string LogApi { get; set; } = "text";
 
         /// <summary>
         ///     监控API
         /// </summary>
-        public string MonitorApi { get; set; }
+        public string MonitorApi { get; set; } = "monitor";
 
         #region IZeroOption
 
         /// <summary>
         /// 实例
         /// </summary>
-        public static readonly LogOption Instance = new LogOption();
+        public static readonly LogOption Instance = new();
 
         const string sectionName = "MessageMVC:MessageLogger";
 
-        const string optionName = "HttpClient配置";
+        const string optionName = "TcpLoggin配置";
 
         const string supperUrl = "https://";
 
@@ -75,17 +74,9 @@ namespace Agebull.Common.Logging
 
             if (first)
             {
-                if (option == null)
-                {
-                    Enable = true;
-                    Level = LogLevel.Information;
-                    Service = "log";
-                    LogApi = "text";
-                    MonitorApi = "monitor";
-                }
-                ConfigurationHelper.RegistOnChange<LogOption>("MessageMVC:Tools", Update, false);
+                ConfigurationHelper.RegistOnChange<LogOption>(sectionName, Update, true);
             }
-            if (option != null)
+            else if (option != null)
             {
                 Update(option);
             }

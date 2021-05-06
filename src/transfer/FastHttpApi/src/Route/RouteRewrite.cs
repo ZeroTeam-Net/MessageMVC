@@ -25,7 +25,7 @@ namespace BeetleX.FastHttpApi
 
         private readonly LRUCached mRouteCached;
 
-        private readonly ConcurrentDictionary<string, RouteGroup> mRoutes = new ConcurrentDictionary<string, RouteGroup>(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, RouteGroup> mRoutes = new(StringComparer.OrdinalIgnoreCase);
 
         private RouteGroup[] mMatchRoutes = new RouteGroup[0];
 
@@ -86,7 +86,7 @@ namespace BeetleX.FastHttpApi
 
         public void Remove(string host, string url)
         {
-            UrlRoute item = new UrlRoute { Host = host, Rewrite = null, Url = url, Ext = null };
+            UrlRoute item = new() { Host = host, Rewrite = null, Url = url, Ext = null };
             item.Init();
             if (mRoutes.TryGetValue(item.Path, out RouteGroup rg))
             {
@@ -111,7 +111,7 @@ namespace BeetleX.FastHttpApi
             var extTag = url.IndexOf(".");
             if (extTag > 0)
                 ext = url.Substring(extTag + 1, url.Length - extTag - 1);
-            UrlRoute route = new UrlRoute { Rewrite = rewriteurl, Url = url, Ext = ext, Host = host };
+            UrlRoute route = new() { Rewrite = rewriteurl, Url = url, Ext = ext, Host = host };
             Add(route);
             return this;
         }
@@ -153,7 +153,7 @@ namespace BeetleX.FastHttpApi
                 }
             }
             bool iscached = true;
-            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            Dictionary<string, string> parameters = new();
             result = new RouteMatchResult();
             if (mRoutes.TryGetValue(request.Path, out rg))
             {
@@ -209,7 +209,7 @@ namespace BeetleX.FastHttpApi
 
         public List<Config> GetRoutes()
         {
-            List<Config> items = new List<Config>();
+            List<Config> items = new();
             foreach (var r in mRoutes.Values)
                 items.AddRange(from a in r.Routes select new Config { Host = a.Host, Url = a.Url, Rewrite = a.Rewrite });
             return items;
@@ -219,7 +219,7 @@ namespace BeetleX.FastHttpApi
         {
             if (System.IO.File.Exists(REWRITE_FILE))
             {
-                using (System.IO.StreamReader reader = new System.IO.StreamReader(REWRITE_FILE))
+                using (System.IO.StreamReader reader = new(REWRITE_FILE))
                 {
                     string data = reader.ReadToEnd();
                     List<Config> items = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Config>>(data);
@@ -234,7 +234,7 @@ namespace BeetleX.FastHttpApi
 
         public void Save()
         {
-            using (System.IO.StreamWriter writer = new System.IO.StreamWriter(REWRITE_FILE, false))
+            using (System.IO.StreamWriter writer = new(REWRITE_FILE, false))
             {
                 writer.Write(Newtonsoft.Json.JsonConvert.SerializeObject(GetRoutes()));
                 writer.Flush();

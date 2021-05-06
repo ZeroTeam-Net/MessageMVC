@@ -25,7 +25,7 @@ namespace BeetleX.FastHttpApi
 
         }
 
-        readonly object locked = new object();
+        readonly object locked = new();
         /// <summary>
         /// Http消息接收处理
         /// </summary>
@@ -33,14 +33,19 @@ namespace BeetleX.FastHttpApi
         /// <param name="response"></param>
         protected override void OnHttpRequest(HttpRequest request, HttpResponse response)
         {
-            lock(locked)
+            if (request.Method == HttpParse.OPTIONS_TAG)
+            {
+                response.Result(new OptionsResult());
+            }
+
+            lock (locked)
             {
                 if (OnHttpRequesting(request, response).Cancel)
                 {
                     return;
                 }
                 string baseUrl = request.BaseUrl;
-                if (string.IsNullOrEmpty(request.Ext) && baseUrl[baseUrl.Length - 1] != '/')
+                if (string.IsNullOrEmpty(request.Ext) && baseUrl[^1] != '/')
                 {
                     HttpMessageReader.OnHttpRequest(this, request, response);
                 }
@@ -49,12 +54,6 @@ namespace BeetleX.FastHttpApi
                     OnProcessResource(request, response);
                 }
             }
-            //if (request.BaseUrl == "/" || Path.GetFileName(request.BaseUrl).Contains('.'))
-            //{
-            //    base.OnHttpRequest(request, response);
-            //    return;
-            //}
-
         }
 
         /// <summary>

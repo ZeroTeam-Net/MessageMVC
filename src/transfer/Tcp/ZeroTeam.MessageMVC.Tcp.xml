@@ -24,11 +24,6 @@
                 初始化
             </summary>
         </member>
-        <member name="M:ZeroTeam.MessageMVC.Tcp.TcpApp.AddMessageMvcTcpServer(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
-            <summary>
-                初始化
-            </summary>
-        </member>
         <member name="T:ZeroTeam.MessageMVC.Tcp.ClientOption">
             <summary>
             接收服务配置
@@ -178,6 +173,11 @@
                 Http进站出站的处理类
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Tcp.TcpServerFlow.PosterName">
+            <summary>
+            投递对象名称
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.Tcp.TcpServerFlow.State">
             <summary>
             运行状态
@@ -196,6 +196,11 @@
         <member name="M:ZeroTeam.MessageMVC.Tcp.TcpServerFlow.ZeroTeam#MessageMVC#ILifeFlow#Open">
             <summary>
             初始化
+            </summary>
+        </member>
+        <member name="M:ZeroTeam.MessageMVC.Tcp.TcpServerFlow.CheckTimeOut">
+            <summary>
+            检查超时
             </summary>
         </member>
         <member name="M:ZeroTeam.MessageMVC.Tcp.TcpServerFlow.ZeroTeam#MessageMVC#ILifeFlow#Destroy">

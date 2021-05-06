@@ -23,7 +23,7 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
         /// <summary>
         /// 单例
         /// </summary>
-        public static RabbitMQPoster Instance = new RabbitMQPoster();
+        public static RabbitMQPoster Instance = new();
 
         /// <summary>
         /// 征集周期管理器
@@ -142,7 +142,7 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
 
         private static HealthItem ProduceTest()
         {
-            HealthItem item = new HealthItem
+            HealthItem item = new()
             {
                 ItemName = "Produce"
             };
@@ -184,7 +184,7 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
 
         private HealthItem ConsumerTest()
         {
-            HealthItem item = new HealthItem
+            HealthItem item = new()
             {
                 ItemName = "Consumer"
             };
@@ -224,7 +224,7 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
         /// <summary>
         /// 当前通道
         /// </summary>
-        internal readonly ConcurrentDictionary<string, (IModel model, RabbitMQItemOption option)> channels = new ConcurrentDictionary<string, (IModel model, RabbitMQItemOption option)>(StringComparer.OrdinalIgnoreCase);
+        internal readonly ConcurrentDictionary<string, (IModel model, RabbitMQItemOption option)> channels = new(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// 取得通道

@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Agebull.EntityModel.BusinessLogic" Version="5.0.6.10" />
+    <PackageReference Include="Agebull.EntityModel.MySql" Version="5.0.6.10" />
+    <PackageReference Include="ZeroTeam.MessageMVC.ModelApi" Version="5.0.6.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\Core\ZeroTeam.MessageMVC.Core.csproj" />
+    <ProjectReference Include="..\..\transfer\FastHttpApi\ZeroTeam.MessageMVC.FastHttpApi.csproj" />
+    <ProjectReference Include="..\..\transfer\Http\ZeroTeam.MessageMVC.Http.csproj" />
+    <ProjectReference Include="..\..\transfer\kafka\ZeroTeam.MessageMVC.Kafka.csproj" />
+    <ProjectReference Include="..\..\transfer\redis\RedisMQ\ZeroTeam.MessageMVC.RedisMQ.csproj" />
+    <ProjectReference Include="..\..\transfer\Tcp\ZeroTeam.MessageMVC.Tcp.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+
+</Project>

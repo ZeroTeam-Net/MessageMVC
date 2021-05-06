@@ -78,7 +78,7 @@ namespace ZeroTeam.MessageMVC.Services
         /// <summary>
         /// 注册的方法
         /// </summary>
-        readonly Dictionary<string, IApiAction> ApiActions = new Dictionary<string, IApiAction>(StringComparer.OrdinalIgnoreCase);
+        readonly Dictionary<string, IApiAction> ApiActions = new(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         ///  取得API信息

@@ -20,6 +20,11 @@ namespace ZeroTeam.MessageMVC.MessageQueue
         #region IMessagePoster 
 
         /// <summary>
+        /// 投递对象名称
+        /// </summary>
+        public string PosterName => Name;
+
+        /// <summary>
         /// 取得生命周期对象
         /// </summary>
         /// <returns></returns>
@@ -150,9 +155,9 @@ namespace ZeroTeam.MessageMVC.MessageQueue
 
         #region 消息可靠性
 
-        private static readonly ConcurrentQueue<TQueueItem> queues = new ConcurrentQueue<TQueueItem>();
+        private static readonly ConcurrentQueue<TQueueItem> queues = new();
 
-        private static readonly SemaphoreSlim semaphore = new SemaphoreSlim(0);
+        private static readonly SemaphoreSlim semaphore = new(0);
 
         private async void AsyncPostQueue()
         {
@@ -344,7 +349,12 @@ namespace ZeroTeam.MessageMVC.MessageQueue
                 }
             }
             if (!ZeroAppOption.Instance.IsClosed)
-                queues.Enqueue(item);
+            {
+                if (queues.Count < 1024 && item.Try < 10)//否则系统异常将存在内存泄漏
+                    queues.Enqueue(item);
+                else
+                    RecordLog(LogLevel.Error, () => $"[异步消息投递] {item.ID} 发送失败次数({item.Try})过多或总队列数超过1024,已丢弃处理");
+            }
         }
 
         #endregion
@@ -396,7 +406,7 @@ namespace ZeroTeam.MessageMVC.MessageQueue
         /// <returns></returns>
         async Task<IMessageResult> PostMessage(TQueueItem item)
         {
-            var task = new PostTask
+            var postTask = new PostTask
             {
                 Start = DateTime.Now.ToTimestamp(),
                 Message = item.Message,
@@ -407,19 +417,20 @@ namespace ZeroTeam.MessageMVC.MessageQueue
                     State = MessageState.None
                 }
             };
-            PostTasks[item.Message.ID] = task;
-            task.WaitingTask = DoPost(item);
-            CurrentTask = task;
+            PostTasks[item.Message.ID] = postTask;
+            var task = DoPost(item);
+            postTask.WaitingTask = task;
+            CurrentTask = postTask;
             try
             {
-                var resut = await task.WaitingTask.Task;
+                var resut = await task.Task;
                 PostTasks.TryRemove(item.ID, out _);
                 return resut;
             }
             catch
             {
-                task.Result.State = MessageState.NetworkError;
-                return task.Result;
+                postTask.Result.State = MessageState.NetworkError;
+                return postTask.Result;
             }
             finally
             {
@@ -430,7 +441,7 @@ namespace ZeroTeam.MessageMVC.MessageQueue
         /// <summary>
         /// 当前等待队列
         /// </summary>
-        protected static readonly ConcurrentDictionary<string, PostTask> PostTasks = new ConcurrentDictionary<string, PostTask>();
+        protected static readonly ConcurrentDictionary<string, PostTask> PostTasks = new();
 
         static int CheckTimeOutRun;
         /// <summary>
@@ -452,11 +463,13 @@ namespace ZeroTeam.MessageMVC.MessageQueue
                 var now = DateTime.Now.ToTimestamp();
                 foreach (var item in items)
                 {
-                    if (now - item.Start > 3)
+                    if (now - item.Start > 10)
                     {
                         try
                         {
                             item.Result.State = MessageState.NetworkError;
+                            if (item.WaitingTask == null)
+                                continue;
                             var task = item.WaitingTask;
                             item.WaitingTask = null;
                             task.TrySetResult(item.Result);

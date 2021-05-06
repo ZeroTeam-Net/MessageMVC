@@ -189,7 +189,8 @@ namespace ZeroTeam.MessageMVC.Http
             if (Message.TraceInfo.Option.HasFlag(MessageTraceType.Request))
             {
                 GetHeaderAndSet(request, "x-zmvc-app", app => Message.TraceInfo.RequestApp = app);
-                GetHeaderAndSet(request, "Referer", referer => Message.TraceInfo.RequestPage = referer?.ToLower());
+                GetHeaderAndSet(request, "Referer", referer => Message.TraceInfo.RequestHost = referer?.ToLower());
+                GetHeaderAndSet(request, "x-zmvc-page", app => Message.TraceInfo.RequestPage = app);
             }
             if (Message.TraceInfo.Option.HasFlag(MessageTraceType.LinkTrace))
             {

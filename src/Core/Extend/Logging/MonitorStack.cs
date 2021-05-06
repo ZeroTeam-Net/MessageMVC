@@ -9,7 +9,7 @@ namespace Agebull.Common.Logging
         /// <summary>
         ///     记录堆栈
         /// </summary>
-        internal LocalTraceStack Stack = new LocalTraceStack();
+        internal LocalTraceStack Stack = new();
 
         /// <summary>
         ///     侦测开关
@@ -55,7 +55,11 @@ namespace Agebull.Common.Logging
         public void EndStep()
         {
             if (InMonitor)
-                Stack.Pop();
+            {
+                var step = Stack.Pop();
+                if (step.End == DateTime.MinValue)
+                    step.End = DateTime.Now;
+            }
         }
 
         /// <summary>
@@ -68,7 +72,9 @@ namespace Agebull.Common.Logging
             InMonitor = false;
             while (!Stack.IsEmpty)
             {
-                Stack.Pop();
+                var step = Stack.Pop();
+                if (step.End == DateTime.MinValue)
+                    step.End = DateTime.Now;
             }
             Stack.FixValue.End = DateTime.Now;
             return Stack.FixValue;

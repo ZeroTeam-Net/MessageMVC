@@ -36,12 +36,12 @@ namespace ZeroTeam.MessageMVC.Http
         public List<HttpClientItem> Services { get; set; }
 
 
-        internal static Dictionary<string, HttpClientItem> Options = new Dictionary<string, HttpClientItem>(StringComparer.OrdinalIgnoreCase);
+        internal static Dictionary<string, HttpClientItem> Options = new(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// 服务到HttpClientName的查找表.
         /// </summary>
-        internal static readonly Dictionary<string, string> ServiceMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        internal static readonly Dictionary<string, string> ServiceMap = new(StringComparer.OrdinalIgnoreCase);
 
         static IHttpClientFactory httpClientFactory;
 
@@ -54,7 +54,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// <summary>
         /// 实例
         /// </summary>
-        public static HttpClientOption Instance = new HttpClientOption();
+        public static HttpClientOption Instance = new();
 
 
         const string sectionName = "HttpClient";

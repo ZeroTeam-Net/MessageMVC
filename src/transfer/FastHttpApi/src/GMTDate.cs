@@ -6,13 +6,13 @@ namespace BeetleX.FastHttpApi
 {
     class GMTDate
     {
-        private readonly List<byte[]> mWeekBuffers = new List<byte[]>();
+        private readonly List<byte[]> mWeekBuffers = new();
 
-        public List<byte[]> mYears = new List<byte[]>();
+        public List<byte[]> mYears = new();
 
-        public List<byte[]> mMoth = new List<byte[]>();
+        public List<byte[]> mMoth = new();
 
-        public List<byte[]> mNumber = new List<byte[]>();
+        public List<byte[]> mNumber = new();
 
         private readonly byte _1 = 58;
 

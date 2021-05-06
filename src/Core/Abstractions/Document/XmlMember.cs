@@ -16,12 +16,12 @@ namespace ZeroTeam.MessageMVC.Documents
         /// <summary>
         ///     读取的帮助XML
         /// </summary>
-        private static readonly List<XmlMember> HelpXml = new List<XmlMember>();
+        private static readonly List<XmlMember> HelpXml = new();
 
         /// <summary>
         ///     读取的帮助XML
         /// </summary>
-        private static readonly List<Assembly> Assemblies = new List<Assembly>();
+        private static readonly List<Assembly> Assemblies = new();
 
         private Dictionary<string, string> _arguments;
 
@@ -156,14 +156,14 @@ namespace ZeroTeam.MessageMVC.Documents
             }
 
             Assemblies.Add(assembly);
+            var path = assembly.Location;
             // ReSharper disable once AssignNullToNotNullAttribute
-            if (assembly.IsDynamic || assembly.Location == null)
+            if (assembly.IsDynamic || path.IsMissing())
             {
                 return;
             }
 
-            Load(Path.Combine(Path.GetDirectoryName(assembly.Location),
-                Path.GetFileNameWithoutExtension(assembly.Location) + ".xml"));
+            Load(Path.Combine(path,Path.GetFileNameWithoutExtension(path) + ".xml"));
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace ZeroTeam.MessageMVC.Documents
         /// <returns></returns>
         public static void Load(string path)
         {
-            if (!File.Exists(path))
+            if (path.IsMissing() || !File.Exists(path))
             {
                 return;
             }

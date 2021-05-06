@@ -6,7 +6,7 @@ namespace BeetleX.FastHttpApi
 {
     public class Cookies
     {
-        private readonly Dictionary<string, string> mItems = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> mItems = new();
 
         public string this[string name]
         {
@@ -23,7 +23,7 @@ namespace BeetleX.FastHttpApi
 
         public IDictionary<string, string> Copy()
         {
-            Dictionary<string, string> result = new Dictionary<string, string>();
+            Dictionary<string, string> result = new();
             foreach (var item in mItems)
                 result[item.Key] = item.Value;
             return result;
@@ -44,7 +44,7 @@ namespace BeetleX.FastHttpApi
         }
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             foreach (var item in mItems)
             {
                 sb.AppendFormat("{0}={1}\r\n", item.Key, item.Value);

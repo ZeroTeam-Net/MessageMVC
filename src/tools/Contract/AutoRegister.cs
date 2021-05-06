@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Agebull.Common.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.ComponentModel.Composition;
 using ZeroTeam.MessageMVC.AddIn;
@@ -18,6 +19,7 @@ namespace ZeroTeam.MessageMVC.ApiContract
         /// </summary>
         void IAutoRegister.AutoRegist(IServiceCollection services, Microsoft.Extensions.Logging.ILogger logger)
         {
+            logger.Information("使用ZeroTeam.MessageMVC.ApiContract作为接口规范");
             //ApiResult构造
             services.TryAddTransient<IApiResultHelper, ApiResultDefault>();
             services.TryAddTransient<IOperatorStatus, OperatorStatus>();

@@ -53,7 +53,7 @@ namespace BeetleX.FastHttpApi
 
         private readonly RouteRewrite mUrlRewrite;
 
-        private readonly IPv4Tables mIPv4Tables = new IPv4Tables();
+        private readonly IPv4Tables mIPv4Tables = new();
 
         private readonly ModuleManager mModuleManager;
 
@@ -77,11 +77,11 @@ namespace BeetleX.FastHttpApi
 
         private long mTotalConnections;
 
-        private readonly ActionSettings mActionSettings = new ActionSettings();
+        private readonly ActionSettings mActionSettings = new();
 
         private readonly ActionHandlerFactory mActionFactory;
 
-        private readonly ConcurrentQueue<LogRecord> mCacheLogQueue = new ConcurrentQueue<LogRecord>();
+        private readonly ConcurrentQueue<LogRecord> mCacheLogQueue = new();
 
         public LogRecord[] GetCacheLog()
         {
@@ -90,7 +90,7 @@ namespace BeetleX.FastHttpApi
 
         private int mCacheLogLength = 0;
 
-        private readonly ConcurrentDictionary<string, object> mProperties = new ConcurrentDictionary<string, object>();
+        private readonly ConcurrentDictionary<string, object> mProperties = new();
 
         public long RequestErrors => mRequestErrors;
 
@@ -110,7 +110,7 @@ namespace BeetleX.FastHttpApi
 
         public IDataFrameSerializer FrameSerializer { get; set; }
 
-        private readonly ObjectPoolGroup<HttpRequest> mRequestPool = new ObjectPoolGroup<HttpRequest>();
+        private readonly ObjectPoolGroup<HttpRequest> mRequestPool = new();
 
         internal HttpRequest CreateRequest(ISession session)
         {
@@ -132,9 +132,9 @@ namespace BeetleX.FastHttpApi
         public void SaveOptions()
         {
             string file = Directory.GetCurrentDirectory() + System.IO.Path.DirectorySeparatorChar + mConfigFile;
-            using (System.IO.StreamWriter writer = new StreamWriter(file))
+            using (System.IO.StreamWriter writer = new(file))
             {
-                System.Collections.Generic.Dictionary<string, object> config = new Dictionary<string, object>();
+                System.Collections.Generic.Dictionary<string, object> config = new();
                 config["HttpConfig"] = this.Options;
                 string strConfig = Newtonsoft.Json.JsonConvert.SerializeObject(config);
                 writer.Write(strConfig);
@@ -148,7 +148,7 @@ namespace BeetleX.FastHttpApi
             string file = Directory.GetCurrentDirectory() + System.IO.Path.DirectorySeparatorChar + mConfigFile;
             if (System.IO.File.Exists(file))
             {
-                using (System.IO.StreamReader reader = new StreamReader(mConfigFile, Encoding.UTF8))
+                using (System.IO.StreamReader reader = new(mConfigFile, Encoding.UTF8))
                 {
                     string json = reader.ReadToEnd();
                     if (string.IsNullOrEmpty(json))
@@ -211,7 +211,7 @@ namespace BeetleX.FastHttpApi
 
         public EventHandler<WebSocketConnectArgs> WebSocketConnect { get; set; }
 
-        private readonly List<System.Reflection.Assembly> mAssemblies = new List<System.Reflection.Assembly>();
+        private readonly List<System.Reflection.Assembly> mAssemblies = new();
 
         public List<System.Reflection.Assembly> Assemblies => mAssemblies;
 
@@ -285,7 +285,7 @@ namespace BeetleX.FastHttpApi
             var ct = ContentTypes.TEXT_UTF8;
             var a = HeaderTypeFactory.Find("Content-Length");
             AppDomain.CurrentDomain.AssemblyResolve += ResolveHandler;
-            HttpPacket hp = new HttpPacket(this, this.FrameSerializer);
+            HttpPacket hp = new(this, this.FrameSerializer);
             var gtmdate = GMTDate.Default;
             string serverInfo = $"Server: beetlex.io\r\n";
             HeaderTypeFactory.SERVAR_HEADER_BYTES = Encoding.ASCII.GetBytes(serverInfo);
@@ -336,7 +336,7 @@ namespace BeetleX.FastHttpApi
             ModuleManager.Load();
             if (Options.ManageApiEnabled)
             {
-                ServerController serverStatusController = new ServerController();
+                ServerController serverStatusController = new();
                 mActionFactory.Register(serverStatusController);
             }
             StartTime = DateTime.Now;
@@ -350,7 +350,7 @@ namespace BeetleX.FastHttpApi
             HeaderTypeFactory.Find(HeaderTypeFactory.HOST);
             AppDomain.CurrentDomain.UnhandledException += (s, e) =>
             {
-                using (System.IO.StreamWriter writer = new StreamWriter("__UnhandledException.txt"))
+                using (System.IO.StreamWriter writer = new("__UnhandledException.txt"))
                 {
                     Exception error = e.ExceptionObject as Exception;
                     writer.WriteLine(DateTime.Now);
@@ -397,7 +397,7 @@ namespace BeetleX.FastHttpApi
         {
             if (Options.Virtuals == null)
                 Options.Virtuals = new List<VirtualFolder>();
-            VirtualFolder vf = new VirtualFolder { Folder = folder, Path = path };
+            VirtualFolder vf = new() { Folder = folder, Path = path };
             vf.Verify();
             var has = Options.Virtuals.FirstOrDefault(p => string.Compare(p.Folder, vf.Folder, true) == 0);
             if (has == null)
@@ -501,7 +501,7 @@ namespace BeetleX.FastHttpApi
 
             if (items.Count > 0)
             {
-                List<ISession> receiveRequest = new List<ISession>();
+                List<ISession> receiveRequest = new();
                 IServer server = items[0].Server.BaseServer;
                 for (int i = 0; i < items.Count; i++)
                 {
@@ -540,7 +540,7 @@ namespace BeetleX.FastHttpApi
         public override void Connected(IServer server, ConnectedEventArgs e)
         {
             System.Threading.Interlocked.Increment(ref mTotalConnections);
-            HttpToken token = new HttpToken();
+            HttpToken token = new();
             token.Request = new HttpRequest();
             token.Request.Init(e.Session, this);
             e.Session.Tag = token;
@@ -644,7 +644,7 @@ namespace BeetleX.FastHttpApi
             return stream.ReadString((int)data.Length);
         }
 
-        private readonly System.Collections.Concurrent.ConcurrentQueue<byte[]> mBuffers = new System.Collections.Concurrent.ConcurrentQueue<byte[]>();
+        private readonly System.Collections.Concurrent.ConcurrentQueue<byte[]> mBuffers = new();
 
         public virtual ArraySegment<byte> FrameSerialize(DataFrame data, object body)
         {
@@ -690,7 +690,7 @@ namespace BeetleX.FastHttpApi
 
         protected virtual void ConnectionUpgradeWebsocket(HttpRequest request, HttpResponse response)
         {
-            WebSocketConnectArgs wsca = new WebSocketConnectArgs(request);
+            WebSocketConnectArgs wsca = new(request);
             wsca.Request = request;
             WebSocketConnect?.Invoke(this, wsca);
             if (wsca.Cancel)
@@ -703,7 +703,7 @@ namespace BeetleX.FastHttpApi
             }
             else
             {
-                UpgradeWebsocketResult upgradeWebsocket = new UpgradeWebsocketResult(request.Header[HeaderTypeFactory.SEC_WEBSOCKET_KEY]);
+                UpgradeWebsocketResult upgradeWebsocket = new(request.Header[HeaderTypeFactory.SEC_WEBSOCKET_KEY]);
                 response.Result(upgradeWebsocket);
             }
         }
@@ -717,7 +717,7 @@ namespace BeetleX.FastHttpApi
 
         public DataFrame CreateDataFrame(object body = null)
         {
-            DataFrame dp = new DataFrame(this);
+            DataFrame dp = new(this);
             dp.DataPacketSerializer = this.FrameSerializer;
             dp.Body = body;
             return dp;
@@ -789,7 +789,7 @@ namespace BeetleX.FastHttpApi
         {
             if (Options.CacheLogMaxSize > 0)
             {
-                LogRecord record = new LogRecord();
+                LogRecord record = new();
                 record.Type = e.Type.ToString();
                 record.Message = e.Message;
                 record.Time = DateTime.Now.ToString("H:mm:ss");
@@ -815,7 +815,7 @@ namespace BeetleX.FastHttpApi
             ISession output = LogOutput;
             if (output != null && e.Session != output)
             {
-                ActionResult log = new ActionResult();
+                ActionResult log = new();
                 log.Data = new { LogType = e.Type.ToString(), Time = DateTime.Now.ToString("H:mm:ss"), Message = e.Message };
                 CreateDataFrame(log).Send(output);
             }
@@ -852,7 +852,7 @@ namespace BeetleX.FastHttpApi
                         {
                             BaseServer.Error(e_, request.Session, $"{request.RemoteIPAddress} {request.Method} {request.BaseUrl} file error {e_.Message}");
                         }
-                        InnerErrorResult result = new InnerErrorResult($"response file error ", e_, Options.OutputStackTrace);
+                        InnerErrorResult result = new($"response file error ", e_, Options.OutputStackTrace);
                         response.Result(result);
                     }
                 }
@@ -860,7 +860,7 @@ namespace BeetleX.FastHttpApi
                 {
                     if (EnableLog(LogType.Info))
                         Log(LogType.Info, $"{request.RemoteIPAddress}{request.Method} {request.Url} not support");
-                    NotSupportResult notSupport = new NotSupportResult($"{request.Method} {request.Url} not support");
+                    NotSupportResult notSupport = new($"{request.Method} {request.Url} not support");
                     response.Result(notSupport);
 
                 }
@@ -922,7 +922,7 @@ namespace BeetleX.FastHttpApi
                     if (!mIPLimit.ValidateRPS(request))
                     {
                         token.KeepAlive = false;
-                        InnerErrorResult innerErrorResult = new InnerErrorResult("400", $"{request.RemoteIPAddress} request limit!");
+                        InnerErrorResult innerErrorResult = new("400", $"{request.RemoteIPAddress} request limit!");
                         response.Result(innerErrorResult);
                         return;
                     }
@@ -940,7 +940,7 @@ namespace BeetleX.FastHttpApi
                         }
                         else
                         {
-                            IOQueueProcessArgs args = new IOQueueProcessArgs
+                            IOQueueProcessArgs args = new()
                             {
                                 Request = request,
                                 Response = response
@@ -977,7 +977,7 @@ namespace BeetleX.FastHttpApi
         {
             if (ActionExecuting != null)
             {
-                EventActionExecutingArgs e = new EventActionExecutingArgs();
+                EventActionExecutingArgs e = new();
                 e.HttpContext = context;
                 e.Handler = handler;
                 ActionExecuting(this, e);
@@ -1075,7 +1075,7 @@ namespace BeetleX.FastHttpApi
                         if (mVersion != BaseServer.Version)
                         {
                             ISession[] items = BaseServer.GetOnlines();
-                            List<HttpRequest> lst = new List<HttpRequest>();
+                            List<HttpRequest> lst = new();
                             for (int i = 0; i < items.Length; i++)
                             {
                                 HttpToken token = (HttpToken)items[i].Tag;

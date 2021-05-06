@@ -46,7 +46,7 @@ namespace ZeroTeam.MessageMVC.PageInfoAutoSave
                     ApiUrl = context.Request.Path.Value,
                     Appid = GetHeader("x-zmvc-app"),
                     ActionName = GetHeader("x-zmvc-action-code"),
-                    PageUrl = GetHeader("Referer"),
+                    PageUrl = GetHeader("x-zmvc-page"),
                     PageTitle = HttpUtility.UrlDecode(GetHeader("x-zmvc-page-title")),
                     ActionTitle = HttpUtility.UrlDecode(GetHeader("x-zmvc-action-title"))
                 }.ToJson());

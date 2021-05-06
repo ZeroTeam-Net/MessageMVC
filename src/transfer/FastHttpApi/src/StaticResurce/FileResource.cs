@@ -77,9 +77,9 @@ namespace BeetleX.FastHttpApi.StaticResurce
                 byte[] buffer = HttpParse.GetByteBuffer();
                 if (length > 0)
                 {
-                    using (System.IO.MemoryStream memory = new MemoryStream())
+                    using (System.IO.MemoryStream memory = new())
                     {
-                        using (GZipStream gstream = new GZipStream(memory, CompressionMode.Compress))
+                        using (GZipStream gstream = new(memory, CompressionMode.Compress))
                         {
                             while (length > 0)
                             {
@@ -107,7 +107,7 @@ namespace BeetleX.FastHttpApi.StaticResurce
             Name = System.IO.Path.GetFileName(FullName);
             if (!InnerResource)
             {
-                FileInfo fi = new FileInfo(FullName);
+                FileInfo fi = new(FullName);
                 Length = (int)fi.Length;
             }
             else
@@ -174,7 +174,7 @@ namespace BeetleX.FastHttpApi.StaticResurce
 
         }
 
-        private readonly System.Collections.Concurrent.ConcurrentQueue<byte[]> mPool = new System.Collections.Concurrent.ConcurrentQueue<byte[]>();
+        private readonly System.Collections.Concurrent.ConcurrentQueue<byte[]> mPool = new();
 
         public override ArraySegment<byte> GetBlodk(int offset, int size, out int newOffset)
         {

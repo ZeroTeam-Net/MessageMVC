@@ -38,7 +38,7 @@ namespace Agebull.Common.Ioc
         /// <summary>
         /// 活动实例
         /// </summary>
-        static readonly AsyncLocal<ScopeInnerData> scopeLocal = new AsyncLocal<ScopeInnerData>();
+        static readonly AsyncLocal<ScopeInnerData> scopeLocal = new();
 
         /// <summary>
         /// 范围名称

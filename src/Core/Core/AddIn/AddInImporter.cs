@@ -7,6 +7,7 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace ZeroTeam.MessageMVC.AddIn
 {
@@ -17,7 +18,7 @@ namespace ZeroTeam.MessageMVC.AddIn
     {
         #region 程序集排除
 
-        private static readonly HashSet<string> knowAssemblies = new HashSet<string>();
+        private static readonly HashSet<string> knowAssemblies = new();
 
         static bool CheckAssembly(string file)
         {
@@ -88,27 +89,27 @@ namespace ZeroTeam.MessageMVC.AddIn
         /// <summary>
         /// 所有自动注册对象
         /// </summary>
-        List<IAutoRegister> registers;
+        List<IAutoRegister> registers = new();
 
         /// <summary>
         /// 载入插件
         /// </summary>
         internal void LoadAddIn(ILogger logger)
         {
-            logger.Information("载入插件");
-
             if (string.IsNullOrEmpty(ZeroAppOption.Instance.AddInPath))
             {
-                ZeroAppOption.Instance.AddInPath = Path.GetDirectoryName(GetType().Assembly.Location);
+                ZeroAppOption.Instance.AddInPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             }
             else if (ZeroAppOption.Instance.AddInPath[0] != '/')
             {
                 ZeroAppOption.Instance.AddInPath = Path.Combine(ZeroAppOption.Instance.RootPath, ZeroAppOption.Instance.AddInPath);
             }
             if (!Directory.Exists(ZeroAppOption.Instance.AddInPath))
+            {
+                logger.Information($"插件地址无效:{ZeroAppOption.Instance.AddInPath}");
                 return;
-
-            registers = new List<IAutoRegister>();
+            }
+            logger.Information($"载入插件:{ZeroAppOption.Instance.AddInPath}");
 
             var files = Directory.GetFiles(ZeroAppOption.Instance.AddInPath, "*.dll", SearchOption.TopDirectoryOnly);
             foreach (var file in files)

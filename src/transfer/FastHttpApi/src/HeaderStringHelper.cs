@@ -14,7 +14,7 @@ namespace BeetleX.FastHttpApi
 
         public static int Count => mStringCache.Count;
 
-        private static readonly Dictionary<ulong, string> mStringCache = new Dictionary<ulong, string>();
+        private static readonly Dictionary<ulong, string> mStringCache = new();
 
         public unsafe static string GetString(ReadOnlySpan<char> data, bool toLower = false)
         {

@@ -44,7 +44,7 @@ namespace ZeroTeam.MessageMVC.ApiContract
         {
             return Serializer.ToObject<ApiResult<T>>(str);
         }
-        static readonly Dictionary<Type, Type> interfaceMap = new Dictionary<Type, Type>();
+        static readonly Dictionary<Type, Type> interfaceMap = new();
 
         /// <summary>
         /// 反序列化(BUG:interface构造)

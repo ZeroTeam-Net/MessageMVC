@@ -176,7 +176,7 @@ namespace Agebull.Common.Reflection
         //}
 #endif
 
-        private static readonly Dictionary<string, Type> unKnowTypes = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
+        private static readonly Dictionary<string, Type> unKnowTypes = new(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         ///     生成一个类型的实例

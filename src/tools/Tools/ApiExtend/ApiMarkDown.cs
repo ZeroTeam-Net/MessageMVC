@@ -22,7 +22,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         {
             foreach (var type in types)
             {
-                ApiDiscover discover = new ApiDiscover();
+                ApiDiscover discover = new();
                 discover.Discover(type);
 
                 var path = IOHelper.CheckPath(Environment.CurrentDirectory, "md");
@@ -41,7 +41,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         {
             foreach (var assembly in assemblies)
             {
-                ApiDiscover discover = new ApiDiscover();
+                ApiDiscover discover = new();
                 discover.Discover(assembly);
 
                 var path = IOHelper.CheckPath(Environment.CurrentDirectory, "md");

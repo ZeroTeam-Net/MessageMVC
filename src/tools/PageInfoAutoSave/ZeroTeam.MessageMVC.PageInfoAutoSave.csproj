@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <DebugType>portable</DebugType>
     <PackageProjectUrl>https://github.com/ZeroTeam-Net/MessageMVC</PackageProjectUrl>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
@@ -18,7 +18,7 @@
     <Company>ZeroTeam</Company>
     <PackageReleaseNotes></PackageReleaseNotes>
     <Product>ZeroTeam.MessageMVC.PageInfoAutoSave</Product>
-    <Version>1.1.4.13</Version>
+    <Version>1.1.6.17</Version>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\transfer\Http\ZeroTeam.MessageMVC.Http.csproj" />

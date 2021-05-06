@@ -15,7 +15,7 @@ namespace BeetleX.FastHttpApi
         /// <summary>
         /// 唯一实例
         /// </summary>
-        public static FastHttpApiLifeFlow Instance = new FastHttpApiLifeFlow();
+        public static FastHttpApiLifeFlow Instance = new();
 
         /// <summary>
         /// 实例名称
@@ -35,7 +35,7 @@ namespace BeetleX.FastHttpApi
         /// <summary>
         /// 连接关闭的事件注册
         /// </summary>
-        public static List<Action<ISession>> HttpDisconnectHandlers = new List<Action<ISession>>();
+        public static List<Action<ISession>> HttpDisconnectHandlers = new();
 
         private void Server_HttpDisconnect(object sender, EventArgs.SessionEventArgs e)
         {

@@ -45,12 +45,12 @@ namespace BeetleX.FastHttpApi
         {
             try
             {
-                using (FileStream file = new FileStream(fileName, FileMode.Open))
+                using (FileStream file = new(fileName, FileMode.Open))
                 {
                     System.Security.Cryptography.MD5 md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
                     byte[] retVal = md5.ComputeHash(file);
                     file.Close();
-                    StringBuilder sb = new StringBuilder();
+                    StringBuilder sb = new();
                     for (int i = 0; i < retVal.Length; i++)
                     {
                         sb.Append(retVal[i].ToString("x2"));
@@ -79,9 +79,9 @@ namespace BeetleX.FastHttpApi
 
         public static string HmacSha1Sign(string text, string key)
         {
-            HMACSHA1 myHMACSHA1 = new HMACSHA1(Encoding.UTF8.GetBytes(key));
+            HMACSHA1 myHMACSHA1 = new(Encoding.UTF8.GetBytes(key));
             byte[] RstRes = myHMACSHA1.ComputeHash(Encoding.UTF8.GetBytes(text));
-            StringBuilder EnText = new StringBuilder();
+            StringBuilder EnText = new();
             foreach (byte Byte in RstRes)
             {
                 EnText.AppendFormat("{0:x2}", Byte);
@@ -134,11 +134,11 @@ namespace BeetleX.FastHttpApi
                 ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
 
                 // Create the streams used for encryption.
-                using (MemoryStream msEncrypt = new MemoryStream())
+                using (MemoryStream msEncrypt = new())
                 {
-                    using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                    using (CryptoStream csEncrypt = new(msEncrypt, encryptor, CryptoStreamMode.Write))
                     {
-                        using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
+                        using (StreamWriter swEncrypt = new(csEncrypt))
                         {
                             //Write all data to the stream.
                             swEncrypt.Write(plainText);
@@ -179,11 +179,11 @@ namespace BeetleX.FastHttpApi
                 ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
 
                 // Create the streams used for decryption.
-                using (MemoryStream msDecrypt = new MemoryStream(cipherText))
+                using (MemoryStream msDecrypt = new(cipherText))
                 {
-                    using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                    using (CryptoStream csDecrypt = new(msDecrypt, decryptor, CryptoStreamMode.Read))
                     {
-                        using (StreamReader srDecrypt = new StreamReader(csDecrypt))
+                        using (StreamReader srDecrypt = new(csDecrypt))
                         {
 
                             // Read the decrypted bytes from the decrypting stream

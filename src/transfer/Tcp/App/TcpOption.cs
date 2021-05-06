@@ -67,7 +67,7 @@ namespace ZeroTeam.MessageMVC.Tcp
         /// <summary>
         /// 实例
         /// </summary>
-        public static readonly TcpOption Instance = new TcpOption();
+        public static readonly TcpOption Instance = new();
 
         internal static bool haseConsumer, haseProducer;
 

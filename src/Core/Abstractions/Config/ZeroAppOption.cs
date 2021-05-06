@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using ZeroTeam.MessageMVC.Messages;
 
 namespace ZeroTeam.MessageMVC
 {
@@ -78,22 +79,17 @@ namespace ZeroTeam.MessageMVC
         public string ConfigFolder { get; set; }
 
         /// <summary>
-        ///     插件地址,如为空则与运行目录相同
+        /// 服务字典
         /// </summary>
-        public string AddInPath { get; set; }
-
-        /// <summary>
-        ///     使用System.Text.Json序列化，而不是使用默认的Newtonsoft.Json
-        /// </summary>
-        public bool UsMsJson { get; set; }
+        public ServiceMap Services { get; set; }
 
         #endregion
 
         #region Flow
 
-        internal static readonly List<NameValue<string, Func<CancellationToken, Task>>> StartActions = new List<NameValue<string, Func<CancellationToken, Task>>>();
+        internal static readonly List<NameValue<string, Func<CancellationToken, Task>>> StartActions = new();
 
-        internal static readonly List<NameValue<string, Func<Task>>> StopActions = new List<NameValue<string, Func<Task>>>();
+        internal static readonly List<NameValue<string, Func<Task>>> StopActions = new();
 
         /// <summary>
         /// 注册后台方法
@@ -119,7 +115,7 @@ namespace ZeroTeam.MessageMVC
                 Value = action
             });
 
-        internal static readonly List<Func<Task>> DestoryAction = new List<Func<Task>>();
+        internal static readonly List<Func<Task>> DestoryAction = new();
 
         /// <summary>
         /// 注册析构方法
@@ -135,9 +131,9 @@ namespace ZeroTeam.MessageMVC
         #region TraceOption & ServiceMap
 
         /// <summary>
-        ///     服务映射，即将对应服务名称替换成另一个服务
+        ///     服务替换映射，即将对应服务名称替换成另一个服务
         /// </summary>
-        public Dictionary<string, string> ServiceMap { get; set; }
+        public Dictionary<string, string> ServiceReplaceMap { get; set; }
 
         /// <summary>
         /// 跟踪信息内容配置

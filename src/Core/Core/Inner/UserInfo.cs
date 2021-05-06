@@ -86,7 +86,7 @@ namespace ZeroTeam.MessageMVC.Context
         /// <summary>
         /// JWT信息字典
         /// </summary>
-        protected Dictionary<string, string> claims = new Dictionary<string, string>();
+        protected Dictionary<string, string> claims = new();
 
         /// <summary>
         /// 快捷读写字典

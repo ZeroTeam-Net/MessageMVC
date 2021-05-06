@@ -382,6 +382,11 @@
              发现
             </summary>
         </member>
+        <member name="P:ZeroTeam.MessageMVC.Http.HttpPoster.PosterName">
+            <summary>
+            投递对象名称
+            </summary>
+        </member>
         <member name="P:ZeroTeam.MessageMVC.Http.HttpPoster.ZeroTeam#MessageMVC#IZeroDependency#Name">
             <summary>
             名称

@@ -27,7 +27,7 @@ namespace System.Linq
         {
             IsEmpty = true;
         }
-        private List<T> _value = new List<T>();
+        private List<T> _value = new();
 
         /// <summary>
         /// 清栈
@@ -225,7 +225,7 @@ namespace System.Linq
         {
             IsEmpty = true;
         }
-        private List<T> _value = new List<T>();
+        private List<T> _value = new();
 
         /// <summary>
         ///   当前

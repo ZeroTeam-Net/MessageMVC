@@ -28,6 +28,11 @@ namespace ZeroTeam.MessageMVC.Http
         ILifeFlow IMessagePoster.GetLife() => null;
 
         /// <summary>
+        /// 投递对象名称
+        /// </summary>
+        public string PosterName => nameof(HttpPoster);
+
+        /// <summary>
         /// 名称
         /// </summary>
         string IZeroDependency.Name => nameof(HttpPoster);

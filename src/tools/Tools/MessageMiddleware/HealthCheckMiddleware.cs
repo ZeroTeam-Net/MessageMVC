@@ -95,7 +95,7 @@ namespace ZeroTeam.MessageMVC.Tools
             return false;
         }
 
-        static ApiCollection Collection = new ApiCollection
+        static ApiCollection Collection = new()
         {
             Start = DateTime.Now,
             End = DateTime.Now
@@ -184,13 +184,13 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <summary>
         /// 状态统计
         /// </summary>
-        public Dictionary<MessageState, int> State = new Dictionary<MessageState, int>();
+        public Dictionary<MessageState, int> State = new();
 
 
         /// <summary>
         /// 状态统计
         /// </summary>
-        public Dictionary<int, CollectionItem> TimeLevel = new Dictionary<int, CollectionItem>();
+        public Dictionary<int, CollectionItem> TimeLevel = new();
 
     }
 
@@ -207,6 +207,6 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <summary>
         /// 相关接口
         /// </summary>
-        public Dictionary<string, int> Apis = new Dictionary<string, int>();
+        public Dictionary<string, int> Apis = new();
     }
 }

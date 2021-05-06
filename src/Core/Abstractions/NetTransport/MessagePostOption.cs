@@ -16,22 +16,10 @@ namespace ZeroTeam.MessageMVC
     public class MessagePostOption : IZeroOption
     {
         /// <summary>
-        /// 启用本地隧道（即本地接收器存在的话，本地处理）
-        /// </summary>
-        [JsonProperty]
-        public bool LocalTunnel { get; private set; }
-
-        /// <summary>
-        /// 默认的生产者
-        /// </summary>
-        [JsonProperty]
-        public string DefaultPosterName { get; private set; }
-
-        /// <summary>
         /// 生产者与服务关联
         /// </summary>
         [JsonProperty]
-        public Dictionary<string, List<string>> PosterServices = new Dictionary<string, List<string>>(StringComparer.CurrentCultureIgnoreCase);
+        public Dictionary<string, List<string>> PosterServices = new(StringComparer.CurrentCultureIgnoreCase);
 
         /// <summary>
         /// 默认的生产者
@@ -41,12 +29,12 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 服务查找表
         /// </summary>
-        public readonly Dictionary<string, Dictionary<string, IMessagePoster>> ServiceMap = new Dictionary<string, Dictionary<string, IMessagePoster>>(StringComparer.OrdinalIgnoreCase);
+        public readonly Dictionary<string, Dictionary<string, IMessagePoster>> ServiceMap = new(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// 服务查找表
         /// </summary>
-        public Dictionary<string, IMessagePoster> posters = new Dictionary<string, IMessagePoster>();
+        public Dictionary<string, IMessagePoster> posters = new();
 
 
         #region IZeroOption
@@ -54,7 +42,7 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 实例
         /// </summary>
-        public static readonly MessagePostOption Instance = new MessagePostOption();
+        public static readonly MessagePostOption Instance = new();
 
         internal static bool haseConsumer, haseProducer;
 
@@ -101,9 +89,9 @@ namespace ZeroTeam.MessageMVC
                     continue;
 
                 if ("LocalTunnel".IsMe(kv.Key))
-                    LocalTunnel = bool.TryParse(kv.Value, out var bl) && bl;
+                    ZeroAppOption.Instance.LocalTunnel = bool.TryParse(kv.Value, out var bl) && bl;
                 else if ("Default".IsMe(kv.Key))
-                    DefaultPosterName = kv.Value;
+                    ZeroAppOption.Instance.DefaultPoster = kv.Value;
                 else
                     PosterServices.Add(kv.Key, kv.Value.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).ToList());
             }
@@ -111,9 +99,15 @@ namespace ZeroTeam.MessageMVC
             #region 构造发送器
 
             posters = new Dictionary<string, IMessagePoster>();
+
+            #endregion
+        }
+        internal void CheckPoster()
+        {
+
             foreach (var poster in DependencyHelper.RootProvider.GetServices<IMessagePoster>())
             {
-                posters.TryAdd(poster.GetTypeName(), poster);
+                posters.TryAdd(poster.PosterName, poster);
             }
 
             foreach (var poster in posters)
@@ -122,19 +116,16 @@ namespace ZeroTeam.MessageMVC
                     BindingPoster(poster.Key, poster.Value, services);
             }
 
-            if (DefaultPosterName.IsMissing() || !posters.TryGetValue(DefaultPosterName, out DefaultPoster))
+            if (ZeroAppOption.Instance.DefaultPoster.IsMissing() || !posters.TryGetValue(ZeroAppOption.Instance.DefaultPoster, out DefaultPoster))
             {
                 var f = posters.FirstOrDefault();
                 if (!f.Key.IsMissing())
                 {
-                    DefaultPosterName = f.Key;
+                    ZeroAppOption.Instance.DefaultPoster = f.Key;
                     DefaultPoster = f.Value;
                 }
             }
-
-            #endregion
         }
-
         /// <summary>
         ///     手动注销
         /// </summary>
@@ -199,14 +190,20 @@ namespace ZeroTeam.MessageMVC
         /// <returns>传输对象构造器</returns>
         public IMessagePoster GetService(string service, bool def)
         {
-            if (!ServiceMap.TryGetValue(service, out var items))
-                return def ? DefaultPoster : null;
-            foreach (var item in items.Values)
+            if (ServiceMap.TryGetValue(service, out var items))
             {
-                if (item.IsLocalReceiver && !LocalTunnel)
-                    continue;
-                return item;
+                foreach (var item in items.Values)
+                {
+                    if (item.IsLocalReceiver && !ZeroAppOption.Instance.LocalTunnel)
+                        continue;
+                    return item;
+                }
             }
+            if (ZeroAppOption.Instance.Services.Services.TryGetValue(service, out var net))
+            {
+                return posters.TryGetValue(net.Poster, out var poster) ? poster : null;
+            }
+
             return def ? DefaultPoster : null;
         }
 

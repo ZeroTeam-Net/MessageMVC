@@ -51,7 +51,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <summary>
         /// 实例
         /// </summary>
-        public static readonly RedisOption Instance = new RedisOption();
+        public static readonly RedisOption Instance = new();
 
         const string sectionName = "MessageMVC:Redis";
 

@@ -62,6 +62,12 @@ namespace ZeroTeam.MessageMVC.Http
                 Context.Response.Headers.Add("x-zmvc-id", message.ID);
                 Context.Response.Headers.Add("x-zmvc-state", message.State.ToString());
             }
+            //else
+            //{
+            //    Context.Response.Headers.Add("Access-Control-Allow-Headers", "*");
+            //    Context.Response.Headers.Add("Access-Control-Allow-Methods", "*");
+            //    Context.Response.Headers.Add("Access-Control-Allow-Origin","*");
+            //}
             await Context.Response.WriteAsync(message.Result ?? "", Encoding.UTF8);
             return true;
         }

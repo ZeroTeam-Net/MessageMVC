@@ -51,7 +51,7 @@ namespace ZeroTeam.MessageMVC.Consul
         /// <summary>
         /// 唯一实例
         /// </summary>
-        public static ConsulOption Instance = new ConsulOption
+        public static ConsulOption Instance = new()
         {
             HealthName = "_health_/consul",
             RegisterAfter = 1,

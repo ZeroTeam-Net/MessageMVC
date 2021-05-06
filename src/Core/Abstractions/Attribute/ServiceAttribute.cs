@@ -12,11 +12,28 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// 构造
         /// </summary>
-        /// <param name="name"></param>
-        public ServiceAttribute(string name)
+        /// <param name="service">服务</param>
+        public ServiceAttribute(string service)
         {
-            ServiceName = name;
+            ServiceName = service;
         }
+
+        /// <summary>
+        /// 构造
+        /// </summary>
+        /// <param name="service">服务</param>
+        /// <param name="prefix">接口前缀</param>
+        public ServiceAttribute(string service,string prefix)
+        {
+            ServiceName = service;
+            ApiPrefix = prefix;
+        }
+
+        /// <summary>
+        /// 接口前缀
+        /// </summary>
+        public string ApiPrefix { get; }
+
 
         /// <summary>
         /// 消息节点

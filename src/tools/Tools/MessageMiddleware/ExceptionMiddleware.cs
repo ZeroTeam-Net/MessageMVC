@@ -19,7 +19,7 @@ namespace ZeroTeam.MessageMVC.Tools
         /// <summary>
         /// 代表资源相关的异常
         /// </summary>
-        public static Dictionary<Type, NameValue<MessageState>> ResourceExceptions = new Dictionary<Type, NameValue<MessageState>>
+        public static Dictionary<Type, NameValue<MessageState>> ResourceExceptions = new()
         {
             { typeof(DbException),new NameValue<MessageState>("数据异常",MessageState.FrameworkError)},
             { typeof(IOException),new NameValue<MessageState>("文件异常",MessageState.FrameworkError)},

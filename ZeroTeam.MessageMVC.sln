@@ -115,6 +115,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.FastHtt
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroTeam.MessageMVC.FastHttpApi.Sample", "src\sample\FastHttpApi\ZeroTeam.MessageMVC.FastHttpApi.Sample.csproj", "{D8E3E5E5-6838-4893-B3D9-05A7D447DD62}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZeroTeam.MessageMVC.Services", "src\tools\ZeroTeamService\ZeroTeam.MessageMVC.Services.csproj", "{10D655DD-A600-420E-9605-86ECC4A6547C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Service", "Service", "{B01EC0F5-960D-46C0-B8A1-B2E863976933}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -225,6 +229,10 @@ Global
 		{D8E3E5E5-6838-4893-B3D9-05A7D447DD62}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8E3E5E5-6838-4893-B3D9-05A7D447DD62}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D8E3E5E5-6838-4893-B3D9-05A7D447DD62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10D655DD-A600-420E-9605-86ECC4A6547C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10D655DD-A600-420E-9605-86ECC4A6547C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10D655DD-A600-420E-9605-86ECC4A6547C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10D655DD-A600-420E-9605-86ECC4A6547C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -265,6 +273,8 @@ Global
 		{66B97F20-C5B5-4035-9EBA-2B1286FF4876} = {9326B16E-84B4-42BB-BFB7-F7A798CEDABB}
 		{EAAF0190-A375-430A-AED0-DF4C698CD4C5} = {81072A46-14AF-4AAA-83E0-F05E2F4E480A}
 		{D8E3E5E5-6838-4893-B3D9-05A7D447DD62} = {0474706D-4F72-454C-9E28-C43AC2F2629E}
+		{10D655DD-A600-420E-9605-86ECC4A6547C} = {B01EC0F5-960D-46C0-B8A1-B2E863976933}
+		{B01EC0F5-960D-46C0-B8A1-B2E863976933} = {7CF8A384-37FA-484D-8D99-61CED654D0FB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {866CE928-6325-4962-BB28-9A3BAF4BBCD1}

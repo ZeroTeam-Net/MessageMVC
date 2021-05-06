@@ -15,7 +15,7 @@ namespace BeetleX.FastHttpApi
 
         private readonly int mOffset;
 
-        private readonly List<MatchItem> mItems = new List<MatchItem>();
+        private readonly List<MatchItem> mItems = new();
 
         public List<MatchItem> Items => mItems;
 
@@ -25,7 +25,7 @@ namespace BeetleX.FastHttpApi
 
         private void Init()
         {
-            MatchItem item = new MatchItem();
+            MatchItem item = new();
             bool first = true;
             bool inmatch = false;
             int offset = 0;
@@ -179,7 +179,7 @@ namespace BeetleX.FastHttpApi
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             foreach (var item in mItems)
             {
                 sb.Append(item.Start).Append(item.Name).Append(item.Eof);

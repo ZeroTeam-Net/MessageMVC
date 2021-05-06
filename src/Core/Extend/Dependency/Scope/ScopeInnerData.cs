@@ -92,12 +92,12 @@ namespace Agebull.Common.Ioc
         /// <summary>
         /// 析构方法
         /// </summary>
-        public readonly List<Action> DisposeFunc = new List<Action>();
+        public readonly List<Action> DisposeFunc = new();
 
         /// <summary>
         /// 附件内容
         /// </summary>
-        public ScopeAttachData ScopeData = new ScopeAttachData();
+        public ScopeAttachData ScopeData = new();
 
         #region 清理资源
 

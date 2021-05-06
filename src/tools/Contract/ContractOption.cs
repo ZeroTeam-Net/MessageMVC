@@ -3,7 +3,7 @@
 namespace ZeroTeam.MessageMVC.ApiContract
 {
     /// <summary>
-    /// 扩展工具配置
+    /// 接口契约配置
     /// </summary>
     internal class ContractOption
     {
@@ -16,13 +16,12 @@ namespace ZeroTeam.MessageMVC.ApiContract
         /// <summary>
         ///     返回值跟踪包含机器名
         /// </summary>
-
         public bool TraceMachine { get; set; }
 
         /// <summary>
         /// 实例
         /// </summary>
-        public static readonly ContractOption Instance = new ContractOption();
+        public static readonly ContractOption Instance = new();
 
         static ContractOption()
         {

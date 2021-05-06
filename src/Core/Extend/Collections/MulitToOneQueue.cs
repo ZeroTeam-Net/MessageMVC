@@ -32,7 +32,7 @@ namespace Agebull.Common
         /// <summary>
         /// 用于同步的信号量
         /// </summary>
-        private readonly Semaphore _semaphore = new Semaphore(0, Int32.MaxValue);
+        private readonly Semaphore _semaphore = new(0, Int32.MaxValue);
 
         /// <summary>
         /// 是否为空

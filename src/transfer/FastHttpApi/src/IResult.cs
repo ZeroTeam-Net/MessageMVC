@@ -289,9 +289,9 @@ namespace BeetleX.FastHttpApi
             if (mJsonText == null)
                 mJsonText = new System.Text.StringBuilder();
             mJsonText.Clear();
-            JsonSerializer serializer = new JsonSerializer();
-            System.IO.StringWriter writer = new System.IO.StringWriter(mJsonText);
-            JsonTextWriter jsonTextWriter = new JsonTextWriter(writer);
+            JsonSerializer serializer = new();
+            System.IO.StringWriter writer = new(mJsonText);
+            JsonTextWriter jsonTextWriter = new(writer);
             serializer.Serialize(jsonTextWriter, Data);
             var charbuffer = System.Buffers.ArrayPool<Char>.Shared.Rent(mJsonText.Length);
             mJsonText.CopyTo(0, charbuffer, 0, mJsonText.Length);

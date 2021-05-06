@@ -22,7 +22,7 @@ namespace BeetleX.FastHttpApi
 
         private static long mID;
 
-        private readonly object _workSync = new object();
+        private readonly object _workSync = new();
 
         private bool _doingWork;
 
@@ -118,7 +118,7 @@ namespace BeetleX.FastHttpApi
     public class NextQueueGroup
     {
 
-        private readonly List<NextQueue> mQueues = new List<NextQueue>();
+        private readonly List<NextQueue> mQueues = new();
 
         public IList<NextQueue> Queues => mQueues;
 
@@ -185,7 +185,7 @@ namespace BeetleX.FastHttpApi
 
         public int Count { get; private set; }
 
-        private static readonly NextQueueGroup mUniqueQueueGroup = new NextQueueGroup(25 * Environment.ProcessorCount);
+        private static readonly NextQueueGroup mUniqueQueueGroup = new(25 * Environment.ProcessorCount);
 
         public ThreadQueueAttribute(string uniqueName)
         {

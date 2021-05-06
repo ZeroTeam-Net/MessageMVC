@@ -293,7 +293,7 @@ namespace BeetleX.FastHttpApi
 
         public string GetCackeKey(object[] parameters)
         {
-            StringBuilder key = new StringBuilder();
+            StringBuilder key = new();
             key.Append(Url);
             for (int i = 0; i < Parameters.Count; i++)
             {
@@ -344,7 +344,7 @@ namespace BeetleX.FastHttpApi
 
         public override object GetValue(IHttpContext context)
         {
-            EventParameterBinding e = new EventParameterBinding();
+            EventParameterBinding e = new();
             e.ActionHandler = this.ActionHandler;
             e.Context = context;
             e.Type = Type;
@@ -838,8 +838,8 @@ namespace BeetleX.FastHttpApi
 
         #region field handler
 
-        private static readonly Dictionary<FieldInfo, GetValueHandler> mFieldGetHandlers = new Dictionary<FieldInfo, GetValueHandler>();
-        private static readonly Dictionary<FieldInfo, SetValueHandler> mFieldSetHandlers = new Dictionary<FieldInfo, SetValueHandler>();
+        private static readonly Dictionary<FieldInfo, GetValueHandler> mFieldGetHandlers = new();
+        private static readonly Dictionary<FieldInfo, SetValueHandler> mFieldSetHandlers = new();
         public static GetValueHandler FieldGetHandler(FieldInfo field)
         {
             GetValueHandler handler;
@@ -867,7 +867,7 @@ namespace BeetleX.FastHttpApi
         }
         private static GetValueHandler CreateFieldGetHandler(FieldInfo field)
         {
-            DynamicMethod dm = new DynamicMethod("", typeof(object), new Type[] { typeof(object) }, field.DeclaringType);
+            DynamicMethod dm = new("", typeof(object), new Type[] { typeof(object) }, field.DeclaringType);
             ILGenerator ilGenerator = dm.GetILGenerator();
             ilGenerator.Emit(OpCodes.Ldarg_0);
             ilGenerator.Emit(OpCodes.Ldfld, field);
@@ -901,7 +901,7 @@ namespace BeetleX.FastHttpApi
         }
         private static SetValueHandler CreateFieldSetHandler(FieldInfo field)
         {
-            DynamicMethod dm = new DynamicMethod("", null, new Type[] { typeof(object), typeof(object) }, field.DeclaringType);
+            DynamicMethod dm = new("", null, new Type[] { typeof(object), typeof(object) }, field.DeclaringType);
             ILGenerator ilGenerator = dm.GetILGenerator();
             ilGenerator.Emit(OpCodes.Ldarg_0);
             ilGenerator.Emit(OpCodes.Ldarg_1);
@@ -915,8 +915,8 @@ namespace BeetleX.FastHttpApi
 
         #region Property Handler
 
-        private static readonly Dictionary<PropertyInfo, GetValueHandler> mPropertyGetHandlers = new Dictionary<PropertyInfo, GetValueHandler>();
-        private static readonly Dictionary<PropertyInfo, SetValueHandler> mPropertySetHandlers = new Dictionary<PropertyInfo, SetValueHandler>();
+        private static readonly Dictionary<PropertyInfo, GetValueHandler> mPropertyGetHandlers = new();
+        private static readonly Dictionary<PropertyInfo, SetValueHandler> mPropertySetHandlers = new();
         public static SetValueHandler PropertySetHandler(PropertyInfo property)
         {
             SetValueHandler handler;
@@ -943,7 +943,7 @@ namespace BeetleX.FastHttpApi
         }
         private static SetValueHandler CreatePropertySetHandler(PropertyInfo property)
         {
-            DynamicMethod dynamicMethod = new DynamicMethod(string.Empty, null, new Type[] { typeof(object), typeof(object) }, property.DeclaringType.Module);
+            DynamicMethod dynamicMethod = new(string.Empty, null, new Type[] { typeof(object), typeof(object) }, property.DeclaringType.Module);
 
             ILGenerator ilGenerator = dynamicMethod.GetILGenerator();
 
@@ -994,7 +994,7 @@ namespace BeetleX.FastHttpApi
         private static GetValueHandler CreatePropertyGetHandler(PropertyInfo property)
         {
 
-            DynamicMethod dynamicMethod = new DynamicMethod(string.Empty, typeof(object), new Type[] { typeof(object) }, property.DeclaringType.Module);
+            DynamicMethod dynamicMethod = new(string.Empty, typeof(object), new Type[] { typeof(object) }, property.DeclaringType.Module);
 
             ILGenerator ilGenerator = dynamicMethod.GetILGenerator();
 
@@ -1019,7 +1019,7 @@ namespace BeetleX.FastHttpApi
 
         #region Method Handler
 
-        private static readonly Dictionary<MethodInfo, FastMethodHandler> mMethodHandlers = new Dictionary<MethodInfo, FastMethodHandler>();
+        private static readonly Dictionary<MethodInfo, FastMethodHandler> mMethodHandlers = new();
         public static FastMethodHandler MethodHandler(MethodInfo method)
         {
             FastMethodHandler handler = null;
@@ -1046,7 +1046,7 @@ namespace BeetleX.FastHttpApi
         }
         private static FastMethodHandler CreateMethodHandler(MethodInfo methodInfo)
         {
-            DynamicMethod dynamicMethod = new DynamicMethod(string.Empty, typeof(object), new Type[] { typeof(object), typeof(object[]) }, methodInfo.DeclaringType.Module);
+            DynamicMethod dynamicMethod = new(string.Empty, typeof(object), new Type[] { typeof(object), typeof(object[]) }, methodInfo.DeclaringType.Module);
             ILGenerator il = dynamicMethod.GetILGenerator();
             ParameterInfo[] ps = methodInfo.GetParameters();
             Type[] paramTypes = new Type[ps.Length];
@@ -1112,7 +1112,7 @@ namespace BeetleX.FastHttpApi
 
         #region Instance Handler
 
-        private static readonly Dictionary<Type, ObjectInstanceHandler> mInstanceHandlers = new Dictionary<Type, ObjectInstanceHandler>();
+        private static readonly Dictionary<Type, ObjectInstanceHandler> mInstanceHandlers = new();
         public static ObjectInstanceHandler InstanceHandler(Type type)
         {
             ObjectInstanceHandler handler;
@@ -1139,7 +1139,7 @@ namespace BeetleX.FastHttpApi
         }
         private static ObjectInstanceHandler CreateInstanceHandler(Type type)
         {
-            DynamicMethod method = new DynamicMethod(string.Empty, type, null, type.Module);
+            DynamicMethod method = new(string.Empty, type, null, type.Module);
             ILGenerator il = method.GetILGenerator();
             il.DeclareLocal(type, true);
             il.Emit(OpCodes.Newobj, type.GetConstructor(new Type[0]));

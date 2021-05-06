@@ -19,7 +19,7 @@ namespace Agebull.Common.Logging
     /// </summary>
     internal sealed class LocalTraceStack
     {
-        private readonly Stack<TraceStep> _value = new Stack<TraceStep>();
+        private readonly Stack<TraceStep> _value = new();
 
         /// <summary>
         /// 栈深

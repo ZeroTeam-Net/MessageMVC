@@ -22,8 +22,8 @@ namespace BeetleX.FastHttpApi.Data
             {
                 using (request.Stream.LockFree())
                 {
-                    using (System.IO.StreamReader streamReader = new System.IO.StreamReader(request.Stream))
-                    using (JsonTextReader reader = new JsonTextReader(streamReader))
+                    using (System.IO.StreamReader streamReader = new(request.Stream))
+                    using (JsonTextReader reader = new(streamReader))
                     {
                         JsonSerializer jsonSerializer = JsonSerializer.CreateDefault();
                         JToken token = (JToken)jsonSerializer.Deserialize(reader);
@@ -74,7 +74,7 @@ namespace BeetleX.FastHttpApi.Data
         {
             if (request.Method == HttpParse.POST_TAG)
             {
-                DataLoader dataLoader = new DataLoader(request.ContentType);
+                DataLoader dataLoader = new(request.ContentType);
                 dataLoader.Load(dataContext, request);
             }
         }
@@ -116,7 +116,7 @@ namespace BeetleX.FastHttpApi.Data
             }
             else
             {
-                PostFile postFile = new PostFile();
+                PostFile postFile = new();
                 stream.Position = 0;
                 stream.SetLength(stream.Length - 2);
                 postFile.Data = stream;
@@ -140,7 +140,7 @@ namespace BeetleX.FastHttpApi.Data
                     {
                         if (string.IsNullOrEmpty(headerLine))
                         {
-                            System.IO.MemoryStream memoryStream = new System.IO.MemoryStream();
+                            System.IO.MemoryStream memoryStream = new();
                             while (true)
                             {
                                 IndexOfResult indexOf = stream.IndexOf(HeaderTypeFactory.LINE_BYTES);

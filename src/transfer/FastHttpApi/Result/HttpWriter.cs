@@ -37,6 +37,7 @@ namespace BeetleX.FastHttpApi
                         Response.Header.Add("x-zmvc-id", message.ID);
                         Response.Header.Add("x-zmvc-state", message.State.ToString());
                     }
+                    Response.Header.Add("Access-Control-Allow-Origin", "*");
 
                     Response.Result(new MessageResult
                     {
@@ -66,6 +67,7 @@ namespace BeetleX.FastHttpApi
                 }
                 else
                 {
+                    Response.Header.Add("Access-Control-Allow-Origin", "*");
                     Response.Result(new ObjectResult
                     {
                         Message = result

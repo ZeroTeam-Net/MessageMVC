@@ -366,7 +366,7 @@ namespace Agebull.Common.Ioc
 
         #region 名称构造
 
-        static readonly Dictionary<string, Type> NameTypes = new Dictionary<string, Type>(StringComparer.InvariantCultureIgnoreCase);
+        static readonly Dictionary<string, Type> NameTypes = new(StringComparer.InvariantCultureIgnoreCase);
         /// <summary>
         ///     注册瞬时命名类型
         /// </summary>

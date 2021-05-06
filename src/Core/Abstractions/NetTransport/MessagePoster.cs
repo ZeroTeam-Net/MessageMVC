@@ -29,6 +29,8 @@ namespace ZeroTeam.MessageMVC
         Task IZeroDiscover.Discovery()
         {
             logger = DependencyHelper.LoggerFactory.CreateLogger(nameof(MessagePoster));
+
+            MessagePostOption.Instance.CheckPoster();
             return WaitAll<IZeroDiscover>(p => p.Discovery());
         }
         /// <summary>
@@ -119,13 +121,7 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 启用本地隧道（即本地接收器存在的话，本地处理）
         /// </summary>
-        public static bool LocalTunnel => MessagePostOption.Instance.LocalTunnel;
-
-        /// <summary>
-        /// 默认的生产者
-        /// </summary>
-        public static string DefaultPosterName => MessagePostOption.Instance.DefaultPosterName;
-
+        public static bool LocalTunnel => ZeroAppOption.Instance.LocalTunnel;
 
         /// <summary>
         ///     手动注册

@@ -9,6 +9,11 @@ namespace ZeroTeam.MessageMVC.Messages
     public interface IMessagePoster : IMessageWorker
     {
         /// <summary>
+        /// 投递对象名称
+        /// </summary>
+        public string PosterName { get; }
+
+        /// <summary>
         /// 取得生命周期对象
         /// </summary>
         /// <returns></returns>

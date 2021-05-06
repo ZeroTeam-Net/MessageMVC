@@ -15,7 +15,7 @@ namespace Agebull.Common.Ioc
         /// <summary>
         /// 字典
         /// </summary>
-        internal readonly Dictionary<Type, object> dictionary = new Dictionary<Type, object>();
+        internal readonly Dictionary<Type, object> dictionary = new();
 
         /// <summary>
         /// 克隆新副本

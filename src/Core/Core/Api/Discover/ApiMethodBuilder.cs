@@ -128,7 +128,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             {
                 //构造参数
                 var info = TypeInfo.GetConstructors()[0];
-                List<LocalBuilder> locals = new List<LocalBuilder>();
+                List<LocalBuilder> locals = new();
                 foreach (var parameter in info.GetParameters())
                 {
                     var ca = parameter.GetCustomAttribute<FromConfigAttribute>();
@@ -179,7 +179,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         void Call()
         {
             ActionInfo.IsDictionaryArgument = ActionInfo.AccessOption.HasFlag(ApiOption.DictionaryArgument);
-            List<LocalBuilder> paras = new List<LocalBuilder>();
+            List<LocalBuilder> paras = new();
             foreach (var parameter in Method.GetParameters())
             {
                 var res = Parameter(parameter);

@@ -7,7 +7,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <Description>以MVC方式进行消息处理,支持常用消息队列以及其它RPC方式的消息处理</Description>
-    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    <TargetFramework>net5.0</TargetFramework>
     <DebugType>portable</DebugType>
     <PackageId></PackageId>
     
@@ -24,7 +24,7 @@
     <Company>ZeroTeam</Company>
     <PackageReleaseNotes></PackageReleaseNotes>
     <Product>MessageMVC</Product>
-    <Version>1.1.5.14</Version>
+    <Version>1.1.6.17</Version>
     <PackageTags>MessageMVC</PackageTags>
   </PropertyGroup>
 
@@ -37,14 +37,14 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.1|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release||AnyCPU'">
     <Optimize>true</Optimize>
     <DefineConstants>monitor</DefineConstants>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>ZeroTeam.MessageMVC.Core.xml</DocumentationFile>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp3.1|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug||AnyCPU'">
     <DocumentationFile>ZeroTeam.MessageMVC.Core.xml</DocumentationFile>
   </PropertyGroup>
 

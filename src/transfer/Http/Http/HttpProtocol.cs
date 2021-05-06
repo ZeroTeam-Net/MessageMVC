@@ -25,8 +25,8 @@ namespace ZeroTeam.MessageMVC.Http
         /// </summary>
         internal static void CrosOption(HttpResponse response)
         {
-            response.Headers.Add("Access-Control-Allow-Methods", methods);
-            response.Headers.Add("Access-Control-Allow-Headers", headers);
+            response.Headers.Add("Access-Control-Allow-Methods", "*");
+            response.Headers.Add("Access-Control-Allow-Headers", "*");
             response.Headers.Add("Access-Control-Allow-Origin", "*");
         }
 
@@ -37,6 +37,5 @@ namespace ZeroTeam.MessageMVC.Http
         {
             response.Headers.Add("Access-Control-Allow-Origin", "*");
         }
-
     }
 }

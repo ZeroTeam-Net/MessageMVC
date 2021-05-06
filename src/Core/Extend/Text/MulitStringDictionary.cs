@@ -30,7 +30,7 @@ namespace Agebull.Common.Text
         /// </summary>
         public string Global => ListToString(_global);
 
-        private readonly List<string> _global = new List<string>();
+        private readonly List<string> _global = new();
 
         /// <summary>
         ///   加入

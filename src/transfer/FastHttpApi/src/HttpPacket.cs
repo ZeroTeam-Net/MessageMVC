@@ -29,7 +29,7 @@ namespace BeetleX.FastHttpApi
 
         private readonly HttpApiServer mServer;
 
-        private readonly PacketDecodeCompletedEventArgs mCompletedArgs = new PacketDecodeCompletedEventArgs();
+        private readonly PacketDecodeCompletedEventArgs mCompletedArgs = new();
 
         private HttpRequest mRequest;
 
@@ -79,7 +79,7 @@ namespace BeetleX.FastHttpApi
                         }
                         token.KeepAlive = false;
                         var response = mRequest.CreateResponse();
-                        InnerErrorResult innerErrorResult = new InnerErrorResult("400", "Request http receive data error!");
+                        InnerErrorResult innerErrorResult = new("400", "Request http receive data error!");
                         response.Result(innerErrorResult);
                         return;
                     }
@@ -98,7 +98,7 @@ namespace BeetleX.FastHttpApi
                             }
                             token.KeepAlive = false;
                             var response = mRequest.CreateResponse();
-                            InnerErrorResult innerErrorResult = new InnerErrorResult("400", "Request http protocol data error!");
+                            InnerErrorResult innerErrorResult = new("400", "Request http protocol data error!");
                             response.Result(innerErrorResult);
                             return;
                         }
@@ -112,7 +112,7 @@ namespace BeetleX.FastHttpApi
                     }
                     token.KeepAlive = false;
                     var response = mRequest.CreateResponse();
-                    InnerErrorResult innerErrorResult = new InnerErrorResult("400", "Request header too large");
+                    InnerErrorResult innerErrorResult = new("400", "Request header too large");
                     response.Result(innerErrorResult);
                 }
                 else if (mRequest.Length > mServerConfig.MaxBodyLength)
@@ -123,7 +123,7 @@ namespace BeetleX.FastHttpApi
                     }
                     token.KeepAlive = false;
                     var response = mRequest.CreateResponse();
-                    InnerErrorResult innerErrorResult = new InnerErrorResult("400", "Request entity too large");
+                    InnerErrorResult innerErrorResult = new("400", "Request entity too large");
                     response.Result(innerErrorResult);
                     return;
                 }
@@ -135,7 +135,7 @@ namespace BeetleX.FastHttpApi
                     }
                     token.KeepAlive = false;
                     var response = mRequest.CreateResponse();
-                    InnerErrorResult innerErrorResult = new InnerErrorResult("400", "protocol data commit exception");
+                    InnerErrorResult innerErrorResult = new("400", "protocol data commit exception");
                     response.Result(innerErrorResult);
                 }
                 return;
@@ -275,7 +275,7 @@ namespace BeetleX.FastHttpApi
         public byte[] Encode(object data, IServer server)
         {
             byte[] result = null;
-            using (Buffers.PipeStream stream = new PipeStream(server.SendBufferPool.Next(), server.Options.LittleEndian, server.Options.Encoding))
+            using (Buffers.PipeStream stream = new(server.SendBufferPool.Next(), server.Options.LittleEndian, server.Options.Encoding))
             {
                 OnEncode(null, data, stream);
                 stream.Position = 0;
@@ -287,7 +287,7 @@ namespace BeetleX.FastHttpApi
 
         public ArraySegment<byte> Encode(object data, IServer server, byte[] buffer)
         {
-            using (Buffers.PipeStream stream = new PipeStream(server.SendBufferPool.Next(), server.Options.LittleEndian, server.Options.Encoding))
+            using (Buffers.PipeStream stream = new(server.SendBufferPool.Next(), server.Options.LittleEndian, server.Options.Encoding))
             {
                 OnEncode(null, data, stream);
                 stream.Position = 0;

@@ -25,7 +25,7 @@ namespace ZeroTeam.MessageMVC.Http
         /// <summary>
         /// 选项
         /// </summary>
-        public static MessageRouteOption Instance = new MessageRouteOption
+        public static MessageRouteOption Instance = new()
         {
             HostPaths = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase),
         };

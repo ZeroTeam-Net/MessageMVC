@@ -13,7 +13,7 @@ namespace BeetleX.FastHttpApi.Validations
     {
         public void Execute(IHttpContext context, IActionResultHandler handler, ValidationBase validation, ParameterInfo parameterInfo)
         {
-            ActionResult actionResult = new ActionResult(validation.Code, validation.GetResultMessage(parameterInfo.Name));
+            ActionResult actionResult = new(validation.Code, validation.GetResultMessage(parameterInfo.Name));
             handler.Success(actionResult);
         }
     }

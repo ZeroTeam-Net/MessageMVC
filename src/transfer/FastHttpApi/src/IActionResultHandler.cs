@@ -95,7 +95,7 @@ namespace BeetleX.FastHttpApi
             if (Server.EnableLog(logType))
                 Server.Log(logType,
                     $"HTTP {Request.ID} {Request.RemoteIPAddress} {Request.Method} { Request.Url} inner error {e_.Message}@{e_.StackTrace}");
-            InnerErrorResult result = new InnerErrorResult($"http execute {Request.BaseUrl} error ", e_, Server.Options.OutputStackTrace);
+            InnerErrorResult result = new($"http execute {Request.BaseUrl} error ", e_, Server.Options.OutputStackTrace);
             result.Code = code.ToString();
             Response.Result(result);
         }

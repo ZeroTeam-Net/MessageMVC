@@ -33,7 +33,7 @@ namespace DiscoverTest
                 Path.GetDirectoryName(
                 Path.GetDirectoryName(
                     System.Environment.CurrentDirectory)));
-            ApiDiscover discover = new ApiDiscover();
+            ApiDiscover discover = new();
             discover.Discover(GetType().Assembly);
             var extend = new ApiUnitTestCode
             {
@@ -56,7 +56,7 @@ namespace DiscoverTest
                 Path.GetDirectoryName(
                 Path.GetDirectoryName(
                     System.Environment.CurrentDirectory)));
-            ApiDiscover discover = new ApiDiscover();
+            ApiDiscover discover = new();
             discover.Discover(typeof(NetEventControler).Assembly);
             var extend = new ApiSqlCode
             {
@@ -68,7 +68,7 @@ namespace DiscoverTest
         [Test]
         public void CreateMarkdown()
         {
-            ApiDiscover discover = new ApiDiscover();
+            ApiDiscover discover = new();
             discover.Discover(typeof(NetEventControler).Assembly);
 
             var path = IOHelper.CheckPath(Environment.CurrentDirectory, "MarkDown");

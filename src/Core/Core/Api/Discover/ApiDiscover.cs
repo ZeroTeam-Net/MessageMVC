@@ -67,7 +67,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// 站点文档信息
         /// </summary>
-        public readonly Dictionary<string, ServiceInfo> ServiceInfos = new Dictionary<string, ServiceInfo>(StringComparer.OrdinalIgnoreCase);
+        public readonly Dictionary<string, ServiceInfo> ServiceInfos = new(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// 构造
@@ -82,7 +82,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
         #region 程序集排除
 
-        private static readonly HashSet<string> knowAssemblies = new HashSet<string>();
+        private static readonly HashSet<string> knowAssemblies = new();
 
         static bool CheckAssembly(string file)
         {
@@ -194,7 +194,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
             }
             catch (Exception e2)
             {
-                discover.logger.Debug(e2.ToString());
+                discover.logger.Debug($"FindApies({asm.FullName}) Error:{e2}");
             }
         }
 
@@ -315,9 +315,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
             #region 服务类型检测
 
-            var serializeType = GetCustomAttribute<SerializeTypeAttribute>(type)?.Type ?? SerializeType.Json;
-
-            var builder = type.DiscoverNetTransport(out var serviceName);
+            var builder = ZeroAppOption.Instance.Services.DiscoverNetTransport(type, out var serviceName);
             if (builder == null)
             {
                 return;
@@ -325,6 +323,8 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
             if (!ServiceInfos.TryGetValue(serviceName, out ServiceInfo service))
             {
+                var serializeType = GetCustomAttribute<SerializeTypeAttribute>(type)?.Type ?? SerializeType.Json;
+
                 ServiceInfos.Add(serviceName, service = new ServiceInfo
                 {
                     Name = serviceName,

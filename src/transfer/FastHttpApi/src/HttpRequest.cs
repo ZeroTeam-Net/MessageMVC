@@ -38,7 +38,7 @@ namespace BeetleX.FastHttpApi
 
         private static long mID = 0;
 
-        private static readonly object mLockID = new object();
+        private static readonly object mLockID = new();
 
         internal static long GetID()
         {
@@ -129,7 +129,7 @@ namespace BeetleX.FastHttpApi
 
         private readonly Data.DataContxt mDataContxt;
 
-        private readonly List<PostFile> mFiles = new List<PostFile>();
+        private readonly List<PostFile> mFiles = new();
 
         public IList<PostFile> Files => mFiles;
 
@@ -392,7 +392,7 @@ namespace BeetleX.FastHttpApi
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             sb.AppendLine("");
             sb.Append(Header.ToString());
             sb.Append(this.Cookies.ToString());

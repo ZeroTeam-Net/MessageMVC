@@ -10,7 +10,7 @@ namespace Agebull.Common.Logging
     /// </summary>
     public class MessageLoggerProvider : ILoggerProvider
     {
-        private static readonly ConcurrentDictionary<string, MessageLogger> loggers = new ConcurrentDictionary<string, MessageLogger>();
+        private static readonly ConcurrentDictionary<string, MessageLogger> loggers = new();
 
         /// <inheritdoc />
         public ILogger CreateLogger(string name)

@@ -52,7 +52,7 @@ namespace Agebull.Common.Ioc
             else
             { //构造参数
                 var info = type.GetConstructors()[0];
-                List<LocalBuilder> locals = new List<LocalBuilder>();
+                List<LocalBuilder> locals = new();
                 foreach (var parameter in info.GetParameters())
                 {
                     var ca = parameter.GetCustomAttribute<FromConfigAttribute>();
