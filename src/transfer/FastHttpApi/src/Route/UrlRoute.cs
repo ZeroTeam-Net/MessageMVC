@@ -75,7 +75,7 @@ namespace BeetleX.FastHttpApi
             if (!string.IsNullOrEmpty(Rewrite))
             {
                 ReExt = HttpParse.GetBaseUrlExt(Rewrite);
-                HasRewriteParamters = Rewrite.IndexOf("{") >= 0;
+                HasRewriteParamters = Rewrite.Contains("{", StringComparison.CurrentCulture);
             }
         }
 
@@ -108,7 +108,7 @@ namespace BeetleX.FastHttpApi
 
                         if (nameIndex > 0)
                         {
-                            string name = new(str.Slice(nameIndex, i - nameIndex));
+                            string name = new(str[nameIndex..i]);
                             if (parameters.TryGetValue(name, out string value))
                             {
                                 for (int l = 0; l < value.Length; l++)

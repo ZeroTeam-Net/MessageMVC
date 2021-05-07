@@ -20,8 +20,8 @@ namespace BeetleX.FastHttpApi
             OutputStackTrace = false;
             Filters = new List<FilterAttribute>();
             StaticResurceType = @"jpg;jpeg;gif;png;js;html;htm;css;txt;ico;xml";
-            StaticResourcePath = System.IO.Directory.GetCurrentDirectory() +
-                System.IO.Path.DirectorySeparatorChar + "views";
+            StaticResourcePath = Directory.GetCurrentDirectory() +
+                Path.DirectorySeparatorChar + "views";
             DefaultPage = "index.html;index.htm";
             Debug = false;
             WriteLog = false;
@@ -30,7 +30,7 @@ namespace BeetleX.FastHttpApi
             CacheFiles = "html;htm;js;css";
             BufferSize = 1024 * 4;
             WebSocketMaxRPS = 30;
-            LogLevel = EventArgs.LogType.Warring;
+            LogLevel = LogType.Warring;
             LogToConsole = false;
             NotLoadFolder = @"\Files;\Images";
             FileManager = false;
@@ -173,7 +173,7 @@ namespace BeetleX.FastHttpApi
         public int MaxBodyLength { get; set; }
 
         [JsonIgnore]
-        public System.Text.Encoding Encoding { get; set; }
+        public Encoding Encoding { get; set; }
 
         public bool OutputStackTrace { get; set; }
 

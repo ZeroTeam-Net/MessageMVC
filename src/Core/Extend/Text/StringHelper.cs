@@ -134,7 +134,7 @@ namespace System
             if (idx + 1 == xml.Length)
                 return null;
             if (idx > 1)
-                xml = xml.Substring(idx - 1);
+                xml = xml[(idx - 1)..];
             xml = xml.TrimEnd();
             return xml.Length < 4 || xml[^1] != '>' ? null : xml;
         }
@@ -602,18 +602,18 @@ namespace System.Text
 
             if (word.Length >= 3)
             {
-                switch (word.Substring(word.Length - 2).ToLower())
+                switch (word[^2..].ToLower())
                 {
                     case "is":
-                        return $"{word.Substring(0, word.Length - 2)}es";
+                        return $"{word[0..^2]}es";
                     case "fe":
-                        return $"{word.Substring(0, word.Length - 1)}ves";
+                        return $"{word[0..^1]}ves";
                     case "ch":
                     case "sh":
                         return $"{word}es";
                 }
             }
-            switch (word[word.Length - 1])
+            switch (word[^1])
             {
                 case 's':
                 case 'z':
@@ -623,7 +623,7 @@ namespace System.Text
                 case 'f':
                     return $"{word}ves";
                 case 'y':
-                    return $"{word.Substring(0, word.Length - 1)}ies";
+                    return $"{word[0..^1]}ies";
             }
 
             return $"{word}s";
@@ -641,7 +641,7 @@ namespace System.Text
             }
             return word.Length == 1
                            ? word.ToUpper()
-                           : $"{ToUpper(word[0])}{word.Substring(1)}";
+                           : $"{ToUpper(word[0])}{word[1..]}";
         }
         /// <summary>
         ///   到首字母小写的文本
@@ -656,7 +656,7 @@ namespace System.Text
             }
             return word.Length == 1
                            ? word.ToLower()
-                           : $"{ToLower(word[0])}{word.Substring(1)}";
+                           : $"{ToLower(word[0])}{word[1..]}";
         }
 
         /// <summary>
@@ -1200,7 +1200,7 @@ namespace System.Text
             }
             return word.Length == 1
                            ? word.ToUpper()
-                           : $"{ToUpper(word[0])}{word.Substring(1)}";
+                           : $"{ToUpper(word[0])}{word[1..]}";
         }
 
         /// <summary>
@@ -1216,7 +1216,7 @@ namespace System.Text
             }
             return word.Length == 1
                            ? word.ToUpper()
-                           : $"{ToLower(word[0])}{word.Substring(1)}";
+                           : $"{ToLower(word[0])}{word[1..]}";
         }
 
         /// <summary>

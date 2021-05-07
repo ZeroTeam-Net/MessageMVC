@@ -150,7 +150,7 @@ namespace ZeroTeam.MessageMVC.Documents
         /// <returns></returns>
         public static void Load(Assembly assembly)
         {
-            if (Assemblies.Contains(assembly))
+            if (assembly.IsDynamic || Assemblies.Contains(assembly))
             {
                 return;
             }
@@ -158,12 +158,10 @@ namespace ZeroTeam.MessageMVC.Documents
             Assemblies.Add(assembly);
             var path = assembly.Location;
             // ReSharper disable once AssignNullToNotNullAttribute
-            if (assembly.IsDynamic || path.IsMissing())
+            if (path.IsPresent())
             {
-                return;
+                Load(Path.Combine(path, Path.GetFileNameWithoutExtension(path) + ".xml"));
             }
-
-            Load(Path.Combine(path,Path.GetFileNameWithoutExtension(path) + ".xml"));
         }
 
         /// <summary>

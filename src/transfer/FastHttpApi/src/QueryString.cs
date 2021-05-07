@@ -25,8 +25,7 @@ namespace BeetleX.FastHttpApi
 
         private string GetValue(string name)
         {
-            string result;
-            mDataContext.TryGetString(name, out result);
+            mDataContext.TryGetString(name, out string result);
             return result;
 
 

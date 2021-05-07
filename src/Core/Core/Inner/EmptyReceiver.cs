@@ -20,7 +20,7 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         /// 对应发送器名称
         /// </summary>
-        string IMessageReceiver.PosterName => nameof(EmptyReceiver);
+        string IMessagePoster.PosterName => nameof(EmptyReceiver);
 
         private TaskCompletionSource<bool> task;
         Task<bool> IMessageReceiver.Loop(CancellationToken token)

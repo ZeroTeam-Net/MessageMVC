@@ -25,7 +25,7 @@ namespace ZeroTeam.MessageMVC.RabbitMQ
         /// <summary>
         /// 对应发送器名称
         /// </summary>
-        string IMessageReceiver.PosterName => nameof(RabbitMQPoster);
+        string IMessagePoster.PosterName => nameof(RabbitMQPoster);
 
         /// <summary>
         /// 当前通道

@@ -129,6 +129,7 @@ namespace Agebull.EntityModel.Common
         async Task LoadInner()
         {
             await Task.Yield();
+            Logger.LogDebug("开始载入数据");
             using var di = Logger.BeginScope($"{CacheName}.LoadInner");
             try
             {
@@ -143,6 +144,7 @@ namespace Agebull.EntityModel.Common
                         task.Item2.SetResult(Data);
                     }
                     waitTasks.Clear();
+                    Logger.LogDebug("载入完成");
                     return;
                 }
             }

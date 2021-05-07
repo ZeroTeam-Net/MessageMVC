@@ -63,8 +63,25 @@ namespace Agebull.Common.Configuration
             Root = Builder.Build();
             RunEnvironment = Root.GetValue<string>("ASPNETCORE_ENVIRONMENT_") ?? "Production";
             Builder.AddJsonFile(Path.Combine(Environment.CurrentDirectory, $"appsettings.{RunEnvironment}.json"), true, true);
+            foreach(var file in JsonFiles.Distinct())
+                Builder.AddJsonFile(file, true, true);
             Root = Builder.Build();
+            Flush();
         }
+
+        /// <summary>
+        /// 设置包含此配置文件
+        /// </summary>
+        public static void IncludeFile(string file)
+        {
+            if (!JsonFiles.Any(p => p.IsMe(file)))
+                JsonFiles.Add(file);
+        }
+
+        /// <summary>
+        /// 建造生成器，使用前请调用
+        /// </summary>
+        static List<string> JsonFiles = new();
 
         #endregion
 

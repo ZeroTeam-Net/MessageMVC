@@ -7,6 +7,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -51,7 +52,7 @@ namespace ZeroTeam.MessageMVC
         private static IFlowMiddleware[] Middlewares;
         #region AddIn
 
-        static AddInImporter addInImporter;
+       internal static AddInImporter addInImporter;
         /// <summary>
         ///     插件载入,作为第零步
         /// </summary>
@@ -70,11 +71,17 @@ namespace ZeroTeam.MessageMVC
 
         internal static ILogger Logger;
 
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"unhandledException.{DateTime.Now.Ticks}.log"), e.ExceptionObject.ToString());
+        }
+
         /// <summary>
         ///     配置校验,作为第一步
         /// </summary>
         public static void LoadConfig()
         {
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             Console.ResetColor();
             Console.WriteLine("【基础配置】开始");
             configChecker.CheckBaseConfig();
@@ -145,7 +152,7 @@ namespace ZeroTeam.MessageMVC
         /// <summary>
         ///     发现
         /// </summary>
-        public static void Discove() => ApiDiscover.FindAppDomain();
+        public static void DiscoveAll() => ApiDiscover.FindAppDomain();
 
         /// <summary>
         ///     发现

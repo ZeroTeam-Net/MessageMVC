@@ -41,14 +41,14 @@ namespace BeetleX.FastHttpApi
 
         private DataFrame mDataPacket;
 
-        private readonly WebSockets.IDataFrameSerializer mDataPacketSerializer;
+        private readonly IDataFrameSerializer mDataPacketSerializer;
 
         private void OnHttpDecode(ISession session, PipeStream pstream)
         {
             mReceives++;
             if (mRequest == null)
             {
-                mRequest = mServer.CreateRequest(session);
+                mRequest = HttpApiServer.CreateRequest(session);
                 mRequest.ID = HttpRequest.GetID();
             }
             if (mRequest.Read(pstream) == LoadedState.Completed)
@@ -257,7 +257,7 @@ namespace BeetleX.FastHttpApi
             OnEncode(session, data, stream);
         }
 
-        private void OnEncode(ISession session, object data, System.IO.Stream stream)
+        private static void OnEncode(ISession session, object data, Stream stream)
         {
             PipeStream pstream = stream.ToPipeStream();
             IDataResponse dataResponse = data as IDataResponse;
@@ -275,7 +275,7 @@ namespace BeetleX.FastHttpApi
         public byte[] Encode(object data, IServer server)
         {
             byte[] result = null;
-            using (Buffers.PipeStream stream = new(server.SendBufferPool.Next(), server.Options.LittleEndian, server.Options.Encoding))
+            using (PipeStream stream = new(server.SendBufferPool.Next(), server.Options.LittleEndian, server.Options.Encoding))
             {
                 OnEncode(null, data, stream);
                 stream.Position = 0;
@@ -287,14 +287,12 @@ namespace BeetleX.FastHttpApi
 
         public ArraySegment<byte> Encode(object data, IServer server, byte[] buffer)
         {
-            using (Buffers.PipeStream stream = new(server.SendBufferPool.Next(), server.Options.LittleEndian, server.Options.Encoding))
-            {
-                OnEncode(null, data, stream);
-                stream.Position = 0;
-                int count = (int)stream.Length;
-                stream.Read(buffer, 0, count);
-                return new ArraySegment<byte>(buffer, 0, count);
-            }
+            using PipeStream stream = new(server.SendBufferPool.Next(), server.Options.LittleEndian, server.Options.Encoding);
+            OnEncode(null, data, stream);
+            stream.Position = 0;
+            int count = (int)stream.Length;
+            stream.Read(buffer, 0, count);
+            return new ArraySegment<byte>(buffer, 0, count);
         }
     }
 }

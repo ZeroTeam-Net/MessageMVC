@@ -23,7 +23,7 @@ namespace ZeroTeam.MessageMVC.RedisMQ
         /// <summary>
         /// 对应发送器名称
         /// </summary>
-        string IMessageReceiver.PosterName => nameof(CSRedisEventReceiver);
+        string IMessagePoster.PosterName => nameof(CSRedisEventReceiver);
 
         /// <summary>
         /// 本地代理

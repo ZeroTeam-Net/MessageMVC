@@ -93,7 +93,7 @@ namespace BeetleX.FastHttpApi
                 string content;
                 using (request.Stream.LockFree())
                 {
-                    using var streamReader = new System.IO.StreamReader(request.Stream);
+                    using var streamReader = new StreamReader(request.Stream);
                     content = streamReader.ReadToEnd();
                 }
                 if (ver != "v2")
@@ -185,8 +185,20 @@ namespace BeetleX.FastHttpApi
             {
                 return false;
             }
-            Message.Service = words[0].ToLower();
-            Message.Method = string.Join('/', words.Skip(1).Select(p => p.ToLower()));
+            if (words[0].IsMe("api"))
+            {
+                if (words.Length < 3)
+                {
+                    return false;
+                }
+                Message.Service = words[1].ToLower();
+                Message.Method = string.Join('/', words.Skip(2).Select(p => p.ToLower()));
+            }
+            else
+            {
+                Message.Service = words[0].ToLower();
+                Message.Method = string.Join('/', words.Skip(1).Select(p => p.ToLower()));
+            }
             return true;
         }
 
@@ -203,13 +215,13 @@ namespace BeetleX.FastHttpApi
 
             if (!string.IsNullOrEmpty(Request.ContentType))
             {
-                if (Request.ContentType.IndexOf("application/x-www-form-urlencoded", StringComparison.CurrentCultureIgnoreCase) >= 0)
+                if (Request.ContentType.Contains("application/x-www-form-urlencoded", StringComparison.CurrentCultureIgnoreCase))
                 {
                     var convert = new FormUrlDataConvertAttribute();
                     convert.Execute(Message, Request);
                     return;
                 }
-                else if (Request.ContentType.IndexOf("multipart/form-data", StringComparison.CurrentCultureIgnoreCase) >= 0)
+                else if (Request.ContentType.Contains("multipart/form-data", StringComparison.CurrentCultureIgnoreCase))
                 {
                     var convert = new MultiDataConvertAttribute();
                     convert.Execute(Message, Request);
@@ -219,7 +231,7 @@ namespace BeetleX.FastHttpApi
 
             using (Request.Stream.LockFree())
             {
-                using var streamReader = new System.IO.StreamReader(Request.Stream);
+                using var streamReader = new StreamReader(Request.Stream);
                 Message.Argument = Message.HttpContent = streamReader.ReadToEnd();
             }
         }

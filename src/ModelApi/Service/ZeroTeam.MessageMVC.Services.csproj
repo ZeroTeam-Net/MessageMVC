@@ -1,0 +1,64 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="MessageMvc\**" />
+    <EmbeddedResource Remove="MessageMvc\**" />
+    <None Remove="MessageMvc\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\Core\ZeroTeam.MessageMVC.Core.csproj" />
+    <ProjectReference Include="..\..\tools\Contract\ZeroTeam.MessageMVC.ApiContract.csproj">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </ProjectReference>
+    <ProjectReference Include="..\..\tools\Logging\ZeroTeam.MessageMVC.Logging.csproj">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </ProjectReference>
+    <ProjectReference Include="..\..\tools\Tools\ZeroTeam.MessageMVC.Tools.csproj">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </ProjectReference>
+    <ProjectReference Include="..\..\transfer\FastHttpApi\ZeroTeam.MessageMVC.FastHttpApi.csproj" />
+    <ProjectReference Include="..\..\transfer\Http\ZeroTeam.MessageMVC.Http.csproj" />
+    <ProjectReference Include="..\..\transfer\kafka\ZeroTeam.MessageMVC.Kafka.csproj" />
+    <ProjectReference Include="..\..\transfer\redis\RedisMQ\ZeroTeam.MessageMVC.RedisMQ.csproj" />
+    <ProjectReference Include="..\..\transfer\Tcp\ZeroTeam.MessageMVC.Tcp.csproj" />
+    <ProjectReference Include="..\BusinessLogic\Agebull.EntityModel.BusinessLogic.csproj">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </ProjectReference>
+    <ProjectReference Include="..\DataEvents\Agebull.EntityModel.DataEvents.csproj">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </ProjectReference>
+    <ProjectReference Include="..\ModelApi\ZeroTeam.MessageMVC.ModelApi.csproj">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </ProjectReference>
+    <ProjectReference Include="..\WebSocketBus\ZeroTeam.MessageMVC.WebSocketBus.csproj">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </ProjectReference>
+    <ProjectReference Include="..\WechatApi\ZeroTeam.MessageMVC.WechatApi.csproj" />
+  </ItemGroup>
+
+</Project>

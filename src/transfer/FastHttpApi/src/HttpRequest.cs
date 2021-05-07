@@ -268,8 +268,7 @@ namespace BeetleX.FastHttpApi
         {
             if (mState == LoadedState.None)
             {
-                Span<char> data;
-                if (!stream.ReadLine(out data))
+                if (!stream.ReadLine(out Span<char> data))
                 {
                     return;
                 }
@@ -301,9 +300,8 @@ namespace BeetleX.FastHttpApi
                         KeepAlive = string.Compare(connection, "keep-alive", true) == 0;
                     }
 
-                    RouteMatchResult routeMatchResult;
                     this.IsRewrite = false;
-                    if (Server.UrlRewrite.Count > 0 && Server.UrlRewrite.Match(this, out routeMatchResult, mQueryString))
+                    if (Server.UrlRewrite.Count > 0 && Server.UrlRewrite.Match(this, out RouteMatchResult routeMatchResult, mQueryString))
                     {
                         var url = routeMatchResult.RewriteUrl;
                         if (Server.Options.AgentRewrite)
@@ -318,7 +316,7 @@ namespace BeetleX.FastHttpApi
                                 {
                                     url += "?";
                                 }
-                                url += new string(Url.AsSpan().Slice(mQueryStringIndex + 1));
+                                url += new string(Url.AsSpan()[(mQueryStringIndex + 1)..]);
                             }
                         }
                         UrlRewriteTo(url);

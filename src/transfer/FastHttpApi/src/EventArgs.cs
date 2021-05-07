@@ -6,9 +6,9 @@ using System.Text;
 
 namespace BeetleX.FastHttpApi
 {
-    public delegate void EventHttpServerLog(IServer server, BeetleX.EventArgs.ServerLogEventArgs e);
+    public delegate void EventHttpServerLog(IServer server, ServerLogEventArgs e);
 
-    public class HttpServerLogEventArgs : BeetleX.EventArgs.ServerLogEventArgs
+    public class HttpServerLogEventArgs : ServerLogEventArgs
     {
         public HttpServerLogEventArgs(object tag, string message, LogType type, ISession session = null)
             : base(message, type, session)

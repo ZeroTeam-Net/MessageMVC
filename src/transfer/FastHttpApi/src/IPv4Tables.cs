@@ -102,23 +102,19 @@ namespace BeetleX.FastHttpApi
 
         public void Save()
         {
-            using (System.IO.StreamWriter writer = new(IPTABLE_FILE, false))
-            {
-                writer.Write(Newtonsoft.Json.JsonConvert.SerializeObject(GetConfig()));
-                writer.Flush();
-            }
+            using System.IO.StreamWriter writer = new(IPTABLE_FILE, false);
+            writer.Write(JsonConvert.SerializeObject(GetConfig()));
+            writer.Flush();
         }
 
         public void Load()
         {
             if (System.IO.File.Exists(IPTABLE_FILE))
             {
-                using (System.IO.StreamReader reader = new(IPTABLE_FILE))
-                {
-                    string data = reader.ReadToEnd();
-                    var config = Newtonsoft.Json.JsonConvert.DeserializeObject<Config>(data);
-                    SetConfig(config);
-                }
+                using System.IO.StreamReader reader = new(IPTABLE_FILE);
+                string data = reader.ReadToEnd();
+                var config = JsonConvert.DeserializeObject<Config>(data);
+                SetConfig(config);
             }
         }
 
@@ -228,7 +224,7 @@ namespace BeetleX.FastHttpApi
 
             if (remote.IsIPv4MappedToIPv6)
             {
-                ipdata = GetIP(bytes.AsSpan().Slice(bytes.Length - 4));
+                ipdata = GetIP(bytes.AsSpan()[(bytes.Length - 4)..]);
             }
             else
             {

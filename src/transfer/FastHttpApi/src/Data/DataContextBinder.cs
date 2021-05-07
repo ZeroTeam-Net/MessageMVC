@@ -36,11 +36,11 @@ namespace BeetleX.FastHttpApi.Data
             {
                 return new JsonDataConvertAttribute();
             }
-            else if (contentType.IndexOf("application/x-www-form-urlencoded", StringComparison.CurrentCultureIgnoreCase) >= 0)
+            else if (contentType.Contains("application/x-www-form-urlencoded", StringComparison.CurrentCultureIgnoreCase))
             {
                 return new FormUrlDataConvertAttribute();
             }
-            else if (contentType.IndexOf("multipart/form-data", StringComparison.CurrentCultureIgnoreCase) >= 0)
+            else if (contentType.Contains("multipart/form-data", StringComparison.CurrentCultureIgnoreCase))
             {
                 return new MultiDataConvertAttribute();
             }

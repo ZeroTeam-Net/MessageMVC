@@ -34,7 +34,7 @@ namespace BeetleX.FastHttpApi
     {
         public HeaderItem(string value)
         {
-            if (value.IndexOf("\r\n") == -1)
+            if (!value.Contains("\r\n", StringComparison.CurrentCulture))
                 value += "\r\n";
             mData = Encoding.UTF8.GetBytes(value);
         }
@@ -165,43 +165,43 @@ namespace BeetleX.FastHttpApi
             TOW_LINE_BYTES = Encoding.UTF8.GetBytes("\r\n\r\n");
             SERVAR_HEADER_BYTES = Encoding.UTF8.GetBytes("Server: BeetleX\r\n");
             HTTP_V11_BYTES = Encoding.UTF8.GetBytes("HTTP/1.1");
-            Add(HeaderTypeFactory.AGE);
-            Add(HeaderTypeFactory.AUTHORIZATION);
-            Add(HeaderTypeFactory.WWW_AUTHENTICATE);
-            Add(HeaderTypeFactory.ACCEPT);
-            Add(HeaderTypeFactory.ACCEPT_ENCODING);
-            Add(HeaderTypeFactory.ACCEPT_LANGUAGE);
-            Add(HeaderTypeFactory.ACCEPT_CHARSET);
-            Add(HeaderTypeFactory.ACCESS_CONTROL_ALLOW_CREDENTIALS);
-            Add(HeaderTypeFactory.ACCESS_CONTROL_ALLOW_HEADERS);
-            Add(HeaderTypeFactory.ACCESS_CONTROL_ALLOW_ORIGIN);
-            Add(HeaderTypeFactory.CACHE_CONTROL);
-            Add(HeaderTypeFactory.CLIENT_IPADDRESS);
-            Add(HeaderTypeFactory.CONNECTION);
-            Add(HeaderTypeFactory.CONTENT_ENCODING);
-            Add(HeaderTypeFactory.CONTENT_LENGTH);
-            Add(HeaderTypeFactory.CONTENT_TYPE);
-            Add(HeaderTypeFactory.COOKIE);
-            Add(HeaderTypeFactory.DATE);
-            Add(HeaderTypeFactory.HOST);
-            Add(HeaderTypeFactory.ETAG);
-            Add(HeaderTypeFactory.IF_NONE_MATCH);
-            Add(HeaderTypeFactory.LOCATION);
-            Add(HeaderTypeFactory.ORIGIN);
-            Add(HeaderTypeFactory.REFERER);
-            Add(HeaderTypeFactory.SEC_WEBSOCKET_EXTENSIONS);
-            Add(HeaderTypeFactory.SEC_WEBSOCKET_KEY);
-            Add(HeaderTypeFactory.SEC_WEBSOCKET_VERSION);
-            Add(HeaderTypeFactory.SEC_WEBSOCKT_ACCEPT);
-            Add(HeaderTypeFactory.SERVER);
-            Add(HeaderTypeFactory.SET_COOKIE);
-            Add(HeaderTypeFactory.STATUS);
-            Add(HeaderTypeFactory.TRANSFER_ENCODING);
-            Add(HeaderTypeFactory.UPGRADE);
-            Add(HeaderTypeFactory.USER_AGENT);
+            Add(AGE);
+            Add(AUTHORIZATION);
+            Add(WWW_AUTHENTICATE);
+            Add(ACCEPT);
+            Add(ACCEPT_ENCODING);
+            Add(ACCEPT_LANGUAGE);
+            Add(ACCEPT_CHARSET);
+            Add(ACCESS_CONTROL_ALLOW_CREDENTIALS);
+            Add(ACCESS_CONTROL_ALLOW_HEADERS);
+            Add(ACCESS_CONTROL_ALLOW_ORIGIN);
+            Add(CACHE_CONTROL);
+            Add(CLIENT_IPADDRESS);
+            Add(CONNECTION);
+            Add(CONTENT_ENCODING);
+            Add(CONTENT_LENGTH);
+            Add(CONTENT_TYPE);
+            Add(COOKIE);
+            Add(DATE);
+            Add(HOST);
+            Add(ETAG);
+            Add(IF_NONE_MATCH);
+            Add(LOCATION);
+            Add(ORIGIN);
+            Add(REFERER);
+            Add(SEC_WEBSOCKET_EXTENSIONS);
+            Add(SEC_WEBSOCKET_KEY);
+            Add(SEC_WEBSOCKET_VERSION);
+            Add(SEC_WEBSOCKT_ACCEPT);
+            Add(SERVER);
+            Add(SET_COOKIE);
+            Add(STATUS);
+            Add(TRANSFER_ENCODING);
+            Add(UPGRADE);
+            Add(USER_AGENT);
         }
 
-        private static readonly System.Collections.Generic.Dictionary<long, HeaderType> mHeaderTypes = new();
+        private static readonly Dictionary<long, HeaderType> mHeaderTypes = new();
 
         private static int mCount;
 
@@ -229,9 +229,8 @@ namespace BeetleX.FastHttpApi
 
         public static HeaderType Find(string name)
         {
-            HeaderType type;
             long id = HeaderType.GetNameCode(name);
-            if (mHeaderTypes.TryGetValue(id, out type))
+            if (mHeaderTypes.TryGetValue(id, out HeaderType type))
                 return type;
             HeaderType[] items;
             lock (mHeaderTypes)
@@ -299,8 +298,7 @@ namespace BeetleX.FastHttpApi
         private HeaderValue Find(string name)
         {
             HeaderType type = HeaderTypeFactory.Find(name);
-            HeaderValue value;
-            if (mValues.TryGetValue(type.ID, out value))
+            if (mValues.TryGetValue(type.ID, out HeaderValue value))
                 return value;
             value = new HeaderValue(type, null);
             mValues[type.ID] = value;
@@ -309,9 +307,8 @@ namespace BeetleX.FastHttpApi
 
         private HeaderValue FindOnly(string name)
         {
-            HeaderValue result;
             long id = HeaderType.GetNameCode(name);
-            mValues.TryGetValue(id, out result);
+            mValues.TryGetValue(id, out HeaderValue result);
             return result;
         }
 
@@ -349,8 +346,7 @@ namespace BeetleX.FastHttpApi
 
         public bool Read(PipeStream stream, Cookies cookies)
         {
-            Span<char> lineData;
-            while (stream.ReadLine(out lineData))
+            while (stream.ReadLine(out Span<char> lineData))
             {
                 if (lineData.Length == 0)
                 {
@@ -359,11 +355,11 @@ namespace BeetleX.FastHttpApi
                 else
                 {
                     ReadOnlySpan<Char> line = lineData;
-                    Tuple<string, string> result = HttpParse.AnalyzeHeader(line);
+                    Tuple<string, string> result = AnalyzeHeader(line);
                     this[result.Item1] = result.Item2;
                     if (line[0] == 'C' && line[5] == 'e' && line[1] == 'o' && line[2] == 'o' && line[3] == 'k' && line[4] == 'i')
                     {
-                        HttpParse.AnalyzeCookie(line.Slice(8, line.Length - 8), cookies);
+                        AnalyzeCookie(line[8..], cookies);
                     }
                 }
             }
@@ -403,7 +399,7 @@ namespace BeetleX.FastHttpApi
 
         public void Write(PipeStream stream)
         {
-            byte[] buffer = HttpParse.GetByteBuffer();
+            byte[] buffer = GetByteBuffer();
             int count = Type.Bytes.Length;
             System.Buffer.BlockCopy(Type.Bytes, 0, buffer, 0, count);
             if (Value == null)

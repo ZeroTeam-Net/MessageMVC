@@ -12,7 +12,7 @@ namespace BeetleX.FastHttpApi
     class ServerController : IController
     {
         [SkipFilter(typeof(AccessTokenFilter))]
-        public object __ServerStatus(IHttpContext context)
+        public static object __ServerStatus(IHttpContext context)
         {
             if (context.Server.ServerCounter != null)
             {
@@ -22,14 +22,14 @@ namespace BeetleX.FastHttpApi
         }
         [Post]
         [Data.JsonDataConvert]
-        public void __SetSettings(List<Setting> body, IHttpContext context)
+        public static void __SetSettings(List<Setting> body, IHttpContext context)
         {
             HttpApiServer server = context.Server;
             server.Options.Settings = body;
             server.SaveOptions();
         }
         [Data.JsonDataConvert]
-        public void __ChangeAccessKey(string key, IHttpContext context)
+        public static void __ChangeAccessKey(string key, IHttpContext context)
         {
             byte[] keyData = Convert.FromBase64String(key);
             HttpApiServer server = context.Server;
@@ -39,13 +39,13 @@ namespace BeetleX.FastHttpApi
             server.SaveOptions();
         }
 
-        public object __GetSettings(IHttpContext context)
+        public static object __GetSettings(IHttpContext context)
         {
             HttpApiServer server = context.Server;
             return server.Options.Settings;
         }
         [SkipFilter(typeof(AccessTokenFilter))]
-        public object __LogConnect(string token, IHttpContext context)
+        public static object __LogConnect(string token, IHttpContext context)
         {
             if (!context.WebSocket)
                 return false;
@@ -86,13 +86,13 @@ namespace BeetleX.FastHttpApi
             }
         }
 
-        public object __ListLog(IHttpContext context)
+        public static object __ListLog(IHttpContext context)
         {
             HttpApiServer server = context.Server;
             return server.GetCacheLog();
         }
 
-        public object __GetOptions(IHttpContext context)
+        public static object __GetOptions(IHttpContext context)
         {
             HttpApiServer server = context.Server;
             return new
@@ -114,7 +114,7 @@ namespace BeetleX.FastHttpApi
 
         [Post]
         [Data.JsonDataConvert]
-        public void __UploadModule(string name, string md5, bool eof, string base64Data, IHttpContext context)
+        public static void __UploadModule(string name, string md5, bool eof, string base64Data, IHttpContext context)
         {
             HttpApiServer server = context.Server;
             server.ModuleManager.SaveFile(name, md5, eof, Convert.FromBase64String(base64Data));
@@ -122,7 +122,7 @@ namespace BeetleX.FastHttpApi
 
         [Post]
         [Data.JsonDataConvert]
-        public void __SetActionMaxrps(List<SetMaxrps> body, IHttpContext context)
+        public static void __SetActionMaxrps(List<SetMaxrps> body, IHttpContext context)
         {
             HttpApiServer server = context.Server;
             if (body != null)
@@ -147,7 +147,7 @@ namespace BeetleX.FastHttpApi
         }
         [Post]
         [Data.JsonDataConvert]
-        public void __SetOptions(ServerSetting body, IHttpContext context)
+        public static void __SetOptions(ServerSetting body, IHttpContext context)
         {
             HttpApiServer server = context.Server;
             server.BaseServer.Options.LogLevel = body.LogLevel;

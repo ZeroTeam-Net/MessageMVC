@@ -125,7 +125,7 @@ namespace BeetleX.FastHttpApi
             return mInfo;
         }
 
-        private double GetByteMB(double value)
+        private static double GetByteMB(double value)
         {
             return (long)((value / (double)(1024 * 1024)) * 10000) / 10000d;
         }

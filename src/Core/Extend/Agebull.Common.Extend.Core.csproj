@@ -10,7 +10,7 @@
   <PropertyGroup>
     <Description>一些常用的基础功能扩展</Description>
     <AssemblyTitle>Agebull.Common.Extend</AssemblyTitle>
-    <Version>4.0.6.10</Version>
+    <Version>4.0.6.11</Version>
     <!--monoandroid60;xamarinios10-->
     <TargetFramework>net5.0</TargetFramework>
     <DebugType>portable</DebugType>

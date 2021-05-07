@@ -97,7 +97,7 @@ namespace BeetleX.FastHttpApi
         ///     请求的内容
         /// </summary>
         [JsonIgnore]
-        public string RequestId { get; internal set; }
+        public string RequestId { get; set; }
 
         /// <summary>
         ///     Http上下文
@@ -106,7 +106,7 @@ namespace BeetleX.FastHttpApi
         ///     请求的内容
         /// </summary>
         [JsonIgnore]
-        public HttpRequest Request { get; internal set; }
+        public HttpRequest Request { get; set; }
 
         /// <summary>
         ///     Http上下文
@@ -115,19 +115,19 @@ namespace BeetleX.FastHttpApi
         ///     请求的内容
         /// </summary>
         [JsonIgnore]
-        public IHttpContext HttpContext { get; internal set; }
+        public IHttpContext HttpContext { get; set; }
 
         /// <summary>
         ///     请求地址
         /// </summary>
         [JsonIgnore]
-        public string Url { get; internal set; }
+        public string Url { get; set; }
 
         /// <summary>
         ///     HTTP method
         /// </summary>
         [JsonIgnore]
-        public string HttpMethod { get; internal set; }
+        public string HttpMethod { get; set; }
 
         /// <summary>
         ///     请求的内容

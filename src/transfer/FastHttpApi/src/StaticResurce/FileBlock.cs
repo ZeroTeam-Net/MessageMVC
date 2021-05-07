@@ -32,8 +32,7 @@ namespace BeetleX.FastHttpApi.StaticResurce
 
         private void LoadData()
         {
-            int roffset;
-            Data = mFileResource.GetBlodk(Offset, Size, out roffset);
+            Data = mFileResource.GetBlodk(Offset, Size, out int roffset);
             Offset = roffset;
 
         }

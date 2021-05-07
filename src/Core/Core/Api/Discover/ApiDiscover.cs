@@ -1,3 +1,4 @@
+using Agebull.Common;
 using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Agebull.EntityModel.Common;
@@ -27,7 +28,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         public ApiDiscover()
         {
-            logger = DependencyHelper.LoggerFactory.CreateLogger<ApiDiscover>();
+            logger = DependencyHelper.LoggerFactory.CreateLogger("ApiDiscover");
         }
 
         /// <summary>
@@ -35,7 +36,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         public void Discover(Assembly assembly)
         {
-            logger = DependencyHelper.LoggerFactory.CreateLogger<ApiDiscover>();
+            logger ??= DependencyHelper.LoggerFactory.CreateLogger("ApiDiscover");
             XmlMember.Load(assembly);
             Assembly = assembly;
             var types = Assembly.GetTypes().Where(p => p.IsSupperInterface(typeof(IApiController))).ToArray();
@@ -50,7 +51,7 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         public void Discover(Type type)
         {
-            logger = DependencyHelper.LoggerFactory.CreateLogger<ApiDiscover>();
+            logger ??= DependencyHelper.LoggerFactory.CreateLogger("ApiDiscover");
             Assembly = type.Assembly;
             XmlMember.Load(Assembly);
             if (type.IsSupperInterface(typeof(IApiController)))
@@ -86,19 +87,25 @@ namespace ZeroTeam.MessageMVC.ZeroApis
 
         static bool CheckAssembly(string file)
         {
+            if (file.IsMissing())
+            {
+                return false;
+            }
+            if (knowAssemblies.Contains(file))
+            {
+                return false;
+            }
+            knowAssemblies.Add(file);
+            return CheckAssemblyName(Path.GetFileName(file));
+        }
+        static bool CheckAssemblyName(string name)
+        {
             try
             {
-                if (file.IsMissing())
+                if (name.IsMissing())
                 {
                     return false;
                 }
-                if (knowAssemblies.Contains(file))
-                {
-                    return false;
-                }
-                knowAssemblies.Add(file);
-
-                var name = Path.GetFileName(file);
                 if (knowAssemblies.Contains(name))
                 {
                     return false;
@@ -151,16 +158,29 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// </summary>
         public static void FindAppDomain()
         {
-            FindApies(AppDomain.CurrentDomain.GetAssemblies());
+            //var addIns = ZeroFlowControl.addInImporter.registers.Select(p => p.GetType().Assembly).ToArray();
 
-            var path = Path.GetDirectoryName(typeof(ApiDiscover).Assembly.Location);
-            var files = Directory.GetFiles(path, "*.dll", SearchOption.TopDirectoryOnly);
-            foreach (var file in files)
+            FindDirectory(AppDomain.CurrentDomain.BaseDirectory,  true);
+            //FindDirectory(ZeroAppOption.Instance.AddInPath, addIns, false);
+            FindApies(ZeroFlowControl.addInImporter.Assemblies);
+        }
+
+        private static void FindDirectory(string directory, bool directoryOnly)
+        {
+            IOHelper.Search(directory, "*.dll", directoryOnly, (path, file) =>
             {
                 if (!CheckAssembly(file))
-                    continue;
-                FindApies(Assembly.LoadFile(file));
-            }
+                    return;
+                var ass = ZeroFlowControl.addInImporter.Assemblies.FirstOrDefault(p => p.Location.IsMe(file));
+                try
+                {
+                    ass ??= Assembly.LoadFile(file);
+                    FindApies(ass);
+                }
+                catch
+                {
+                }
+            });
         }
 
         /// <summary>
@@ -170,10 +190,6 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         {
             foreach (var assembly in assemblies)
             {
-                if (assembly.IsDynamic)
-                    continue;
-                if (!CheckAssembly(assembly.Location))
-                    continue;
                 FindApies(assembly);
             }
         }
@@ -181,20 +197,25 @@ namespace ZeroTeam.MessageMVC.ZeroApis
         /// <summary>
         /// 查找API
         /// </summary>
-        public static void FindApies(Assembly asm)
+        public static void FindApies(Assembly assembly)
         {
+            if (assembly == null || assembly.Location == null || assembly.IsDynamic)
+                return;
+            if (!CheckAssembly(assembly.Location))
+                return;
+
             var discover = new ApiDiscover
             {
-                Assembly = asm
+                Assembly = assembly
             };
             try
             {
-                XmlMember.Load(asm);
+                XmlMember.Load(assembly);
                 discover.FindApies();
             }
             catch (Exception e2)
             {
-                discover.logger.Debug($"FindApies({asm.FullName}) Error:{e2}");
+                discover.logger.Debug($"FindApies({assembly.FullName}) Error:{e2}");
             }
         }
 

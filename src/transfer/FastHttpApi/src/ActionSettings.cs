@@ -107,26 +107,22 @@ namespace BeetleX.FastHttpApi
 
         public void Save(params ActionHandler[] actions)
         {
-            using (System.IO.StreamWriter writer = new(SETTING_FILE, false))
-            {
-                this.Settings.Clear();
-                foreach (var item in actions)
-                    this.Settings.Add(new ActionInfo(item));
-                string value = Newtonsoft.Json.JsonConvert.SerializeObject(this.Settings);
-                writer.Write(value);
-                writer.Flush();
-            }
+            using System.IO.StreamWriter writer = new(SETTING_FILE, false);
+            this.Settings.Clear();
+            foreach (var item in actions)
+                this.Settings.Add(new ActionInfo(item));
+            string value = Newtonsoft.Json.JsonConvert.SerializeObject(this.Settings);
+            writer.Write(value);
+            writer.Flush();
         }
 
         public void Load()
         {
             if (System.IO.File.Exists(SETTING_FILE))
             {
-                using (System.IO.StreamReader reader = new(SETTING_FILE))
-                {
-                    string value = reader.ReadToEnd();
-                    Settings = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ActionInfo>>(value);
-                }
+                using System.IO.StreamReader reader = new(SETTING_FILE);
+                string value = reader.ReadToEnd();
+                Settings = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ActionInfo>>(value);
             }
         }
     }

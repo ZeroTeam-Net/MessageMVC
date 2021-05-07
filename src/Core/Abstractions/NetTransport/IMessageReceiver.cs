@@ -26,11 +26,6 @@ namespace ZeroTeam.MessageMVC.Messages
     public interface IMessageReceiver : IMessagePoster, IMessageWriter, ILifeFlow
     {
         /// <summary>
-        /// 对应发送器名称
-        /// </summary>
-        string PosterName { get; }
-
-        /// <summary>
         /// 服务
         /// </summary>
         IService Service { get; set; }

@@ -458,22 +458,41 @@ namespace Agebull.Common
             sb.Replace('\\', '_').Replace('(', '_').Replace(')', '_');
             return sb.ToString();
         }
+
         /// <summary>
-        ///   得到一个路径下所有文件名
+        ///   查找一个路径下所有文件名并执行动作
         /// </summary>
         /// <param name="path"> </param>
         /// <param name="ext"> </param>
+        /// <param name="directoryOnly"> </param>
+        /// <param name="action"> </param>
         /// <returns> </returns>
-        public static List<string> GetAllField(string path, string ext)
+        public static void Search(string path, string ext, bool directoryOnly, Action<string, string> action)
         {
-            var fs = new List<string>();
-            if (ext != null && ext.IndexOf("*", StringComparison.Ordinal) < 0 && ext.IndexOf("?", StringComparison.Ordinal) < 0)
+            if (path.IsMissing() || !Directory.Exists(path))
             {
-                ext = $"*.{ext}";
+                return;
             }
-            GetAllFiles(fs, path, ext);
-            return fs.Distinct().ToList();
+            SearchInner(path, ext, directoryOnly, action);
         }
+
+        private static void SearchInner(string path, string ext, bool directoryOnly, Action<string, string> action)
+        {
+            var files = Directory.GetFiles(path, ext, SearchOption.TopDirectoryOnly);
+            foreach (var file in files)
+            {
+                action(path, file);
+            }
+            if (directoryOnly)
+                return;
+            foreach (var ch in Directory.GetDirectories(path))
+            {
+                if (ch == "." || ch == "..")
+                    continue;
+                Search(ch, ext,false, action);
+            }
+        }
+
         /// <summary>
         ///   得到一个路径下所有文件名
         /// </summary>
@@ -483,6 +502,10 @@ namespace Agebull.Common
         public static List<string> GetAllFiles(string path, string ext)
         {
             var fs = new List<string>();
+            if (path.IsMissing() || !Directory.Exists(path))
+            {
+                return fs;
+            }
             if (ext != null && ext.IndexOf("*", StringComparison.Ordinal) < 0 && ext.IndexOf("?", StringComparison.Ordinal) < 0)
             {
                 ext = $"*.{ext}";
@@ -500,13 +523,13 @@ namespace Agebull.Common
         /// <returns> </returns>
         private static void GetAllFiles(List<string> fields, string path, string ext)
         {
-            if (!Directory.Exists(path))
-            {
-                return;
-            }
-            fields.AddRange(Directory.GetFiles(path, ext, SearchOption.TopDirectoryOnly));
+            var files = Directory.GetFiles(path, ext, SearchOption.TopDirectoryOnly);
+            foreach (var file in files)
+                fields.Add(Path.Combine(path, file));
             foreach (var ch in Directory.GetDirectories(path))
             {
+                if (ch == "." || ch == "..")
+                    continue;
                 GetAllFiles(fields, ch, ext);
             }
         }

@@ -47,7 +47,7 @@
             构造
             </summary>
         </member>
-        <member name="P:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQConsumer.ZeroTeam#MessageMVC#Messages#IMessageReceiver#PosterName">
+        <member name="P:ZeroTeam.MessageMVC.RabbitMQ.RabbitMQConsumer.ZeroTeam#MessageMVC#Messages#IMessagePoster#PosterName">
             <summary>
             对应发送器名称
             </summary>

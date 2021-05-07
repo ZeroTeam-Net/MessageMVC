@@ -93,7 +93,7 @@ namespace BeetleX.FastHttpApi
             public string Message;
         }
 
-        public void Run()
+        public static void Run()
         {
 
         }

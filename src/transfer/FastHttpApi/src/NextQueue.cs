@@ -46,7 +46,7 @@ namespace BeetleX.FastHttpApi
             }
         }
 
-        private void OnError(Exception e, IEventWork work)
+        private static void OnError(Exception e, IEventWork work)
         {
             try
             {

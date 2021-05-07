@@ -18,7 +18,7 @@ namespace BeetleX.FastHttpApi
 
         public HttpApiServer Server { get; set; }
 
-        private readonly System.Collections.Generic.Dictionary<string, ActionHandler> mMethods = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, ActionHandler> mMethods = new(StringComparer.OrdinalIgnoreCase);
 
         private readonly Dictionary<Type, Type> mParameterBinders = new();
 
@@ -133,9 +133,9 @@ namespace BeetleX.FastHttpApi
             ParameterBinding?.Invoke(this, e);
         }
 
-        public event System.EventHandler<EventControllerInstanceArgs> ControllerInstance;
+        public event EventHandler<EventControllerInstanceArgs> ControllerInstance;
 
-        public event System.EventHandler<EventParameterBinding> ParameterBinding;
+        public event EventHandler<EventParameterBinding> ParameterBinding;
 
         public bool HasParameterBindEvent
         {
@@ -276,7 +276,7 @@ namespace BeetleX.FastHttpApi
             {
                 if (rooturl[0] != '/')
                     rooturl = "/" + rooturl;
-                if (rooturl[rooturl.Length - 1] != '/')
+                if (rooturl[^1] != '/')
                     rooturl += "/";
             }
             RequestMaxRPS control_maxRPS = controllerType.GetCustomAttribute<RequestMaxRPS>();
@@ -304,8 +304,8 @@ namespace BeetleX.FastHttpApi
                 if (string.Compare("Equals", mi.Name, true) == 0
                     || string.Compare("GetHashCode", mi.Name, true) == 0
                     || string.Compare("GetType", mi.Name, true) == 0
-                    || string.Compare("ToString", mi.Name, true) == 0 || mi.Name.IndexOf("set_") >= 0
-                    || mi.Name.IndexOf("get_") >= 0)
+                    || string.Compare("ToString", mi.Name, true) == 0 || mi.Name.Contains("set_", StringComparison.CurrentCulture)
+                    || mi.Name.Contains("get_", StringComparison.CurrentCulture))
                     continue;
                 if (mi.GetCustomAttribute<NotActionAttribute>(false) != null)
                     continue;
@@ -474,8 +474,7 @@ namespace BeetleX.FastHttpApi
 
         private ActionHandler GetAction(string url)
         {
-            ActionHandler result = null;
-            mMethods.TryGetValue(url, out result);
+            mMethods.TryGetValue(url, out ActionHandler result);
             return result;
         }
 
@@ -483,7 +482,7 @@ namespace BeetleX.FastHttpApi
         {
             ActionResult result = new();
             JToken url = token["url"];
-            WebSockets.DataFrame dataFrame = server.CreateDataFrame(result);
+            DataFrame dataFrame = server.CreateDataFrame(result);
             if (url == null)
             {
                 if (server.EnableLog(EventArgs.LogType.Warring))
@@ -520,7 +519,7 @@ namespace BeetleX.FastHttpApi
             {
                 try
                 {
-                    Data.DataContxt dataContxt = new();
+                    DataContxt dataContxt = new();
                     DataContextBind.BindJson(dataContxt, data);
                     WebsocketJsonContext dc = new(server, request, dataContxt);
                     dc.ActionUrl = baseurl;
@@ -572,7 +571,7 @@ namespace BeetleX.FastHttpApi
             {
                 try
                 {
-                    if (handler.Method.IndexOf(request.Method, StringComparison.OrdinalIgnoreCase) == -1)
+                    if (!handler.Method.Contains(request.Method, StringComparison.OrdinalIgnoreCase))
                     {
                         if (request.Method == HttpParse.OPTIONS_TAG && handler.OptionsAttribute != null)
                         {

@@ -73,7 +73,7 @@ namespace BeetleX.FastHttpApi.Validations
                 return true;
             if (data == null)
                 return false;
-            long value = (long)System.Convert.ChangeType(data, typeof(long));
+            long value = (long)Convert.ChangeType(data, typeof(long));
             bool result = true;
             if (Min != long.MinValue)
             {
@@ -115,7 +115,7 @@ namespace BeetleX.FastHttpApi.Validations
                 return true;
             if (data == null)
                 return false;
-            double value = (double)System.Convert.ChangeType(data, typeof(double));
+            double value = (double)Convert.ChangeType(data, typeof(double));
             bool result = true;
             if (Min != double.MinValue)
             {

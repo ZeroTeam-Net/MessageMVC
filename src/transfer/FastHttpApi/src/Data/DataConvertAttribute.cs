@@ -22,13 +22,11 @@ namespace BeetleX.FastHttpApi.Data
             {
                 using (request.Stream.LockFree())
                 {
-                    using (System.IO.StreamReader streamReader = new(request.Stream))
-                    using (JsonTextReader reader = new(streamReader))
-                    {
-                        JsonSerializer jsonSerializer = JsonSerializer.CreateDefault();
-                        JToken token = (JToken)jsonSerializer.Deserialize(reader);
-                        DataContextBind.BindJson(dataContext, token);
-                    }
+                    using System.IO.StreamReader streamReader = new(request.Stream);
+                    using JsonTextReader reader = new(streamReader);
+                    JsonSerializer jsonSerializer = JsonSerializer.CreateDefault();
+                    JToken token = (JToken)jsonSerializer.Deserialize(reader);
+                    DataContextBind.BindJson(dataContext, token);
                 }
             }
         }
@@ -54,16 +52,12 @@ namespace BeetleX.FastHttpApi.Data
         {
             if (request.Length > 0)
             {
-                using (var bytes = System.Buffers.MemoryPool<byte>.Shared.Rent(request.Length))
-                {
-                    int len = request.Stream.Read(bytes.Memory.Span);
-                    Encoding encoding = string.IsNullOrEmpty(mEncoding) ? Encoding.UTF8 : Encoding.GetEncoding(mEncoding);
-                    using (var chars = System.Buffers.MemoryPool<char>.Shared.Rent(request.Length))
-                    {
-                        len = encoding.GetChars(bytes.Memory.Slice(0, len).Span, chars.Memory.Span);
-                        DataContextBind.BindFormUrl(dataContext, chars.Memory.Slice(0, len).Span);
-                    }
-                }
+                using var bytes = System.Buffers.MemoryPool<byte>.Shared.Rent(request.Length);
+                int len = request.Stream.Read(bytes.Memory.Span);
+                Encoding encoding = string.IsNullOrEmpty(mEncoding) ? Encoding.UTF8 : Encoding.GetEncoding(mEncoding);
+                using var chars = System.Buffers.MemoryPool<char>.Shared.Rent(request.Length);
+                len = encoding.GetChars(bytes.Memory.Slice(0, len).Span, chars.Memory.Span);
+                DataContextBind.BindFormUrl(dataContext, chars.Memory.Slice(0, len).Span);
             }
         }
     }
@@ -72,7 +66,7 @@ namespace BeetleX.FastHttpApi.Data
     {
         public override void Execute(IDataContext dataContext, HttpRequest request)
         {
-            if (request.Method == HttpParse.POST_TAG)
+            if (request.Method == POST_TAG)
             {
                 DataLoader dataLoader = new(request.ContentType);
                 dataLoader.Load(dataContext, request);
@@ -91,7 +85,7 @@ namespace BeetleX.FastHttpApi.Data
                     if (contentType[i] == '=')
                     {
                         int offset = i + 1;
-                        mStartBoundary = "--" + contentType.Substring(offset);
+                        mStartBoundary = "--" + contentType[offset..];
                         mEndBoundary = mStartBoundary + "--";
                     }
                 }
@@ -106,7 +100,7 @@ namespace BeetleX.FastHttpApi.Data
 
         public const string ContentType = "Content-Type";
 
-        private void CreateParameter(IDataContext context, HttpRequest request, string name, string filename, string contentType
+        private static void CreateParameter(IDataContext context, HttpRequest request, string name, string filename, string contentType
             , System.IO.MemoryStream stream,string charSet)
         {
             if (string.IsNullOrEmpty(filename))
@@ -150,7 +144,7 @@ namespace BeetleX.FastHttpApi.Data
                                 }
                                 if (indexOf.Length == mEndBoundary.Length + 2)
                                 {
-                                    byte[] buffer = HttpParse.GetByteBuffer();
+                                    byte[] buffer = GetByteBuffer();
                                     stream.Read(buffer, 0, indexOf.Length);
                                     string line = Encoding.UTF8.GetString(buffer, 0, indexOf.Length - 2);
                                     if (line == mEndBoundary)
@@ -167,7 +161,7 @@ namespace BeetleX.FastHttpApi.Data
                                 }
                                 else if (indexOf.Length == mStartBoundary.Length + 2)
                                 {
-                                    byte[] buffer = HttpParse.GetByteBuffer();
+                                    byte[] buffer = GetByteBuffer();
                                     stream.Read(buffer, 0, indexOf.Length);
                                     string line = Encoding.UTF8.GetString(buffer, 0, indexOf.Length - 2);
                                     if (line == mStartBoundary)
@@ -208,7 +202,7 @@ namespace BeetleX.FastHttpApi.Data
                         }
                         else
                         {
-                            var result = HttpParse.AnalyzeContentHeader(headerLine);
+                            var result = AnalyzeContentHeader(headerLine);
                             if (string.Compare(result.Name, ContentDisposition, true) == 0)
                             {
                                 if (result.Properties != null)

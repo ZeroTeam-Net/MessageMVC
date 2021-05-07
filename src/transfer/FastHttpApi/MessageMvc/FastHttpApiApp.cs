@@ -1,6 +1,7 @@
 ﻿using Agebull.Common.Ioc;
 using Microsoft.Extensions.DependencyInjection;
 using ZeroTeam.MessageMVC;
+using ZeroTeam.MessageMVC.Context;
 
 namespace BeetleX.FastHttpApi
 {
@@ -15,7 +16,8 @@ namespace BeetleX.FastHttpApi
         public static void AddMessageMvcFastHttpApi(this IServiceCollection services)
         {
             services.AddSingleton<IZeroOption>(pri => HttpMessageOption.Instance);
-            services.AddTransient<IFlowMiddleware, FastHttpApiLifeFlow>();
+            services.AddTransient<IFlowMiddleware>(pr=>FastHttpApiLifeFlow.Instance);
+            services.AddTransient(pri => GlobalContext.Current.Message is HttpMessage message ? message.HttpContext : null);
         }
     }
 }

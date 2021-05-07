@@ -17,7 +17,7 @@ using System.Runtime;
 
 namespace BeetleX.FastHttpApi
 {
-    public class HttpApiServer : ServerHandlerBase, BeetleX.ISessionSocketProcessHandler, WebSockets.IDataFrameSerializer, IWebSocketServer, IDisposable
+    public class HttpApiServer : ServerHandlerBase, ISessionSocketProcessHandler, IDataFrameSerializer, IWebSocketServer, IDisposable
     {
 
         public const int WEBSOCKET_SUCCESS = 250;
@@ -112,7 +112,7 @@ namespace BeetleX.FastHttpApi
 
         private readonly ObjectPoolGroup<HttpRequest> mRequestPool = new();
 
-        internal HttpRequest CreateRequest(ISession session)
+        internal static HttpRequest CreateRequest(ISession session)
         {
             HttpToken token = (HttpToken)session.Tag;
             token.Request.RequestTime = TimeWatch.GetTotalMilliseconds();
@@ -131,35 +131,31 @@ namespace BeetleX.FastHttpApi
 
         public void SaveOptions()
         {
-            string file = Directory.GetCurrentDirectory() + System.IO.Path.DirectorySeparatorChar + mConfigFile;
-            using (System.IO.StreamWriter writer = new(file))
-            {
-                System.Collections.Generic.Dictionary<string, object> config = new();
-                config["HttpConfig"] = this.Options;
-                string strConfig = Newtonsoft.Json.JsonConvert.SerializeObject(config);
-                writer.Write(strConfig);
-                writer.Flush();
-                OnOptionLoad(new EventOptionsReloadArgs { HttpApiServer = this, HttpOptions = this.Options });
-            }
+            string file = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + mConfigFile;
+            using StreamWriter writer = new(file);
+            Dictionary<string, object> config = new();
+            config["HttpConfig"] = this.Options;
+            string strConfig = Newtonsoft.Json.JsonConvert.SerializeObject(config);
+            writer.Write(strConfig);
+            writer.Flush();
+            OnOptionLoad(new EventOptionsReloadArgs { HttpApiServer = this, HttpOptions = this.Options });
         }
 
         public static HttpOptions LoadOptions()
         {
-            string file = Directory.GetCurrentDirectory() + System.IO.Path.DirectorySeparatorChar + mConfigFile;
-            if (System.IO.File.Exists(file))
+            string file = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + mConfigFile;
+            if (File.Exists(file))
             {
-                using (System.IO.StreamReader reader = new(mConfigFile, Encoding.UTF8))
-                {
-                    string json = reader.ReadToEnd();
-                    if (string.IsNullOrEmpty(json))
-                        return new HttpOptions();
-                    Newtonsoft.Json.Linq.JToken toke = (Newtonsoft.Json.Linq.JToken)Newtonsoft.Json.JsonConvert.DeserializeObject(json);
-                    if (toke["HttpConfig"] != null && toke["HttpConfig"].Type == JTokenType.Object)
-                    {
-                        return toke["HttpConfig"].ToObject<HttpOptions>();
-                    }
+                using StreamReader reader = new(mConfigFile, Encoding.UTF8);
+                string json = reader.ReadToEnd();
+                if (string.IsNullOrEmpty(json))
                     return new HttpOptions();
+                JToken toke = (JToken)Newtonsoft.Json.JsonConvert.DeserializeObject(json);
+                if (toke["HttpConfig"] != null && toke["HttpConfig"].Type == JTokenType.Object)
+                {
+                    return toke["HttpConfig"].ToObject<HttpOptions>();
                 }
+                return new HttpOptions();
             }
             else
             {
@@ -171,8 +167,7 @@ namespace BeetleX.FastHttpApi
         {
             get
             {
-                object result;
-                mProperties.TryGetValue(name, out result);
+                mProperties.TryGetValue(name, out object result);
                 return result;
             }
             set
@@ -211,15 +206,15 @@ namespace BeetleX.FastHttpApi
 
         public EventHandler<WebSocketConnectArgs> WebSocketConnect { get; set; }
 
-        private readonly List<System.Reflection.Assembly> mAssemblies = new();
+        private readonly List<Assembly> mAssemblies = new();
 
-        public List<System.Reflection.Assembly> Assemblies => mAssemblies;
+        public List<Assembly> Assemblies => mAssemblies;
 
         private DispatchCenter<IOQueueProcessArgs> mRequestIOQueues;
 
         public ISession LogOutput { get; set; }
 
-        public void Register(params System.Reflection.Assembly[] assemblies)
+        public void Register(params Assembly[] assemblies)
         {
             //mUrlRewrite.UrlIgnoreCase = Options.UrlIgnoreCase;
             mAssemblies.AddRange(assemblies);
@@ -253,9 +248,9 @@ namespace BeetleX.FastHttpApi
             }
         }
 
-        private void InitFromCommandLineArgs(IServer server)
+        private static void InitFromCommandLineArgs(IServer server)
         {
-            string[] lines = System.Environment.GetCommandLineArgs();
+            string[] lines = Environment.GetCommandLineArgs();
             if (lines != null)
             {
                 foreach (var item in lines)
@@ -324,7 +319,7 @@ namespace BeetleX.FastHttpApi
             Name = "BeetleX Http Server";
             if (mAssemblies != null)
             {
-                foreach (System.Reflection.Assembly assembly in mAssemblies)
+                foreach (Assembly assembly in mAssemblies)
                 {
                     mResourceCenter.LoadManifestResource(assembly);
                 }
@@ -350,27 +345,25 @@ namespace BeetleX.FastHttpApi
             HeaderTypeFactory.Find(HeaderTypeFactory.HOST);
             AppDomain.CurrentDomain.UnhandledException += (s, e) =>
             {
-                using (System.IO.StreamWriter writer = new("__UnhandledException.txt"))
+                using StreamWriter writer = new("__UnhandledException.txt");
+                Exception error = e.ExceptionObject as Exception;
+                writer.WriteLine(DateTime.Now);
+                if (error != null)
                 {
-                    Exception error = e.ExceptionObject as Exception;
-                    writer.WriteLine(DateTime.Now);
-                    if (error != null)
+                    writer.WriteLine(error.Message);
+                    writer.WriteLine(error.StackTrace);
+                    if (error.InnerException != null)
                     {
-                        writer.WriteLine(error.Message);
-                        writer.WriteLine(error.StackTrace);
-                        if (error.InnerException != null)
-                        {
-                            writer.WriteLine(error.InnerException.Message);
-                            writer.WriteLine(error.InnerException.StackTrace);
-                        }
+                        writer.WriteLine(error.InnerException.Message);
+                        writer.WriteLine(error.InnerException.StackTrace);
                     }
-                    else
-                    {
-                        writer.WriteLine("Unhandled Exception:" + e.ExceptionObject.ToString());
-
-                    }
-                    writer.Flush();
                 }
+                else
+                {
+                    writer.WriteLine("Unhandled Exception:" + e.ExceptionObject.ToString());
+
+                }
+                writer.Flush();
             };
             mIPLimit = new IPLimit(this);
             OnOptionLoad(new EventOptionsReloadArgs { HttpApiServer = this, HttpOptions = this.Options });
@@ -422,7 +415,7 @@ namespace BeetleX.FastHttpApi
 
         private void OutputLogo()
         {
-            AssemblyCopyrightAttribute productAttr = typeof(BeetleX.FastHttpApi.HttpApiServer).Assembly.GetCustomAttribute<AssemblyCopyrightAttribute>();
+            AssemblyCopyrightAttribute productAttr = typeof(HttpApiServer).Assembly.GetCustomAttribute<AssemblyCopyrightAttribute>();
             var logo = "\r\n";
             logo += " -----------------------------------------------------------------------------\r\n";
             logo +=
@@ -439,7 +432,7 @@ namespace BeetleX.FastHttpApi
             logo += " -----------------------------------------------------------------------------\r\n";
             //logo += $" {productAttr.Copyright}\r\n";
             logo += $" ServerGC    [{GCSettings.IsServerGC}]\r\n";
-            logo += $" BeetleX     Version [{typeof(BeetleX.BXException).Assembly.GetName().Version}]\r\n";
+            logo += $" BeetleX     Version [{typeof(BXException).Assembly.GetName().Version}]\r\n";
             logo += $" FastHttpApi Version [{ typeof(HttpApiServer).Assembly.GetName().Version}] \r\n";
             logo += " -----------------------------------------------------------------------------\r\n";
             foreach (var item in mServer.Options.Listens)
@@ -478,7 +471,7 @@ namespace BeetleX.FastHttpApi
             try
             {
                 //  Log(LogType.Info, $"{args.RequestingAssembly.FullName} load assembly {args.Name}");
-                string path = System.IO.Path.GetDirectoryName(args.RequestingAssembly.Location) + System.IO.Path.DirectorySeparatorChar;
+                string path = Path.GetDirectoryName(args.RequestingAssembly.Location) + Path.DirectorySeparatorChar;
                 string name = args.Name.Substring(0, args.Name.IndexOf(','));
                 string file = path + name + ".dll";
                 Assembly result = Assembly.LoadFile(file);
@@ -531,7 +524,7 @@ namespace BeetleX.FastHttpApi
             }
         }
 
-        private void OnSendToWebSocket(DataFrame data, HttpRequest request)
+        private static void OnSendToWebSocket(DataFrame data, HttpRequest request)
         {
             data.Send(request.Session);
 
@@ -644,12 +637,11 @@ namespace BeetleX.FastHttpApi
             return stream.ReadString((int)data.Length);
         }
 
-        private readonly System.Collections.Concurrent.ConcurrentQueue<byte[]> mBuffers = new();
+        private readonly ConcurrentQueue<byte[]> mBuffers = new();
 
         public virtual ArraySegment<byte> FrameSerialize(DataFrame data, object body)
         {
-            byte[] result;
-            if (!mBuffers.TryDequeue(out result))
+            if (!mBuffers.TryDequeue(out byte[] result))
             {
                 result = new byte[this.Options.MaxBodyLength];
             }
@@ -902,7 +894,7 @@ namespace BeetleX.FastHttpApi
                 HttpToken token = (HttpToken)e.Session.Tag;
                 if (token.WebSocket)
                 {
-                    OnWebSocketRequest(token.Request, e.Session, (WebSockets.DataFrame)e.Message);
+                    OnWebSocketRequest(token.Request, e.Session, (DataFrame)e.Message);
                 }
                 else
                 {
@@ -1021,7 +1013,7 @@ namespace BeetleX.FastHttpApi
             if (!OnHttpRequesting(request, response).Cancel)
             {
                 string baseUrl = request.BaseUrl;
-                if (string.IsNullOrEmpty(request.Ext) && baseUrl[baseUrl.Length - 1] != '/')
+                if (string.IsNullOrEmpty(request.Ext) && baseUrl[^1] != '/')
                 {
                     mActionFactory.Execute(request, response, this);
                 }

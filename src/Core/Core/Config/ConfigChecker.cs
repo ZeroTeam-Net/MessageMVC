@@ -25,6 +25,11 @@ namespace ZeroTeam.MessageMVC
         /// </summary>
         public void CheckLast(ZeroAppOption config, ILogger logger)
         {
+
+            config.CopyByHase(ConfigurationHelper.Get<ZeroAppConfig>("MessageMVC:Option"));
+
+            config.Services.Merge(config.ServiceMaps);
+
             //线程数
             if (config.MaxIOThreads > 0 && config.MaxWorkThreads > 0)
             {
@@ -101,7 +106,7 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
             {
                 AppName = asName.Name,
                 AppVersion = asName.Version?.ToString(),
-                BinPath = Environment.CurrentDirectory,
+                BinPath = AppDomain.CurrentDomain.BaseDirectory,
                 MaxCloseSecond = 30,
                 DefaultTraceOption = MessageTraceType.Simple,
                 ServiceReplaceMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
@@ -111,6 +116,8 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
             };
 
             config.CopyByHase(ConfigurationHelper.Get<ZeroAppConfig>("MessageMVC:Option"));
+
+
             config.IsDevelopment = ConfigurationHelper.RunEnvironment.IsMe("Development");
 
             if (config.IsolateFolder)
@@ -120,6 +127,17 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
             else
             {
                 config.RootPath = Environment.CurrentDirectory;
+            }
+            if (config.AddInPath.IsPresent())
+            {
+                if (config.IsLinux && config.AddInPath[0] != '/')
+                {
+                    config.AddInPath = Path.Combine(config.RootPath, config.AddInPath);
+                }
+                if (!config.IsLinux && config.AddInPath[1] != ':')
+                {
+                    config.AddInPath = Path.Combine(config.RootPath, config.AddInPath);
+                }
             }
 
             #region ServiceName
@@ -166,11 +184,25 @@ ApiServiceName : {ZeroAppOption.Instance.ApiServiceName}
             {
                 config.ConfigFolder = IOHelper.CheckPath(config.RootPath, "config");
             }
+            var dynamicFileName = Path.Combine(config.ConfigFolder, "appsettings.dynamic.json");
+            if (!File.Exists(dynamicFileName))
+            {
+                File.WriteAllText(dynamicFileName, "{}");
+            }
+            ConfigurationHelper.IncludeFile(dynamicFileName);
+            IOHelper.Search(config.AddInPath, "*.json", false, (path, file) =>
+            {
+                if ("appsettings.json".IsMe(Path.GetFileName(file)))
+                    ConfigurationHelper.IncludeFile(file);
+            });
+            IOHelper.Search(config.ConfigFolder, "*.json", false, (path, file) =>
+            {
+                if ("appsettings.json".IsMe(Path.GetFileName(file)))
+                    ConfigurationHelper.IncludeFile(file);
+            });
+
             #endregion
 
-            #region ServiceMap
-            config.Services.Merge(config.ServiceMaps);
-            #endregion
         }
 
         private static string GetHostIps()

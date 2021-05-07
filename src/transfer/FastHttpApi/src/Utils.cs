@@ -12,20 +12,16 @@ namespace BeetleX.FastHttpApi
 
         public static string MD5Encrypt(Byte[] value)
         {
-            using (MD5 md5Hash = MD5.Create())
-            {
-                byte[] hash = md5Hash.ComputeHash(value);
-                return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-            }
+            using MD5 md5Hash = MD5.Create();
+            byte[] hash = md5Hash.ComputeHash(value);
+            return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
         }
 
         public static string MD5Encrypt(string value)
         {
-            using (MD5 md5Hash = MD5.Create())
-            {
-                byte[] hash = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(value));
-                return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-            }
+            using MD5 md5Hash = MD5.Create();
+            byte[] hash = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(value));
+            return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
         }
 
         public static byte[] GetKey(string keyStr)
@@ -45,18 +41,16 @@ namespace BeetleX.FastHttpApi
         {
             try
             {
-                using (FileStream file = new(fileName, FileMode.Open))
+                using FileStream file = new(fileName, FileMode.Open);
+                MD5 md5 = new MD5CryptoServiceProvider();
+                byte[] retVal = md5.ComputeHash(file);
+                file.Close();
+                StringBuilder sb = new();
+                for (int i = 0; i < retVal.Length; i++)
                 {
-                    System.Security.Cryptography.MD5 md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
-                    byte[] retVal = md5.ComputeHash(file);
-                    file.Close();
-                    StringBuilder sb = new();
-                    for (int i = 0; i < retVal.Length; i++)
-                    {
-                        sb.Append(retVal[i].ToString("x2"));
-                    }
-                    return sb.ToString();
+                    sb.Append(retVal[i].ToString("x2"));
                 }
+                return sb.ToString();
             }
             catch (Exception ex)
             {
@@ -67,7 +61,7 @@ namespace BeetleX.FastHttpApi
         public static string EncryptToSHA1(string str)
         {
             var buffer = Encoding.UTF8.GetBytes(str);
-            var data = System.Security.Cryptography.SHA1.Create().ComputeHash(buffer);
+            var data = SHA1.Create().ComputeHash(buffer);
             var sb = new StringBuilder();
             foreach (var t in data)
             {
@@ -102,13 +96,13 @@ namespace BeetleX.FastHttpApi
 
         public static long GetSeconds(DateTime time)
         {
-            var baseDate = new System.DateTime(1970, 1, 1);
+            var baseDate = new DateTime(1970, 1, 1);
             return (long)(time - baseDate).TotalSeconds;
         }
 
         public static DateTime GetTime(long seconds)
         {
-            var baseDate = new System.DateTime(1970, 1, 1);
+            var baseDate = new DateTime(1970, 1, 1);
             return baseDate.AddSeconds(seconds);
         }
 
@@ -134,18 +128,14 @@ namespace BeetleX.FastHttpApi
                 ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
 
                 // Create the streams used for encryption.
-                using (MemoryStream msEncrypt = new())
+                using MemoryStream msEncrypt = new();
+                using CryptoStream csEncrypt = new(msEncrypt, encryptor, CryptoStreamMode.Write);
+                using (StreamWriter swEncrypt = new(csEncrypt))
                 {
-                    using (CryptoStream csEncrypt = new(msEncrypt, encryptor, CryptoStreamMode.Write))
-                    {
-                        using (StreamWriter swEncrypt = new(csEncrypt))
-                        {
-                            //Write all data to the stream.
-                            swEncrypt.Write(plainText);
-                        }
-                        encrypted = msEncrypt.ToArray();
-                    }
+                    //Write all data to the stream.
+                    swEncrypt.Write(plainText);
                 }
+                encrypted = msEncrypt.ToArray();
             }
 
 
@@ -179,19 +169,13 @@ namespace BeetleX.FastHttpApi
                 ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
 
                 // Create the streams used for decryption.
-                using (MemoryStream msDecrypt = new(cipherText))
-                {
-                    using (CryptoStream csDecrypt = new(msDecrypt, decryptor, CryptoStreamMode.Read))
-                    {
-                        using (StreamReader srDecrypt = new(csDecrypt))
-                        {
+                using MemoryStream msDecrypt = new(cipherText);
+                using CryptoStream csDecrypt = new(msDecrypt, decryptor, CryptoStreamMode.Read);
+                using StreamReader srDecrypt = new(csDecrypt);
 
-                            // Read the decrypted bytes from the decrypting stream
-                            // and place them in a string.
-                            plaintext = srDecrypt.ReadToEnd();
-                        }
-                    }
-                }
+                // Read the decrypted bytes from the decrypting stream
+                // and place them in a string.
+                plaintext = srDecrypt.ReadToEnd();
 
             }
 

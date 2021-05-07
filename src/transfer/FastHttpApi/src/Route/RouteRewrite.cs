@@ -71,8 +71,7 @@ namespace BeetleX.FastHttpApi
         {
             mServer.GetLog(EventArgs.LogType.Info)?.Log(EventArgs.LogType.Info, $"HTTP set rewrite url [{item.Host}{item.Url}] to [{item.Rewrite}]");
             item.Init();
-            RouteGroup rg = null;
-            mRoutes.TryGetValue(item.Path, out rg);
+            mRoutes.TryGetValue(item.Path, out RouteGroup rg);
             if (rg == null)
             {
                 rg = new RouteGroup();
@@ -124,7 +123,6 @@ namespace BeetleX.FastHttpApi
         public bool Match(HttpRequest request, out RouteMatchResult result, QueryString queryString)
         {
             result = null;
-            RouteGroup rg = null;
             UrlRoute urlRoute = null;
             string key = $"{request.GetHostBase()}{request.BaseUrl}";
             if (mRouteCached.TryGetValue(key, out UrlRouteAgent cached))
@@ -155,7 +153,7 @@ namespace BeetleX.FastHttpApi
             bool iscached = true;
             Dictionary<string, string> parameters = new();
             result = new RouteMatchResult();
-            if (mRoutes.TryGetValue(request.Path, out rg))
+            if (mRoutes.TryGetValue(request.Path, out RouteGroup rg))
             {
                 urlRoute = rg.Match(request.BaseUrl, ref result, parameters, request.Ext, request);
             }
@@ -219,26 +217,22 @@ namespace BeetleX.FastHttpApi
         {
             if (System.IO.File.Exists(REWRITE_FILE))
             {
-                using (System.IO.StreamReader reader = new(REWRITE_FILE))
+                using System.IO.StreamReader reader = new(REWRITE_FILE);
+                string data = reader.ReadToEnd();
+                List<Config> items = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Config>>(data);
+                foreach (var item in items)
                 {
-                    string data = reader.ReadToEnd();
-                    List<Config> items = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Config>>(data);
-                    foreach (var item in items)
-                    {
-                        if (!string.IsNullOrEmpty(item.Url) && !string.IsNullOrEmpty(item.Rewrite))
-                            Add(item.Host, item.Url, item.Rewrite, null);
-                    }
+                    if (!string.IsNullOrEmpty(item.Url) && !string.IsNullOrEmpty(item.Rewrite))
+                        Add(item.Host, item.Url, item.Rewrite, null);
                 }
             }
         }
 
         public void Save()
         {
-            using (System.IO.StreamWriter writer = new(REWRITE_FILE, false))
-            {
-                writer.Write(Newtonsoft.Json.JsonConvert.SerializeObject(GetRoutes()));
-                writer.Flush();
-            }
+            using System.IO.StreamWriter writer = new(REWRITE_FILE, false);
+            writer.Write(Newtonsoft.Json.JsonConvert.SerializeObject(GetRoutes()));
+            writer.Flush();
 
         }
 

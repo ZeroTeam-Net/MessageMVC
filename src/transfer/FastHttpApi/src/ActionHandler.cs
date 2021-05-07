@@ -17,7 +17,7 @@ namespace BeetleX.FastHttpApi
 
         private static int mIdSeed = 0;
 
-        public ActionHandler(object controller, System.Reflection.MethodInfo method, HttpApiServer httpApiServer)
+        public ActionHandler(object controller, MethodInfo method, HttpApiServer httpApiServer)
         {
 
             ID = System.Threading.Interlocked.Increment(ref mIdSeed);
@@ -149,7 +149,7 @@ namespace BeetleX.FastHttpApi
             DescriptionAttribute da = mMethod.GetCustomAttribute<DescriptionAttribute>(false);
             if (da != null)
                 this.Remark = da.Description;
-            foreach (System.Reflection.ParameterInfo pi in mMethod.GetParameters())
+            foreach (ParameterInfo pi in mMethod.GetParameters())
             {
 
                 ParameterBinder pb = new DefaultParameter();
@@ -377,7 +377,7 @@ namespace BeetleX.FastHttpApi
     {
         public Type Type { get; internal set; }
 
-        public System.Reflection.ParameterInfo ParameterInfo { get; internal set; }
+        public ParameterInfo ParameterInfo { get; internal set; }
 
         public ActionHandler ActionHandler { get; internal set; }
 
@@ -407,8 +407,7 @@ namespace BeetleX.FastHttpApi
 
         public override object GetValue(IHttpContext context)
         {
-            bool result;
-            context.Data.TryGetBoolean(this.Name, out result);
+            context.Data.TryGetBoolean(this.Name, out bool result);
             return result;
         }
     }
@@ -422,8 +421,7 @@ namespace BeetleX.FastHttpApi
 
         public override object GetValue(IHttpContext context)
         {
-            int result;
-            context.Data.TryGetInt(this.Name, out result);
+            context.Data.TryGetInt(this.Name, out int result);
             return result;
         }
 
@@ -434,8 +432,7 @@ namespace BeetleX.FastHttpApi
     {
         public override object GetValue(IHttpContext context)
         {
-            short result;
-            context.Data.TryGetShort(this.Name, out result);
+            context.Data.TryGetShort(this.Name, out short result);
             return result;
         }
         public override object DefaultValue()
@@ -449,8 +446,7 @@ namespace BeetleX.FastHttpApi
     {
         public override object GetValue(IHttpContext context)
         {
-            long result;
-            context.Data.TryGetLong(this.Name, out result);
+            context.Data.TryGetLong(this.Name, out long result);
             return result;
         }
         public override object DefaultValue()
@@ -464,8 +460,7 @@ namespace BeetleX.FastHttpApi
     {
         public override object GetValue(IHttpContext context)
         {
-            uint result;
-            context.Data.TryGetUInt(this.Name, out result);
+            context.Data.TryGetUInt(this.Name, out uint result);
             return result;
         }
         public override object DefaultValue()
@@ -479,8 +474,7 @@ namespace BeetleX.FastHttpApi
     {
         public override object GetValue(IHttpContext context)
         {
-            ushort result;
-            context.Data.TryGetUShort(this.Name, out result);
+            context.Data.TryGetUShort(this.Name, out ushort result);
             return result;
         }
         public override object DefaultValue()
@@ -494,8 +488,7 @@ namespace BeetleX.FastHttpApi
     {
         public override object GetValue(IHttpContext context)
         {
-            ulong result;
-            context.Data.TryGetULong(this.Name, out result);
+            context.Data.TryGetULong(this.Name, out ulong result);
             return result;
         }
         public override object DefaultValue()
@@ -509,8 +502,7 @@ namespace BeetleX.FastHttpApi
     {
         public override object GetValue(IHttpContext context)
         {
-            float result;
-            context.Data.TryGetFloat(this.Name, out result);
+            context.Data.TryGetFloat(this.Name, out float result);
             return result;
         }
         public override object DefaultValue()
@@ -524,8 +516,7 @@ namespace BeetleX.FastHttpApi
     {
         public override object GetValue(IHttpContext context)
         {
-            double result;
-            context.Data.TryGetDouble(this.Name, out result);
+            context.Data.TryGetDouble(this.Name, out double result);
             return result;
         }
         public override object DefaultValue()
@@ -539,8 +530,7 @@ namespace BeetleX.FastHttpApi
     {
         public override object GetValue(IHttpContext context)
         {
-            string result;
-            context.Data.TryGetString(this.Name, out result);
+            context.Data.TryGetString(this.Name, out string result);
             return result;
         }
         public override object DefaultValue()
@@ -554,8 +544,7 @@ namespace BeetleX.FastHttpApi
     {
         public override object GetValue(IHttpContext context)
         {
-            Decimal result;
-            context.Data.TryGetDecimal(this.Name, out result);
+            context.Data.TryGetDecimal(this.Name, out decimal result);
             return result;
         }
         public override object DefaultValue()
@@ -569,8 +558,7 @@ namespace BeetleX.FastHttpApi
     {
         public override object GetValue(IHttpContext context)
         {
-            DateTime result;
-            context.Data.TryGetDateTime(this.Name, out result);
+            context.Data.TryGetDateTime(this.Name, out DateTime result);
             return result;
         }
         public override object DefaultValue()
@@ -1153,7 +1141,7 @@ namespace BeetleX.FastHttpApi
         #endregion
 
 
-        private static void EmitCastToReference(ILGenerator il, System.Type type)
+        private static void EmitCastToReference(ILGenerator il, Type type)
         {
             if (type.IsValueType)
             {
@@ -1164,7 +1152,7 @@ namespace BeetleX.FastHttpApi
                 il.Emit(OpCodes.Castclass, type);
             }
         }
-        private static void EmitBoxIfNeeded(ILGenerator il, System.Type type)
+        private static void EmitBoxIfNeeded(ILGenerator il, Type type)
         {
             if (type.IsValueType)
             {

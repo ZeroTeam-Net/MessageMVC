@@ -282,15 +282,15 @@ namespace BeetleX.FastHttpApi
         private ArraySegment<byte> mJsonData;
 
         [ThreadStatic]
-        private static System.Text.StringBuilder mJsonText;
+        private static StringBuilder mJsonText;
 
         private void OnSerialize()
         {
             if (mJsonText == null)
-                mJsonText = new System.Text.StringBuilder();
+                mJsonText = new StringBuilder();
             mJsonText.Clear();
             JsonSerializer serializer = new();
-            System.IO.StringWriter writer = new(mJsonText);
+            StringWriter writer = new(mJsonText);
             JsonTextWriter jsonTextWriter = new(writer);
             serializer.Serialize(jsonTextWriter, Data);
             var charbuffer = System.Buffers.ArrayPool<Char>.Shared.Rent(mJsonText.Length);
@@ -298,7 +298,7 @@ namespace BeetleX.FastHttpApi
             try
             {
                 var bytes = System.Buffers.ArrayPool<byte>.Shared.Rent(mJsonText.Length * 6);
-                var len = System.Text.Encoding.UTF8.GetBytes(charbuffer, 0, mJsonText.Length, bytes, 0);
+                var len = Encoding.UTF8.GetBytes(charbuffer, 0, mJsonText.Length, bytes, 0);
                 mJsonData = new ArraySegment<byte>(bytes, 0, len);
             }
             finally
@@ -330,11 +330,9 @@ namespace BeetleX.FastHttpApi
                     {
                         using (stream.LockFree())
                         {
-                            using (var gzipStream = new GZipStream(stream, CompressionMode.Compress, true))
-                            {
-                                gzipStream.Write(mJsonData.Array, mJsonData.Offset, mJsonData.Count);
-                                gzipStream.Flush();
-                            }
+                            using var gzipStream = new GZipStream(stream, CompressionMode.Compress, true);
+                            gzipStream.Write(mJsonData.Array, mJsonData.Offset, mJsonData.Count);
+                            gzipStream.Flush();
                         }
                     }
                     else
@@ -453,7 +451,7 @@ namespace BeetleX.FastHttpApi
         public bool GZip { get; set; } = false;
     }
 
-    public class DownLoadResult : BeetleX.FastHttpApi.IResult
+    public class DownLoadResult : IResult
     {
         public DownLoadResult(string text, string fileName, IHeaderItem contentType = null)
         {

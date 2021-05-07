@@ -69,8 +69,7 @@ namespace BeetleX.FastHttpApi
                 for (int i = 0; i < mItems.Count; i++)
                 {
                     MatchItem item = mItems[i];
-                    string value;
-                    var count = item.Match(url, offset, out value);
+                    var count = item.Match(url, offset, out string value);
                     if (count <= 0)
                         return false;
                     parameters[item.Name] = value;
@@ -91,8 +90,7 @@ namespace BeetleX.FastHttpApi
                 for (int i = 0; i < mItems.Count; i++)
                 {
                     MatchItem item = mItems[i];
-                    string value;
-                    var count = item.Match(url, offset, out value);
+                    var count = item.Match(url, offset, out string value);
                     if (count <= 0)
                         return false;
                     queryString.Add(item.Name, value);
@@ -149,7 +147,7 @@ namespace BeetleX.FastHttpApi
                             if (submatch)
                             {
                                 //value = url.Substring(valueoffset, i - valueoffset);
-                                value = url.Substring(offset, i - offset);
+                                value = url[offset..i];
                                 // valueoffset = -1;
                                 count += Eof.Length;
                                 break;

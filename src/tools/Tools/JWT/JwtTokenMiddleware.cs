@@ -61,13 +61,17 @@ namespace ZeroTeam.MessageMVC.Context
             {
                 return true;
             }
-            context.User = resolver.TokenToUser(message.TraceInfo.Token);
-            if (context.User[ZeroTeamJwtClaim.Iss] != ToolsOption.Instance.JwtIssue)
+            var user = resolver.TokenToUser(message.TraceInfo.Token);
+            if ( user!= null)
             {
-                FlowTracer.MonitorInfomation(() => $"非法令牌颁发机构 => {context.User[ZeroTeamJwtClaim.Iss]}");
-                message.State = MessageState.Deny;
-                message.Result = ApiResultHelper.DenyAccessJson;
-                return false;
+                if(user[ZeroTeamJwtClaim.Iss] != ToolsOption.Instance.JwtIssue)
+                {
+                    FlowTracer.MonitorInfomation(() => $"非法令牌颁发机构 => {context.User[ZeroTeamJwtClaim.Iss]}");
+                    message.State = MessageState.Deny;
+                    message.Result = ApiResultHelper.DenyAccessJson;
+                    return false;
+                }
+                context.User = user;
             }
             return true;
         }

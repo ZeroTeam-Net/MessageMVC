@@ -305,8 +305,7 @@ namespace BeetleX.FastHttpApi
 
         public static string GetContentType(string ext)
         {
-            string value;
-            if (!mContent.TryGetValue(ext, out value))
+            if (!mContent.TryGetValue(ext, out string value))
                 value = OTHER_OCTET_STREAM;
             return value;
         }

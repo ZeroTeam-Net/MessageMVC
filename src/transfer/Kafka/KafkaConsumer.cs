@@ -25,7 +25,7 @@ namespace ZeroTeam.MessageMVC.Kafka
         /// <summary>
         /// 对应发送器名称
         /// </summary>
-        string IMessageReceiver.PosterName => nameof(KafkaPoster);
+        string IMessagePoster.PosterName => nameof(KafkaPoster);
 
         private IConsumer<byte[], string> consumer;
 

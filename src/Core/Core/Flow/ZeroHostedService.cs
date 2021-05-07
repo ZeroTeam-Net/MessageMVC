@@ -37,7 +37,7 @@ namespace ZeroTeam.MessageMVC
             ZeroFlowControl.Logger = _logger;
             await ZeroFlowControl.CheckConfig();
             if (ZeroAppOption.Instance.AutoDiscover)
-                ZeroFlowControl.Discove();
+                ZeroFlowControl.DiscoveAll();
             ZeroAppOption.Instance.Discovery?.Invoke();
 
             await ZeroFlowControl.Initialize();

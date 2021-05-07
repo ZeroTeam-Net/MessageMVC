@@ -18,7 +18,7 @@
     <Company>ZeroTeam</Company>
     <PackageReleaseNotes></PackageReleaseNotes>
     <Product>ZeroTeam.MessageMVC.PageInfoAutoSave</Product>
-    <Version>1.1.6.17</Version>
+    <Version>1.2.0</Version>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\transfer\Http\ZeroTeam.MessageMVC.Http.csproj" />

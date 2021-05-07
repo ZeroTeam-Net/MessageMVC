@@ -14,17 +14,17 @@ namespace BeetleX.FastHttpApi
         public ModuleManager(HttpApiServer server)
         {
             Server = server;
-            mPath = System.IO.Directory.GetCurrentDirectory();
-            mPath += System.IO.Path.DirectorySeparatorChar + "_models" + System.IO.Path.DirectorySeparatorChar;
-            if (!System.IO.Directory.Exists(mPath))
+            mPath = Directory.GetCurrentDirectory();
+            mPath += Path.DirectorySeparatorChar + "_models" + Path.DirectorySeparatorChar;
+            if (!Directory.Exists(mPath))
             {
-                System.IO.Directory.CreateDirectory(mPath);
+                Directory.CreateDirectory(mPath);
             }
-            mRunningPath = System.IO.Directory.GetCurrentDirectory();
-            mRunningPath += System.IO.Path.DirectorySeparatorChar + "_runing_models" + System.IO.Path.DirectorySeparatorChar;
-            if (!System.IO.Directory.Exists(mRunningPath))
+            mRunningPath = Directory.GetCurrentDirectory();
+            mRunningPath += Path.DirectorySeparatorChar + "_runing_models" + Path.DirectorySeparatorChar;
+            if (!Directory.Exists(mRunningPath))
             {
-                System.IO.Directory.CreateDirectory(mRunningPath);
+                Directory.CreateDirectory(mRunningPath);
             }
 
             fileSystemWatcher = new FileSystemWatcher(mPath, "*.zip");
@@ -95,8 +95,7 @@ namespace BeetleX.FastHttpApi
 
         private void OnFileWatchHandler(object sender, FileSystemEventArgs e)
         {
-            UpdateItem item = null;
-            if (mUpdateItems.TryGetValue(e.Name, out item))
+            if (mUpdateItems.TryGetValue(e.Name, out UpdateItem item))
             {
                 item.Time = Server.BaseServer.GetRunTime();
             }
@@ -104,7 +103,7 @@ namespace BeetleX.FastHttpApi
             {
                 item = new UpdateItem();
                 item.Name = e.Name;
-                item.Module = System.IO.Path.GetFileNameWithoutExtension(e.Name);
+                item.Module = Path.GetFileNameWithoutExtension(e.Name);
                 item.FullName = e.FullPath;
                 item.Time = Server.BaseServer.GetRunTime();
                 mUpdateItems[e.Name] = item;
@@ -122,7 +121,7 @@ namespace BeetleX.FastHttpApi
 
         public IEnumerable<string> List()
         {
-            var result = from a in System.IO.Directory.GetFiles(mPath) select System.IO.Path.GetFileNameWithoutExtension(a);
+            var result = from a in Directory.GetFiles(mPath) select Path.GetFileNameWithoutExtension(a);
             return result;
         }
 
@@ -130,9 +129,9 @@ namespace BeetleX.FastHttpApi
         {
             try
             {
-                foreach (var folder in System.IO.Directory.GetDirectories(mRunningPath))
+                foreach (var folder in Directory.GetDirectories(mRunningPath))
                 {
-                    System.IO.Directory.Delete(folder, true);
+                    Directory.Delete(folder, true);
                 }
             }
             catch (Exception e_)
@@ -157,10 +156,10 @@ namespace BeetleX.FastHttpApi
             List<string> success = new();
             foreach (string file in files)
             {
-                string aname = System.IO.Path.GetFileName(file);
+                string aname = Path.GetFileName(file);
                 try
                 {
-                    System.Reflection.Assembly assembly = System.Reflection.Assembly.LoadFile(file);
+                    Assembly assembly = Assembly.LoadFile(file);
                     Server.ResourceCenter.LoadManifestResource(assembly);
                     Server.ActionFactory.Register(assembly);
                     Server.Log(EventArgs.LogType.Info, $"loaded {aname} assembly success");
@@ -178,7 +177,7 @@ namespace BeetleX.FastHttpApi
         public bool SaveFile(string name, string md5, bool eof, byte[] data)
         {
             string file = mPath + name + ".tmp";
-            using (System.IO.Stream stream = System.IO.File.Open(file, FileMode.Append))
+            using (Stream stream = File.Open(file, FileMode.Append))
             {
                 stream.Write(data, 0, data.Length);
                 stream.Flush();
@@ -187,16 +186,16 @@ namespace BeetleX.FastHttpApi
             {
                 if (Utils.GetFileMD5(file) != md5)
                 {
-                    System.IO.File.Delete(file);
+                    File.Delete(file);
                     throw new Exception("Verify file md5 value error!");
 
                 }
                 else
                 {
                     string targetFile = mPath + name + ".zip";
-                    if (System.IO.File.Exists(targetFile))
-                        System.IO.File.Delete(targetFile);
-                    System.IO.File.Move(file, targetFile);
+                    if (File.Exists(targetFile))
+                        File.Delete(targetFile);
+                    File.Move(file, targetFile);
                     return true;
                 }
             }
@@ -212,22 +211,22 @@ namespace BeetleX.FastHttpApi
                     mUpdateCount = 0;
                 Server.Log(EventArgs.LogType.Info, $"loding {module} module ...");
                 string zipfile = mPath + module + ".zip";
-                string target = mRunningPath + module + mUpdateCount.ToString("000") + System.IO.Path.DirectorySeparatorChar;
-                if (System.IO.Directory.Exists(target))
+                string target = mRunningPath + module + mUpdateCount.ToString("000") + Path.DirectorySeparatorChar;
+                if (Directory.Exists(target))
                 {
-                    System.IO.Directory.Delete(target, true);
+                    Directory.Delete(target, true);
                 }
-                if (System.IO.File.Exists(zipfile))
+                if (File.Exists(zipfile))
                 {
-                    if (!System.IO.Directory.Exists(target))
-                        System.IO.Directory.CreateDirectory(target);
+                    if (!Directory.Exists(target))
+                        Directory.CreateDirectory(target);
                     ZipFile.ExtractToDirectory(zipfile, target, true);
-                    string beetledll = System.IO.Directory.GetCurrentDirectory() + System.IO.Path.DirectorySeparatorChar + "BeetleX.dll";
-                    string fastApidll = System.IO.Directory.GetCurrentDirectory() + System.IO.Path.DirectorySeparatorChar + "BeetleX.FastHttpApi.dll";
-                    System.IO.File.Copy(beetledll, target + "BeetleX.dll", true);
-                    System.IO.File.Copy(fastApidll, target + "BeetleX.FastHttpApi.dll", true);
+                    string beetledll = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "BeetleX.dll";
+                    string fastApidll = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "BeetleX.FastHttpApi.dll";
+                    File.Copy(beetledll, target + "BeetleX.dll", true);
+                    File.Copy(fastApidll, target + "BeetleX.FastHttpApi.dll", true);
                     List<string> files = new();
-                    foreach (string assemblyFile in System.IO.Directory.GetFiles(target, "*.dll"))
+                    foreach (string assemblyFile in Directory.GetFiles(target, "*.dll"))
                     {
                         files.Add(assemblyFile);
                     }

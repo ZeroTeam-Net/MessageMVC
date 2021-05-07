@@ -180,7 +180,7 @@ namespace System.Linq
                 IsEmpty = _value.Count == 0;
                 return Current = IsEmpty
                     ? FixValue
-                    : _value[_value.Count - 1];
+                    : _value[^1];
             }
         }
         /// <summary>
@@ -206,7 +206,7 @@ namespace System.Linq
                 IsEmpty = _value.Count == 0;
                 Current = IsEmpty
                     ? FixValue
-                    : _value[_value.Count - 1];
+                    : _value[^1];
             }
         }
     }
@@ -334,7 +334,7 @@ namespace System.Linq
                 IsEmpty = _value.Count == 0;
                 Current = IsEmpty
                     ? FixValue
-                    : _value[_value.Count - 1];
+                    : _value[^1];
             }
         }
     }

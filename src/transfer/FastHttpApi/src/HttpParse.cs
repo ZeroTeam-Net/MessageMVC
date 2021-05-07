@@ -63,7 +63,7 @@ namespace BeetleX.FastHttpApi
         public static ReadOnlySpan<char> ReadCharLine(IndexOfResult result)
         {
             int offset = 0;
-            char[] data = HttpParse.GetCharBuffer();
+            char[] data = GetCharBuffer();
             IMemoryBlock memory = result.Start;
             for (int i = result.StartPostion; i < memory.Length; i++)
             {
@@ -134,12 +134,10 @@ namespace BeetleX.FastHttpApi
 
         public static string MD5Encrypt(string filename)
         {
-            using (MD5 md5Hash = MD5.Create())
-            {
-                byte[] hash = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(filename));
+            using MD5 md5Hash = MD5.Create();
+            byte[] hash = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(filename));
 
-                return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-            }
+            return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
         }
 
         public static string GetBaseUrlExt(ReadOnlySpan<char> url)
@@ -153,7 +151,7 @@ namespace BeetleX.FastHttpApi
                 }
             }
             if (offset > 0)
-                return CharToLower(url.Slice(offset, url.Length - offset));
+                return CharToLower(url[offset..]);
             return null;
         }
 
@@ -167,12 +165,12 @@ namespace BeetleX.FastHttpApi
                 {
                     if (cookieData[offset] == ' ')
                         offset++;
-                    name = new string(cookieData.Slice(offset, i - offset));
+                    name = new string(cookieData[offset..i]);
                     offset = i + 1;
                 }
                 if (name != null && cookieData[i] == ';')
                 {
-                    value = new string(cookieData.Slice(offset, i - offset));
+                    value = new string(cookieData[offset..i]);
                     offset = i + 1;
                     cookies.Add(name, value);
                     name = null;
@@ -182,7 +180,7 @@ namespace BeetleX.FastHttpApi
             }
             if (name != null)
             {
-                value = new string(cookieData.Slice(offset, cookieData.Length - offset));
+                value = new string(cookieData[offset..]);
                 cookies.Add(name, value);
             }
         }
@@ -195,14 +193,14 @@ namespace BeetleX.FastHttpApi
             {
                 if (url[i] == '=')
                 {
-                    name = new string(url.Slice(offset, i - offset));
+                    name = new string(url[offset..i]);
                     offset = i + 1;
                 }
                 if (name != null && url[i] == '&')
                 {
                     if (i > offset)
                     {
-                        value = new string(url.Slice(offset, i - offset));
+                        value = new string(url[offset..i]);
                         context.SetValue(name, System.Net.WebUtility.UrlDecode(value));
                         offset = i + 1;
                     }
@@ -216,7 +214,7 @@ namespace BeetleX.FastHttpApi
             {
                 if (url.Length > offset)
                 {
-                    value = new string(url.Slice(offset, url.Length - offset));
+                    value = new string(url[offset..]);
                     context.SetValue(name, System.Net.WebUtility.UrlDecode(value));
                 }
             }
@@ -234,14 +232,14 @@ namespace BeetleX.FastHttpApi
                 }
                 if (url[i] == '=' && offset > 0)
                 {
-                    name = new string(url.Slice(offset, i - offset));
+                    name = new string(url[offset..i]);
                     offset = i + 1;
                 }
                 if (name != null && url[i] == '&')
                 {
                     if (i > offset)
                     {
-                        value = new string(url.Slice(offset, i - offset));
+                        value = new string(url[offset..i]);
                         qs.Add(name, value);
                     }
                     name = null;
@@ -252,7 +250,7 @@ namespace BeetleX.FastHttpApi
             {
                 if (url.Length > offset)
                 {
-                    value = new string(url.Slice(offset, url.Length - offset));
+                    value = new string(url[offset..]);
                     qs.Add(name, value);
                 }
             }
@@ -274,14 +272,14 @@ namespace BeetleX.FastHttpApi
                 }
                 if (line[i] == '=')
                 {
-                    name = new string(line.Slice(offset, i - offset));
+                    name = new string(line[offset..i]);
                     offset = i + 1;
                 }
                 else if (line[i] == ';')
                 {
                     if (!string.IsNullOrEmpty(name))
                     {
-                        value = new string(line.Slice(offset, i - offset));
+                        value = new string(line[offset..i]);
                         proerties.Add(new ContentHeaderProperty() { Name = name, Value = value });
                         offset = i + 1;
                         name = null;
@@ -290,7 +288,7 @@ namespace BeetleX.FastHttpApi
             }
             if (name != null)
             {
-                value = new string(line.Slice(offset, line.Length - offset));
+                value = new string(line[offset..]);
                 proerties.Add(new ContentHeaderProperty() { Name = name, Value = value });
             }
             return proerties.ToArray();
@@ -312,15 +310,15 @@ namespace BeetleX.FastHttpApi
                     offset = i + 1;
                 else if (line[i] == ';')
                 {
-                    result.Value = new string(line.Slice(offset, i - offset));
-                    property = line.Slice(i + 1);
+                    result.Value = new string(line[offset..i]);
+                    property = line[(i + 1)..];
                     offset = 0;
                     break;
                 }
             }
             if (offset > 0)
             {
-                result.Value = new string(line.Slice(offset, line.Length - offset));
+                result.Value = new string(line[offset..]);
             }
             if (property.Length != line.Length)
             {
@@ -344,7 +342,7 @@ namespace BeetleX.FastHttpApi
             {
                 if (line[i] == ':' && name == null)
                 {
-                    name = new string(line.Slice(offset, i - offset));
+                    name = new string(line[offset..i]);
                     offset = i + 1;
                 }
                 else
@@ -358,7 +356,7 @@ namespace BeetleX.FastHttpApi
                     }
                 }
             }
-            value = new string(line.Slice(offset, line.Length - offset));
+            value = new string(line[offset..]);
             return new Tuple<string, string>(name, value);
         }
 
@@ -380,14 +378,14 @@ namespace BeetleX.FastHttpApi
                 {
                     if (count == 0)
                     {
-                        httpversion = new string(line.Slice(offset, i - offset));
+                        httpversion = new string(line[offset..i]);
                         offset = i + 1;
                     }
                     else
                     {
-                        code = int.Parse(line.Slice(offset, i - offset));
+                        code = int.Parse(line[offset..i]);
                         offset = i + 1;
-                        codemsg = new string(line.Slice(offset, line.Length - offset));
+                        codemsg = new string(line[offset..]);
                         break;
                     }
                     count++;
@@ -431,14 +429,14 @@ namespace BeetleX.FastHttpApi
                 {
                     if (count == 0)
                     {
-                        request.Method = new string(line.Slice(offset, i - offset));
+                        request.Method = new string(line[offset..i]);
                         offset = i + 1;
                     }
                     else
                     {
-                        request.Url = new string(line.Slice(offset, i - offset));
+                        request.Url = new string(line[offset..i]);
                         offset = i + 1;
-                        request.HttpVersion = new string(line.Slice(offset, line.Length - offset));
+                        request.HttpVersion = new string(line[offset..]);
                         return;
                     }
                     count++;
@@ -473,14 +471,14 @@ namespace BeetleX.FastHttpApi
                 {
                     if (qsdata[i] == '=')
                     {
-                        name = new string(qsdata.Slice(offset, i - offset));
+                        name = new string(qsdata[offset..i]);
                         offset = i + 1;
                     }
                     else if (qsdata[i] == '&')
                     {
                         if (name != null && i - offset > 0)
                         {
-                            value = new string(qsdata.Slice(offset, i - offset));
+                            value = new string(qsdata[offset..i]);
                             queryString.Add(name, value);
                             name = null;
                         }
@@ -489,7 +487,7 @@ namespace BeetleX.FastHttpApi
                 }
                 if (name != null && qsdata.Length - offset > 0)
                 {
-                    value = new string(qsdata.Slice(offset, qsdata.Length - offset));
+                    value = new string(qsdata[offset..]);
                     queryString.Add(name, value);
                 }
             }
@@ -559,7 +557,7 @@ namespace BeetleX.FastHttpApi
                         header[Name] = value;
                         if (Name[0] == 'C' && Name[5] == 'e' && Name[1] == 'o' && Name[2] == 'o' && Name[3] == 'k' && Name[4] == 'i')
                         {
-                            HttpParse.AnalyzeCookie(value, cookie);
+                            AnalyzeCookie(value, cookie);
                         }
                         Name = null;
                         Offset = 0;
@@ -600,7 +598,7 @@ namespace BeetleX.FastHttpApi
 
             public short VersionOffset;
 
-            private int ReadQueryString(ReadOnlySpan<char> buffer, QueryString queryString, HttpRequest request)
+            private static int ReadQueryString(ReadOnlySpan<char> buffer, QueryString queryString, HttpRequest request)
             {
                 int result = 0;
                 ReadOnlySpan<char> qsdata = buffer;
@@ -622,14 +620,14 @@ namespace BeetleX.FastHttpApi
                     {
                         if (qsdata[i] == '=')
                         {
-                            name = new string(qsdata.Slice(offset, i - offset));
+                            name = new string(qsdata[offset..i]);
                             offset = i + 1;
                         }
                         else if (qsdata[i] == '&')
                         {
                             if (name != null && i - offset > 0)
                             {
-                                value = new string(qsdata.Slice(offset, i - offset));
+                                value = new string(qsdata[offset..i]);
                                 queryString.Add(name, value);
                                 name = null;
                             }
@@ -638,14 +636,14 @@ namespace BeetleX.FastHttpApi
                     }
                     if (name != null && qsdata.Length - offset > 0)
                     {
-                        value = new string(qsdata.Slice(offset, qsdata.Length - offset));
+                        value = new string(qsdata[offset..]);
                         queryString.Add(name, value);
                     }
                 }
                 return result;
             }
 
-            private void ReadPath(ReadOnlySpan<char> buffer, QueryString queryString, HttpRequest request)
+            private static void ReadPath(ReadOnlySpan<char> buffer, QueryString queryString, HttpRequest request)
             {
                 request.BaseUrl = CharToLower(buffer);
                 for (int i = buffer.Length - 1; i >= 0; i--)
@@ -663,7 +661,7 @@ namespace BeetleX.FastHttpApi
                 }
             }
 
-            private void ReadHttpVersionNumber(ReadOnlySpan<char> buffer, QueryString queryString, HttpRequest request)
+            private static void ReadHttpVersionNumber(ReadOnlySpan<char> buffer, QueryString queryString, HttpRequest request)
             {
                 for (int i = 0; i < buffer.Length; i++)
                 {

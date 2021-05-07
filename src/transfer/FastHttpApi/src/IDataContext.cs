@@ -19,7 +19,7 @@ namespace BeetleX.FastHttpApi
             mDataContext = dataContext;
         }
 
-        private readonly Data.IDataContext mDataContext;
+        private readonly IDataContext mDataContext;
 
         public HttpRequest Request { get; set; }
 
@@ -35,7 +35,7 @@ namespace BeetleX.FastHttpApi
 
         public void Result(object data)
         {
-            WebSockets.DataFrame frame = data as WebSockets.DataFrame;
+            DataFrame frame = data as DataFrame;
             if (frame == null)
             {
                 ActionResult result = data as ActionResult;
@@ -70,12 +70,12 @@ namespace BeetleX.FastHttpApi
         }
 
 
-        public void SendToWebSocket(WebSockets.DataFrame data, HttpRequest request)
+        public void SendToWebSocket(DataFrame data, HttpRequest request)
         {
             Server.SendToWebSocket(data, request);
         }
 
-        public void SendToWebSocket(WebSockets.DataFrame data, Func<ISession, HttpRequest, bool> filter = null)
+        public void SendToWebSocket(DataFrame data, Func<ISession, HttpRequest, bool> filter = null)
         {
             Server.SendToWebSocket(data, filter);
         }
@@ -113,7 +113,7 @@ namespace BeetleX.FastHttpApi
             mDataContext = dataContext;
         }
 
-        private readonly Data.IDataContext mDataContext;
+        private readonly IDataContext mDataContext;
 
         public NextQueue Queue { get; set; }
 
@@ -145,12 +145,12 @@ namespace BeetleX.FastHttpApi
             Response.Async();
         }
 
-        public void SendToWebSocket(WebSockets.DataFrame data, HttpRequest request)
+        public void SendToWebSocket(DataFrame data, HttpRequest request)
         {
             Server.SendToWebSocket(data, request);
         }
 
-        public void SendToWebSocket(WebSockets.DataFrame data, Func<ISession, HttpRequest, bool> filter = null)
+        public void SendToWebSocket(DataFrame data, Func<ISession, HttpRequest, bool> filter = null)
         {
             Server.SendToWebSocket(data, filter);
         }

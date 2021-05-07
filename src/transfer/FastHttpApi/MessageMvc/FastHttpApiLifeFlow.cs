@@ -53,7 +53,7 @@ namespace BeetleX.FastHttpApi
         Task IZeroDiscover.Discovery()
         {
             Server = new HttpMessageServer();
-            if (HttpDisconnectHandlers.Count > 0)
+            //if (HttpDisconnectHandlers.Count > 0)
             {
                 Server.HttpDisconnect += Server_HttpDisconnect; ;
             }

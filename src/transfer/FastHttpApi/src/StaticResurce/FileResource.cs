@@ -16,7 +16,7 @@ namespace BeetleX.FastHttpApi.StaticResurce
             mInnerResource = innerResource;
             GZIP = true;
             Cached = false;
-            Ext = System.IO.Path.GetExtension(filename);
+            Ext = Path.GetExtension(filename);
         }
 
         public System.Reflection.Assembly Assembly { get; set; }
@@ -62,14 +62,14 @@ namespace BeetleX.FastHttpApi.StaticResurce
         protected virtual void LoadFile()
         {
             int length;
-            System.IO.Stream fsstream;
+            Stream fsstream;
             if (InnerResource)
             {
                 fsstream = Assembly.GetManifestResourceStream(FullName);
             }
             else
             {
-                fsstream = System.IO.File.Open(FullName, FileMode.Open, FileAccess.Read, FileShare.Read);
+                fsstream = File.Open(FullName, FileMode.Open, FileAccess.Read, FileShare.Read);
             }
             using (fsstream)
             {
@@ -77,20 +77,16 @@ namespace BeetleX.FastHttpApi.StaticResurce
                 byte[] buffer = HttpParse.GetByteBuffer();
                 if (length > 0)
                 {
-                    using (System.IO.MemoryStream memory = new())
+                    using MemoryStream memory = new();
+                    using GZipStream gstream = new(memory, CompressionMode.Compress);
+                    while (length > 0)
                     {
-                        using (GZipStream gstream = new(memory, CompressionMode.Compress))
-                        {
-                            while (length > 0)
-                            {
-                                int len = fsstream.Read(buffer, 0, buffer.Length);
-                                length -= len;
-                                gstream.Write(buffer, 0, len);
-                                gstream.Flush();
-                                if (length == 0)
-                                    Data = memory.ToArray();
-                            }
-                        }
+                        int len = fsstream.Read(buffer, 0, buffer.Length);
+                        length -= len;
+                        gstream.Write(buffer, 0, len);
+                        gstream.Flush();
+                        if (length == 0)
+                            Data = memory.ToArray();
                     }
                 }
                 else
@@ -104,7 +100,7 @@ namespace BeetleX.FastHttpApi.StaticResurce
 
         public void Load()
         {
-            Name = System.IO.Path.GetFileName(FullName);
+            Name = Path.GetFileName(FullName);
             if (!InnerResource)
             {
                 FileInfo fi = new(FullName);
@@ -112,10 +108,8 @@ namespace BeetleX.FastHttpApi.StaticResurce
             }
             else
             {
-                using (System.IO.Stream stream = Assembly.GetManifestResourceStream(FullName))
-                {
-                    Length = (int)stream.Length;
-                }
+                using Stream stream = Assembly.GetManifestResourceStream(FullName);
+                Length = (int)stream.Length;
             }
             if (Length < 1024 * 1024*5 && !string.IsNullOrEmpty(UrlName))
             {
@@ -124,14 +118,12 @@ namespace BeetleX.FastHttpApi.StaticResurce
             LoadFile();
         }
 
-        public string MD5Encrypt(string filename)
+        public static string MD5Encrypt(string filename)
         {
-            using (MD5 md5Hash = MD5.Create())
-            {
-                byte[] hash = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(filename));
+            using MD5 md5Hash = MD5.Create();
+            byte[] hash = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(filename));
 
-                return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-            }
+            return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
         }
 
         public virtual FileBlock CreateFileBlock()
@@ -141,22 +133,20 @@ namespace BeetleX.FastHttpApi.StaticResurce
 
         public static string FMD5(string filename, System.Reflection.Assembly assembly)
         {
-            using (var md5 = MD5.Create())
+            using var md5 = MD5.Create();
+            Stream stream;
+            if (assembly != null)
             {
-                System.IO.Stream stream;
-                if (assembly != null)
-                {
-                    stream = assembly.GetManifestResourceStream(filename);
-                }
-                else
-                {
-                    stream = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
-                }
-                using (stream)
-                {
-                    var hash = md5.ComputeHash(stream);
-                    return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-                }
+                stream = assembly.GetManifestResourceStream(filename);
+            }
+            else
+            {
+                stream = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
+            }
+            using (stream)
+            {
+                var hash = md5.ComputeHash(stream);
+                return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
             }
         }
     }
@@ -183,14 +173,14 @@ namespace BeetleX.FastHttpApi.StaticResurce
                 length = size;
             newOffset = offset + length;
             byte[] buffer = GetBuffer(size);
-            System.IO.Stream fsstream;
+            Stream fsstream;
             if (InnerResource)
             {
                 fsstream = Assembly.GetManifestResourceStream(FullName);
             }
             else
             {
-                fsstream = System.IO.File.Open(FullName, FileMode.Open, FileAccess.Read, FileShare.Read);
+                fsstream = File.Open(FullName, FileMode.Open, FileAccess.Read, FileShare.Read);
             }
             using (fsstream)
             {
@@ -209,8 +199,7 @@ namespace BeetleX.FastHttpApi.StaticResurce
 
         protected virtual byte[] GetBuffer(int size)
         {
-            byte[] buffer = null;
-            if (!mPool.TryDequeue(out buffer))
+            if (!mPool.TryDequeue(out byte[] buffer))
             {
                 buffer = new byte[size];
             }

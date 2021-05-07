@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <Authors>Agebull</Authors>
+    <Company>ZeroTeam</Company>
+    <Product>ZeroTeam.MessageMVC</Product>
+    <Description>简单的微信公众平台Api封装</Description>
+    <PackageProjectUrl>https://github.com/ZeroTeam-Net/MessageMVC</PackageProjectUrl>
+    <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
+
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/ZeroTeam-Net/MessageMVC.git</RepositoryUrl>
+    <IncludeSymbols>false</IncludeSymbols>
+    <IncludeSource>false</IncludeSource>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <FileVersion>1.0.0.3</FileVersion>
+    <AssemblyVersion>1.0.0.3</AssemblyVersion>
+    <Version>1.0.0.3</Version>
+
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\transfer\Http\ZeroTeam.MessageMVC.Http.csproj" />
+  </ItemGroup>
+
+</Project>

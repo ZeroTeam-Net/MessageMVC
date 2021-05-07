@@ -8,7 +8,7 @@ namespace BeetleX.FastHttpApi
     public class ServerStatusController
     {
         [DefaultJsonResultFilter]
-        public object __ServerStatus(IHttpContext context)
+        public static object __ServerStatus(IHttpContext context)
         {
             if (context.Server.ServerCounter != null)
             {

@@ -14,7 +14,7 @@ namespace BeetleX.FastHttpApi
             RequestArgs = new EventHttpRequestArgs();
         }
 
-        internal BeetleX.Dispatchs.SingleThreadDispatcher<HttpApiServer.IOQueueProcessArgs> IOQueue { get; set; }
+        internal Dispatchs.SingleThreadDispatcher<HttpApiServer.IOQueueProcessArgs> IOQueue { get; set; }
 
         internal EventHttpRequestArgs RequestArgs { get; set; }
 

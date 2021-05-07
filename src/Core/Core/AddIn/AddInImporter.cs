@@ -1,10 +1,12 @@
-﻿using Agebull.Common.Ioc;
+﻿using Agebull.Common;
+using Agebull.Common.Ioc;
 using Agebull.Common.Logging;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
+using System.ComponentModel.Composition.Primitives;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -33,6 +35,11 @@ namespace ZeroTeam.MessageMVC.AddIn
             knowAssemblies.Add(file);
 
             var name = Path.GetFileName(file);
+            return CheckAssemblyName(name);
+        }
+
+        private static bool CheckAssemblyName(string name)
+        {
             if (knowAssemblies.Contains(name))
             {
                 return false;
@@ -80,60 +87,100 @@ namespace ZeroTeam.MessageMVC.AddIn
         }
         #endregion
 
-        /// <summary>
-        /// 插件对象
-        /// </summary>
-        [ImportMany(typeof(IAutoRegister))]
-        public IEnumerable<IAutoRegister> Import { get; set; }
+        public class AutoRegisterCatalog
+        {
+            /// <summary>
+            /// 插件对象
+            /// </summary>
+            [ImportMany(typeof(IAutoRegister))]
+            public IEnumerable<IAutoRegister> Import { get; set; }
+
+        }
 
         /// <summary>
         /// 所有自动注册对象
         /// </summary>
-        List<IAutoRegister> registers = new();
+        internal List<IAutoRegister> registers = new();
 
         /// <summary>
         /// 载入插件
         /// </summary>
         internal void LoadAddIn(ILogger logger)
         {
+            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+            //CheckApplication(logger);
+            FindFiles(logger, AppDomain.CurrentDomain.BaseDirectory, true);
             if (string.IsNullOrEmpty(ZeroAppOption.Instance.AddInPath))
             {
-                ZeroAppOption.Instance.AddInPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            }
-            else if (ZeroAppOption.Instance.AddInPath[0] != '/')
-            {
-                ZeroAppOption.Instance.AddInPath = Path.Combine(ZeroAppOption.Instance.RootPath, ZeroAppOption.Instance.AddInPath);
+                return;
             }
             if (!Directory.Exists(ZeroAppOption.Instance.AddInPath))
             {
                 logger.Information($"插件地址无效:{ZeroAppOption.Instance.AddInPath}");
                 return;
             }
-            logger.Information($"载入插件:{ZeroAppOption.Instance.AddInPath}");
+            FindFiles(logger, ZeroAppOption.Instance.AddInPath, false);
+        }
 
-            var files = Directory.GetFiles(ZeroAppOption.Instance.AddInPath, "*.dll", SearchOption.TopDirectoryOnly);
-            foreach (var file in files)
+        private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            Console.WriteLine(args.Name);
+            var dir = Path.GetDirectoryName(args.RequestingAssembly.Location);
+            var file = args.Name.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)[0].Trim();
+            return Assembly.LoadFile(Path.Combine(dir, file + ".dll"));
+        }
+
+        public List<Assembly> Assemblies = new List<Assembly>();
+
+        void FindFiles(ILogger logger, string folder, bool directoryOnly)
+        {
+            if (string.IsNullOrEmpty(folder))
             {
-                if (!CheckAssembly(file))
-                    continue;
+                return;
+            }
+            logger.Information($"插件路径:{folder}");
+
+            IOHelper.Search(folder, "*.dll", directoryOnly, (path, file) =>
+             {
+                 if (!CheckAssembly(file))
+                     return;
+                 logger.Information($"插件路径:{file}");
                 // 通过容器对象将宿主和部件组装到一起。 
                 try
-                {
-                    using var provider = new DirectoryCatalog(ZeroAppOption.Instance.AddInPath, Path.GetFileName(file));
-                    using var c = new CompositionContainer(provider);
-                    c.ComposeParts(this);
-                    if (Import != null && Import.Any())
-                    {
-                        registers.AddRange(Import);
-                    }
-                    Import = null;
-                }
-                catch (System.Exception e2)
-                {
-                    logger.Exception(e2);
-                }
-            }
+                 {
+                     var catalog = new AutoRegisterCatalog();
+                     if (!directoryOnly)
+                     {
+                         var ass = Assembly.LoadFile(file);
+                         Assemblies.Add(ass);
+                         using var provider = new AssemblyCatalog(ass);
+                         using var c = new CompositionContainer(provider);
+                         c.ComposeParts(catalog);
+                     }
+                     else
+                     {
+                         using var provider = new DirectoryCatalog(path, Path.GetFileName(file));
+                         using var c = new CompositionContainer(provider);
+                         c.ComposeParts(catalog);
+                     }
+
+                     if (catalog.Import == null || !catalog.Import.Any())
+                     {
+                         return;
+                     }
+                     foreach (var obj in catalog.Import)
+                     {
+                         logger.Information($"发现插件:{obj}");
+                         registers.Add(obj);
+                     }
+                 }
+                 catch (Exception e2)
+                 {
+                     logger.Exception(e2);
+                 }
+             });
         }
+
 
         /// <summary>
         /// 载入插件

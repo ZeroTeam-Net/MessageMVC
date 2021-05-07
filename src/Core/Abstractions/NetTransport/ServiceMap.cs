@@ -23,7 +23,11 @@ namespace ZeroTeam.MessageMVC.Messages
             foreach (var kv in map)
             {
                 var item = new ServiceItem();
-                NetTransfers.Add(kv.Key, item);
+                if(!NetTransfers.TryAdd(kv.Key, item))
+                {
+                    Console.WriteLine(kv.Key);
+                }
+                item = NetTransfers[kv.Key];
                 if (kv.Value == null || kv.Value.Length == 0)
                     continue;
                 foreach (var service in kv.Value)

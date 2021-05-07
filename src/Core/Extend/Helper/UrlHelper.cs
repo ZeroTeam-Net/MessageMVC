@@ -58,12 +58,12 @@ namespace Agebull.Common
                 string value = null;
                 if (index >= 0)
                 {
-                    key = queryString.Substring(startIndex, index - startIndex);
+                    key = queryString[startIndex..index];
                     value = queryString.Substring(index + 1, i - index - 1);
                 }
                 else
                 {
-                    key = queryString.Substring(startIndex, i - startIndex);
+                    key = queryString[startIndex..i];
                 }
                 if (isEncoded)
                 {

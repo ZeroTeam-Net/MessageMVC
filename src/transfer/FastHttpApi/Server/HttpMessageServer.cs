@@ -38,7 +38,7 @@ namespace BeetleX.FastHttpApi
                 response.Result(new OptionsResult());
             }
 
-            lock (locked)
+            //lock (locked)
             {
                 if (OnHttpRequesting(request, response).Cancel)
                 {
@@ -100,13 +100,11 @@ namespace BeetleX.FastHttpApi
                 //开始调用
                 if (success)
                 {
-                    var service = ZeroFlowControl.GetService(message.Service) ?? new ZeroService
-                    {
-                        ServiceName = message.Service,
-                        Receiver = new EmptyReceiver(),
-                        Serialize = DependencyHelper.GetService<ISerializeProxy>()
-                    };
-                    MessageProcessor.RunOnMessagePush(service, message, false, message.HttpContext);
+                    var service = ZeroFlowControl.GetService(message.Service);
+                    if (service == null)
+                        writer.WriteResult(ApiResultHelper.Helper.NoFind);
+                    else
+                        MessageProcessor.RunOnMessagePush(service, message, false, message.HttpContext);
                 }
                 else
                 {

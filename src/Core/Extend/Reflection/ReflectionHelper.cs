@@ -1027,7 +1027,7 @@ namespace Agebull.Common.Reflection
             }
             sb.Append(type.IsGenericParameter
                     ? type.Name
-                    : type.Name.Substring(0, type.Name.Length - 2));
+                    : type.Name[0..^2]);
 
             var isFirst = true;
             foreach (var tParam in type.GetGenericArguments())
@@ -1355,7 +1355,7 @@ namespace Agebull.Common.Reflection
             var source = err.Source;
             var stack = err.StackTrace;
             var inner = err.InnerException;
-            if (type.IndexOf("FaultException", StringComparison.Ordinal) >= 0)
+            if (type.Contains("FaultException"))
             {
                 //直接处理SSO的异常,并中止递归
                 var innererr = TryGetProperty(tp, "Detail", err);
@@ -1426,7 +1426,7 @@ namespace Agebull.Common.Reflection
             if (name.IndexOf('.') < 0)
                 return "this";
             var itns = GetTypeShowName(name).Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
-            return $"{itns[itns.Length - 2]}.this";
+            return $"{itns[^2]}.this";
         }
 
         /// <summary>
@@ -1442,7 +1442,7 @@ namespace Agebull.Common.Reflection
 
             if (name.IndexOf('<') < 0)
             {
-                return $"{itns[itns.Length - 2]}.{itns[itns.Length - 1]}";
+                return $"{itns[^2]}.{itns[^1]}";
             }
             var sb = new StringBuilder();
             var word = new StringBuilder();
@@ -1476,7 +1476,7 @@ namespace Agebull.Common.Reflection
                 }
             }
             sb.Append('.');
-            sb.Append(itns[itns.Length - 1]);
+            sb.Append(itns[^1]);
             return sb.ToString();
         }
 

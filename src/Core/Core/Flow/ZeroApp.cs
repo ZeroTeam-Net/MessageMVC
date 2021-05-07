@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -74,6 +75,7 @@ namespace ZeroTeam.MessageMVC
                 DependencyHelper.ServiceCollection.AddSingleton(p => builder);
                 ConfigurationHelper.BindBuilder(builder);
                 ZeroFlowControl.LoadConfig();
+                ConfigurationHelper.BindBuilder(builder);
                 ZeroAppOption.Instance.AutoDiscover = autoDiscovery;
                 ZeroAppOption.Instance.Discovery = discovery;
                 ConfigurationHelper.OnConfigurationUpdate = cfg => ctx.Configuration = cfg;
@@ -87,6 +89,7 @@ namespace ZeroTeam.MessageMVC
                 AddDependency(services);
             });
         }
+
         /// <summary>
         /// 检查并注入配置
         /// </summary>
@@ -102,7 +105,7 @@ namespace ZeroTeam.MessageMVC
             AddDependency(DependencyHelper.ServiceCollection);
             await ZeroFlowControl.CheckConfig();
             if (ZeroAppOption.Instance.AutoDiscover)
-                ZeroFlowControl.Discove();
+                ZeroFlowControl.DiscoveAll();
             ZeroAppOption.Instance.Discovery?.Invoke();
 
             await ZeroFlowControl.Initialize();
